@@ -111,3 +111,44 @@ def format_timings_markdown(timings: dict[str, Any]) -> str:
         return ""
     parts = [f"`{k}`: **{v} ms**" for k, v in timings.items()]
     return "**Độ trễ từng chặng (Stage Timings):** " + " • ".join(parts)
+
+
+def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True) -> str:
+    comp = data.get("comparison") or {}
+    koc = comp.get("koc_scores") or {}
+    viewer = comp.get("viewer_clean_scores") or {}
+    gap = float(comp.get("pr_hype_gap") or 0.0)
+    risk = float(comp.get("undisclosed_pr_risk") or 0.0)
+    pains = comp.get("viewer_pain_points") or []
+    comments = data.get("comments") or []
+
+    lines = [
+        "### Đối Chiếu ABSA 4 Khía Cạnh (KOC Lời Thoại vs. Bình Luận Sạch) & Quét Seeding",
+        f"- **Độ lệch Quảng cáo (`PR Hype Gap`):** `{gap:+.2f}` • **Rủi ro Booking Ngầm (`Undisclosed PR Risk`):** `{risk * 100:.1f}%`",
+        f"- **Bình luận hợp lệ:** `{comp.get('clean_comment_count', 0)}` • **Bình luận nghi Seeding/Spam bị lọc:** `{comp.get('seeding_comment_count', 0)}`",
+        "",
+        "| Khía cạnh (Aspect) | Điểm KOC (Voice) | Điểm Khách Thật (Clean Comments) | Nhận định |",
+        "| :--- | :---: | :---: | :--- |",
+    ]
+    for key, label in (
+        ("taste", "Hương vị (Taste)"),
+        ("price", "Giá cả (Price)"),
+        ("hygiene", "Vệ sinh & Không gian (Hygiene)"),
+        ("service", "Phục vụ (Service)"),
+    ):
+        ks = float(koc.get(key) or 0.0)
+        vs = float(viewer.get(key) or 0.0)
+        note = "⚠️ KOC khen cao hơn thực tế" if (ks - vs) >= 0.45 else "✅ Đồng thuận tương đối"
+        lines.append(f"| **{label}** | `{ks:+.2f}` | `{vs:+.2f}` | {note} |")
+
+    if pains:
+        lines.append("\n#### Điểm Phàn Nàn Thực Tế Từ Người Xem (Pain Points)")
+        lines.extend(f"- {p}" for p in pains)
+
+    shown = [c for c in comments if (not hide_seeding or not c.get("is_seeding"))]
+    lines.append(f"\n#### Danh Sách Bình Luận ({'Đã ẩn Seeding' if hide_seeding else 'Hiển thị tất cả'})")
+    for c in shown:
+        tag = f"🚫 `[SEEDING: {c.get('seeding_reason')}]`" if c.get("is_seeding") else "✅ `[CLEAN]`"
+        lines.append(f"- {tag} **@{c.get('author_handle') or 'user'}**: {c.get('text')}")
+    return "\n".join(lines)
+

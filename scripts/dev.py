@@ -25,6 +25,8 @@ def main() -> int:
             "build-corpus",
             "build-index",
             "benchmark",
+            "crawl-4m-demo",
+            "ingest-4m",
             "lint",
             "typecheck",
             "test",
@@ -63,6 +65,18 @@ def main() -> int:
                 "artifacts/indexes/bm25-v1",
                 "--output",
                 "artifacts/benchmarks/retrieval_v1.json",
+            ]
+        )
+    if args.command == "crawl-4m-demo":
+        return _run([py, "-m", "pipelines.crawl_incremental", "--seed-demo-batch"])
+    if args.command == "ingest-4m":
+        return _run(
+            [
+                py,
+                "-m",
+                "pipelines.ingest_incremental_to_gold",
+                "--output-corpus",
+                "data/corpus/20261116_v2_4m",
             ]
         )
     if args.command == "lint":

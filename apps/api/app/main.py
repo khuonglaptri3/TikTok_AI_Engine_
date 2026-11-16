@@ -8,7 +8,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
 
 from apps.api.app.dependencies import ServiceContainer, build_container
-from apps.api.app.routers import analytics, health, retrieval, script
+from apps.api.app.routers import analytics, health, retrieval, script, trust
 from apps.demo.ui import build_gradio_blocks
 from packages.common.exceptions import ViralRagError
 from packages.common.settings import AppSettings
@@ -48,6 +48,7 @@ def create_app(
     app.include_router(analytics.router)
     app.include_router(retrieval.router)
     app.include_router(script.router)
+    app.include_router(trust.router)
 
     @app.get("/", include_in_schema=False)
     async def root_redirect() -> RedirectResponse:

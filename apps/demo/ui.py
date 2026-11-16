@@ -12,6 +12,7 @@ from apps.demo.presentation import (
     format_evidence_cards_markdown,
     format_script_markdown,
     format_timings_markdown,
+    format_trust_audit_markdown,
 )
 from packages.taxonomy import FOOD_CATEGORIES, OCCASION_LABELS, PRICE_TIERS, VIDEO_FORMATS
 
@@ -129,6 +130,37 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
         _, eval_data = await _get_api("/api/v1/evaluation/summary")
         return ready_data, eval_data
 
+    async def handle_trust_audit(
+        caption: str,
+        transcript: str,
+        raw_comments_lines: str,
+        hide_seeding: bool,
+    ) -> tuple[str, str]:
+        comments_payload = []
+        for idx, line in enumerate(raw_comments_lines.splitlines(), start=1):
+            clean = line.strip()
+            if not clean:
+                continue
+            if ":" in clean:
+                user_part, text_part = clean.split(":", 1)
+                handle = user_part.strip().lstrip("@")
+                txt = text_part.strip()
+            else:
+                handle = f"viewer_{idx}"
+                txt = clean
+            comments_payload.append({"comment_id": f"c{idx}", "author_handle": handle, "text": txt})
+
+        status, data = await _post_api(
+            "/api/v1/trust/audit-video",
+            {"caption": caption, "transcript": transcript, "comments": comments_payload},
+        )
+        if status != 200:
+            return f"### ⚠️ Lỗi (`{status}`)\n{json.dumps(data, ensure_ascii=False)}", ""
+        return (
+            format_trust_audit_markdown(data, hide_seeding=hide_seeding),
+            format_timings_markdown(data.get("timings_ms") or {}),
+        )
+
     all_opt = "(Tự động / Tất cả)"
 
     with gr.Blocks(title="ViralFoodRAG — Evidence-Based TikTok Intelligence") as demo:
@@ -201,7 +233,38 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                     outputs=[e_bench, e_cards, e_timings],
                 )
 
-            with gr.Tab("3. Readiness & Retrieval Benchmark"):
+            with gr.Tab("3. Seeding & ABSA Trust Radar (4-Month Stream)"):
+                t_cap = gr.Textbox(
+                    label="Caption Video (4-Month Fresh Review)",
+                    value="Khai trương lẩu bò mắm ruốc Quận 10 giảm giá 20% ngon xuất sắc",
+                )
+                t_tr = gr.Textbox(
+                    label="Lời thoại KOC (Transcript)",
+                    lines=3,
+                    value="Tặng ngay voucher khai trương nha anh em! Nước lẩu bò thơm đậm đà, thịt tươi đầy đặn giá 169k siêu rẻ, không gian sạch sẽ thoáng mát nhân viên dễ thương cực kỳ!",
+                )
+                t_comms = gr.Textbox(
+                    label="Danh sách Bình luận (mỗi dòng: @user: nội dung)",
+                    lines=5,
+                    value=(
+                        "@seed_01: Quán ruột của mình mỗi tuần đều ghé ăn lẩu bò xuất sắc luôn\n"
+                        "@seed_02: Quán ruột của mình mỗi tuần đều ghé ăn lẩu bò xuất sắc nha\n"
+                        "@spam_bot: Nhận tuyển CTV việc nhẹ lương cao inbox zalo 0909123456\n"
+                        "@khach_that_1: Nước lẩu mặn chát mà bàn ghế bẩn đầy khói, nhân viên phục vụ quá chậm chờ 40 phút\n"
+                        "@khach_that_2: Thịt ít xịu tính thêm rau bún vô đắt chứ không rẻ như quảng cáo lố"
+                    ),
+                )
+                hide_seed_chk = gr.Checkbox(value=True, label="Ẩn bình luận Seeding / Spam khỏi danh sách hiển thị")
+                audit_btn = gr.Button("🛡️ Quét Seeding & Đối Chiếu ABSA (KOC vs. Thực Khách)", variant="primary")
+                t_audit_timings = gr.Markdown()
+                t_audit_md = gr.Markdown()
+                audit_btn.click(
+                    fn=handle_trust_audit,
+                    inputs=[t_cap, t_tr, t_comms, hide_seed_chk],
+                    outputs=[t_audit_md, t_audit_timings],
+                )
+
+            with gr.Tab("4. Readiness & Retrieval Benchmark"):
                 refresh_btn = gr.Button("🔄 Kiểm Tra Trạng Thái Hệ Thống & Báo Cáo Đánh Giá")
                 with gr.Row():
                     ready_json = gr.JSON(label="/health/ready")
