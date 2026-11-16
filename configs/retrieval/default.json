@@ -1,0 +1,9 @@
+{
+  "rrf_k": 60,
+  "candidate_k": 30,
+  "viral_log_boost_weight": 0.15,
+  "bm25_k1": 1.5,
+  "bm25_b": 0.75,
+  "default_top_k": 5,
+  "max_top_k": 20
+}

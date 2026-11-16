@@ -1,0 +1,32 @@
+{
+  "snapshot_id": "20261116_v1",
+  "created_at": "2026-11-16T07:37:32.329981+00:00",
+  "date_window_start": "2023-11-25",
+  "date_window_end": "2025-03-19",
+  "total_creators": 264,
+  "total_videos": 70996,
+  "transcribed_videos": 21748,
+  "poi_tagged_videos": 23448,
+  "ec_tagged_videos": 5798,
+  "files": [
+    {
+      "filename": "dim_creators.parquet",
+      "rows": 264,
+      "columns": 15,
+      "sha256": "9c2b5fb502aa71b95b347adb3ffc9093b8d6595334424c310a06c23c64f25ed7",
+      "size_bytes": 36562
+    },
+    {
+      "filename": "fact_videos.parquet",
+      "rows": 70996,
+      "columns": 49,
+      "sha256": "ec342461cc2c76743b31e0d068583445d3893f8c82261fb10d87bfb25325e475",
+      "size_bytes": 59453674
+    }
+  ],
+  "caveats": [
+    "Creator-centric cohort (264 Vietnamese F&B creators, Nov 2023 - Apr 2025), not a uniform random sample of all TikTok Vietnam uploads.",
+    "Engagement metrics are single-snapshot observations captured in Mar-Apr 2025; viral_multiplier normalizes plays against each creator's own empirical median.",
+    "Spoken transcripts cover top weekly viral and enriched subsets (~22.6K videos), while metadata and POI benchmarks cover all 70,996 videos."
+  ]
+}

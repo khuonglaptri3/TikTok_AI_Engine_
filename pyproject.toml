@@ -1,0 +1,78 @@
+[build-system]
+requires = ["poetry-core>=2.2.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "tiktok-viral-rag"
+version = "0.2.0"
+description = "Evidence-Based Viral Content Intelligence & Hybrid RAG Script Engine for Vietnamese F&B TikTok"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+keywords = [
+    "tiktok-analytics",
+    "fnb",
+    "rag",
+    "hybrid-retrieval",
+    "bm25",
+    "qdrant",
+    "fastapi",
+    "gradio"
+]
+dependencies = [
+    "fastapi>=0.140.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "httpx>=0.27.0",
+    "numpy>=1.26.0",
+    "pandas>=2.1.0",
+    "pyarrow>=14.0.0",
+    "scipy>=1.11.0",
+    "google-genai>=1.0.0",
+]
+
+[project.optional-dependencies]
+demo = [
+    "gradio>=6.0.0",
+]
+infra = [
+    "qdrant-client>=1.12.0",
+    "redis>=5.0.0",
+    "duckdb>=1.0.0",
+    "rank-bm25>=0.2.2",
+]
+dev = [
+    "pytest>=7.4.0",
+    "mypy>=1.8.0",
+    "ruff>=0.6.0",
+]
+
+[tool.poetry]
+packages = [
+    {include = "apps"},
+    {include = "packages"},
+    {include = "pipelines"}
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = ["."]
+
+[tool.mypy]
+python_version = "3.11"
+explicit_package_bases = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true

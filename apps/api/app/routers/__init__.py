@@ -1,0 +1,1 @@
+"""Typed FastAPI route modules."""

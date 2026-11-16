@@ -1,0 +1,25 @@
+{
+  "benchmark_id": "retrieval_v1",
+  "corpus_snapshot_id": "20261116_v1",
+  "evaluated_at": "2026-11-16T08:13:30.101678+00:00",
+  "indexed_videos": 21748,
+  "queries_file": "data/evaluation/v1/queries.jsonl",
+  "configurations": {
+    "bm25_viral_boost": {
+      "query_count": 16,
+      "recall_at_10": 0.6656,
+      "mrr_at_10": 0.8875,
+      "ndcg_at_10": 0.6962,
+      "mean_latency_ms": 5.21,
+      "p95_latency_ms": 8.5
+    },
+    "bm25_viral_boost_reranked": {
+      "query_count": 16,
+      "recall_at_10": 0.7094,
+      "mrr_at_10": 0.8127,
+      "ndcg_at_10": 0.7083,
+      "mean_latency_ms": 17.01,
+      "p95_latency_ms": 21.0
+    }
+  }
+}

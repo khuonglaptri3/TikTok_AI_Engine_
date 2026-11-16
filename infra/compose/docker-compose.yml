@@ -1,0 +1,53 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: tiktok-rag-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  qdrant:
+    image: qdrant/qdrant:v1.20.0
+    container_name: tiktok-rag-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 1 bash -c '</dev/tcp/localhost/6333' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.api
+    container_name: tiktok-rag-api
+    environment:
+      TIKTOK_RAG_ENV: docker
+      TIKTOK_RAG_REDIS_URL: redis://redis:6379/0
+      TIKTOK_RAG_QDRANT_URL: http://qdrant:6333
+      TIKTOK_RAG_CORPUS_DIR: data/corpus/20261116_v1
+      TIKTOK_RAG_BM25_INDEX_DIR: artifacts/indexes/bm25-v1
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../data/corpus:/app/data/corpus:ro
+      - ../../artifacts:/app/artifacts:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+
+volumes:
+  redis_data:
+  qdrant_data:
