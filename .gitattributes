@@ -2,6 +2,9 @@
 # Other files retain the contributor's existing Git line-ending configuration.
 .gitattributes -text
 docs/reports/** -text
+data/** -text
+artifacts/indexes/** -text
+artifacts/enrichment/** -text
 .env.example -text
 AGENTS.md -text
 README.md -text

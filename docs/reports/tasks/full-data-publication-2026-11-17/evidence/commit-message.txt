@@ -1,0 +1,14 @@
+data: publish full historical corpus and runnable Gold artifacts
+
+Publish all 37,849 inventoried data/runtime files (1,593,622,816 bytes)
+in the existing private repository under the owner's explicit instruction.
+
+Include every preserved historical raw/interim/processed/transcript/legacy
+asset, default Gold Parquet and the complete BM25 runtime index. Keep
+original bytes using scoped -text attributes and retain .env/cache exclusions.
+
+Update setup and kickoff guidance so a full clone can run the existing
+data-backed tests and offline demo without a separate data transfer.
+
+Checks and per-file hashes are recorded in:
+docs/reports/tasks/full-data-publication-2026-11-17/README.md

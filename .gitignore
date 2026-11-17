@@ -15,13 +15,7 @@ dist/
 build/
 *.egg-info/
 
-# Runtime binary indexes & checkpoints (keep small JSON benchmark reports tracked)
-artifacts/indexes/
-artifacts/enrichment/
-
-# Heavy raw, interim, corpus parquet & legacy datasets (preserved 100% locally on disk)
-data/*
-!data/corpus/
-data/corpus/*/*.parquet
-!data/evaluation/
+# Owner explicitly authorized publishing the full dataset and runtime artifacts.
+# data/, artifacts/indexes/ and artifacts/enrichment/ are tracked byte-for-byte.
+# Secret files, tool caches and unrelated legacy application archives stay ignored.
 archive/

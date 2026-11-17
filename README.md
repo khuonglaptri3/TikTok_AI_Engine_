@@ -11,6 +11,8 @@ This README presents the overall project vision, dual-stream data architecture, 
 
 For the two-person handoff, start with the [team kickoff and first tasks](docs/reports/tasks/team-kickoff-and-push-2026-11-17/README.md), including source-only checks and the local data/artifact prerequisites.
 
+The owner authorized the [full dataset and runtime artifact publication](docs/reports/tasks/full-data-publication-2026-11-17/README.md), including raw/interim/processed/transcript inputs, Gold Parquet and BM25. That report records the actual upload/checksum status; `.env` stays private to each machine.
+
 ## 1. Executive Summary
 
 **TikTok_AI_Engine_** is an end-to-end Vietnamese Food & Beverage (F&B) AI Engineering monorepo that unifies **Creator-Side Viral Content Intelligence** and **Consumer-Side Review Trust & Multimodal ABSA** on top of a dual-tier Lakehouse:
@@ -110,16 +112,14 @@ cp .env.example .env
 # Analytics, BM25 retrieval, heuristic comment/ABSA diagnostics and 'offline_grounded' drafts run locally at $0.
 ```
 
-### 2. Build Local Gold Artifacts & Run Verification Gates
-*(Requires local `data/` directory containing the preserved upstream datasets)*
+### 2. Verify Included Gold Artifacts & Run Local Checks
+*(The full data publication supplies the preserved `data/` tree and default Gold/BM25 artifacts.)*
 
 The builder also needs the preserved legacy location table under `data/legacy_app_data/trend_analysis/`. The [recovery evidence](docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-review.md) records the pinned source and integrity method. Builds create `data/corpus/20261117_recovered_v1`, `artifacts/indexes/bm25-v2` and `artifacts/benchmarks/retrieval_v2.json`. Existing Gold snapshots and benchmark receipts are rejected on collision; reuse verified artifacts or supply a new output path and matching environment settings. Standard Recall@10 uses all relevant documents as its denominator; the frozen keyword labels are a regression set, with independent relevance evaluation still pending.
 
 ```bash
 python3 scripts/dev.py check-secrets
-python3 scripts/dev.py build-corpus
-python3 scripts/dev.py build-index
-python3 scripts/dev.py benchmark
+python3 -c "from pathlib import Path; from packages.analytics import load_verified_corpus; m, c, v = load_verified_corpus(Path('data/corpus/20261117_recovered_v1')); print(m.snapshot_id, len(c), len(v))"
 python3 scripts/dev.py typecheck
 python3 scripts/dev.py test
 ```

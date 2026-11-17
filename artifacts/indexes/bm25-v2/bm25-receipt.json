@@ -1,0 +1,11 @@
+{
+  "index_type": "okapi_bm25_vn_nfc_csr",
+  "corpus_snapshot_id": "20261117_recovered_v1",
+  "created_at": "2026-11-17T05:59:02.535593+00:00",
+  "document_count": 21748,
+  "vocab_size": 391043,
+  "postings_count": 9464226,
+  "avgdl": 309.4,
+  "k1": 1.5,
+  "b": 0.75
+}

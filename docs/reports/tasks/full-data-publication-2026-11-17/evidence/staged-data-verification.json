@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "staged_files": 37849,
+  "logical_bytes": 1593622816,
+  "exact_git_blob_match": true,
+  "historical_sha256_and_blob_checks": 37840,
+  "credential_findings": 0
+}
