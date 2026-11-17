@@ -14,7 +14,11 @@ from packages.data_contracts.multimodal import (
     TrustAuditResponse,
     VoiceSegmentRecord,
 )
-from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest, ScriptGenerationRequest
+from packages.data_contracts.query import (
+    NicheQueryFilter,
+    RetrievalRequest,
+    ScriptGenerationRequest,
+)
 from packages.data_contracts.retrieval import EvidenceCard, RetrievalResponse, VideoCitation
 from packages.data_contracts.script import (
     GroundedScriptResponse,

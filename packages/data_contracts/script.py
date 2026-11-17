@@ -2,14 +2,15 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from packages.data_contracts._validators import validate_timings_ms
 from packages.data_contracts.analytics import NicheBenchmarkSummary
 from packages.data_contracts.retrieval import EvidenceCard
 
 
 class ScriptBeat(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
 
     section_title: str
     time_range: str
@@ -20,7 +21,7 @@ class ScriptBeat(BaseModel):
 
 
 class ShootingAdvice(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
 
     camera_angles: list[str]
     lighting_and_audio: list[str]
@@ -28,7 +29,7 @@ class ShootingAdvice(BaseModel):
 
 
 class GuardrailReport(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
 
     passed: bool
     estimated_duration_sec: float = Field(ge=0.0)
@@ -45,7 +46,7 @@ class GuardrailReport(BaseModel):
 
 
 class GroundedScriptResponse(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
 
     generation_mode: str
     model_used: str
@@ -62,3 +63,8 @@ class GroundedScriptResponse(BaseModel):
     timings_ms: dict[str, float]
     draft_status: Literal["creative_draft"] = "creative_draft"
     grounding_verified: Literal[False] = False
+
+    @field_validator("timings_ms")
+    @classmethod
+    def _validate_timings(cls, val: dict[str, float]) -> dict[str, float]:
+        return validate_timings_ms(val)

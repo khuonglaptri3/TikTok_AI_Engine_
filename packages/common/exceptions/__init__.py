@@ -2,14 +2,20 @@
 
 from __future__ import annotations
 
+from packages.common.logging import redact_secrets
+
 
 class ViralRagError(Exception):
-    """Base domain error with machine-readable code and HTTP status."""
+    """Base domain error with machine-readable code, HTTP status, and secret-safe message."""
 
     def __init__(self, code: str, message: str, status_code: int = 400) -> None:
-        super().__init__(message)
-        self.code = code
-        self.message = message
+        clean_code = code.strip()
+        if not clean_code:
+            raise ValueError("ViralRagError code must be non-empty")
+        safe_message = redact_secrets(message.strip()) or clean_code
+        super().__init__(safe_message)
+        self.code = clean_code
+        self.message = safe_message
         self.status_code = status_code
 
 

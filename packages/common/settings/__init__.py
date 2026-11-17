@@ -5,8 +5,11 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from packages.common.logging import redact_secrets
 
 
 def _parse_dotenv(dotenv_path: Path) -> dict[str, str]:
@@ -24,10 +27,10 @@ def _parse_dotenv(dotenv_path: Path) -> dict[str, str]:
 
 
 class AppSettings(BaseModel):
-    model_config = ConfigDict(frozen=True, extra="ignore")
+    model_config = ConfigDict(frozen=True, extra="ignore", allow_inf_nan=False)
 
     env: str = Field(default="local")
-    gemini_api_key: str = Field(default="")
+    gemini_api_key: str = Field(default="", repr=False)
     gemini_fast_model: str = Field(default="gemini-2.5-flash")
     max_llm_calls_per_turn: int = Field(default=2, ge=1, le=5)
     llm_deadline_seconds: float = Field(default=30.0, gt=0.0, le=120.0)
@@ -45,6 +48,51 @@ class AppSettings(BaseModel):
     embedding_device: str = Field(default="cpu")
     reranker_model: str = Field(default="cross-encoder/mmarco-mMiniLMv2-L12-H384-v1")
     reranker_enabled: bool = Field(default=True)
+
+    @field_validator(
+        "env",
+        "gemini_fast_model",
+        "qdrant_url",
+        "qdrant_collection",
+        "redis_url",
+        "embedding_model",
+        "embedding_device",
+        "reranker_model",
+    )
+    @classmethod
+    def _reject_blank_setting(cls, val: str) -> str:
+        clean = val.strip()
+        if not clean:
+            raise ValueError("Setting string must be non-empty")
+        return clean
+
+    def safe_summary(self) -> dict[str, Any]:
+        """Return a log-safe dictionary with API keys and URL passwords redacted."""
+        return {
+            "env": self.env,
+            "gemini_api_key": "***" if self.gemini_api_key.strip() else "",
+            "gemini_fast_model": self.gemini_fast_model,
+            "max_llm_calls_per_turn": self.max_llm_calls_per_turn,
+            "llm_deadline_seconds": self.llm_deadline_seconds,
+            "rate_limit_rpm": self.rate_limit_rpm,
+            "corpus_dir": str(self.corpus_dir),
+            "bm25_index_dir": str(self.bm25_index_dir),
+            "benchmark_report_path": str(self.benchmark_report_path),
+            "qdrant_url": redact_secrets(self.qdrant_url),
+            "qdrant_collection": self.qdrant_collection,
+            "redis_url": redact_secrets(self.redis_url),
+            "embedding_model": self.embedding_model,
+            "embedding_device": self.embedding_device,
+            "reranker_model": self.reranker_model,
+            "reranker_enabled": self.reranker_enabled,
+        }
+
+    def __repr__(self) -> str:
+        parts = ", ".join(f"{k}={v!r}" for k, v in self.safe_summary().items())
+        return f"AppSettings({parts})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     @classmethod
     def from_env(cls, dotenv_path: Path | None = None) -> AppSettings:
