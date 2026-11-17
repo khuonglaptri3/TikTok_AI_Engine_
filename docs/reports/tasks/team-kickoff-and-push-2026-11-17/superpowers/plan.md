@@ -14,8 +14,8 @@
 - [x] Record the Git line-ending failure with real clean-filter byte comparisons. Add attributes limited to checksum-bound files/evidence and observe those comparisons pass, including unchanged receipt-bound source files.
 - [x] Write the English kickoff, exact commit message, workflow and navigation. Map first work to the approved owner/reviewer rows; explain data is local and generated binaries are rebuilt rather than fetched from Git.
 - [x] Run the full pytest command, configured mypy, secret scanner and document/index/receipt checks. Preserve actual output; no new product tests or provider calls are required for documentation/Git configuration.
-- [ ] Stage an explicit reviewed scope, verify Git blobs against working bytes and receipt-bound expectations, confirm raw/Parquet/index/.env exclusions, and inspect the complete staged diff. Commit using the exact body file after a fresh zero-leak check.
-- [ ] Push `HEAD:main` without force; compare remote/local IDs. Publish the short repository description. Record actual URLs/results and finish the report/index without falsely changing milestone gates.
+- [x] Stage an explicit reviewed scope, verify Git blobs against working bytes and receipt-bound expectations, confirm raw/Parquet/index/.env exclusions, and inspect the complete staged diff. Commit using the exact body file after a fresh zero-leak check.
+- [x] Push `HEAD:main` without force; compare remote/local IDs. Publish the short repository description. Record actual URLs/results and finish the report/index without falsely changing milestone gates.
 
 ## Publication and evidence ordering
 

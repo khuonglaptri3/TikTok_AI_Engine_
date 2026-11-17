@@ -1,15 +1,17 @@
 # Team kickoff — verified CPU baseline and first reciprocal tasks
 
-- Status: IN_PROGRESS
+- Status: COMPLETE
 - Execution date: 2026-11-17 (Asia/Saigon)
 - Requirement source: owner request to push the completed recovery and write a description so the team can begin.
-- Repository: private `khuonglaptri3/TikTok_AI_Engine_`, target branch `main`; publication receipt follows verification.
+- Repository: private `khuonglaptri3/TikTok_AI_Engine_`, branch `main`; primary published commit [2068d36](https://github.com/khuonglaptri3/TikTok_AI_Engine_/commit/2068d365e7f88bed0b0c6b75a5231b9123eff98b).
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
 ## Conclusion
 
-Start from the recovered historical CPU core: descriptive niche analytics, Vietnamese BM25 evidence retrieval, qualified script drafts, typed AI APIs and one Gradio demo at `/demo/`. The previous [recovery report](../core-recovery-and-two-person-plan-2026-11-17/README.md) records **57 passing tests**, verified 37,840-file input restoration, new Gold/BM25 artifacts and zero provider calls. This publication reruns checks before committing; its actual results and remote commit are recorded below.
+The reviewed CPU core, reports and this kickoff are **published on `main`**, and the repository About description is updated. A fresh pre-publication run passed **57 tests in 65.74 seconds**, configured mypy passed 75 source files, the scanner found zero leaks, and Git byte/staged-scope checks passed. The [publication receipt](evidence/publication-receipt.json) verifies primary commit `2068d36`, its remote identity, repository description and all 166 staged inventory entries against that commit. A documentation-only follow-up publishes the receipt and final status.
+
+Start from descriptive niche analytics, Vietnamese BM25 evidence retrieval, qualified script drafts, typed AI APIs and one Gradio demo at `/demo/`. The previous [recovery report](../core-recovery-and-two-person-plan-2026-11-17/README.md) supplies the verified 37,840-file restoration, new Gold/BM25 artifacts and zero-provider observations.
 
 **Trần Đình Khương and Nguyễn Việt Nguyên share 94 estimated effort points each**, including implementation, evaluation, integration and reciprocal review. Use the [active milestone plan](../../../planning/TikTok_AI_Engine_Milestone.md) as the work allocation and acceptance authority. Recovery completion does not pass G0–G6; independent relevance/claim evaluation, fresh acquisition, audio and calibrated trust diagnostics remain future work.
 
@@ -83,11 +85,13 @@ Each reviewable task provides its spec, checkable plan, implementation/data chan
 | [Secret scan](evidence/secrets-pre-commit.log) | PASS: zero leaked keys; rerun before each commit. |
 | [Staged-file inventory](evidence/staged-files.json) | Exact Git blob/working-byte comparison, sizes and exclusion checks; excludes its own self-reference. |
 | [Source diff check](evidence/source-diff-check.log) | PASS with CRLF recognized and immutable raw evidence excluded from whitespace rewriting. |
+| [Publication receipt](evidence/publication-receipt.json) | PASS: primary local/remote commit equality, 166 staged rows rechecked against the commit, private visibility and exact About text. |
+| [Commit result](evidence/commit-primary.log) / [push result](evidence/push-primary.log) | Actual creation and normal fast-forward push of `2068d36`; native exit 0. |
 
-The fresh suite, type check, secret scan, document checks and staged-byte checks pass. Remote commit and repository-description results are recorded as publication finishes. The final remote receipt, not preparation of this page, proves push success.
+The fresh suite, type check, secret scan, document checks, staged-byte checks, normal remote push and repository-description verification pass. PowerShell labels Git's normal stderr progress as `NativeCommandError` in the raw push log; native exit 0 and exact remote SHA confirmation establish the observed success. No force push occurred.
 
 ## Open issues and handoff
 
 Raw data/runtime artifacts still require permitted local transfer or independent rebuilding; they are not supplied by a Git clone. Human relevance/claim judgments, source rights and future multimodal/hosting gates remain unresolved under their owning tasks. Estimated equal work does not establish actual capacity or equal hours.
 
-Publication status remains **IN_PROGRESS** until the commit, normal remote push and description update are verified. The deliverable for beginning work is this linked kickoff plus the unchanged authoritative milestone allocation.
+Publication status: **COMPLETE**. The deliverable for beginning work is this kickoff on GitHub plus the unchanged authoritative milestone allocation. The content commit is linked above; the later documentation-only commit records its verification and does not change product code or milestone gates. Begin with the source-only checks and the first reciprocal tasks, then arrange verified local assets for the full demo.
