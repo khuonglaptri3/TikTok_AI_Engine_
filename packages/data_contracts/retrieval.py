@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from packages.data_contracts._validators import require_non_blank, validate_timings_ms
 
 
 class VideoCitation(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
 
     video_id: str
     author_handle: str
@@ -13,9 +15,14 @@ class VideoCitation(BaseModel):
     viral_multiplier: float = Field(ge=0.0)
     engagement_rate: float = Field(ge=0.0)
 
+    @field_validator("video_id")
+    @classmethod
+    def _validate_video_id(cls, val: str) -> str:
+        return require_non_blank(val)
+
 
 class EvidenceCard(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
 
     rank: int = Field(ge=1)
     score: float
@@ -39,7 +46,7 @@ class EvidenceCard(BaseModel):
 
 
 class RetrievalResponse(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
 
     query: str
     mode: str
@@ -48,3 +55,8 @@ class RetrievalResponse(BaseModel):
     relaxed_filters: list[str]
     items: list[EvidenceCard]
     timings_ms: dict[str, float]
+
+    @field_validator("timings_ms")
+    @classmethod
+    def _validate_timings(cls, val: dict[str, float]) -> dict[str, float]:
+        return validate_timings_ms(val)
