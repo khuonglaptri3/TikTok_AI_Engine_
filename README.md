@@ -9,19 +9,23 @@
 
 This README presents the overall project vision, dual-stream data architecture, repository layout, and Quickstart. Active scope rules, milestone plans, and verification evidence are maintained in [AGENTS.md](AGENTS.md), [TikTok_AI_Engine_Milestone.md](docs/planning/TikTok_AI_Engine_Milestone.md), and [Milestone Reports](docs/reports/milestones/README.md).
 
+For the two-person handoff, start with the [team kickoff and first tasks](docs/reports/tasks/team-kickoff-and-push-2026-11-17/README.md), including source-only checks and the local data/artifact prerequisites.
+
 ## 1. Executive Summary
 
 **TikTok_AI_Engine_** is an end-to-end Vietnamese Food & Beverage (F&B) AI Engineering monorepo that unifies **Creator-Side Viral Content Intelligence** and **Consumer-Side Review Trust & Multimodal ABSA** on top of a dual-tier Lakehouse:
 
 > **Measure Niche Benchmarks → Retrieve Viral Evidence → Synthesize Cited Scripts → Audit Seeding & KOC-vs-Viewer ABSA**
 
+The current delivery sequence is a CPU/offline historical core, followed by gated fresh-data and multimodal evaluation. Trần Đình Khương and Nguyễn Việt Nguyên share delivery, evaluation, integration and reciprocal review equally in the [active plan](docs/planning/TikTok_AI_Engine_Milestone.md). See the [recovery report](docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/README.md) for measured results and remaining work. Historical statistics are descriptive; script outputs are creative drafts with structural checks. Comment/aspect scores are heuristic diagnostics pending independent labels.
+
 ### Three Core Value Layers
 
 | Value Layer | Core Question | Technical Mechanism | Data Scope | System Output |
 | :--- | :--- | :--- | :--- | :--- |
-| **Quantitative Niche Benchmarks** | *"What duration, speaking pace, and posting hours win in this micro-niche?"* | Columnar PyArrow/DuckDB IQR & Median Aggregation + 6-Axis F&B Taxonomy | `70,996+` Videos & `23,448` Official GPS POIs | Empirical IQR duration, `median_word_per_second`, top hours, top POI venues. |
-| **Qualitative Evidence & Script RAG** | *"How do breakout videos structure their Hook/Body/CTA, and how should I script mine?"* | NFC Vietnamese CSR BM25 + Qdrant Dense + RRF + `viral_multiplier` Boost + Pacing Guardrails | `21,748+` Spoken Vietnamese Transcripts | Cited `EvidenceCard`s, 4-beat `mm:ss` scripts, camera/audio notes, anti-cliché audit. |
-| **Multimodal Trust & ABSA Radar** | *"Is this KOC review over-hyped PR, and what do real non-seeding diners complain about?"* | Comment Seeding Clustering + 4-Aspect ABSA (`Taste`, `Price`, `Hygiene`, `Service`) + Whisper/Librosa | Rolling **4-Month Fresh Stream** (`Audio + Comments`) | `PR Hype Gap`, `Undisclosed PR Risk`, cleansed comments, viewer pain-points. |
+| **Quantitative Niche Benchmarks** | *"What duration, transcript density, and posting hours appear in this historical niche?"* | PyArrow/pandas IQR & Median Aggregation + 6-Axis F&B Taxonomy | Historical video metadata, transcripts and platform POIs; counts verified in the recovery report | Empirical duration IQR, whitespace units/second, observed hours and POI venues. |
+| **Qualitative Evidence & Script RAG** | *"How do reference videos structure their Hook/Body/CTA, and how might I draft mine?"* | NFC Vietnamese CSR BM25 + phrase/viral reranking; dense/RRF evaluation is conditional | Historical Vietnamese transcripts | Cited `EvidenceCard`s, creative 4-beat `mm:ss` drafts, camera/audio notes and structural checks; factual support requires review. |
+| **Multimodal Trust & ABSA Radar** | *"How do creator speech and retained comments differ on observed aspects?"* | Comment-pattern rules + 4-Aspect ABSA (`Taste`, `Price`, `Hygiene`, `Service`); audio evaluation planned | Manual/synthetic demonstration inputs today; bounded **4-Month Fresh Stream** planned | Heuristic sentiment discrepancies, comment flags and source diagnostics; no verified diner, bot or hidden-sponsorship classification. |
 
 ---
 
@@ -36,7 +40,7 @@ flowchart LR
     end
 
     subgraph Fresh4M ["2. Rolling 4-Month Incremental Stream"]
-        F1["pipelines.crawl_incremental (Metadata + 64kbps Audio + Comments)"]
+        F1["Planned bounded collector; current CLI provides synthetic fixtures"]
     end
 
     subgraph Gold ["3. Immutable SHA256 Gold Snapshots (data/corpus/)"]
@@ -77,10 +81,10 @@ TikTok_AI_Engine_/
 │   ├── llm/                               # Sliding-window RPM BoundedGeminiClient, domain gate, timeline/cliché guardrails
 │   └── script_engine/                     # Citation-grounded script synthesis orchestrator (gemini_free & $0 offline_grounded)
 ├── pipelines/
-│   ├── build_gold_corpus/                 # Builds historical Gold snapshot (20261116_v1) + SHA256 manifest.json
+│   ├── build_gold_corpus/                 # Builds new historical Gold snapshots + SHA256 manifest.json
 │   ├── build_dense_sparse_index/          # Builds 391K-term NFC Vietnamese CSR BM25 index (21,748 videos)
-│   ├── benchmark_retrieval/               # Freezes Recall@10, MRR@10, nDCG@10, p95 latency into artifacts/benchmarks/
-│   ├── crawl_incremental/                 # Rolling 4-month crawler (skips >120d & historical IDs; fetches audio + comments)
+│   ├── benchmark_retrieval/               # Versions Recall@10, Precision@10, MRR@10, nDCG@10 and artifact receipts
+│   ├── crawl_incremental/                 # Cutoff/skip helpers and synthetic fixture CLI; live worker remains planned
 │   ├── ingest_incremental_to_gold/        # Dual-Sink converter appending 4M batch into fact_videos + multimodal tables
 │   └── enrich_taxonomy_batch/             # Optional resumable Free-Tier Gemini batch taxonomy enricher
 ├── docs/
@@ -98,13 +102,19 @@ TikTok_AI_Engine_/
 
 ### 1. Environment Setup
 ```bash
+python3 -m venv .venv
+# Activate .venv using your shell, then install the API/demo and verification tools:
+python3 -m pip install '.[dev]'
 cp .env.example .env
 # Optional: set GEMINI_API_KEY in .env to enable live 'gemini_free' generation.
-# All analytics, BM25/RRF retrieval, Seeding/ABSA radar, and 'offline_grounded' script synthesis run 100% locally at $0.
+# Analytics, BM25 retrieval, heuristic comment/ABSA diagnostics and 'offline_grounded' drafts run locally at $0.
 ```
 
 ### 2. Build Local Gold Artifacts & Run Verification Gates
 *(Requires local `data/` directory containing the preserved upstream datasets)*
+
+The builder also needs the preserved legacy location table under `data/legacy_app_data/trend_analysis/`. The [recovery evidence](docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-review.md) records the pinned source and integrity method. Builds create `data/corpus/20261117_recovered_v1`, `artifacts/indexes/bm25-v2` and `artifacts/benchmarks/retrieval_v2.json`. Existing Gold snapshots and benchmark receipts are rejected on collision; reuse verified artifacts or supply a new output path and matching environment settings. Standard Recall@10 uses all relevant documents as its denominator; the frozen keyword labels are a regression set, with independent relevance evaluation still pending.
+
 ```bash
 python3 scripts/dev.py check-secrets
 python3 scripts/dev.py build-corpus
@@ -114,11 +124,13 @@ python3 scripts/dev.py typecheck
 python3 scripts/dev.py test
 ```
 
-### 3. Test 4-Month Incremental Dual-Sink Pipeline
+### 3. Test Incremental Dual-Sink Ingestion With Synthetic Inputs
 ```bash
 python3 -m pipelines.crawl_incremental --seed-demo-batch
-python3 -m pipelines.ingest_incremental_to_gold --output-corpus data/corpus/20261116_v2_4m
+python3 -m pipelines.ingest_incremental_to_gold --output-corpus data/corpus/20261117_incremental_v1
 ```
+
+For another batch, pass the preceding snapshot with `--base-corpus`, a new `--output-corpus`, and the batch path with `--incremental-jsonl`. The Python API `ingest_incremental_batch_to_gold(..., update_existing=True)` permits explicit transcript/comment enrichment while retaining base observations. Synthetic fixtures do not demonstrate a live crawl or current trends.
 
 ### 4. Launch API & 4-Tab Gradio Studio
 ```bash

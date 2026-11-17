@@ -1,0 +1,69 @@
+{
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "guardrails": {
+    "uncited_input": {
+      "output_citations": [
+        "unrelated_retrieved_video"
+      ],
+      "report": {
+        "passed": true,
+        "estimated_duration_sec": 3.0,
+        "target_duration_sec": 300.0,
+        "duration_delta_sec": -297.0,
+        "total_words": 7,
+        "valid_citations_ratio": 1.0,
+        "cliche_phrases_detected": [],
+        "warnings": [
+          "Th\u1eddi l\u01b0\u1ee3ng \u01b0\u1edbc t\u00ednh (3.0s) l\u1ec7ch -297.0s so v\u1edbi m\u1ee5c ti\u00eau (300s) \u1edf t\u1ed1c \u0111\u1ed9 3.00 t\u1eeb/gi\u00e2y."
+        ]
+      }
+    },
+    "empty_script": {
+      "passed": true,
+      "estimated_duration_sec": 0.0,
+      "target_duration_sec": 45.0,
+      "duration_delta_sec": -45.0,
+      "total_words": 0,
+      "valid_citations_ratio": 1.0,
+      "cliche_phrases_detected": [],
+      "warnings": [
+        "Th\u1eddi l\u01b0\u1ee3ng \u01b0\u1edbc t\u00ednh (0.0s) l\u1ec7ch -45.0s so v\u1edbi m\u1ee5c ti\u00eau (45s) \u1edf t\u1ed1c \u0111\u1ed9 3.00 t\u1eeb/gi\u00e2y."
+      ]
+    },
+    "max_calls_setting_accepts_5": 5,
+    "scope": "Controlled function calls using synthetic text; no semantic entailment or live synthesis measured."
+  },
+  "incremental": {
+    "after_A": {
+      "fact_videos.parquet": 2,
+      "fact_voice_segments.parquet": 1,
+      "fact_comments.parquet": 1,
+      "fact_absa_reviews.parquet": 1
+    },
+    "after_A_then_B": {
+      "fact_videos.parquet": 3,
+      "fact_voice_segments.parquet": 1,
+      "fact_comments.parquet": 1,
+      "fact_absa_reviews.parquet": 1
+    },
+    "after_A_then_replay_A": {
+      "fact_videos.parquet": 2,
+      "fact_voice_segments.parquet": 0,
+      "fact_comments.parquet": 0,
+      "fact_absa_reviews.parquet": 0
+    },
+    "same_output_as_base_accepted": true,
+    "same_output_manifest_changed": true,
+    "scope": "Synthetic temporary snapshots only; original project data was not modified."
+  },
+  "versions": {
+    "pydantic": "2.14.3",
+    "pandas": "3.1.1",
+    "pyarrow": "26.0.1",
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "fastapi": "0.163.1",
+    "gradio": "6.32.0",
+    "pytest": "9.2.0"
+  }
+}

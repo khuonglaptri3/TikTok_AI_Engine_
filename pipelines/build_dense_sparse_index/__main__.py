@@ -10,8 +10,8 @@ from packages.retrieval.sparse.bm25 import BM25Index
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build Vietnamese NFC BM25 sparse index over Gold corpus.")
-    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261116_v1"))
-    parser.add_argument("--output", type=Path, default=Path("artifacts/indexes/bm25-v1"))
+    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
+    parser.add_argument("--output", type=Path, default=Path("artifacts/indexes/bm25-v2"))
     args = parser.parse_args()
 
     manifest, _, df_videos = load_verified_corpus(args.corpus)

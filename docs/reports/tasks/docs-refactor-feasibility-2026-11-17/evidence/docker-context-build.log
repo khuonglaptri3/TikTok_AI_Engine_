@@ -1,0 +1,60 @@
+CONTROLLED PACKAGING CHECK: Linux Docker runtime was not built or executed.
+Recreated only the COPY file set declared in infra/docker/Dockerfile.api in a temporary directory.
+COMMAND: uv build --wheel --out-dir <temporary-dist> <temporary-COPY-context>
+EXIT: 2
+Building wheel...
+Traceback (most recent call last):
+  File "<string>", line 11, in <module>
+    wheel_filename = backend.build_wheel("C:\\Users\\lanph\\AppData\\Local\\Temp\\tiktok-docker-context-audit-yntzfj6e\\dist", {}, None)
+  File "C:\Users\lanph\AppData\Local\uv\cache\builds-v0\.tmpEkkaXr\Lib\site-packages\poetry\core\masonry\api.py", line 58, in build_wheel
+    return WheelBuilder.make_in(
+           ~~~~~~~~~~~~~~~~~~~~^
+        poetry,
+        ^^^^^^^
+    ...<2 lines>...
+        config_settings=config_settings,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\lanph\AppData\Local\uv\cache\builds-v0\.tmpEkkaXr\Lib\site-packages\poetry\core\masonry\builders\wheel.py", line 95, in make_in
+    wb.build(target_dir=directory)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lanph\AppData\Local\uv\cache\builds-v0\.tmpEkkaXr\Lib\site-packages\poetry\core\masonry\builders\wheel.py", line 135, in build
+    self._copy_module(zip_file)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\lanph\AppData\Local\uv\cache\builds-v0\.tmpEkkaXr\Lib\site-packages\poetry\core\masonry\builders\wheel.py", line 307, in _copy_module
+    to_add = self.find_files_to_add()
+  File "C:\Users\lanph\AppData\Local\uv\cache\builds-v0\.tmpEkkaXr\Lib\site-packages\poetry\core\masonry\builders\builder.py", line 157, in find_files_to_add
+    for include in self._module.includes:
+                   ^^^^^^^^^^^^
+  File "C:\Users\lanph\AppData\Roaming\uv\python\cpython-3.13-windows-x86_64-none\Lib\functools.py", line 1026, in __get__
+    val = self.func(instance)
+  File "C:\Users\lanph\AppData\Local\uv\cache\builds-v0\.tmpEkkaXr\Lib\site-packages\poetry\core\masonry\builders\builder.py", line 70, in _module
+    return Module(
+        self._package.name,
+    ...<2 lines>...
+        includes=includes,
+    )
+  File "C:\Users\lanph\AppData\Local\uv\cache\builds-v0\.tmpEkkaXr\Lib\site-packages\poetry\core\masonry\utils\module.py", line 76, in __init__
+    PackageInclude(
+    ~~~~~~~~~~~~~~^
+        self._path,
+        ^^^^^^^^^^^
+    ...<3 lines>...
+        target=package.get("to"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\lanph\AppData\Local\uv\cache\builds-v0\.tmpEkkaXr\Lib\site-packages\poetry\core\masonry\utils\package_include.py", line 31, in __init__
+    self.check_elements()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\lanph\AppData\Local\uv\cache\builds-v0\.tmpEkkaXr\Lib\site-packages\poetry\core\masonry\utils\package_include.py", line 72, in check_elements
+    raise ValueError(
+        f"{self._base / self._include} does not contain any element"
+    )
+ValueError: C:\Users\lanph\AppData\Local\Temp\tiktok-docker-context-audit-yntzfj6e\context\pipelines does not contain any element
+error: Failed to build `C:\Users\lanph\AppData\Local\Temp\tiktok-docker-context-audit-yntzfj6e\context`
+  Caused by: The build backend returned an error
+  Caused by: Call to `poetry.core.masonry.api.build_wheel` failed (exit code: 1)
+
+hint: Build failures usually indicate a problem with the package or the build environment

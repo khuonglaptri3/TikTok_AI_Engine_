@@ -33,9 +33,9 @@ class AppSettings(BaseModel):
     llm_deadline_seconds: float = Field(default=30.0, gt=0.0, le=120.0)
     rate_limit_rpm: int = Field(default=15, ge=1, le=300)
 
-    corpus_dir: Path = Field(default=Path("data/corpus/20261116_v1"))
-    bm25_index_dir: Path = Field(default=Path("artifacts/indexes/bm25-v1"))
-    benchmark_report_path: Path = Field(default=Path("artifacts/benchmarks/retrieval_v1.json"))
+    corpus_dir: Path = Field(default=Path("data/corpus/20261117_recovered_v1"))
+    bm25_index_dir: Path = Field(default=Path("artifacts/indexes/bm25-v2"))
+    benchmark_report_path: Path = Field(default=Path("artifacts/benchmarks/retrieval_v2.json"))
 
     qdrant_url: str = Field(default="http://127.0.0.1:6333")
     qdrant_collection: str = Field(default="tiktok_fnb_videos_v1")
@@ -63,10 +63,10 @@ class AppSettings(BaseModel):
             max_llm_calls_per_turn=int(_get("TIKTOK_RAG_MAX_LLM_CALLS_PER_TURN", "2")),
             llm_deadline_seconds=float(_get("TIKTOK_RAG_LLM_DEADLINE_SECONDS", "30.0")),
             rate_limit_rpm=int(_get("TIKTOK_RAG_RATE_LIMIT_RPM", "15")),
-            corpus_dir=Path(_get("TIKTOK_RAG_CORPUS_DIR", "data/corpus/20261116_v1")),
-            bm25_index_dir=Path(_get("TIKTOK_RAG_BM25_INDEX_DIR", "artifacts/indexes/bm25-v1")),
+            corpus_dir=Path(_get("TIKTOK_RAG_CORPUS_DIR", "data/corpus/20261117_recovered_v1")),
+            bm25_index_dir=Path(_get("TIKTOK_RAG_BM25_INDEX_DIR", "artifacts/indexes/bm25-v2")),
             benchmark_report_path=Path(
-                _get("TIKTOK_RAG_BENCHMARK_REPORT_PATH", "artifacts/benchmarks/retrieval_v1.json")
+                _get("TIKTOK_RAG_BENCHMARK_REPORT_PATH", "artifacts/benchmarks/retrieval_v2.json")
             ),
             qdrant_url=_get("TIKTOK_RAG_QDRANT_URL", "http://127.0.0.1:6333"),
             qdrant_collection=_get("TIKTOK_RAG_QDRANT_COLLECTION", "tiktok_fnb_videos_v1"),

@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from packages.common.settings import AppSettings
+
 from packages.analytics import NicheAnalyticsEngine
 from packages.common.exceptions import CorpusNotReadyError, IndexNotReadyError
 from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest
@@ -24,8 +26,8 @@ def test_fail_closed_corpus_loader_rejects_missing_manifest(tmp_path: Path) -> N
 
 
 def test_niche_analytics_and_hybrid_retrieval_end_to_end() -> None:
-    corpus_dir = Path("data/corpus/20261116_v1")
-    bm25_dir = Path("artifacts/indexes/bm25-v1")
+    corpus_dir = AppSettings().corpus_dir
+    bm25_dir = AppSettings().bm25_index_dir
 
     engine = NicheAnalyticsEngine.from_corpus_dir(corpus_dir)
     bench = engine.compute_benchmark(

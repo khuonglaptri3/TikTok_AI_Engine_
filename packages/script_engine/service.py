@@ -5,7 +5,11 @@ from typing import Any
 from packages.analytics import NicheAnalyticsEngine
 from packages.common.logging import StageTimer
 from packages.data_contracts.analytics import NicheBenchmarkSummary
-from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest, ScriptGenerationRequest
+from packages.data_contracts.query import (
+    NicheQueryFilter,
+    RetrievalRequest,
+    ScriptGenerationRequest,
+)
 from packages.data_contracts.retrieval import EvidenceCard
 from packages.data_contracts.script import GroundedScriptResponse, ShootingAdvice
 from packages.llm import (
@@ -102,55 +106,65 @@ class GroundedScriptEngine:
         city_focus = (effective_filters.city_norm or (c0.city_norm if c0 else None) or "địa phương").title()
         fmt = effective_filters.video_format or "Review quán ăn"
 
-        id0 = c0.citation.video_id if c0 else ""
-        id1 = c1.citation.video_id if c1 else id0
-        id2 = c2.citation.video_id if c2 else id0
-
-        ref_hook_0 = c0.hook_text[:110] if (c0 and c0.hook_text) else f"Khám phá {dish_focus} đáng thử tại {city_focus}"
+        ref_hook_0 = c0.hook_text[:110] if (c0 and c0.hook_text) else f"Tìm hiểu {dish_focus} tại {city_focus}"
         hook_options = [
-            f"Một tọa độ {dish_focus} tại {city_focus} đang được dân sành ăn truyền tai nhau — thực tế có xứng đáng với mức giá?",
-            f"Cầm ngân sách hợp lý đi thử {dish_focus} theo gợi ý thực tế: phần ăn đầy đặn và hương vị ra sao?",
-            f"Lấy cảm hứng mở đầu trực diện như @{c0.citation.author_handle if c0 else 'creator'}: '{ref_hook_0}'",
+            f"Nếu quay về {dish_focus} tại {city_focus}, bạn muốn kiểm tra hương vị hay mức giá trước?",
+            f"Cùng lên ý tưởng tìm hiểu {dish_focus}: cần ghi lại điều gì để người xem tự đánh giá?",
+            (f"Mở đầu tham khảo từ kho @{c0.citation.author_handle}: '{ref_hook_0}'"
+             if c0 and c0.hook_text.strip() else f"Gợi ý mở đầu sáng tạo: '{ref_hook_0}'"),
         ]
 
-        # Calibrate word count per beat to match target_duration_sec * median_wps
-        wps = max(2.4, min(benchmark.median_word_per_second, 4.2))
+        # Whitespace-token pacing is an estimate, not measured acoustic alignment.
+        wps = max(2.0, min(benchmark.median_word_per_second, 5.0))
         target_words = max(55, int(round(target_duration_sec * wps)))
 
         beat1_text = (
-            f"Hôm nay mình ghé trải nghiệm {dish_focus} tại {city_focus} theo đúng đề bài '{brief[:90]}'. "
-            f"Ngay từ cái nhìn đầu tiên, phần nguyên liệu được chuẩn bị rất tươi và lên màu bắt mắt."
-        )
-        ev_detail_1 = (
-            c0.body_beats[0]
-            if (c0 and c0.body_beats)
-            else "Phần nước dùng và gia vị được cân chỉnh vừa vặn, giữ được độ tươi tự nhiên của nguyên liệu."
+            f"Hôm nay mình lên ý tưởng tìm hiểu {dish_focus} tại {city_focus}. "
+            "Khi quay thực tế, mình sẽ ghi lại món ăn và bảng giá trước khi đưa ra nhận xét. "
+            "Bạn muốn biết điều gì về món này?"
         )
         beat2_text = (
-            f"Điểm đáng chú ý đầu tiên nằm ở khâu chế biến và bày trí: {ev_detail_1} "
-            f"Khi quay cận cảnh lúc món vừa dọn ra còn nóng hổi, mùi thơm dậy lên rất rõ ràng."
-        )
-        ev_detail_2 = (
-            c1.body_beats[0]
-            if (c1 and c1.body_beats)
-            else "Kết cấu món ăn có sự tương phản rõ giữa độ giòn bên ngoài và vị đậm đà bên trong."
+            "Đây là thông tin trong nguồn cũ, cần kiểm tra lại khi đến quay. "
+            "Mình sẽ ghi hình phần chế biến nếu được phép và mô tả đúng những gì quan sát được."
         )
         beat3_text = (
-            f"Thử trực tiếp từng thành phần để kiểm chứng chất lượng: {ev_detail_2} "
-            f"Xét về khẩu phần và trải nghiệm thực tế trong phân khúc {effective_filters.price_tier or 'phổ thông'}, mức giá này hoàn toàn hợp lý."
+            "Khi thử món, mình sẽ tách nhận xét về hương vị, khẩu phần và mức giá đang niêm yết. "
+            "Những nhận định này cần trải nghiệm thực tế trước khi đưa vào bản quay cuối."
         )
         beat4_text = (
-            f"Tổng kết lại, đây là lựa chọn {dish_focus} rất đáng lưu vào danh sách khi bạn cần một bữa ăn chất lượng tại {city_focus}. "
-            f"Bạn đã từng thử kiểu chế biến này chưa, bình luận địa chỉ quen thuộc của bạn bên dưới nhé!"
+            f"Sau khi quay và kiểm tra thông tin, mình sẽ tổng kết điểm phù hợp của {dish_focus} với nhu cầu người xem. "
+            "Phần kết sẽ nêu rõ thời điểm trải nghiệm và điều còn chưa xác minh. "
+            "Bạn muốn mình tìm hiểu thêm chi tiết nào?"
         )
 
         # Pad middle beat slightly if target_duration_sec > 55s so pacing matches target duration
         current_words = sum(len(t.split()) for t in (beat1_text, beat2_text, beat3_text, beat4_text))
         if target_words - current_words >= 25 and c2 and c2.transcript_excerpt:
             beat3_text += (
-                " Ngoài ra bạn nên đi vào khung giờ sớm một chút để món lên nhanh, giữ trọn độ nóng giòn "
-                "và dễ chọn được góc ngồi thoáng đãng khi đi cùng bạn bè."
+                " Có thể bổ sung cảnh bảng giá, khẩu phần và phần trả lời của người bán nếu được đồng ý. "
+                "Mình sẽ ghi rõ thông tin nào được quan sát và thông tin nào chỉ lấy từ nguồn tham khảo."
             )
+
+        # Keep short requests within their spoken-word budget. Longer drafts may
+        # deliberately fail the timing check instead of padding with invented facts.
+        dialogue_texts = [beat1_text, beat2_text, beat3_text, beat4_text]
+        budgets = [max(1, target_words // 4)] * 3
+        budgets.append(max(1, target_words - sum(budgets)))
+        citation_ids: list[list[str]] = []
+        for idx, (card, budget) in enumerate(zip([c0, c0, c1, c2], budgets)):
+            candidates = [card.hook_text, *card.body_beats, card.cta_text, card.transcript_excerpt] if card else []
+            excerpt = next((text for text in candidates if text.strip()), "")
+            # Attribute only content actually incorporated in this beat. Bound
+            # the excerpt before shortening so its attribution cannot be cut off.
+            excerpt = " ".join(excerpt.split()[:min(12, max(1, budget - 4))])
+            if card and excerpt:
+                dialogue_texts[idx] = f'Nguồn cũ: "{excerpt}" ' + dialogue_texts[idx]
+                citation_ids.append([card.citation.video_id])
+            else:
+                citation_ids.append([])
+        if sum(len(text.split()) for text in dialogue_texts) > target_words:
+            dialogue_texts = [" ".join(text.split()[:budget]) for text, budget in zip(dialogue_texts, budgets)]
+        beat1_text, beat2_text, beat3_text, beat4_text = dialogue_texts
 
         if fmt == "Hướng dẫn nấu ăn":
             setting = "Gian bếp gia đình gọn gàng, ánh sáng chếch 45 độ chiếu rõ thớt sơ chế và chảo nấu."
@@ -169,35 +183,37 @@ class GroundedScriptEngine:
 
         hashtags = benchmark.top_hashtags[:6] or ["ancungtiktok", "reviewanngon", "foodtiktok"]
         return {
+            "draft_status": "creative_draft",
+            "grounding_verified": False,
             "hook_options": hook_options,
-            "caption_draft": f"Trải nghiệm thực tế {dish_focus} tại {city_focus} — chi tiết hương vị và mức giá cho mọi người tham khảo!",
+            "caption_draft": f"Bản nháp về {dish_focus} tại {city_focus}, lấy ý tưởng từ nguồn tham khảo lịch sử; cần kiểm chứng trước khi quay.",
             "recommended_hashtags": hashtags,
             "setting": setting,
-            "persona_tone": "Chân thực, trực diện vào chất lượng món & giá cả, miêu tả vị giác cụ thể",
+            "persona_tone": "Bản nháp sáng tạo; tách nguồn tham khảo và nhận xét cần trải nghiệm thực tế",
             "beats": [
                 {
                     "section_title": "1. Hook mở đầu (0-5s giữ chân)",
                     "visual_angle": cam_angles[0],
                     "dialogue": beat1_text,
-                    "cited_video_ids": [v for v in [id0] if v],
+                    "cited_video_ids": citation_ids[0],
                 },
                 {
                     "section_title": "2. Bối cảnh & Cận cảnh chế biến",
                     "visual_angle": cam_angles[1],
                     "dialogue": beat2_text,
-                    "cited_video_ids": [v for v in [id0, id1] if v][:2],
+                    "cited_video_ids": citation_ids[1],
                 },
                 {
                     "section_title": "3. Trải nghiệm hương vị & Giá trị thực",
                     "visual_angle": cam_angles[2],
                     "dialogue": beat3_text,
-                    "cited_video_ids": [v for v in [id1, id2] if v][:2],
+                    "cited_video_ids": citation_ids[2],
                 },
                 {
                     "section_title": "4. Tổng kết & Kêu gọi tương tác (CTA)",
                     "visual_angle": "Góc cận biểu cảm gật đầu xác nhận kèm text tóm tắt điểm cộng trên màn hình",
                     "dialogue": beat4_text,
-                    "cited_video_ids": [v for v in [id2] if v],
+                    "cited_video_ids": citation_ids[3],
                 },
             ],
             "shooting_advice": {
@@ -208,7 +224,7 @@ class GroundedScriptEngine:
                 ],
                 "pacing_and_editing": [
                     f"Tốc độ thoại mục tiêu của ngách: ~{benchmark.median_word_per_second} từ/giây; cắt bỏ toàn bộ khoảng nghỉ thở thừa >0.3s",
-                    f"Thời lượng tối ưu của ngách nằm trong khoảng {benchmark.duration_q25_sec:.0f}s - {benchmark.duration_q75_sec:.0f}s (trung vị {benchmark.duration_median_sec:.0f}s)",
+                    f"Phân bố thời lượng lịch sử của lát cắt: {benchmark.duration_q25_sec:.0f}s - {benchmark.duration_q75_sec:.0f}s (trung vị {benchmark.duration_median_sec:.0f}s); không chứng minh thời lượng tối ưu",
                 ],
             },
         }

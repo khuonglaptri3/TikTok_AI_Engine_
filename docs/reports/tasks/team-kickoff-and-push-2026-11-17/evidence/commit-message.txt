@@ -1,0 +1,18 @@
+fix: publish recovered AI core and balanced team kickoff
+
+Restore a reproducible historical CPU core and publish the recovery evidence
+so Khuong and Nguyen can start from the same reviewed baseline.
+
+- Preserve snapshot identity, multimodal continuity and sparse enrichment.
+- Remove arbitrary citation attachment and reject invalid script structure/timing.
+- Correct standard Recall@10 and publish query/corpus/index/code receipts.
+- Align API/demo packaging and document local artifact reproduction.
+- Define equal 94/94 estimated effort with reciprocal reviews and bounded gates.
+- Preserve checksum-bound bytes in Git and provide a concrete team kickoff.
+
+Validation and exact observations are recorded in the kickoff/recovery reports.
+The recovered dataset and runtime Parquet/BM25 binaries remain local; no secrets,
+paid inference, live crawl, collaborator invitation or deployment are included.
+
+Start here:
+docs/reports/tasks/team-kickoff-and-push-2026-11-17/README.md

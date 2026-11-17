@@ -1,0 +1,13 @@
+{
+  "created_date": "2026-11-17",
+  "scope": "Delegated metrics/package handoff; historical v1 included as preservation check",
+  "files_sha256": {
+    "pipelines/benchmark_retrieval/__init__.py": "5bf5b98877c735d84729d66f412f8d29646fbbb898b61e4feba25b4cda3b7bcb",
+    "pipelines/benchmark_retrieval/__main__.py": "d09c1cc88a617a018e9daeb92b3ccbd1833ea2a2ef779d65782a88a437c2fae0",
+    "tests/unit/test_retrieval_metrics.py": "c7dba03e7add6a824936228e4a58740e5e1ac8a257b3e7dc9eab60a66077eccd",
+    "tests/eval/test_retrieval_benchmark.py": "67c8ee19cb6c42e749adb0c29b909625369a831cfaa7b95ca2728127c713db21",
+    "pyproject.toml": "274e3b5e8ae3620c19e5b5ccee7554aff0e951e5c7c7168f435b396df62a29d6",
+    "infra/docker/Dockerfile.api": "cdd8bd0d6be9bd9d566d21a619f5ee94e9f09584b1b3a8b8ce68840c39ffee20",
+    "artifacts/benchmarks/retrieval_v1.json": "33c523d528aff22970c40f7bf253e88617a39d901a0ba6e687f0776a9da6b22c"
+  }
+}

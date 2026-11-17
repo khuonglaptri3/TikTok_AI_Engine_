@@ -97,7 +97,7 @@ def test_dual_sink_incremental_ingestion_and_trust_api(tmp_path: Path) -> None:
             }
         ]
     )
-    df_v = pd.read_parquet("data/corpus/20261116_v1/fact_videos.parquet").head(3).copy()
+    df_v = pd.read_parquet(AppSettings().corpus_dir / "fact_videos.parquet").head(3).copy()
     p_c = base_dir / "dim_creators.parquet"
     p_v = base_dir / "fact_videos.parquet"
     df_c.to_parquet(p_c, index=False)

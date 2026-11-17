@@ -1,10 +1,10 @@
-# Owner scope - AI modules and simple demonstration (2026-11-16)
+# Team scope - AI modules and simple demonstration (2026-11-17)
 
-This project (`TikTok_AI_Engine_`) is implemented by one AI Engineer (Trần Đình Khương). Deliver the selected AI modules, serve their results through typed AI APIs, and connect those APIs to one simple UI for demonstration.
+This project (`TikTok_AI_Engine_`) is delivered by two equal contributors, Trần Đình Khương and Nguyễn Việt Nguyên ([NguyenVietNguyen2612](https://github.com/NguyenVietNguyen2612)). Split estimated delivery, evaluation, integration and reciprocal review effort equally across the active plan; do not infer skill tiers from public profiles. Deliver the selected AI modules, serve their results through typed AI APIs, and connect those APIs to one simple UI for demonstration.
 
 - Build the AI logic, relevant data preparation, hybrid retrieval/model workflows, multimodal evaluation, inference serving, bounded failures, and per-module latency measurements (`ms`).
 - Use one lightweight Gradio UI (`/demo/`) mounted over ASGI transport to present actual AI outputs, citations, Niche Micro-Benchmarks, ABSA/Seeding diagnostics, errors, and stage timings. Do not add login, accounts, user-role workspaces, or a product session system.
-- Product CRUD, creator/merchant billing portals, operational ad-buying actions, enterprise cloud administration, and business-pilot KPI studies are excluded from the active project plan. There is no assumed backend contributor and no backend handoff guide to produce.
+- Product CRUD, creator/merchant billing portals, operational ad-buying actions, enterprise cloud administration, and business-pilot KPI studies are excluded from the active project plan. Both contributors share typed AI API and demo integration work; no separate product-backend handoff guide is required.
 - **Dual-Tier Data Preservation & Incremental Discipline:**
   1. **Historical Corpus (`1.50 GB`, `37,840` files, `2023-11` to `2025-03`):** Preserve 100% of original raw/interim/legacy files untouched on local disk (never re-crawl historical videos). Serve downstream analytics and RAG exclusively from immutable, SHA256-verified Gold Parquet snapshots (`data/corpus/<snapshot-id>/`).
   2. **Fresh Rolling 4-Month Stream (`data/raw_incremental/`):** Crawl only the latest 4-month window (`Metadata + 64kbps .mp3 Audio + Comments`) and run the **Dual-Sink Normalization Pipeline** (`pipelines.ingest_incremental_to_gold`) to both (a) append normalized 49-column rows into `fact_videos.parquet` for RAG/Trend freshness and (b) populate `fact_voice_segments.parquet`, `fact_comments.parquet`, and `fact_absa_reviews.parquet` for Voice Prosody, Seeding Detection, and KOC-vs-Viewer ABSA.

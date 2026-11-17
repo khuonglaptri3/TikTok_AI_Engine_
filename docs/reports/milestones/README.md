@@ -6,6 +6,8 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | --- | --- | --- | --- |
 | M0.1 | Legacy repository audit, secret sanitization, 1.50 GB data preservation, and Gold RAG monorepo baseline | COMPLETE | [Read results](M0.1/README.md) |
 
+Independent cross-project assessments are listed in [task reports](../tasks/README.md). Their conclusions do not change milestone status or pass a gate.
+
 Apply the exact layout defined in [AGENTS.md](../../../AGENTS.md) to all subsequent tasks (`M1.1`, `M2.2`, `M3.1`, etc.):
 
 ```text

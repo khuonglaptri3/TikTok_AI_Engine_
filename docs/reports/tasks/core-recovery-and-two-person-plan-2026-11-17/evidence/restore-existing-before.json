@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-17T04:58:08.674186+00:00",
+  "files": [
+    {
+      "path": "data/corpus/20261116_v1/manifest.json",
+      "bytes": 1229,
+      "sha256": "9565c9fc7dd9ce00a638cfcb4cc35032347ddc746c686eb7ccdc91ba911278f6"
+    },
+    {
+      "path": "data/evaluation/v1/queries.jsonl",
+      "bytes": 65050,
+      "sha256": "fffeec843da264e398f6c3f3fe8e057cac2b35d2345a9d42eb4a4de50d46ed98"
+    }
+  ]
+}

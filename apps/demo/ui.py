@@ -233,9 +233,10 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                     outputs=[e_bench, e_cards, e_timings],
                 )
 
-            with gr.Tab("3. Seeding & ABSA Trust Radar (4-Month Stream)"):
+            with gr.Tab("3. Comment Patterns & ABSA (Heuristic Baseline)"):
+                gr.Markdown("Dữ liệu nhập tay; các giá trị điền sẵn là ví dụ tổng hợp, không phải kết quả crawl thực tế.")
                 t_cap = gr.Textbox(
-                    label="Caption Video (4-Month Fresh Review)",
+                    label="Caption video cần phân tích",
                     value="Khai trương lẩu bò mắm ruốc Quận 10 giảm giá 20% ngon xuất sắc",
                 )
                 t_tr = gr.Textbox(
@@ -255,7 +256,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                     ),
                 )
                 hide_seed_chk = gr.Checkbox(value=True, label="Ẩn bình luận Seeding / Spam khỏi danh sách hiển thị")
-                audit_btn = gr.Button("🛡️ Quét Seeding & Đối Chiếu ABSA (KOC vs. Thực Khách)", variant="primary")
+                audit_btn = gr.Button("Phân Tích Mẫu Bình Luận Và Điểm ABSA", variant="primary")
                 t_audit_timings = gr.Markdown()
                 t_audit_md = gr.Markdown()
                 audit_btn.click(

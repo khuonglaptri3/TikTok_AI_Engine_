@@ -13,8 +13,9 @@ import pyarrow.parquet as pq
 
 from packages.absa import analyze_koc_vs_viewer_absa
 from packages.analytics import load_verified_corpus
+from packages.common.snapshots import snapshot_workspace
 from packages.data_contracts.corpus import CorpusFileChecksum, CorpusManifest
-from packages.data_contracts.multimodal import RawIncrementalVideoRecord, VoiceSegmentRecord
+from packages.data_contracts.multimodal import RawCommentInput, RawIncrementalVideoRecord, VoiceSegmentRecord
 from packages.seeding import detect_seeding_comments
 from packages.taxonomy import (
     classify_duration_bucket,
@@ -41,6 +42,16 @@ def _sha256_file(path: Path) -> str:
         for chunk in iter(lambda: fp.read(1024 * 1024), b""):
             hasher.update(chunk)
     return hasher.hexdigest()
+
+
+def _merge_comments(previous: list[RawCommentInput], incoming: list[RawCommentInput]) -> list[RawCommentInput]:
+    merged: dict[str, RawCommentInput] = {}
+    for comment in [*previous, *incoming]:
+        old = merged.get(comment.comment_id)
+        merged[comment.comment_id] = (
+            old.model_copy(update=comment.model_dump(exclude_unset=True)) if old is not None else comment
+        )
+    return list(merged.values())
 
 
 def _build_voice_segments(rec: RawIncrementalVideoRecord, wps: float) -> list[VoiceSegmentRecord]:
@@ -96,21 +107,56 @@ def ingest_incremental_batch_to_gold(
     base_corpus_dir: Path,
     incremental_jsonl: Path,
     output_corpus_dir: Path,
+    *,
+    update_existing: bool = False,
+) -> CorpusManifest:
+    with snapshot_workspace(output_corpus_dir) as staging_dir:
+        manifest = _ingest_incremental_batch_to_gold(
+            base_corpus_dir, incremental_jsonl, staging_dir,
+            snapshot_id=output_corpus_dir.name, update_existing=update_existing,
+        )
+        load_verified_corpus(staging_dir)
+    return manifest
+
+
+def _ingest_incremental_batch_to_gold(
+    base_corpus_dir: Path,
+    incremental_jsonl: Path,
+    output_corpus_dir: Path,
+    *,
+    snapshot_id: str,
+    update_existing: bool,
 ) -> CorpusManifest:
     """Dual-Sink Converter:
     1) Appends normalized 49-column rows to fact_videos.parquet (+ dim_creators.parquet) for RAG/Benchmarks.
     2) Populates fact_voice_segments.parquet, fact_comments.parquet, and fact_absa_reviews.parquet for 4M modules.
     """
     base_manifest, df_creators, df_videos = load_verified_corpus(base_corpus_dir)
-    output_corpus_dir.mkdir(parents=True, exist_ok=True)
+    parent_manifest_sha256 = _sha256_file(base_corpus_dir / "manifest.json")
 
-    raw_records = [
-        RawIncrementalVideoRecord.model_validate_json(line)
-        for line in incremental_jsonl.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
+    # Coalesce repeated video records before either sink is computed. Later
+    # supplied fields win; omitted values and distinct comments are retained.
+    raw_records: dict[str, RawIncrementalVideoRecord] = {}
+    for line in incremental_jsonl.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        rec = RawIncrementalVideoRecord.model_validate_json(line)
+        previous = raw_records.get(rec.video_id)
+        values = previous.model_dump(exclude_unset=True) if previous is not None else {}
+        values.update(rec.model_dump(exclude_unset=True, exclude={"comments"}))
+        values["comments"] = [comment.model_dump(exclude_unset=True) for comment in _merge_comments(
+            previous.comments if previous is not None else [], rec.comments,
+        )]
+        raw_records[rec.video_id] = RawIncrementalVideoRecord.model_validate(values)
 
     existing_vids = set(df_videos["video_id"].astype(str).tolist())
+    base_videos = {str(row["video_id"]): row for row in df_videos.to_dict(orient="records")}
+    base_multimodal: dict[str, pd.DataFrame] = {}
+    declared = {entry.filename for entry in base_manifest.files}
+    for name in ("fact_voice_segments.parquet", "fact_comments.parquet", "fact_absa_reviews.parquet"):
+        # Only load tables covered by the verified base manifest.
+        if name in declared:
+            base_multimodal[name] = pd.read_parquet(base_corpus_dir / name)
     creator_medians: dict[str, float] = dict(
         zip(df_creators["author_id"].astype(str), df_creators["median_play_count"].astype(float))
     )
@@ -121,10 +167,35 @@ def ingest_incremental_batch_to_gold(
     voice_rows: list[dict[str, Any]] = []
     comment_rows: list[dict[str, Any]] = []
     absa_rows: list[dict[str, Any]] = []
+    replaced_voice_ids: set[str] = set()
 
-    for rec in raw_records:
-        if rec.video_id in existing_vids:
+    for rec in raw_records.values():
+        is_existing = rec.video_id in existing_vids
+        if is_existing and not update_existing:
             continue
+        old_row = base_videos.get(rec.video_id)
+        transcript_changed = bool(rec.transcript.strip()) and (
+            old_row is None or rec.transcript != old_row.get("transcript")
+        )
+        replace_voice = old_row is None or bool(rec.whisper_segments) or (
+            bool(rec.transcript.strip()) and rec.transcript != old_row.get("transcript")
+        )
+        if old_row is not None:
+            # Enrichment preserves the observed metadata/counters; it cannot replace
+            # historical observations with the defaults of a sparse ASR/comment record.
+            fields = RawIncrementalVideoRecord.model_fields
+            preserved = {key: old_row[key] for key in fields if key in old_row and key not in {
+                "transcript", "pitch_std", "energy_cv", "comments", "whisper_segments", "audio_path",
+            }}
+            rec = rec.model_copy(update=preserved)
+            if not rec.transcript.strip():
+                rec = rec.model_copy(update={"transcript": str(old_row.get("transcript") or "")})
+            old_comments = base_multimodal.get("fact_comments.parquet")
+            prior_comments: list[RawCommentInput] = []
+            if old_comments is not None:
+                for item in old_comments[old_comments["video_id"] == rec.video_id].to_dict(orient="records"):
+                    prior_comments.append(RawCommentInput.model_validate(item))
+            rec = rec.model_copy(update={"comments": _merge_comments(prior_comments, rec.comments)})
         existing_vids.add(rec.video_id)
 
         tier = classify_follower_tier(rec.follower_count)
@@ -230,6 +301,14 @@ def ingest_incremental_batch_to_gold(
                 "rag_document": rag_doc,
             }
         )
+        if old_row is not None:
+            # Only text-derived columns are replaced during explicit enrichment.
+            derived = {"has_transcript", "transcript", "word_count", "word_per_second", "has_cta",
+                       "has_curiosity_gap", "hook_text", "body_beats", "cta_text", "rag_document"}
+            updated = dict(old_row)
+            if transcript_changed:
+                updated.update({key: new_video_rows[-1][key] for key in derived})
+            new_video_rows[-1] = updated
 
         if rec.author_id not in existing_aids:
             existing_aids.add(rec.author_id)
@@ -254,8 +333,10 @@ def ingest_incremental_batch_to_gold(
             )
 
         # Sink 2: Multimodal tables (Voice Segments + Seeding Comments + KOC-vs-Viewer ABSA)
-        for seg in _build_voice_segments(rec, wps):
-            voice_rows.append(seg.model_dump())
+        if replace_voice:
+            replaced_voice_ids.add(rec.video_id)
+            for seg in _build_voice_segments(rec, wps):
+                voice_rows.append(seg.model_dump())
 
         cleansed_comments = detect_seeding_comments(rec.video_id, rec.comments)
         for c_rec in cleansed_comments:
@@ -293,11 +374,11 @@ def ingest_incremental_batch_to_gold(
         if new_creator_rows
         else df_creators
     )
-    df_out_videos = (
-        pd.concat([df_videos, pd.DataFrame(new_video_rows)[df_videos.columns]], ignore_index=True)
-        if new_video_rows
-        else df_videos
-    )
+    updated_video_ids = {str(row["video_id"]) for row in new_video_rows}
+    df_out_videos = pd.concat([
+        df_videos[~df_videos["video_id"].isin(updated_video_ids)],
+        pd.DataFrame(new_video_rows).reindex(columns=df_videos.columns),
+    ], ignore_index=True) if new_video_rows else df_videos
 
     df_voice = pd.DataFrame(voice_rows) if voice_rows else pd.DataFrame(
         columns=["segment_id", "video_id", "seq_no", "start_sec", "end_sec", "timestamp_source", "text", "words_per_sec", "pitch_std", "energy_cv"]
@@ -308,6 +389,17 @@ def ingest_incremental_batch_to_gold(
     df_absa = pd.DataFrame(absa_rows) if absa_rows else pd.DataFrame(
         columns=["video_id", "koc_taste", "koc_price", "koc_hygiene", "koc_service", "viewer_taste", "viewer_price", "viewer_hygiene", "viewer_service", "pr_hype_gap", "undisclosed_pr_risk", "viewer_pain_points", "clean_comment_count", "seeding_comment_count"]
     )
+
+    def _carry_forward(name: str, fresh: pd.DataFrame, replace_ids: set[str]) -> pd.DataFrame:
+        old = base_multimodal.get(name)
+        if old is None:
+            return fresh
+        retained = old[~old["video_id"].isin(replace_ids)]
+        return pd.concat([retained, fresh], ignore_index=True) if len(fresh) else retained.copy()
+
+    df_voice = _carry_forward("fact_voice_segments.parquet", df_voice, replaced_voice_ids)
+    df_comments = _carry_forward("fact_comments.parquet", df_comments, updated_video_ids)
+    df_absa = _carry_forward("fact_absa_reviews.parquet", df_absa, updated_video_ids)
 
     tables = [
         ("dim_creators.parquet", df_out_creators),
@@ -332,7 +424,9 @@ def ingest_incremental_batch_to_gold(
         )
 
     manifest = CorpusManifest(
-        snapshot_id=output_corpus_dir.name,
+        snapshot_id=snapshot_id,
+        parent_snapshot_id=base_manifest.snapshot_id,
+        parent_manifest_sha256=parent_manifest_sha256,
         created_at=datetime.now(timezone.utc).isoformat(),
         date_window_start=base_manifest.date_window_start,
         date_window_end=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
@@ -344,7 +438,7 @@ def ingest_incremental_batch_to_gold(
         files=checksums,
         caveats=[
             *base_manifest.caveats,
-            f"Includes {len(new_video_rows)} fresh 4-month incremental multimodal videos converted via Dual-Sink pipeline.",
+            f"Applied {len(new_video_rows)} incremental video records; explicit enrichment={update_existing}. Parent snapshot={base_manifest.snapshot_id}.",
         ],
     )
     (output_corpus_dir / "manifest.json").write_text(

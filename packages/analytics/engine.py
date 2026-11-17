@@ -51,6 +51,12 @@ def load_verified_corpus(corpus_dir: Path) -> tuple[CorpusManifest, pd.DataFrame
     except Exception as exc:
         raise CorpusNotReadyError(f"Invalid corpus manifest at {manifest_path}: {exc}") from exc
 
+    names = [entry.filename for entry in manifest.files]
+    required = {"dim_creators.parquet", "fact_videos.parquet"}
+    if not required.issubset(names) or len(names) != len(set(names)):
+        raise CorpusNotReadyError("Manifest must cover each required corpus table exactly once")
+    if any(Path(name).name != name or "\\" in name or "/" in name for name in names):
+        raise CorpusNotReadyError("Manifest table names must be local filenames")
     for f_entry in manifest.files:
         file_path = corpus_dir / f_entry.filename
         if not file_path.is_file():

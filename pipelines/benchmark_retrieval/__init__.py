@@ -1,1 +1,1 @@
-"""Offline Retrieval & Reranking Evaluation Harness (Recall@10, MRR@10, nDCG@10)."""
+"""Offline weak-label retrieval regression (Recall/P/MRR/nDCG at 10)."""

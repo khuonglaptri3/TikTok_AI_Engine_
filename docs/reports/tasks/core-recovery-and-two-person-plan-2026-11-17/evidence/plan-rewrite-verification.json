@@ -1,0 +1,160 @@
+{
+  "verified_on": "2026-11-17",
+  "scope": "Documentation arithmetic, task traceability, local links, exact source archives and limited AGENTS edit. No product accuracy, human availability, provider, hosting or gate acceptance is inferred.",
+  "checks": [
+    {
+      "name": "exact_24_task_ids",
+      "result": "PASS",
+      "detail": 24
+    },
+    {
+      "name": "reciprocal_owner_reviewer",
+      "result": "PASS",
+      "detail": "Every task includes both contributors"
+    },
+    {
+      "name": "exact_equal_total",
+      "result": "PASS",
+      "detail": {
+        "K": 94,
+        "N": 94
+      }
+    },
+    {
+      "name": "exact_equal_core_and_future",
+      "result": "PASS",
+      "detail": {
+        "core": {
+          "K": 40,
+          "N": 40
+        },
+        "future": {
+          "K": 54,
+          "N": 54
+        }
+      }
+    },
+    {
+      "name": "days_and_share",
+      "result": "PASS",
+      "detail": {
+        "points": 188,
+        "person_days": 94,
+        "each_person_days": 47,
+        "share_each": 0.5
+      }
+    },
+    {
+      "name": "json_matches_every_plan_row",
+      "result": "PASS",
+      "detail": "IDs, owners, reviewers, points, days, dependencies and report paths"
+    },
+    {
+      "name": "json_totals_match",
+      "result": "PASS",
+      "detail": {
+        "points": 188,
+        "estimated_person_days": 94.0,
+        "points_by_contributor": {
+          "K": 94,
+          "N": 94
+        },
+        "estimated_days_by_contributor": {
+          "K": 47.0,
+          "N": 47.0
+        },
+        "share_by_contributor": {
+          "K": 0.5,
+          "N": 0.5
+        },
+        "core_points_by_contributor": {
+          "K": 40,
+          "N": 40
+        },
+        "conditional_points_by_contributor": {
+          "K": 54,
+          "N": 54
+        }
+      }
+    },
+    {
+      "name": "every_task_has_definition_and_report_path",
+      "result": "PASS",
+      "detail": {
+        "missing_definitions": [],
+        "missing_report_paths": []
+      }
+    },
+    {
+      "name": "all_seven_gates_not_run",
+      "result": "PASS",
+      "detail": [
+        "NOT_RUN",
+        "NOT_RUN",
+        "NOT_RUN",
+        "NOT_RUN",
+        "NOT_RUN",
+        "NOT_RUN",
+        "NOT_RUN"
+      ]
+    },
+    {
+      "name": "no_checked_completion_in_companion",
+      "result": "PASS",
+      "detail": "All execution steps are prospective/unchecked"
+    },
+    {
+      "name": "four_original_sources_preserved",
+      "result": "PASS",
+      "detail": [
+        {
+          "archive": "prior-milestone-plan.md",
+          "hash_matches": true,
+          "bytes_match": true
+        },
+        {
+          "archive": "prior-resources-and-deployment.md",
+          "hash_matches": true,
+          "bytes_match": true
+        },
+        {
+          "archive": "prior-refactor-implementation-plan.md",
+          "hash_matches": true,
+          "bytes_match": true
+        },
+        {
+          "archive": "prior-project-agents.md",
+          "hash_matches": true,
+          "bytes_match": true
+        }
+      ]
+    },
+    {
+      "name": "agents_only_opening_scope_changed",
+      "result": "PASS",
+      "detail": "All content from dual-tier preservation onward is unchanged"
+    },
+    {
+      "name": "authored_local_links",
+      "result": "PASS",
+      "detail": {
+        "checked": 41,
+        "broken": []
+      }
+    },
+    {
+      "name": "canonical_task_bundle_shape",
+      "result": "PASS",
+      "detail": "Task bundle already supplied by parent; no parallel planning tree"
+    }
+  ],
+  "result": "PASS",
+  "authored_document_sha256": {
+    "docs/planning/TikTok_AI_Engine_Milestone.md": "5a896c5174289a30ff24eabdd508ce29d96f8151dc68b25438f78d5abff76181",
+    "docs/planning/TikTok_AI_Engine_Resources_and_Deployment.md": "e64f66fb78d02f16356415f717a54d8bf7550770d48aaafd81a87ab8c7f85f5d",
+    "ReFactor_structure/04_IMPLEMENTATION_PLAN.md": "66c300696f0551ba880478b7a10009b2aace146be7f85948611a1760ba98c380",
+    "AGENTS.md": "8c865a17dd2a096a4aac3aadc5c3337b7f8f9c17c9ef2ceb3bd0909e84e00dc2",
+    "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/two-person-allocation.json": "48679fc60b1bc5cd9c1a5bf1c52b800a536d2caf5a8137831ee5ebf1d39bc5fd",
+    "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/plan-rewrite-notes.md": "e11b7afebbef83969a70f2d42dce8c6987c6e993e8300e3de4385b8045803c25"
+  }
+}

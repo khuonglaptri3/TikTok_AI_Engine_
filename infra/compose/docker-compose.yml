@@ -35,8 +35,8 @@ services:
       TIKTOK_RAG_ENV: docker
       TIKTOK_RAG_REDIS_URL: redis://redis:6379/0
       TIKTOK_RAG_QDRANT_URL: http://qdrant:6333
-      TIKTOK_RAG_CORPUS_DIR: data/corpus/20261116_v1
-      TIKTOK_RAG_BM25_INDEX_DIR: artifacts/indexes/bm25-v1
+      TIKTOK_RAG_CORPUS_DIR: data/corpus/20261117_recovered_v1
+      TIKTOK_RAG_BM25_INDEX_DIR: artifacts/indexes/bm25-v2
     ports:
       - "8000:8000"
     volumes:

@@ -18,7 +18,7 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("data/corpus/20261116_v1"),
+        default=Path("data/corpus/20261117_recovered_v1"),
         help="Output snapshot directory.",
     )
     args = parser.parse_args()

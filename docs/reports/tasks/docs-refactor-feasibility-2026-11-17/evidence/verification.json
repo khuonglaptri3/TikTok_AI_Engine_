@@ -1,0 +1,107 @@
+{
+  "verified_at": "2026-11-17T02:55:10.698280+00:00",
+  "checks": {
+    "bundle_layout": {
+      "actual": [
+        "README.md",
+        "evidence",
+        "superpowers"
+      ],
+      "expected": [
+        "README.md",
+        "evidence",
+        "superpowers"
+      ],
+      "pass": true
+    },
+    "planning_layout": {
+      "actual": [
+        "plan.md",
+        "spec.md"
+      ],
+      "pass": true
+    },
+    "original_document_integrity": {
+      "pass": true,
+      "unchanged": [
+        "docs/data-cards/tiktok_fnb_corpus_v1.md",
+        "docs/planning/TikTok_AI_Engine_Milestone.md",
+        "docs/planning/TikTok_AI_Engine_Resources_and_Deployment.md",
+        "docs/reports/Case_Study/README.md",
+        "docs/reports/milestones/M0.1/evidence/workflow.md",
+        "docs/reports/milestones/M0.1/README.md",
+        "docs/reports/milestones/M0.1/superpowers/plan.md",
+        "docs/reports/milestones/M0.1/superpowers/spec.md",
+        "ReFactor_structure/00_OVERVIEW_AND_CURRENT_STATE.md",
+        "ReFactor_structure/01_LIMITATIONS_AND_BUGS_AUDIT.md",
+        "ReFactor_structure/02_DATA_AND_RAG_REFACTOR_PROPOSAL.md",
+        "ReFactor_structure/03_AI_ENGINEER_ARCHITECTURE_SPEC.md",
+        "ReFactor_structure/04_IMPLEMENTATION_PLAN.md",
+        "ReFactor_structure/README.md"
+      ],
+      "authorized_navigation_changes": [
+        {
+          "path": "docs/reports/milestones/README.md",
+          "before": "48224ae1282108d466d6e92ef28c223a4defdfdba97400adb3ef9fc080731639",
+          "after": "853ae97ba274e6000d2d856c8685082cd9f47ed1805054e970ba8f5657c733ef"
+        }
+      ],
+      "unexpected": []
+    },
+    "audit_local_links": {
+      "checked": 97,
+      "errors": [],
+      "pass": true
+    },
+    "original_document_local_links": {
+      "checked": 23,
+      "errors": []
+    },
+    "navigation_and_status": {
+      "pass": true,
+      "scope": "Independent task status only; existing milestone status is unchanged."
+    },
+    "secret_scan": {
+      "pass": true,
+      "exit_code": 0,
+      "stdout": "PASS: Zero secret leaks detected across workspace.",
+      "stderr": ""
+    },
+    "git_diff_check": {
+      "pass": true,
+      "exit_code": 0,
+      "output": ""
+    },
+    "tracked_mutation_scope": {
+      "pass": true,
+      "changed_paths": [
+        "docs/reports/milestones/README.md"
+      ]
+    },
+    "repository_head_unchanged": {
+      "pass": true,
+      "commit": "cdbc6ed9ccad11db437aa66c68638cf018701fe5"
+    },
+    "required_evidence": {
+      "pass": true,
+      "missing": []
+    },
+    "controlled_findings_consistency": {
+      "pass": true,
+      "scope": "Verifies that the report refers to the recorded defect reproductions; not a passing product gate."
+    },
+    "audit_artifact_hashes": {
+      "pass": true,
+      "files": 18,
+      "manifest_sha256": "6a5c6e819e7f56d1c130ad3c6b252abe8b2a0f26eeba77791a403f5ca2816b03"
+    }
+  },
+  "runtime_summary": {
+    "existing_pytest": "15 passed, 5 failed (missing historical inputs/Gold payloads)",
+    "mypy": "PASS: 74 source files",
+    "product_defects": "reproduced; not fixed",
+    "live_provider_crawl_deployment": "NOT_RUN"
+  },
+  "manual_review_scope": "English authored prose and source/evidence qualifications reviewed; retained original raw logs may contain Vietnamese.",
+  "audit_handoff_pass": true
+}

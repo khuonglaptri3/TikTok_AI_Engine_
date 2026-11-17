@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "task_status": "COMPLETE",
+  "canonical_layout": true,
+  "current_report_index_agree": true,
+  "authored_local_links_checked": 86,
+  "broken_links": [],
+  "hashed_files": 130,
+  "all_recorded_hashes_rechecked": true,
+  "benchmark_provenance_rechecked": true,
+  "historical_benchmark_preserved": true,
+  "hash_manifest_sha256": "ba938c1e3adbf4d1236bb1d9ed18836ba6fbc4cd0c16aefb401176d3d5e40971",
+  "scope": "Canonical bundle, current authored links/index and final byte hashes; original archived evidence remains historical. Manifest and this result exclude their own mutable bytes."
+}

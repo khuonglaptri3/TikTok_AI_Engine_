@@ -1,0 +1,36 @@
+{"at": "2026-11-17T04:39:22.213187+00:00", "event": "source_tree_ready", "selected_files": 37840, "selected_bytes": 1504284701, "data_files": 37837}
+{"at": "2026-11-17T04:40:50.989417+00:00", "event": "external_curl_download_progress", "bytes": 39464960, "archive": "C:\\Users\\lanph\\AppData\\Local\\Temp\\tiktok-core-recovery-f142e5656a220f94f8024de168b0832754b3bd9e\\upstream.zip.part", "process_session_id": 65415}
+{"at": "2026-11-17T04:45:12.110477+00:00", "event": "external_curl_download_progress", "bytes": 129888256, "process_session_id": 65415}
+{"at": "2026-11-17T04:45:43.378877+00:00", "event": "destination_preflight_passed", "selected_files": 37840, "unique_destinations": 37840, "case_collisions": 0, "guard_rejection_cases": 5, "guard_rejections_passed": 5, "resolved_collision_check_elapsed_seconds": 20.864317300001858, "helper_syntax_files_checked": 2}
+{"at": "2026-11-17T04:49:21.139171+00:00", "event": "external_curl_download_progress", "bytes": 196902912, "process_session_id": 65415}
+{"at": "2026-11-17T04:51:09.271115+00:00", "event": "external_curl_download_progress", "bytes": 239235072, "process_session_id": 65415}
+{"at": "2026-11-17T04:53:03.442846+00:00", "event": "external_curl_download_progress", "bytes": 272302080, "process_session_id": 65415}
+{"at": "2026-11-17T04:54:36.307242+00:00", "event": "external_curl_download_progress", "bytes": 307744768, "process_session_id": 65415, "windows_invalid_destination_paths": 0}
+{"at": "2026-11-17T04:56:03.569698+00:00", "event": "external_curl_download_progress", "bytes": 345624576, "process_session_id": 65415}
+{"at": "2026-11-17T04:57:45.905027+00:00", "event": "external_curl_download_progress", "bytes": 393637888, "process_session_id": 65415}
+{"at": "2026-11-17T04:58:07.419029+00:00", "event": "source_tree_ready", "selected_files": 37840, "selected_bytes": 1504284701, "data_files": 37837}
+{"at": "2026-11-17T04:58:08.604821+00:00", "event": "download_complete", "bytes": 395268581, "sha256": "657c19c54dece116e6820d0d784e071bc36c56d116f37d0a7db77fecc1e60719", "zip_entries": 38323}
+{"at": "2026-11-17T04:59:24.210682+00:00", "event": "restore_started", "expected_files": 37840, "expected_bytes": 1504284701, "existing_files": 2}
+{"at": "2026-11-17T05:00:45.432089+00:00", "event": "restore_progress", "files": 2000, "expected_files": 37840}
+{"at": "2026-11-17T05:02:04.074718+00:00", "event": "restore_progress", "files": 4000, "expected_files": 37840}
+{"at": "2026-11-17T05:07:26.248202+00:00", "event": "source_tree_ready", "selected_files": 37840, "selected_bytes": 1504284701, "data_files": 37837}
+{"at": "2026-11-17T05:09:24.327619+00:00", "event": "restore_started", "expected_files": 37840, "expected_bytes": 1504284701, "existing_files": 5523}
+{"at": "2026-11-17T05:10:03.356368+00:00", "event": "restore_progress", "files": 2000, "expected_files": 37840}
+{"at": "2026-11-17T05:10:32.905001+00:00", "event": "restore_progress", "files": 4000, "expected_files": 37840}
+{"at": "2026-11-17T05:11:14.807159+00:00", "event": "restore_progress", "files": 6000, "expected_files": 37840}
+{"at": "2026-11-17T05:12:43.300857+00:00", "event": "restore_progress", "files": 8000, "expected_files": 37840}
+{"at": "2026-11-17T05:13:59.228229+00:00", "event": "restore_progress", "files": 10000, "expected_files": 37840}
+{"at": "2026-11-17T05:15:17.582371+00:00", "event": "restore_progress", "files": 12000, "expected_files": 37840}
+{"at": "2026-11-17T05:16:34.985327+00:00", "event": "restore_progress", "files": 14000, "expected_files": 37840}
+{"at": "2026-11-17T05:18:21.008601+00:00", "event": "restore_progress", "files": 16000, "expected_files": 37840}
+{"at": "2026-11-17T05:19:39.258909+00:00", "event": "restore_progress", "files": 18000, "expected_files": 37840}
+{"at": "2026-11-17T05:21:00.274550+00:00", "event": "restore_progress", "files": 20000, "expected_files": 37840}
+{"at": "2026-11-17T05:22:24.009955+00:00", "event": "restore_progress", "files": 22000, "expected_files": 37840}
+{"at": "2026-11-17T05:23:41.490707+00:00", "event": "restore_progress", "files": 24000, "expected_files": 37840}
+{"at": "2026-11-17T05:25:00.655373+00:00", "event": "restore_progress", "files": 26000, "expected_files": 37840}
+{"at": "2026-11-17T05:26:25.784481+00:00", "event": "restore_progress", "files": 28000, "expected_files": 37840}
+{"at": "2026-11-17T05:27:50.079955+00:00", "event": "restore_progress", "files": 30000, "expected_files": 37840}
+{"at": "2026-11-17T05:29:11.103563+00:00", "event": "restore_progress", "files": 32000, "expected_files": 37840}
+{"at": "2026-11-17T05:30:40.971180+00:00", "event": "restore_progress", "files": 34000, "expected_files": 37840}
+{"at": "2026-11-17T05:32:06.169576+00:00", "event": "restore_progress", "files": 36000, "expected_files": 37840}
+{"at": "2026-11-17T05:46:23.108505+00:00", "event": "restore_complete", "files": 37840, "bytes": 1504284701}

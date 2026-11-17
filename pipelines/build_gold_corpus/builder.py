@@ -185,9 +185,19 @@ def _sha256_file(path: Path) -> str:
 
 
 def build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str | None = None) -> CorpusManifest:
+    from packages.common.snapshots import snapshot_workspace
+
+    with snapshot_workspace(output_dir) as staging_dir:
+        manifest = _build_gold_corpus(root_dir, staging_dir, snapshot_id or output_dir.name)
+        from packages.analytics import load_verified_corpus
+
+        load_verified_corpus(staging_dir)
+    return manifest
+
+
+def _build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str) -> CorpusManifest:
     """Build immutable Gold Parquet corpus from read-only upstream datasets."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-    snap_id = snapshot_id or output_dir.name
+    snap_id = snapshot_id
 
     user_parquet = root_dir / "data/processed/cleaned_user_info.parquet"
     video_parquet = root_dir / "data/processed/cleaned_video_info.parquet"

@@ -40,7 +40,7 @@ def main() -> int:
     if args.command == "check-secrets":
         return _run([py, "scripts/check_secrets.py"])
     if args.command == "build-corpus":
-        return _run([py, "-m", "pipelines.build_gold_corpus", "--output", "data/corpus/20261116_v1"])
+        return _run([py, "-m", "pipelines.build_gold_corpus", "--output", "data/corpus/20261117_recovered_v1"])
     if args.command == "build-index":
         return _run(
             [
@@ -48,9 +48,9 @@ def main() -> int:
                 "-m",
                 "pipelines.build_dense_sparse_index",
                 "--corpus",
-                "data/corpus/20261116_v1",
+                "data/corpus/20261117_recovered_v1",
                 "--output",
-                "artifacts/indexes/bm25-v1",
+                "artifacts/indexes/bm25-v2",
             ]
         )
     if args.command == "benchmark":
@@ -60,11 +60,11 @@ def main() -> int:
                 "-m",
                 "pipelines.benchmark_retrieval",
                 "--corpus",
-                "data/corpus/20261116_v1",
+                "data/corpus/20261117_recovered_v1",
                 "--index",
-                "artifacts/indexes/bm25-v1",
+                "artifacts/indexes/bm25-v2",
                 "--output",
-                "artifacts/benchmarks/retrieval_v1.json",
+                "artifacts/benchmarks/retrieval_v2.json",
             ]
         )
     if args.command == "crawl-4m-demo":
@@ -76,7 +76,7 @@ def main() -> int:
                 "-m",
                 "pipelines.ingest_incremental_to_gold",
                 "--output-corpus",
-                "data/corpus/20261116_v2_4m",
+                "data/corpus/20261117_incremental_v1",
             ]
         )
     if args.command == "lint":

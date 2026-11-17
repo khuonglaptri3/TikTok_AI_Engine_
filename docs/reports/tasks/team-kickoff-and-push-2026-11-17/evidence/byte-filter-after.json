@@ -1,0 +1,783 @@
+{
+  "status": "PASS",
+  "phase": "after",
+  "checked_files": 129,
+  "failures": [],
+  "files": [
+    {
+      "path": ".env.example",
+      "raw_git_blob": "bb7faee91fdcfabb7d52cd1bbaac52440e29a9c0",
+      "filtered_git_blob": "bb7faee91fdcfabb7d52cd1bbaac52440e29a9c0",
+      "byte_identical": true
+    },
+    {
+      "path": "AGENTS.md",
+      "raw_git_blob": "6c33c566ef54fe961e9c80a8e8c367118f4918f3",
+      "filtered_git_blob": "6c33c566ef54fe961e9c80a8e8c367118f4918f3",
+      "byte_identical": true
+    },
+    {
+      "path": "README.md",
+      "raw_git_blob": "427c567a65dfe8a62a9f371a6760e221ef9c4a7e",
+      "filtered_git_blob": "427c567a65dfe8a62a9f371a6760e221ef9c4a7e",
+      "byte_identical": true
+    },
+    {
+      "path": "ReFactor_structure/04_IMPLEMENTATION_PLAN.md",
+      "raw_git_blob": "5202e41297757b5d9e6b98b487cc010f0432ee8c",
+      "filtered_git_blob": "5202e41297757b5d9e6b98b487cc010f0432ee8c",
+      "byte_identical": true
+    },
+    {
+      "path": "apps/demo/presentation.py",
+      "raw_git_blob": "bbd122606def433c5c01d01ca169c41d200dd064",
+      "filtered_git_blob": "bbd122606def433c5c01d01ca169c41d200dd064",
+      "byte_identical": true
+    },
+    {
+      "path": "apps/demo/ui.py",
+      "raw_git_blob": "d0cf58c1504999278aebf071705af5dfbdf32aea",
+      "filtered_git_blob": "d0cf58c1504999278aebf071705af5dfbdf32aea",
+      "byte_identical": true
+    },
+    {
+      "path": "artifacts/benchmarks/retrieval_v1.json",
+      "raw_git_blob": "05d625d27048270349a17826d8c0e55775f2183c",
+      "filtered_git_blob": "05d625d27048270349a17826d8c0e55775f2183c",
+      "byte_identical": true
+    },
+    {
+      "path": "artifacts/benchmarks/retrieval_v2.json",
+      "raw_git_blob": "0f5095dfec29b79f8c05c757326c332452dba585",
+      "filtered_git_blob": "0f5095dfec29b79f8c05c757326c332452dba585",
+      "byte_identical": true
+    },
+    {
+      "path": "data/corpus/20261116_v1/manifest.json",
+      "raw_git_blob": "ef3c5e92f0f6ac8a8f2289bbb2d8dfa269495542",
+      "filtered_git_blob": "ef3c5e92f0f6ac8a8f2289bbb2d8dfa269495542",
+      "byte_identical": true
+    },
+    {
+      "path": "data/corpus/20261117_recovered_v1/manifest.json",
+      "raw_git_blob": "d98de9907acfa5cf2eee54599768268e54905100",
+      "filtered_git_blob": "d98de9907acfa5cf2eee54599768268e54905100",
+      "byte_identical": true
+    },
+    {
+      "path": "data/evaluation/v1/queries.jsonl",
+      "raw_git_blob": "96407b04f720a96cc7b15a914df57d9930b05b8b",
+      "filtered_git_blob": "96407b04f720a96cc7b15a914df57d9930b05b8b",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/planning/TikTok_AI_Engine_Milestone.md",
+      "raw_git_blob": "0a7cd9aa34ca76b1c02ae1740c53d51050db16b8",
+      "filtered_git_blob": "0a7cd9aa34ca76b1c02ae1740c53d51050db16b8",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/planning/TikTok_AI_Engine_Resources_and_Deployment.md",
+      "raw_git_blob": "619a9512b3b306ab88c70a0ff9754d0a07eb1dd4",
+      "filtered_git_blob": "619a9512b3b306ab88c70a0ff9754d0a07eb1dd4",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/milestones/README.md",
+      "raw_git_blob": "99a85c773f44300e051b776b8ad2c0bbafafe572",
+      "filtered_git_blob": "99a85c773f44300e051b776b8ad2c0bbafafe572",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/README.md",
+      "raw_git_blob": "ab00f535accf90e2766ba38ab12f61b1a57aeefd",
+      "filtered_git_blob": "ab00f535accf90e2766ba38ab12f61b1a57aeefd",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/README.md",
+      "raw_git_blob": "7b63c991faf22aa7ac9bc8c81c0de984eda51bbb",
+      "filtered_git_blob": "7b63c991faf22aa7ac9bc8c81c0de984eda51bbb",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/comment-metadata-red.log",
+      "raw_git_blob": "624ed5a72ecba909f4b55520e4ec666dfe0012d2",
+      "filtered_git_blob": "624ed5a72ecba909f4b55520e4ec666dfe0012d2",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/core-final-mypy.log",
+      "raw_git_blob": "3da32e2d0ccfba56c63a3b01cf1393ac3a733e4c",
+      "filtered_git_blob": "3da32e2d0ccfba56c63a3b01cf1393ac3a733e4c",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/core-final-regressions.log",
+      "raw_git_blob": "a9e8b8976ea99582f41105520050cfd9611595b5",
+      "filtered_git_blob": "a9e8b8976ea99582f41105520050cfd9611595b5",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/core-mypy-intermediate.log",
+      "raw_git_blob": "3da32e2d0ccfba56c63a3b01cf1393ac3a733e4c",
+      "filtered_git_blob": "3da32e2d0ccfba56c63a3b01cf1393ac3a733e4c",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/core-probe-import-path-failure.log",
+      "raw_git_blob": "34f80225e5fe67ca6a7ee0c133ef4b8716f0b102",
+      "filtered_git_blob": "34f80225e5fe67ca6a7ee0c133ef4b8716f0b102",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/core-regressions-green.log",
+      "raw_git_blob": "9c9b012d9ae59a4ac31dfdfbeae1cc39ccc0393d",
+      "filtered_git_blob": "9c9b012d9ae59a4ac31dfdfbeae1cc39ccc0393d",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/final-diff-check.log",
+      "raw_git_blob": "6adbb3362c4b54973a05f1c13152f5506a5ca30f",
+      "filtered_git_blob": "6adbb3362c4b54973a05f1c13152f5506a5ca30f",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/final-full-suite.log",
+      "raw_git_blob": "efc1d5b93c6eb1a1f9347131861c9b1a564cd98e",
+      "filtered_git_blob": "efc1d5b93c6eb1a1f9347131861c9b1a564cd98e",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/final-independent-review.md",
+      "raw_git_blob": "a796922015e4dcf9b90450af512ef856c05761a9",
+      "filtered_git_blob": "a796922015e4dcf9b90450af512ef856c05761a9",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/final-review-green.log",
+      "raw_git_blob": "b5061e8e8a43b90fdb77bcdb5a2b699fe2e72f5f",
+      "filtered_git_blob": "b5061e8e8a43b90fdb77bcdb5a2b699fe2e72f5f",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/final-review-red.log",
+      "raw_git_blob": "84fd526448032f4109f84968b9106cba3818f594",
+      "filtered_git_blob": "84fd526448032f4109f84968b9106cba3818f594",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/final-review-tracked.diff",
+      "raw_git_blob": "d04b5d8f9f784c98153057ba48e1593006121e36",
+      "filtered_git_blob": "d04b5d8f9f784c98153057ba48e1593006121e36",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/final-secret-check.log",
+      "raw_git_blob": "be8068a4b27586ac382c15194a048de900ce9e1d",
+      "filtered_git_blob": "be8068a4b27586ac382c15194a048de900ce9e1d",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/gold-initial-network-failure.log",
+      "raw_git_blob": "5d005db13b83374572e844e8ed7b7f2e4de0043e",
+      "filtered_git_blob": "5d005db13b83374572e844e8ed7b7f2e4de0043e",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/guardrails-green.log",
+      "raw_git_blob": "c0162a1d1be45eb559d3b5c451aee881a6dc9322",
+      "filtered_git_blob": "c0162a1d1be45eb559d3b5c451aee881a6dc9322",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/guardrails-red.log",
+      "raw_git_blob": "bed388990d82186c4370ff9343cfd0d5bd75db4e",
+      "filtered_git_blob": "bed388990d82186c4370ff9343cfd0d5bd75db4e",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/integrate-worktree.py",
+      "raw_git_blob": "deddb6fb79933350f0b597287f8fe29a226598f9",
+      "filtered_git_blob": "deddb6fb79933350f0b597287f8fe29a226598f9",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/integrated-source.diff",
+      "raw_git_blob": "f7be1e28ffef5e9d67733351528d4b44bc6cee78",
+      "filtered_git_blob": "f7be1e28ffef5e9d67733351528d4b44bc6cee78",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/integration-manifest.json",
+      "raw_git_blob": "75ed3b6eb4997174da728f5e2b32e515c0395911",
+      "filtered_git_blob": "75ed3b6eb4997174da728f5e2b32e515c0395911",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/lineage-red.log",
+      "raw_git_blob": "d88ac5a2257e6756d56c94437e09cdbe6944b868",
+      "filtered_git_blob": "d88ac5a2257e6756d56c94437e09cdbe6944b868",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-file-hashes.json",
+      "raw_git_blob": "623570e778fd0362682f52d73aa10d24988d1ee6",
+      "filtered_git_blob": "623570e778fd0362682f52d73aa10d24988d1ee6",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-final-green.log",
+      "raw_git_blob": "e957c2d6593adcff6a59aaa45de5fa727eb06154",
+      "filtered_git_blob": "e957c2d6593adcff6a59aaa45de5fa727eb06154",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-full-suite.log",
+      "raw_git_blob": "b424d96c51d752e1daa98302912107ac21600903",
+      "filtered_git_blob": "b424d96c51d752e1daa98302912107ac21600903",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-green.log",
+      "raw_git_blob": "e957c2d6593adcff6a59aaa45de5fa727eb06154",
+      "filtered_git_blob": "e957c2d6593adcff6a59aaa45de5fa727eb06154",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-lint-green.log",
+      "raw_git_blob": "e0a208c2b0bbc0ae4da1698ccdd0313c486c0db9",
+      "filtered_git_blob": "e0a208c2b0bbc0ae4da1698ccdd0313c486c0db9",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-lint.log",
+      "raw_git_blob": "baef79d3dc296651f4bcc7146046428e09c610ca",
+      "filtered_git_blob": "baef79d3dc296651f4bcc7146046428e09c610ca",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-packaging.md",
+      "raw_git_blob": "8ad8f3d1a31ea171b5eac211cdcfaf53fcfbe7b8",
+      "filtered_git_blob": "8ad8f3d1a31ea171b5eac211cdcfaf53fcfbe7b8",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-receipts-red.log",
+      "raw_git_blob": "8305737270b711aba8e64da880a39da24d0ce248",
+      "filtered_git_blob": "8305737270b711aba8e64da880a39da24d0ce248",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-red.log",
+      "raw_git_blob": "f03899d753195aed0b93b629fc5e455ad468f647",
+      "filtered_git_blob": "f03899d753195aed0b93b629fc5e455ad468f647",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-secret-check.log",
+      "raw_git_blob": "be8068a4b27586ac382c15194a048de900ce9e1d",
+      "filtered_git_blob": "be8068a4b27586ac382c15194a048de900ce9e1d",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/metrics-typecheck.log",
+      "raw_git_blob": "3da32e2d0ccfba56c63a3b01cf1393ac3a733e4c",
+      "filtered_git_blob": "3da32e2d0ccfba56c63a3b01cf1393ac3a733e4c",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/package-final.log",
+      "raw_git_blob": "e0ab6d466569fa804576aa5c8389eee1b2048e8d",
+      "filtered_git_blob": "e0ab6d466569fa804576aa5c8389eee1b2048e8d",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/package-green.log",
+      "raw_git_blob": "3ad9b8f5eb9ed18fede72d76f349f24d520f1a0a",
+      "filtered_git_blob": "3ad9b8f5eb9ed18fede72d76f349f24d520f1a0a",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/package-red.log",
+      "raw_git_blob": "3360cab9a21d6b5cac1fdf219991cc4fc08129ee",
+      "filtered_git_blob": "3360cab9a21d6b5cac1fdf219991cc4fc08129ee",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/parent-lineage-red.log",
+      "raw_git_blob": "fdace9fea8b802c385f671f2c2cfcc995f38d577",
+      "filtered_git_blob": "fdace9fea8b802c385f671f2c2cfcc995f38d577",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/plan-rewrite-notes.md",
+      "raw_git_blob": "b976c868febdfb469372d9d0c5317e543116ed9b",
+      "filtered_git_blob": "b976c868febdfb469372d9d0c5317e543116ed9b",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/plan-rewrite-verification.json",
+      "raw_git_blob": "fc521dd38ec3d92bf65dda7152044cfaed6a2df2",
+      "filtered_git_blob": "fc521dd38ec3d92bf65dda7152044cfaed6a2df2",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-milestone-plan.md",
+      "raw_git_blob": "9339ca16091960e2ca5b04503f7e38b293a9c4ee",
+      "filtered_git_blob": "9339ca16091960e2ca5b04503f7e38b293a9c4ee",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-plan-preservation.json",
+      "raw_git_blob": "0400f26db1629675c6906bc40efaf0a875194105",
+      "filtered_git_blob": "0400f26db1629675c6906bc40efaf0a875194105",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-project-agents.md",
+      "raw_git_blob": "52f6c03027678a8d77f631ba1e67c001f98dbb9e",
+      "filtered_git_blob": "52f6c03027678a8d77f631ba1e67c001f98dbb9e",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-refactor-implementation-plan.md",
+      "raw_git_blob": "bb6ea24b383707ec532bd0d2d7de5cdea2f0ea1c",
+      "filtered_git_blob": "bb6ea24b383707ec532bd0d2d7de5cdea2f0ea1c",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-resources-and-deployment.md",
+      "raw_git_blob": "8b509b44247439771447cac73db9d903363b3e5e",
+      "filtered_git_blob": "8b509b44247439771447cac73db9d903363b3e5e",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/recovered-api-outputs.json",
+      "raw_git_blob": "c94634675586fed9173e6d05e9e1c1f011e193d5",
+      "filtered_git_blob": "c94634675586fed9173e6d05e9e1c1f011e193d5",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/recovered-benchmark-build.log",
+      "raw_git_blob": "2da4c9b67098e2653d5fff2e26d085ca0517b09e",
+      "filtered_git_blob": "2da4c9b67098e2653d5fff2e26d085ca0517b09e",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/recovered-core-verification.json",
+      "raw_git_blob": "269a34b1ea0e37ead1cae35a40550821e8b8b50b",
+      "filtered_git_blob": "269a34b1ea0e37ead1cae35a40550821e8b8b50b",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/recovered-core-verification.log",
+      "raw_git_blob": "e38dbaab537c2a7c47832535f66cf63b0da9ef33",
+      "filtered_git_blob": "e38dbaab537c2a7c47832535f66cf63b0da9ef33",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/recovered-gold-build.log",
+      "raw_git_blob": "63fb8f956ea3b7afb3b7340645a26668263e2961",
+      "filtered_git_blob": "63fb8f956ea3b7afb3b7340645a26668263e2961",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/recovered-index-build.log",
+      "raw_git_blob": "030f5cbfe85546707621a223dddb7a06e39e3e71",
+      "filtered_git_blob": "030f5cbfe85546707621a223dddb7a06e39e3e71",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-archive.json",
+      "raw_git_blob": "2fb19855aa4d028d091ebcee866e996754ef07af",
+      "filtered_git_blob": "2fb19855aa4d028d091ebcee866e996754ef07af",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-existing-before.json",
+      "raw_git_blob": "382c7ee24466af956043a33726ed0f1362977569",
+      "filtered_git_blob": "382c7ee24466af956043a33726ed0f1362977569",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-final-verification.log",
+      "raw_git_blob": "55b40b7de95326df5759a05b2bb20a1999491a5d",
+      "filtered_git_blob": "55b40b7de95326df5759a05b2bb20a1999491a5d",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-input-manifest.json",
+      "raw_git_blob": "8793edcadc8724655d1cfb90aa5a6074c7fe3177",
+      "filtered_git_blob": "8793edcadc8724655d1cfb90aa5a6074c7fe3177",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-progress.jsonl",
+      "raw_git_blob": "a09c7946bcb155108cc0faf81bd2899fe5ebba0d",
+      "filtered_git_blob": "a09c7946bcb155108cc0faf81bd2899fe5ebba0d",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-resume-existing-before.json",
+      "raw_git_blob": "66800741a740235d27b3e6223069c374dddd5898",
+      "filtered_git_blob": "66800741a740235d27b3e6223069c374dddd5898",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-resumed.log",
+      "raw_git_blob": "dced285cd9046cc8a1c9177bb482cdf854809c50",
+      "filtered_git_blob": "dced285cd9046cc8a1c9177bb482cdf854809c50",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-review.md",
+      "raw_git_blob": "291143878bdc321e5c16b38b013f80e8599fc704",
+      "filtered_git_blob": "291143878bdc321e5c16b38b013f80e8599fc704",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-source-tree.json",
+      "raw_git_blob": "c55a5c0338b285020319f60ac60cc8e79413a240",
+      "filtered_git_blob": "c55a5c0338b285020319f60ac60cc8e79413a240",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-summary.json",
+      "raw_git_blob": "280386d6ce596f6f25c54edbac520604ab2a3cbe",
+      "filtered_git_blob": "280386d6ce596f6f25c54edbac520604ab2a3cbe",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-upstream-data.py",
+      "raw_git_blob": "f701823e75567ebda36c7fbb48f0fc4315875071",
+      "filtered_git_blob": "f701823e75567ebda36c7fbb48f0fc4315875071",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-verification.json",
+      "raw_git_blob": "76bccf6d8828aa8d22953bc6d05bdedf6d2e87d3",
+      "filtered_git_blob": "76bccf6d8828aa8d22953bc6d05bdedf6d2e87d3",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-verify.py",
+      "raw_git_blob": "f688a6ac7077b639ba90292254d02f2f39144b7e",
+      "filtered_git_blob": "f688a6ac7077b639ba90292254d02f2f39144b7e",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/resumed-suite-before-data.log",
+      "raw_git_blob": "9d163e29b70664faceeb75bd74e2403e462639be",
+      "filtered_git_blob": "9d163e29b70664faceeb75bd74e2403e462639be",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/scoped-lint-final.log",
+      "raw_git_blob": "e0a208c2b0bbc0ae4da1698ccdd0313c486c0db9",
+      "filtered_git_blob": "e0a208c2b0bbc0ae4da1698ccdd0313c486c0db9",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/scoped-lint.log",
+      "raw_git_blob": "b7ec16d602846986446f97c03d7c0af0621fb8d0",
+      "filtered_git_blob": "b7ec16d602846986446f97c03d7c0af0621fb8d0",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/snapshot-green.log",
+      "raw_git_blob": "2bb84eaf0c66693805dc97fc41b04ec9b45605c9",
+      "filtered_git_blob": "2bb84eaf0c66693805dc97fc41b04ec9b45605c9",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/snapshot-intermediate.log",
+      "raw_git_blob": "b360e339f6c2675763e7844b24fb32d6c0b9b46d",
+      "filtered_git_blob": "b360e339f6c2675763e7844b24fb32d6c0b9b46d",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/snapshot-red.log",
+      "raw_git_blob": "b21ec1a588bb405e4d8d9c7b3f8914142bfcc456",
+      "filtered_git_blob": "b21ec1a588bb405e4d8d9c7b3f8914142bfcc456",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/snapshot-resumed-intermediate.log",
+      "raw_git_blob": "1ce6d8fc49d859d633bb2fa50e4f01548db28fea",
+      "filtered_git_blob": "1ce6d8fc49d859d633bb2fa50e4f01548db28fea",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/snapshot-review-package.diff",
+      "raw_git_blob": "e1a7e9741b6f0cb3c073a6911a8e82710484a414",
+      "filtered_git_blob": "e1a7e9741b6f0cb3c073a6911a8e82710484a414",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/snapshot-review-red.log",
+      "raw_git_blob": "45c94f0af8bf7734effde3e34f6a5b96932ac343",
+      "filtered_git_blob": "45c94f0af8bf7734effde3e34f6a5b96932ac343",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/snapshot-review.md",
+      "raw_git_blob": "604abb6bffebd037d34b212a3108ebf7f144a6bf",
+      "filtered_git_blob": "604abb6bffebd037d34b212a3108ebf7f144a6bf",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/timing-tolerance-red.log",
+      "raw_git_blob": "641a6ac9dc0544ebc0a2c98e4aaf4bb343e2e34c",
+      "filtered_git_blob": "641a6ac9dc0544ebc0a2c98e4aaf4bb343e2e34c",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/two-person-allocation.json",
+      "raw_git_blob": "15ae94ff2fb3be56cf486f7034db789acf45fc02",
+      "filtered_git_blob": "15ae94ff2fb3be56cf486f7034db789acf45fc02",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/verify-plan-rewrite.py",
+      "raw_git_blob": "81d8937aa1f5481890eb5a8b5d81d2a6f4ccdc0f",
+      "filtered_git_blob": "81d8937aa1f5481890eb5a8b5d81d2a6f4ccdc0f",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/verify-recovered-core.py",
+      "raw_git_blob": "a4337903d4f97639525a5fa61787707d40ceddd2",
+      "filtered_git_blob": "a4337903d4f97639525a5fa61787707d40ceddd2",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/verify-task-handoff.py",
+      "raw_git_blob": "8fbd65365296c5938cda2a981458b6b9c36a0dee",
+      "filtered_git_blob": "8fbd65365296c5938cda2a981458b6b9c36a0dee",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/verify_package_context.py",
+      "raw_git_blob": "04f6f7f2918ffe40392854d8cd66fea6827b62e9",
+      "filtered_git_blob": "04f6f7f2918ffe40392854d8cd66fea6827b62e9",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/workflow.md",
+      "raw_git_blob": "b139b423849a3ade940377abed0adb1c39cb6a77",
+      "filtered_git_blob": "b139b423849a3ade940377abed0adb1c39cb6a77",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/superpowers/plan.md",
+      "raw_git_blob": "bc80473b7aa9875e5e44cca252bdb608d3a69eb4",
+      "filtered_git_blob": "bc80473b7aa9875e5e44cca252bdb608d3a69eb4",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/superpowers/spec.md",
+      "raw_git_blob": "d1d1fe7675caa8b905afc5a51069d38f6692aadc",
+      "filtered_git_blob": "d1d1fe7675caa8b905afc5a51069d38f6692aadc",
+      "byte_identical": true
+    },
+    {
+      "path": "infra/compose/docker-compose.yml",
+      "raw_git_blob": "9d8e88845afdc560330f0b5d2010a8a4edaae7e8",
+      "filtered_git_blob": "9d8e88845afdc560330f0b5d2010a8a4edaae7e8",
+      "byte_identical": true
+    },
+    {
+      "path": "infra/docker/Dockerfile.api",
+      "raw_git_blob": "dc1a9acf04cf8dba70bf19867a6d95b97f8294a4",
+      "filtered_git_blob": "dc1a9acf04cf8dba70bf19867a6d95b97f8294a4",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/analytics/engine.py",
+      "raw_git_blob": "72a6be59c35301af0ee9cfb0b21b4586b5e66e3c",
+      "filtered_git_blob": "72a6be59c35301af0ee9cfb0b21b4586b5e66e3c",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/common/settings/__init__.py",
+      "raw_git_blob": "4a7ea58f07fc3a3e533813bc3fdac2b65cf1d5b0",
+      "filtered_git_blob": "4a7ea58f07fc3a3e533813bc3fdac2b65cf1d5b0",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/common/snapshots.py",
+      "raw_git_blob": "58794176f13e33a5f8bd944d2dd86066dd40d9fb",
+      "filtered_git_blob": "58794176f13e33a5f8bd944d2dd86066dd40d9fb",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/data_contracts/corpus.py",
+      "raw_git_blob": "e1305236f98683781b869b58084258ea4fa563c0",
+      "filtered_git_blob": "e1305236f98683781b869b58084258ea4fa563c0",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/data_contracts/script.py",
+      "raw_git_blob": "d7827ffa4e69f50eb673d8d1e642003cd6d59c78",
+      "filtered_git_blob": "d7827ffa4e69f50eb673d8d1e642003cd6d59c78",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/llm/guardrails/verifier.py",
+      "raw_git_blob": "b6c024ab8a5d54dc5959076841ca56229a6c9157",
+      "filtered_git_blob": "b6c024ab8a5d54dc5959076841ca56229a6c9157",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/retrieval/fusion/rrf.py",
+      "raw_git_blob": "788af32cf4adc4142fc32a52133460d7de730fbb",
+      "filtered_git_blob": "788af32cf4adc4142fc32a52133460d7de730fbb",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/retrieval/rerank/scorer.py",
+      "raw_git_blob": "a7033cb459c45f13c20b6b5293b0f693c2cc5248",
+      "filtered_git_blob": "a7033cb459c45f13c20b6b5293b0f693c2cc5248",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/retrieval/service.py",
+      "raw_git_blob": "58a3e70ecb254115e90ba30eff667b84f865a2e1",
+      "filtered_git_blob": "58a3e70ecb254115e90ba30eff667b84f865a2e1",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/retrieval/sparse/bm25.py",
+      "raw_git_blob": "574b8a656841d53d991e3e70be3f9bc12314ce6c",
+      "filtered_git_blob": "574b8a656841d53d991e3e70be3f9bc12314ce6c",
+      "byte_identical": true
+    },
+    {
+      "path": "packages/script_engine/service.py",
+      "raw_git_blob": "783a3d1ec773ff11fa024ce9f2521b6eec40d5d9",
+      "filtered_git_blob": "783a3d1ec773ff11fa024ce9f2521b6eec40d5d9",
+      "byte_identical": true
+    },
+    {
+      "path": "pipelines/benchmark_retrieval/__init__.py",
+      "raw_git_blob": "e9b36d07c4004018c0afdf5ef9890accc454c0d6",
+      "filtered_git_blob": "e9b36d07c4004018c0afdf5ef9890accc454c0d6",
+      "byte_identical": true
+    },
+    {
+      "path": "pipelines/benchmark_retrieval/__main__.py",
+      "raw_git_blob": "0be980386a843058e12ba4fb42b152cfd037ef77",
+      "filtered_git_blob": "0be980386a843058e12ba4fb42b152cfd037ef77",
+      "byte_identical": true
+    },
+    {
+      "path": "pipelines/build_dense_sparse_index/__main__.py",
+      "raw_git_blob": "54e203354f21aabc253e1d8800adbc72778f9802",
+      "filtered_git_blob": "54e203354f21aabc253e1d8800adbc72778f9802",
+      "byte_identical": true
+    },
+    {
+      "path": "pipelines/build_gold_corpus/__main__.py",
+      "raw_git_blob": "d991545f23106eef7825718e150b29bffb76d6ec",
+      "filtered_git_blob": "d991545f23106eef7825718e150b29bffb76d6ec",
+      "byte_identical": true
+    },
+    {
+      "path": "pipelines/build_gold_corpus/builder.py",
+      "raw_git_blob": "f62a643f41322270614e80df5db8a12a4e6c622b",
+      "filtered_git_blob": "f62a643f41322270614e80df5db8a12a4e6c622b",
+      "byte_identical": true
+    },
+    {
+      "path": "pipelines/crawl_incremental/__main__.py",
+      "raw_git_blob": "8bafff829ce4b93284160f438bd6ced3d0882822",
+      "filtered_git_blob": "8bafff829ce4b93284160f438bd6ced3d0882822",
+      "byte_identical": true
+    },
+    {
+      "path": "pipelines/enrich_taxonomy_batch/__main__.py",
+      "raw_git_blob": "399eabd2d4ae7a3a80fd99b76a05ec9f135f9fde",
+      "filtered_git_blob": "399eabd2d4ae7a3a80fd99b76a05ec9f135f9fde",
+      "byte_identical": true
+    },
+    {
+      "path": "pipelines/ingest_incremental_to_gold/__main__.py",
+      "raw_git_blob": "9323b0abd822a17652f05ce8fa0410cd606e80d8",
+      "filtered_git_blob": "9323b0abd822a17652f05ce8fa0410cd606e80d8",
+      "byte_identical": true
+    },
+    {
+      "path": "pipelines/ingest_incremental_to_gold/converter.py",
+      "raw_git_blob": "6493b1632ddaa345603c1ccc2cd18bc260c9b8ab",
+      "filtered_git_blob": "6493b1632ddaa345603c1ccc2cd18bc260c9b8ab",
+      "byte_identical": true
+    },
+    {
+      "path": "pyproject.toml",
+      "raw_git_blob": "b65a46bdbac18b1e1d0ec1140d8b353039f1c5ef",
+      "filtered_git_blob": "b65a46bdbac18b1e1d0ec1140d8b353039f1c5ef",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/dev.py",
+      "raw_git_blob": "2ae39f13a73b704a687c4d3643d02e7bd2e48978",
+      "filtered_git_blob": "2ae39f13a73b704a687c4d3643d02e7bd2e48978",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/eval/test_retrieval_benchmark.py",
+      "raw_git_blob": "dd306f5f2e37f39b5d3839c539d3c3860b83b4c7",
+      "filtered_git_blob": "dd306f5f2e37f39b5d3839c539d3c3860b83b4c7",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/smoke/test_api_and_demo.py",
+      "raw_git_blob": "80b606cb919db535756a78b274795385b76fdf64",
+      "filtered_git_blob": "80b606cb919db535756a78b274795385b76fdf64",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/unit/test_analytics_and_retrieval.py",
+      "raw_git_blob": "33ea821ae26a01db1d807cc2c5a31c9fd155432c",
+      "filtered_git_blob": "33ea821ae26a01db1d807cc2c5a31c9fd155432c",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/unit/test_incremental_absa_seeding.py",
+      "raw_git_blob": "2be5dfda6b974ff379f8dcecea00e9b9b5066864",
+      "filtered_git_blob": "2be5dfda6b974ff379f8dcecea00e9b9b5066864",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/unit/test_offline_draft.py",
+      "raw_git_blob": "9843116aa7f8935ba3c92a8dc3f729a2b3aff0e6",
+      "filtered_git_blob": "9843116aa7f8935ba3c92a8dc3f729a2b3aff0e6",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/unit/test_retrieval_metrics.py",
+      "raw_git_blob": "b3f22fd7246e0917b6335e8abfce2ea4b5b49c03",
+      "filtered_git_blob": "b3f22fd7246e0917b6335e8abfce2ea4b5b49c03",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/unit/test_script_guardrails.py",
+      "raw_git_blob": "c11491592476b138e79fc4da2a99e23c9f2f6f6a",
+      "filtered_git_blob": "c11491592476b138e79fc4da2a99e23c9f2f6f6a",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/unit/test_snapshot_continuity.py",
+      "raw_git_blob": "592beb6aefd7612f21a9a07c0b0d0811f1cf6c6b",
+      "filtered_git_blob": "592beb6aefd7612f21a9a07c0b0d0811f1cf6c6b",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/unit/test_taxonomy_and_corpus.py",
+      "raw_git_blob": "79900ff6b0aea330bfa3e5ba5980df835f5bd28b",
+      "filtered_git_blob": "79900ff6b0aea330bfa3e5ba5980df835f5bd28b",
+      "byte_identical": true
+    }
+  ],
+  "scope": "Exact Git clean-filter/staged byte preservation and immutable recovery bindings; staged manifest excludes itself. Raw data/runtime binaries/secrets excluded by explicit publication checks."
+}

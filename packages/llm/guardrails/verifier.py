@@ -34,7 +34,6 @@ def recalculate_timeline_and_verify(
 
     total_citations = 0
     valid_citations = 0
-    fallback_vid = next(iter(valid_evidence_ids), "")
 
     all_text_parts = list(hook_options)
 
@@ -47,7 +46,8 @@ def recalculate_timeline_and_verify(
         end_sec = cursor_sec + beat_dur
         cursor_sec = end_sec
 
-        raw_cites = b.get("cited_video_ids") or []
+        submitted = b.get("cited_video_ids")
+        raw_cites = submitted if isinstance(submitted, list) else []
         clean_cites: list[str] = []
         for cid in raw_cites:
             cid_s = str(cid).strip()
@@ -58,9 +58,6 @@ def recalculate_timeline_and_verify(
                 valid_citations += 1
                 if cid_s not in clean_cites:
                     clean_cites.append(cid_s)
-
-        if not clean_cites and fallback_vid:
-            clean_cites = [fallback_vid]
 
         verified_beats.append(
             ScriptBeat(
@@ -79,19 +76,28 @@ def recalculate_timeline_and_verify(
     total_words = sum(beat.word_count for beat in verified_beats)
     estimated_sec = round(cursor_sec, 1)
     delta_sec = round(estimated_sec - target_duration_sec, 1)
-    cite_ratio = round(valid_citations / total_citations, 3) if total_citations > 0 else (1.0 if valid_evidence_ids else 0.0)
+    cite_ratio = round(valid_citations / total_citations, 3) if total_citations > 0 else 0.0
+    covered_beats = sum(bool(beat.cited_video_ids) for beat in verified_beats)
+    coverage = covered_beats / len(verified_beats) if verified_beats else 0.0
+    complete_content = bool(verified_beats) and all(beat.word_count > 0 for beat in verified_beats)
+    timing_valid = target_duration_sec > 0 and abs(delta_sec) <= max(2.0, target_duration_sec * 0.05)
 
     warnings: list[str] = []
     if detected_cliches:
         warnings.append(f"Phát hiện cụm từ sáo rỗng cần tránh: {', '.join(detected_cliches)}")
-    if abs(delta_sec) > max(15.0, target_duration_sec * 0.35):
+    if not timing_valid:
         warnings.append(
             f"Thời lượng ước tính ({estimated_sec}s) lệch {delta_sec:+.1f}s so với mục tiêu ({target_duration_sec}s) ở tốc độ {effective_wps:.2f} từ/giây."
         )
     if cite_ratio < 1.0:
         warnings.append("Một số mã trích dẫn video không khớp kho bằng chứng đã được lọc bỏ tự động.")
+    if not complete_content:
+        warnings.append("Kịch bản cần có lời thoại không rỗng trong mọi phân đoạn.")
+    if coverage < 1.0:
+        warnings.append("Một số phân đoạn chưa có video tham chiếu; hệ thống không tự gán nguồn.")
+    warnings.append("Kiểm tra cấu trúc, mã nguồn và thời lượng; chưa xác minh nội dung từng nhận định với nguồn.")
 
-    passed = (len(detected_cliches) == 0) and (cite_ratio >= 0.8)
+    passed = complete_content and timing_valid and not detected_cliches and cite_ratio == 1.0 and coverage == 1.0
     report = GuardrailReport(
         passed=passed,
         estimated_duration_sec=estimated_sec,
@@ -101,5 +107,7 @@ def recalculate_timeline_and_verify(
         valid_citations_ratio=cite_ratio,
         cliche_phrases_detected=detected_cliches,
         warnings=warnings,
+        citation_coverage_ratio=coverage,
+        timing_valid=timing_valid,
     )
     return verified_beats, report

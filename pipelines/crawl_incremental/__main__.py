@@ -96,7 +96,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Crawl fresh 4-month TikTok F&B videos (never re-crawls historical 1.50 GB corpus)."
     )
-    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261116_v1"))
+    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/raw_incremental/batch_latest"))
     parser.add_argument("--window-days", type=int, default=120, help="Rolling window in days (default: 120 = 4 months).")
     parser.add_argument(

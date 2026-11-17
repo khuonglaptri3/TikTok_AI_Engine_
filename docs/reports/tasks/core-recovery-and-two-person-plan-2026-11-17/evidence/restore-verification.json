@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "verified_at": "2026-11-17T05:55:45.450471+00:00",
+  "command": "C:/Users/lanph/.local/bin/python3.12.exe docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-verify.py",
+  "revision": "f142e5656a220f94f8024de168b0832754b3bd9e",
+  "expected_files": 37840,
+  "verified_file_bytes": 1504284701,
+  "groups": {
+    "ScriptGen-data": 1,
+    "UserList": 7,
+    "content-features-dataset": 2,
+    "content_analysis": 1,
+    "error": 1,
+    "filters": 1,
+    "foods-and-locations": 14252,
+    "insights": 1,
+    "interim": 21,
+    "processed": 10,
+    "prompts": 5,
+    "raw": 413,
+    "transcripts": 23122,
+    "legacy_app_data": 3
+  },
+  "all_expected_git_blob_sha1_and_sha256_verified": true,
+  "preexisting_files": [
+    {
+      "path": "data/corpus/20261116_v1/manifest.json",
+      "sha256": "9565c9fc7dd9ce00a638cfcb4cc35032347ddc746c686eb7ccdc91ba911278f6",
+      "unchanged": true
+    },
+    {
+      "path": "data/evaluation/v1/queries.jsonl",
+      "sha256": "fffeec843da264e398f6c3f3fe8e057cac2b35d2345a9d42eb4a4de50d46ed98",
+      "unchanged": true
+    }
+  ],
+  "git_check_ignore_exit_code": 0,
+  "gitignored_recovered_files": 37840,
+  "prior_audit_csv_sha256": {
+    "path": "data/processed/cleaned_video_info.csv",
+    "expected": "ce76aa4acaf6bbc5b2c8976f206710cb7693eae5328bfb913cc15aabbb73e102",
+    "actual": "ce76aa4acaf6bbc5b2c8976f206710cb7693eae5328bfb913cc15aabbb73e102",
+    "match": true
+  },
+  "failures": [],
+  "elapsed_seconds": 557.457,
+  "scope": "Exhaustive fresh installed-byte, Gitignore and preservation verification; no Gold build or semantic data-quality validation."
+}

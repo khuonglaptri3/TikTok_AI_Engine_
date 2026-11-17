@@ -1,0 +1,4502 @@
+{
+  "retrieved_at": "2026-11-17T02:43:33.252Z",
+  "repository": {
+    "full_name": "TrggTin/21KHDL-TikTok-Analytics",
+    "default_branch": "main",
+    "size_kb": 370691,
+    "license": null,
+    "created_at": "2025-05-16T02:56:07Z",
+    "updated_at": "2025-12-29T23:31:00Z",
+    "pushed_at": "2025-09-16T17:03:59Z"
+  },
+  "revision": "f142e5656a220f94f8024de168b0832754b3bd9e",
+  "tree": {
+    "truncated": false,
+    "entries": 38322,
+    "blob_count": 38048,
+    "blob_bytes": 1542074278,
+    "data_blob_count": 37837,
+    "data_blob_bytes": 1475677482,
+    "data_groups": {
+      "ScriptGen-data": {
+        "files": 1,
+        "bytes": 6423256
+      },
+      "UserList": {
+        "files": 7,
+        "bytes": 17566
+      },
+      "content-features-dataset": {
+        "files": 2,
+        "bytes": 16955846
+      },
+      "content_analysis": {
+        "files": 1,
+        "bytes": 6737248
+      },
+      "error": {
+        "files": 1,
+        "bytes": 4440
+      },
+      "filters": {
+        "files": 1,
+        "bytes": 83
+      },
+      "foods-and-locations": {
+        "files": 14252,
+        "bytes": 2105710
+      },
+      "insights": {
+        "files": 1,
+        "bytes": 8497
+      },
+      "interim": {
+        "files": 21,
+        "bytes": 278953237
+      },
+      "processed": {
+        "files": 10,
+        "bytes": 176686024
+      },
+      "prompts": {
+        "files": 5,
+        "bytes": 8323
+      },
+      "raw": {
+        "files": 413,
+        "bytes": 937194479
+      },
+      "transcripts": {
+        "files": 23122,
+        "bytes": 50582773
+      }
+    },
+    "extensions": {
+      ".gitignore": {
+        "files": 1,
+        "bytes": 224
+      },
+      ".md": {
+        "files": 15,
+        "bytes": 53787
+      },
+      ".parquet": {
+        "files": 21,
+        "bytes": 162632304
+      },
+      ".txt": {
+        "files": 10,
+        "bytes": 754789
+      },
+      ".csv": {
+        "files": 19,
+        "bytes": 350998099
+      },
+      ".json": {
+        "files": 37781,
+        "bytes": 974154555
+      },
+      ".ds_store": {
+        "files": 3,
+        "bytes": 18444
+      },
+      ".m4a": {
+        "files": 4,
+        "bytes": 4133681
+      },
+      ".part": {
+        "files": 1,
+        "bytes": 11583301
+      },
+      ".py": {
+        "files": 70,
+        "bytes": 530493
+      },
+      ".zip": {
+        "files": 1,
+        "bytes": 10924460
+      },
+      ".ipynb": {
+        "files": 13,
+        "bytes": 2026779
+      },
+      ".url": {
+        "files": 6,
+        "bytes": 925
+      },
+      ".pdf": {
+        "files": 8,
+        "bytes": 18702265
+      },
+      ".tex": {
+        "files": 24,
+        "bytes": 218272
+      },
+      ".aux": {
+        "files": 1,
+        "bytes": 48071
+      },
+      ".bbl": {
+        "files": 1,
+        "bytes": 28022
+      },
+      ".bcf": {
+        "files": 1,
+        "bytes": 108578
+      },
+      ".blg": {
+        "files": 1,
+        "bytes": 1205
+      },
+      ".fdb_latexmk": {
+        "files": 1,
+        "bytes": 41745
+      },
+      ".fls": {
+        "files": 1,
+        "bytes": 51456
+      },
+      ".log": {
+        "files": 1,
+        "bytes": 82263
+      },
+      ".lua": {
+        "files": 1,
+        "bytes": 517
+      },
+      ".out": {
+        "files": 1,
+        "bytes": 33343
+      },
+      ".xml": {
+        "files": 1,
+        "bytes": 2336
+      },
+      ".gz": {
+        "files": 1,
+        "bytes": 651597
+      },
+      ".toc": {
+        "files": 1,
+        "bytes": 19197
+      },
+      ".cpp": {
+        "files": 1,
+        "bytes": 81
+      },
+      ".sty": {
+        "files": 1,
+        "bytes": 4549
+      },
+      ".png": {
+        "files": 44,
+        "bytes": 2722547
+      },
+      ".jpg": {
+        "files": 12,
+        "bytes": 1541300
+      },
+      ".bib": {
+        "files": 1,
+        "bytes": 5093
+      }
+    }
+  },
+  "candidate_sources": [
+    {
+      "path": "README.md",
+      "size": 4965
+    },
+    {
+      "path": "docs/README.md",
+      "size": 6519
+    },
+    {
+      "path": "notebooks/02_DEP_01-Preprocess_video_data.ipynb",
+      "size": 582157
+    },
+    {
+      "path": "notebooks/02_DEP_02-Preprocess_user_data.ipynb",
+      "size": 50813
+    },
+    {
+      "path": "notebooks/03_FE_01_01-Transcribe_audio_colab.ipynb",
+      "size": 17969
+    },
+    {
+      "path": "notebooks/03_FE_01_02-Transcribe_error_audio_colab.ipynb",
+      "size": 20217
+    },
+    {
+      "path": "notebooks/03_FE_01_03-Preprocess_transcript_data.ipynb",
+      "size": 81883
+    },
+    {
+      "path": "notebooks/05_FE_01-Prepare_data_for_content_dashboard.ipynb",
+      "size": 19984
+    },
+    {
+      "path": "requirements.txt",
+      "size": 120
+    },
+    {
+      "path": "src/app/user_analysis/readme.md",
+      "size": 5680
+    },
+    {
+      "path": "src/app/video_analysis/data/content_analyse.csv",
+      "size": 3937803
+    },
+    {
+      "path": "src/app/video_analysis/data/preprocessed_video.parquet",
+      "size": 5777629
+    },
+    {
+      "path": "src/app/video_analysis/pages/content_analysis.py",
+      "size": 18749
+    },
+    {
+      "path": "src/app/video_analysis/temp/data_preprocessing.py",
+      "size": 4678
+    },
+    {
+      "path": "src/app/video_analysis/utils/preprocess.py",
+      "size": 887
+    },
+    {
+      "path": "src/crawler/TikTokApi/__init__.py",
+      "size": 39
+    },
+    {
+      "path": "src/crawler/TikTokApi/api/__init__.py",
+      "size": 0
+    },
+    {
+      "path": "src/crawler/TikTokApi/api/comment.py",
+      "size": 2580
+    },
+    {
+      "path": "src/crawler/TikTokApi/api/hashtag.py",
+      "size": 4935
+    },
+    {
+      "path": "src/crawler/TikTokApi/api/playlist.py",
+      "size": 4991
+    },
+    {
+      "path": "src/crawler/TikTokApi/api/search.py",
+      "size": 3769
+    },
+    {
+      "path": "src/crawler/TikTokApi/api/sound.py",
+      "size": 5870
+    },
+    {
+      "path": "src/crawler/TikTokApi/api/trending.py",
+      "size": 3617
+    },
+    {
+      "path": "src/crawler/TikTokApi/api/user.py",
+      "size": 8771
+    },
+    {
+      "path": "src/crawler/TikTokApi/api/video.py",
+      "size": 11324
+    },
+    {
+      "path": "src/crawler/TikTokApi/exceptions.py",
+      "size": 979
+    },
+    {
+      "path": "src/crawler/TikTokApi/helpers.py",
+      "size": 1013
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/__init__.py",
+      "size": 35
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/__init__.py",
+      "size": 0
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/chrome_app.py",
+      "size": 2043
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/chrome_csi.py",
+      "size": 1009
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/chrome_hairline.py",
+      "size": 497
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/chrome_load_times.py",
+      "size": 4430
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/chrome_runtime.py",
+      "size": 9608
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/generate_magic_arrays.py",
+      "size": 5925
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/iframe_contentWindow.py",
+      "size": 3513
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/media_codecs.py",
+      "size": 1711
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/navigator_hardwareConcurrency.py",
+      "size": 288
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/navigator_languages.py",
+      "size": 154
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/navigator_permissions.py",
+      "size": 576
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/navigator_platform.py",
+      "size": 187
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/navigator_plugins.py",
+      "size": 2887
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/navigator_userAgent.py",
+      "size": 533
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/navigator_vendor.py",
+      "size": 154
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/utils.py",
+      "size": 17591
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/webgl_vendor.py",
+      "size": 1174
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/js/window_outerdimensions.py",
+      "size": 446
+    },
+    {
+      "path": "src/crawler/TikTokApi/stealth/stealth.py",
+      "size": 5767
+    },
+    {
+      "path": "src/crawler/TikTokApi/tiktok.py",
+      "size": 19950
+    },
+    {
+      "path": "src/crawler/crawler.py",
+      "size": 5766
+    },
+    {
+      "path": "src/crawler/crawler_readme.md",
+      "size": 561
+    },
+    {
+      "path": "src/crawler/run_crawler.py",
+      "size": 2576
+    }
+  ],
+  "data_tables": [
+    {
+      "path": "data/ScriptGen-data/script_gendata.parquet",
+      "size": 6423256
+    },
+    {
+      "path": "data/UserList/top_100_followers_urls.csv",
+      "size": 6205
+    },
+    {
+      "path": "data/UserList/top_100_followers_usernames.csv",
+      "size": 1232
+    },
+    {
+      "path": "data/UserList/top_100_noxscore_urls.csv",
+      "size": 6342
+    },
+    {
+      "path": "data/UserList/top_100_noxscore_usernames.csv",
+      "size": 1274
+    },
+    {
+      "path": "data/content-features-dataset/content_features-new-with-stats-top50WeeklyVideos.parquet",
+      "size": 6515652
+    },
+    {
+      "path": "data/content-features-dataset/preprocessed_videos.parquet",
+      "size": 10440194
+    },
+    {
+      "path": "data/content_analysis/content_analysis_data.parquet",
+      "size": 6737248
+    },
+    {
+      "path": "data/interim/cleaned_user_info.csv",
+      "size": 38110
+    },
+    {
+      "path": "data/interim/cleaned_video_info.csv",
+      "size": 13392177
+    },
+    {
+      "path": "data/interim/content_features_6_users.parquet",
+      "size": 2444195
+    },
+    {
+      "path": "data/interim/filtered_authors.parquet",
+      "size": 235383
+    },
+    {
+      "path": "data/interim/final_raw_users.csv",
+      "size": 91250
+    },
+    {
+      "path": "data/interim/final_raw_videos.csv",
+      "size": 75850189
+    },
+    {
+      "path": "data/interim/food_location_data.parquet",
+      "size": 593919
+    },
+    {
+      "path": "data/interim/preprocessed_videos.parquet",
+      "size": 10514398
+    },
+    {
+      "path": "data/interim/small_weekly_videos_transcripts.parquet",
+      "size": 14793831
+    },
+    {
+      "path": "data/interim/top_20_percent_weekly_videos_transcripts.parquet",
+      "size": 18368205
+    },
+    {
+      "path": "data/interim/top_20_percent_weekly_videos_with_food_location.parquet",
+      "size": 18729833
+    },
+    {
+      "path": "data/interim/top_20_weekly_videos.csv",
+      "size": 488501
+    },
+    {
+      "path": "data/interim/top_viewed_videos.parquet",
+      "size": 2656128
+    },
+    {
+      "path": "data/interim/transcript_video_6_authors.parquet",
+      "size": 2106188
+    },
+    {
+      "path": "data/interim/transcripts.parquet",
+      "size": 14688212
+    },
+    {
+      "path": "data/interim/user_info.csv",
+      "size": 38408
+    },
+    {
+      "path": "data/interim/video_info.csv",
+      "size": 32305793
+    },
+    {
+      "path": "data/interim/videos_with_weekly_rank.csv",
+      "size": 67042750
+    },
+    {
+      "path": "data/interim/weekly_videos_with_transcripts.csv",
+      "size": 3828287
+    },
+    {
+      "path": "data/processed/cleaned_user_info.csv",
+      "size": 91250
+    },
+    {
+      "path": "data/processed/cleaned_user_info.parquet",
+      "size": 94656
+    },
+    {
+      "path": "data/processed/cleaned_video_info.csv",
+      "size": 56371774
+    },
+    {
+      "path": "data/processed/cleaned_video_info.parquet",
+      "size": 10514398
+    },
+    {
+      "path": "data/processed/content_features_6_users.parquet",
+      "size": 2444195
+    },
+    {
+      "path": "data/processed/merged_data.csv",
+      "size": 67215794
+    },
+    {
+      "path": "data/processed/processed_video_info.parquet",
+      "size": 3884928
+    },
+    {
+      "path": "data/processed/subtitles.csv",
+      "size": 43375
+    },
+    {
+      "path": "data/processed/video_data.csv",
+      "size": 30247585
+    },
+    {
+      "path": "data/processed/video_data.parquet",
+      "size": 5778069
+    }
+  ],
+  "license_paths": [],
+  "media_file_counts": {
+    ".m4a": {
+      "files": 4,
+      "bytes": 4133681
+    }
+  },
+  "comment_named_paths": [
+    {
+      "path": "src/crawler/TikTokApi/api/comment.py",
+      "size": 2580
+    }
+  ],
+  "csv_samples": [
+    {
+      "path": "data/processed/cleaned_video_info.csv",
+      "bytes_read": 1048576,
+      "read_to_eof": false,
+      "column_count": 52,
+      "columns": [
+        "CategoryType",
+        "author.downloadSetting",
+        "author.duetSetting",
+        "author.id",
+        "author.nickname",
+        "author.openFavorite",
+        "author.secUid",
+        "author.signature",
+        "author.stitchSetting",
+        "author.uniqueId",
+        "author.verified",
+        "authorStats.diggCount",
+        "authorStats.followerCount",
+        "authorStats.followingCount",
+        "authorStats.heartCount",
+        "authorStats.videoCount",
+        "createTime",
+        "desc",
+        "diversificationId",
+        "isAd",
+        "itemCommentStatus",
+        "music.authorName",
+        "music.duration",
+        "music.id",
+        "music.isCopyrighted",
+        "music.original",
+        "music.title",
+        "statsV2.collectCount",
+        "statsV2.commentCount",
+        "statsV2.diggCount",
+        "statsV2.playCount",
+        "statsV2.shareCount",
+        "textLanguage",
+        "textTranslatable",
+        "video.VQScore",
+        "video.bitrate",
+        "video.claInfo.enableAutoCaption",
+        "video.claInfo.hasOriginalAudio",
+        "video.codecType",
+        "video.definition",
+        "video.duration",
+        "video.encodedType",
+        "video.height",
+        "video.id",
+        "video.ratio",
+        "video.videoQuality",
+        "video.volumeInfo.Loudness",
+        "video.volumeInfo.Peak",
+        "video.width",
+        "collectTime",
+        "hashtags",
+        "hashtag_count"
+      ],
+      "complete_sample_rows": 500,
+      "sample_method": "First up to 500 complete CSV records within first 1 MiB; deterministic source order, not a random sample.",
+      "missing_counts": {
+        "CategoryType": 0,
+        "author.downloadSetting": 0,
+        "author.duetSetting": 0,
+        "author.id": 0,
+        "author.nickname": 0,
+        "author.openFavorite": 0,
+        "author.secUid": 0,
+        "author.signature": 0,
+        "author.stitchSetting": 0,
+        "author.uniqueId": 0,
+        "author.verified": 0,
+        "authorStats.diggCount": 0,
+        "authorStats.followerCount": 0,
+        "authorStats.followingCount": 0,
+        "authorStats.heartCount": 0,
+        "authorStats.videoCount": 0,
+        "createTime": 0,
+        "desc": 0,
+        "diversificationId": 0,
+        "isAd": 0,
+        "itemCommentStatus": 0,
+        "music.authorName": 0,
+        "music.duration": 0,
+        "music.id": 0,
+        "music.isCopyrighted": 0,
+        "music.original": 0,
+        "music.title": 0,
+        "statsV2.collectCount": 0,
+        "statsV2.commentCount": 0,
+        "statsV2.diggCount": 0,
+        "statsV2.playCount": 0,
+        "statsV2.shareCount": 0,
+        "textLanguage": 0,
+        "textTranslatable": 0,
+        "video.VQScore": 0,
+        "video.bitrate": 0,
+        "video.claInfo.enableAutoCaption": 0,
+        "video.claInfo.hasOriginalAudio": 0,
+        "video.codecType": 0,
+        "video.definition": 0,
+        "video.duration": 0,
+        "video.encodedType": 0,
+        "video.height": 0,
+        "video.id": 0,
+        "video.ratio": 0,
+        "video.videoQuality": 0,
+        "video.volumeInfo.Loudness": 0,
+        "video.volumeInfo.Peak": 0,
+        "video.width": 0,
+        "collectTime": 0,
+        "hashtags": 3,
+        "hashtag_count": 0
+      },
+      "sample_date_min": "2023-11-26 11:51:09",
+      "sample_date_max": "2025-03-18 12:07:44",
+      "sample_missing_video_ids": 0,
+      "sample_duplicate_nonempty_video_ids": 0
+    },
+    {
+      "path": "data/interim/final_raw_videos.csv",
+      "bytes_read": 1048576,
+      "read_to_eof": false,
+      "column_count": 174,
+      "columns": [
+        "stats.diggCount",
+        "stats.followerCount",
+        "stats.followingCount",
+        "stats.friendCount",
+        "stats.heart",
+        "stats.heartCount",
+        "stats.videoCount",
+        "user.bioLink.risk",
+        "user.canExpPlaylist",
+        "user.commentSetting",
+        "user.commerceUserInfo.category",
+        "user.commerceUserInfo.categoryButton",
+        "user.commerceUserInfo.commerceUser",
+        "user.commerceUserInfo.downLoadLink.android",
+        "user.commerceUserInfo.downLoadLink.ios",
+        "user.downloadSetting",
+        "user.duetSetting",
+        "user.followingVisibility",
+        "user.ftc",
+        "user.id",
+        "user.isADVirtual",
+        "user.isEmbedBanned",
+        "user.nickNameModifyTime",
+        "user.nickname",
+        "user.openFavorite",
+        "user.privateAccount",
+        "user.profileEmbedPermission",
+        "user.profileTab.showPlayListTab",
+        "user.profileTab.showQuestionTab",
+        "user.relation",
+        "user.secUid",
+        "user.secret",
+        "user.signature",
+        "user.stitchSetting",
+        "user.ttSeller",
+        "user.uniqueId",
+        "user.verified",
+        "AIGCDescription",
+        "CategoryType",
+        "author.commentSetting",
+        "author.downloadSetting",
+        "author.duetSetting",
+        "author.ftc",
+        "author.id",
+        "author.isADVirtual",
+        "author.isEmbedBanned",
+        "author.nickname",
+        "author.openFavorite",
+        "author.privateAccount",
+        "author.relation",
+        "author.secUid",
+        "author.secret",
+        "author.signature",
+        "author.stitchSetting",
+        "author.uniqueId",
+        "author.verified",
+        "authorStats.diggCount",
+        "authorStats.followerCount",
+        "authorStats.followingCount",
+        "authorStats.friendCount",
+        "authorStats.heart",
+        "authorStats.heartCount",
+        "authorStats.videoCount",
+        "backendSourceEventTracking",
+        "collected",
+        "createTime",
+        "desc",
+        "digged",
+        "diversificationId",
+        "duetDisplay",
+        "forFriend",
+        "id",
+        "isAd",
+        "isPinnedItem",
+        "itemCommentStatus",
+        "item_control.can_repost",
+        "music.authorName",
+        "music.duration",
+        "music.id",
+        "music.isCopyrighted",
+        "music.original",
+        "music.private",
+        "music.title",
+        "officalItem",
+        "originalItem",
+        "playlistId",
+        "privateItem",
+        "secret",
+        "shareEnabled",
+        "stats.collectCount",
+        "stats.commentCount",
+        "stats.playCount",
+        "stats.shareCount",
+        "statsV2.collectCount",
+        "statsV2.commentCount",
+        "statsV2.diggCount",
+        "statsV2.playCount",
+        "statsV2.repostCount",
+        "statsV2.shareCount",
+        "stitchDisplay",
+        "textLanguage",
+        "textTranslatable",
+        "video.VQScore",
+        "video.bitrate",
+        "video.claInfo.captionsType",
+        "video.claInfo.enableAutoCaption",
+        "video.claInfo.hasOriginalAudio",
+        "video.claInfo.originalLanguageInfo.canTranslateRealTimeNoCheck",
+        "video.claInfo.originalLanguageInfo.language",
+        "video.claInfo.originalLanguageInfo.languageCode",
+        "video.claInfo.originalLanguageInfo.languageID",
+        "video.codecType",
+        "video.definition",
+        "video.duration",
+        "video.encodeUserTag",
+        "video.encodedType",
+        "video.format",
+        "video.height",
+        "video.id",
+        "video.ratio",
+        "video.videoID",
+        "video.videoQuality",
+        "video.volumeInfo.Loudness",
+        "video.volumeInfo.Peak",
+        "video.width",
+        "collectTime",
+        "duetEnabled",
+        "stitchEnabled",
+        "video.claInfo.noCaptionReason",
+        "adAuthorization",
+        "isECVideo",
+        "item_control.can_comment",
+        "item_control.can_creator_redirect",
+        "item_control.can_music_redirect",
+        "item_control.can_share",
+        "music.album",
+        "poi.address",
+        "poi.category",
+        "poi.city",
+        "poi.cityCode",
+        "poi.country",
+        "poi.countryCode",
+        "poi.fatherPoiId",
+        "poi.fatherPoiName",
+        "poi.id",
+        "poi.name",
+        "poi.province",
+        "poi.ttTypeCode",
+        "poi.ttTypeNameMedium",
+        "poi.ttTypeNameSuper",
+        "poi.ttTypeNameTiny",
+        "poi.type",
+        "poi.typeCode",
+        "music.scheduleSearchTime",
+        "aigcLabelType",
+        "itemMute",
+        "music.coverLarge",
+        "music.coverMedium",
+        "music.coverThumb",
+        "brandOrganicType",
+        "imagePost.cover.imageHeight",
+        "imagePost.cover.imageWidth",
+        "imagePost.shareCover.imageHeight",
+        "imagePost.shareCover.imageWidth",
+        "imagePost.title",
+        "titleLanguage",
+        "titleTranslatable",
+        "BAInfo",
+        "adLabelVersion",
+        "maskType",
+        "user.bioLink.link",
+        "user.roomId",
+        "author.roomId",
+        "duetInfo.duetFromId"
+      ],
+      "complete_sample_rows": 500,
+      "sample_method": "First up to 500 complete CSV records within first 1 MiB; deterministic source order, not a random sample.",
+      "missing_counts": {
+        "stats.diggCount": 0,
+        "stats.followerCount": 498,
+        "stats.followingCount": 498,
+        "stats.friendCount": 498,
+        "stats.heart": 498,
+        "stats.heartCount": 498,
+        "stats.videoCount": 498,
+        "user.bioLink.risk": 499,
+        "user.canExpPlaylist": 498,
+        "user.commentSetting": 498,
+        "user.commerceUserInfo.category": 498,
+        "user.commerceUserInfo.categoryButton": 498,
+        "user.commerceUserInfo.commerceUser": 498,
+        "user.commerceUserInfo.downLoadLink.android": 500,
+        "user.commerceUserInfo.downLoadLink.ios": 500,
+        "user.downloadSetting": 498,
+        "user.duetSetting": 498,
+        "user.followingVisibility": 498,
+        "user.ftc": 498,
+        "user.id": 498,
+        "user.isADVirtual": 498,
+        "user.isEmbedBanned": 498,
+        "user.nickNameModifyTime": 499,
+        "user.nickname": 498,
+        "user.openFavorite": 498,
+        "user.privateAccount": 498,
+        "user.profileEmbedPermission": 498,
+        "user.profileTab.showPlayListTab": 498,
+        "user.profileTab.showQuestionTab": 499,
+        "user.relation": 498,
+        "user.secUid": 498,
+        "user.secret": 498,
+        "user.signature": 498,
+        "user.stitchSetting": 498,
+        "user.ttSeller": 498,
+        "user.uniqueId": 498,
+        "user.verified": 498,
+        "AIGCDescription": 500,
+        "CategoryType": 2,
+        "author.commentSetting": 2,
+        "author.downloadSetting": 2,
+        "author.duetSetting": 2,
+        "author.ftc": 2,
+        "author.id": 2,
+        "author.isADVirtual": 2,
+        "author.isEmbedBanned": 2,
+        "author.nickname": 2,
+        "author.openFavorite": 2,
+        "author.privateAccount": 2,
+        "author.relation": 2,
+        "author.secUid": 2,
+        "author.secret": 2,
+        "author.signature": 2,
+        "author.stitchSetting": 2,
+        "author.uniqueId": 2,
+        "author.verified": 2,
+        "authorStats.diggCount": 2,
+        "authorStats.followerCount": 2,
+        "authorStats.followingCount": 2,
+        "authorStats.friendCount": 2,
+        "authorStats.heart": 2,
+        "authorStats.heartCount": 2,
+        "authorStats.videoCount": 2,
+        "backendSourceEventTracking": 500,
+        "collected": 2,
+        "createTime": 2,
+        "desc": 2,
+        "digged": 2,
+        "diversificationId": 17,
+        "duetDisplay": 2,
+        "forFriend": 2,
+        "id": 2,
+        "isAd": 2,
+        "isPinnedItem": 495,
+        "itemCommentStatus": 2,
+        "item_control.can_repost": 2,
+        "music.authorName": 4,
+        "music.duration": 4,
+        "music.id": 2,
+        "music.isCopyrighted": 2,
+        "music.original": 2,
+        "music.private": 2,
+        "music.title": 4,
+        "officalItem": 2,
+        "originalItem": 2,
+        "playlistId": 245,
+        "privateItem": 2,
+        "secret": 2,
+        "shareEnabled": 2,
+        "stats.collectCount": 2,
+        "stats.commentCount": 2,
+        "stats.playCount": 2,
+        "stats.shareCount": 2,
+        "statsV2.collectCount": 2,
+        "statsV2.commentCount": 2,
+        "statsV2.diggCount": 2,
+        "statsV2.playCount": 2,
+        "statsV2.repostCount": 2,
+        "statsV2.shareCount": 2,
+        "stitchDisplay": 2,
+        "textLanguage": 2,
+        "textTranslatable": 2,
+        "video.VQScore": 2,
+        "video.bitrate": 2,
+        "video.claInfo.captionsType": 176,
+        "video.claInfo.enableAutoCaption": 3,
+        "video.claInfo.hasOriginalAudio": 3,
+        "video.claInfo.originalLanguageInfo.canTranslateRealTimeNoCheck": 176,
+        "video.claInfo.originalLanguageInfo.language": 176,
+        "video.claInfo.originalLanguageInfo.languageCode": 176,
+        "video.claInfo.originalLanguageInfo.languageID": 176,
+        "video.codecType": 2,
+        "video.definition": 2,
+        "video.duration": 2,
+        "video.encodeUserTag": 500,
+        "video.encodedType": 2,
+        "video.format": 2,
+        "video.height": 2,
+        "video.id": 2,
+        "video.ratio": 2,
+        "video.videoID": 2,
+        "video.videoQuality": 2,
+        "video.volumeInfo.Loudness": 2,
+        "video.volumeInfo.Peak": 2,
+        "video.width": 2,
+        "collectTime": 2,
+        "duetEnabled": 164,
+        "stitchEnabled": 175,
+        "video.claInfo.noCaptionReason": 327,
+        "adAuthorization": 485,
+        "isECVideo": 381,
+        "item_control.can_comment": 461,
+        "item_control.can_creator_redirect": 461,
+        "item_control.can_music_redirect": 461,
+        "item_control.can_share": 461,
+        "music.album": 477,
+        "poi.address": 492,
+        "poi.category": 492,
+        "poi.city": 492,
+        "poi.cityCode": 492,
+        "poi.country": 500,
+        "poi.countryCode": 492,
+        "poi.fatherPoiId": 500,
+        "poi.fatherPoiName": 492,
+        "poi.id": 492,
+        "poi.name": 492,
+        "poi.province": 500,
+        "poi.ttTypeCode": 492,
+        "poi.ttTypeNameMedium": 492,
+        "poi.ttTypeNameSuper": 492,
+        "poi.ttTypeNameTiny": 492,
+        "poi.type": 492,
+        "poi.typeCode": 500,
+        "music.scheduleSearchTime": 499,
+        "aigcLabelType": 457,
+        "itemMute": 493,
+        "music.coverLarge": 500,
+        "music.coverMedium": 500,
+        "music.coverThumb": 500,
+        "brandOrganicType": 499,
+        "imagePost.cover.imageHeight": 500,
+        "imagePost.cover.imageWidth": 500,
+        "imagePost.shareCover.imageHeight": 500,
+        "imagePost.shareCover.imageWidth": 500,
+        "imagePost.title": 500,
+        "titleLanguage": 500,
+        "titleTranslatable": 500,
+        "BAInfo": 500,
+        "adLabelVersion": 500,
+        "maskType": 500,
+        "user.bioLink.link": 500,
+        "user.roomId": 500,
+        "author.roomId": 500,
+        "duetInfo.duetFromId": 500
+      },
+      "sample_missing_video_ids": 2,
+      "sample_duplicate_nonempty_video_ids": 0
+    },
+    {
+      "path": "data/processed/cleaned_user_info.csv",
+      "bytes_read": 91250,
+      "read_to_eof": true,
+      "column_count": 39,
+      "columns": [
+        "stats.diggCount",
+        "stats.followerCount",
+        "stats.followingCount",
+        "stats.friendCount",
+        "stats.heart",
+        "stats.heartCount",
+        "stats.videoCount",
+        "user.bioLink.risk",
+        "user.canExpPlaylist",
+        "user.commentSetting",
+        "user.commerceUserInfo.category",
+        "user.commerceUserInfo.categoryButton",
+        "user.commerceUserInfo.commerceUser",
+        "user.commerceUserInfo.downLoadLink.android",
+        "user.commerceUserInfo.downLoadLink.ios",
+        "user.downloadSetting",
+        "user.duetSetting",
+        "user.followingVisibility",
+        "user.ftc",
+        "user.id",
+        "user.isADVirtual",
+        "user.isEmbedBanned",
+        "user.nickNameModifyTime",
+        "user.nickname",
+        "user.openFavorite",
+        "user.privateAccount",
+        "user.profileEmbedPermission",
+        "user.profileTab.showPlayListTab",
+        "user.profileTab.showQuestionTab",
+        "user.relation",
+        "user.secUid",
+        "user.secret",
+        "user.signature",
+        "user.stitchSetting",
+        "user.ttSeller",
+        "user.uniqueId",
+        "user.verified",
+        "user.bioLink.link",
+        "user.roomId"
+      ],
+      "complete_sample_rows": 264,
+      "sample_method": "First up to 500 complete CSV records within first 1 MiB; deterministic source order, not a random sample.",
+      "missing_counts": {
+        "stats.diggCount": 0,
+        "stats.followerCount": 0,
+        "stats.followingCount": 0,
+        "stats.friendCount": 0,
+        "stats.heart": 0,
+        "stats.heartCount": 0,
+        "stats.videoCount": 0,
+        "user.bioLink.risk": 145,
+        "user.canExpPlaylist": 0,
+        "user.commentSetting": 0,
+        "user.commerceUserInfo.category": 220,
+        "user.commerceUserInfo.categoryButton": 220,
+        "user.commerceUserInfo.commerceUser": 0,
+        "user.commerceUserInfo.downLoadLink.android": 264,
+        "user.commerceUserInfo.downLoadLink.ios": 264,
+        "user.downloadSetting": 0,
+        "user.duetSetting": 0,
+        "user.followingVisibility": 0,
+        "user.ftc": 0,
+        "user.id": 0,
+        "user.isADVirtual": 0,
+        "user.isEmbedBanned": 0,
+        "user.nickNameModifyTime": 17,
+        "user.nickname": 0,
+        "user.openFavorite": 0,
+        "user.privateAccount": 0,
+        "user.profileEmbedPermission": 0,
+        "user.profileTab.showPlayListTab": 0,
+        "user.profileTab.showQuestionTab": 187,
+        "user.relation": 0,
+        "user.secUid": 0,
+        "user.secret": 0,
+        "user.signature": 5,
+        "user.stitchSetting": 0,
+        "user.ttSeller": 0,
+        "user.uniqueId": 0,
+        "user.verified": 0,
+        "user.bioLink.link": 252,
+        "user.roomId": 263
+      },
+      "sample_duplicate_video_ids": null
+    }
+  ],
+  "transcript_schema_sample": {
+    "source_directory": "data/transcripts/",
+    "bytes_read": 8779,
+    "strict_json_valid": false,
+    "keys": [
+      "transcript",
+      "takeaways",
+      "has_call_to_action",
+      "has_curiosity_gap"
+    ],
+    "types": {
+      "transcript": "string",
+      "takeaways": "array",
+      "has_call_to_action": "boolean",
+      "has_curiosity_gap": "boolean"
+    },
+    "has_word_timestamps": false,
+    "text_fields_redacted": true
+  },
+  "source_inspection": [
+    {
+      "path": "notebooks/02_DEP_01-Preprocess_video_data.ipynb",
+      "total_lines": 8012,
+      "inspection_method": "Source code only; notebook outputs, literals containing identities, non-ASCII prompts, and credentials excluded.",
+      "selected_source_lines": [
+        {
+          "cell_index": 7,
+          "line": 87,
+          "code": "    \"author.commentSetting\": np.object_,"
+        },
+        {
+          "cell_index": 7,
+          "line": 88,
+          "code": "    \"author.downloadSetting\": np.object_,"
+        },
+        {
+          "cell_index": 7,
+          "line": 95,
+          "code": "    \"createTime\": np.object_,"
+        },
+        {
+          "cell_index": 7,
+          "line": 98,
+          "code": "    \"itemCommentStatus\": np.object_,"
+        },
+        {
+          "cell_index": 7,
+          "line": 105,
+          "code": "    \"collectTime\": np.object_,"
+        },
+        {
+          "cell_index": 7,
+          "line": 124,
+          "code": "    \"video.claInfo.hasOriginalAudio\": np.object_,"
+        },
+        {
+          "cell_index": 11,
+          "line": 958,
+          "code": "video_df.head(n=2)"
+        },
+        {
+          "cell_index": 12,
+          "line": 980,
+          "code": "video_df[\"author.commentSetting\"].value_counts()"
+        },
+        {
+          "cell_index": 37,
+          "line": 3012,
+          "code": "    missing_df = missing_df.sort_values("
+        },
+        {
+          "cell_index": 57,
+          "line": 4612,
+          "code": "# # the first 5 rows of the `collectTime` and `createTime` columns"
+        },
+        {
+          "cell_index": 57,
+          "line": 4613,
+          "code": "# clipboard.copy(video_df[[\"collectTime\", \"createTime\"]].head().to_latex())"
+        },
+        {
+          "cell_index": 57,
+          "line": 4615,
+          "code": "# Display first 5 rows of the `collectTime` and `createTime` columns"
+        },
+        {
+          "cell_index": 57,
+          "line": 4616,
+          "code": "video_df[[\"collectTime\", \"createTime\"]].head()"
+        },
+        {
+          "cell_index": 60,
+          "line": 4652,
+          "code": "# Convert the `collectTime` and `createTime` columns"
+        },
+        {
+          "cell_index": 60,
+          "line": 4654,
+          "code": "video_df[\"collectTime\"] = pd.to_datetime(video_df[\"collectTime\"], unit=\"s\")"
+        },
+        {
+          "cell_index": 60,
+          "line": 4655,
+          "code": "video_df[\"createTime\"] = pd.to_datetime(video_df[\"createTime\"], unit=\"s\")"
+        },
+        {
+          "cell_index": 62,
+          "line": 4671,
+          "code": "# Change the timezone of the `collectTime` and `createTime` columns"
+        },
+        {
+          "cell_index": 62,
+          "line": 4673,
+          "code": "video_df['createTime'] = video_df['createTime'].dt.tz_localize("
+        },
+        {
+          "cell_index": 62,
+          "line": 4675,
+          "code": "video_df['collectTime'] = video_df['collectTime'].dt.tz_localize("
+        },
+        {
+          "cell_index": 64,
+          "line": 4762,
+          "code": "# the first 5 rows of the `collectTime` and `createTime` columns"
+        },
+        {
+          "cell_index": 64,
+          "line": 4613,
+          "code": "# clipboard.copy(video_df[[\"collectTime\", \"createTime\"]].head().to_latex())"
+        },
+        {
+          "cell_index": 64,
+          "line": 4615,
+          "code": "# Display first 5 rows of the `collectTime` and `createTime` columns"
+        },
+        {
+          "cell_index": 64,
+          "line": 4616,
+          "code": "video_df[[\"collectTime\", \"createTime\"]].head()"
+        },
+        {
+          "cell_index": 71,
+          "line": 5252,
+          "code": "    return num_col_info_df.reset_index(names=\"Column Name\").sort_values("
+        },
+        {
+          "cell_index": 138,
+          "line": 7036,
+          "code": "video_df[['desc', 'hashtags', 'hashtag_count']].head()"
+        },
+        {
+          "cell_index": 141,
+          "line": 7059,
+          "code": "# Extract \"year\" and \"week of year\" from the \"createTime\" column"
+        },
+        {
+          "cell_index": 141,
+          "line": 7060,
+          "code": "video_df[\"createTime_year\"] = video_df['createTime'].dt.year"
+        },
+        {
+          "cell_index": 141,
+          "line": 7061,
+          "code": "video_df[\"createTime_week\"] = video_df['createTime'].dt.isocalendar().week"
+        },
+        {
+          "cell_index": 143,
+          "line": 7079,
+          "code": "# Example: Year 2024, Week 4 => \"Y2024_W04\""
+        },
+        {
+          "cell_index": 143,
+          "line": 7081,
+          "code": "    \"Y\" + video_df[\"createTime_year\"].astype(str) + \\"
+        },
+        {
+          "cell_index": 143,
+          "line": 7082,
+          "code": "    \"_W\" + video_df[\"createTime_week\"].apply(lambda x: f\"{x:02d}\")"
+        },
+        {
+          "cell_index": 144,
+          "line": 7172,
+          "code": "video_df[['createTime', 'createTime_year',"
+        },
+        {
+          "cell_index": 144,
+          "line": 7173,
+          "code": "          'createTime_week', 'year_week']].head()"
+        },
+        {
+          "cell_index": 148,
+          "line": 7242,
+          "code": "# top_viewed_videos = top_viewed_videos.sort_values("
+        },
+        {
+          "cell_index": 149,
+          "line": 7783,
+          "code": "top_20_percent_videos = []"
+        },
+        {
+          "cell_index": 149,
+          "line": 7798,
+          "code": "    top_20_percent_videos.append(top_videos)"
+        },
+        {
+          "cell_index": 149,
+          "line": 7801,
+          "code": "top_20_percent_videos_df = pd.concat(top_20_percent_videos, ignore_index=True)"
+        },
+        {
+          "cell_index": 149,
+          "line": 7804,
+          "code": "top_20_percent_videos_df = top_20_percent_videos_df.sort_values("
+        },
+        {
+          "cell_index": 149,
+          "line": 7808,
+          "code": "top_20_percent_videos_df = top_20_percent_videos_df.reset_index(drop=True)"
+        },
+        {
+          "cell_index": 149,
+          "line": 7814,
+          "code": "top_20_percent_videos_df.head()"
+        },
+        {
+          "cell_index": 151,
+          "line": 7842,
+          "code": "year_week_counts = top_20_percent_videos_df['year_week'].value_counts("
+        },
+        {
+          "cell_index": 153,
+          "line": 7949,
+          "code": "top_20_percent_videos_df.to_parquet("
+        },
+        {
+          "cell_index": 153,
+          "line": 7953,
+          "code": "pd.read_parquet(\"../top_viewed_videos.parquet\").info()"
+        },
+        {
+          "cell_index": 156,
+          "line": 7977,
+          "code": "video_df.to_parquet(\"../preprocessed_videos.parquet\", index=False)"
+        }
+      ]
+    },
+    {
+      "path": "notebooks/02_DEP_02-Preprocess_user_data.ipynb",
+      "total_lines": 1368,
+      "inspection_method": "Source code only; notebook outputs, literals containing identities, non-ASCII prompts, and credentials excluded.",
+      "selected_source_lines": [
+        {
+          "cell_index": 4,
+          "line": 116,
+          "code": "video_df = pd.read_parquet(\"preprocessed_videos.parquet\")"
+        },
+        {
+          "cell_index": 10,
+          "line": 182,
+          "code": "    \"user.downloadSetting\": np.object_,"
+        },
+        {
+          "cell_index": 10,
+          "line": 188,
+          "code": "    \"user.profileEmbedPermission\": np.object_,"
+        },
+        {
+          "cell_index": 16,
+          "line": 420,
+          "code": "missing_rate = missing_rate[missing_rate > 0].sort_values("
+        },
+        {
+          "cell_index": 18,
+          "line": 447,
+          "code": "user_df = user_df.dropna(thresh=len(user_df) * 0.5, axis=1)"
+        },
+        {
+          "cell_index": 19,
+          "line": 420,
+          "code": "missing_rate = missing_rate[missing_rate > 0].sort_values("
+        },
+        {
+          "cell_index": 28,
+          "line": 790,
+          "code": "    \"createTime\"].agg([\"min\", \"max\"]).reset_index()"
+        },
+        {
+          "cell_index": 28,
+          "line": 804,
+          "code": "author_video_info.head()"
+        },
+        {
+          "cell_index": 37,
+          "line": 931,
+          "code": "    \"statsV2.collectCount\", \"statsV2.commentCount\", \"statsV2.diggCount\","
+        },
+        {
+          "cell_index": 37,
+          "line": 946,
+          "code": "        \"statsV2.commentCount\": \"avg_comments_per_video\","
+        },
+        {
+          "cell_index": 40,
+          "line": 997,
+          "code": "user_df.to_parquet(\"./data/processed/cleaned_user_info.parquet\", index=False)"
+        },
+        {
+          "cell_index": 41,
+          "line": 1051,
+          "code": "pd.read_parquet("
+        },
+        {
+          "cell_index": 45,
+          "line": 1138,
+          "code": "df = pd.read_parquet("
+        }
+      ]
+    },
+    {
+      "path": "notebooks/03_FE_01_01-Transcribe_audio_colab.ipynb",
+      "total_lines": 511,
+      "inspection_method": "Source code only; notebook outputs, literals containing identities, non-ASCII prompts, and credentials excluded.",
+      "selected_source_lines": [
+        {
+          "cell_index": 1,
+          "line": 24,
+          "code": "!pip install yt-dlp -U -q"
+        },
+        {
+          "cell_index": 3,
+          "line": 45,
+          "code": "import yt_dlp"
+        },
+        {
+          "cell_index": 4,
+          "line": 67,
+          "code": "AUDIO_FOLDER = \"audio\""
+        },
+        {
+          "cell_index": 4,
+          "line": 70,
+          "code": "# Create audio folder if not exists"
+        },
+        {
+          "cell_index": 4,
+          "line": 71,
+          "code": "if not os.path.exists(AUDIO_FOLDER):"
+        },
+        {
+          "cell_index": 4,
+          "line": 72,
+          "code": "    os.makedirs(AUDIO_FOLDER)"
+        },
+        {
+          "cell_index": 6,
+          "line": 96,
+          "code": "Generate a transcript of the speech. The speech is in Vietnamese. If there is no speech in the file, return None."
+        },
+        {
+          "cell_index": 6,
+          "line": 97,
+          "code": "Then generate 3 takeaways from the speech. The takeaways should be concise and informative, written in Vietnamese."
+        },
+        {
+          "cell_index": 6,
+          "line": 98,
+          "code": "Check if the speech contains calls to action (CTA) sentences."
+        },
+        {
+          "cell_index": 6,
+          "line": 99,
+          "code": "Check if the speech contains elements of curiosity gap."
+        },
+        {
+          "cell_index": 6,
+          "line": 103,
+          "code": "    \"transcript\": \"The transcript of the speech\","
+        },
+        {
+          "cell_index": 7,
+          "line": 119,
+          "code": "def download_youtube_audio(url: str, video_id: str) -> str:"
+        },
+        {
+          "cell_index": 7,
+          "line": 120,
+          "code": "    # Define the file path for the target audio file"
+        },
+        {
+          "cell_index": 7,
+          "line": 121,
+          "code": "    output_path: str = AUDIO_FOLDER + f\"/{video_id}.wav\""
+        },
+        {
+          "cell_index": 7,
+          "line": 123,
+          "code": "    # Check if the video is already downloaded"
+        },
+        {
+          "cell_index": 7,
+          "line": 128,
+          "code": "    # Download the audio from the YouTube video"
+        },
+        {
+          "cell_index": 7,
+          "line": 131,
+          "code": "        'format': 'bestaudio/best',"
+        },
+        {
+          "cell_index": 7,
+          "line": 133,
+          "code": "            'key': 'FFmpegExtractAudio',"
+        },
+        {
+          "cell_index": 7,
+          "line": 139,
+          "code": "    with yt_dlp.YoutubeDL(ydl_opts) as ydl:"
+        },
+        {
+          "cell_index": 7,
+          "line": 141,
+          "code": "            ydl.download([url])"
+        },
+        {
+          "cell_index": 7,
+          "line": 161,
+          "code": "def process_audio(wav_file: str, client: genai.Client) -> str:"
+        },
+        {
+          "cell_index": 7,
+          "line": 162,
+          "code": "    # Open the audio file and read the content"
+        },
+        {
+          "cell_index": 7,
+          "line": 168,
+          "code": "        response = client.models.generate_content("
+        },
+        {
+          "cell_index": 7,
+          "line": 169,
+          "code": "            model='gemini-2.0-flash',"
+        },
+        {
+          "cell_index": 7,
+          "line": 174,
+          "code": "                    mime_type='audio/wav',"
+        },
+        {
+          "cell_index": 9,
+          "line": 229,
+          "code": "video_df = pd.read_parquet(\"top_viewed_videos.parquet\")"
+        },
+        {
+          "cell_index": 9,
+          "line": 233,
+          "code": "# video_df = video_df.sort_values("
+        },
+        {
+          "cell_index": 11,
+          "line": 254,
+          "code": "# Read text file to get a set of video IDs that have been transcribed"
+        },
+        {
+          "cell_index": 11,
+          "line": 255,
+          "code": "transcribed_video_ids = set()"
+        },
+        {
+          "cell_index": 11,
+          "line": 256,
+          "code": "if os.path.exists(\"transcribed_video_ids.txt\"):"
+        },
+        {
+          "cell_index": 11,
+          "line": 257,
+          "code": "    with open(\"transcribed_video_ids.txt\", \"r\") as f:"
+        },
+        {
+          "cell_index": 11,
+          "line": 258,
+          "code": "        transcribed_video_ids = set(f.read().splitlines())"
+        },
+        {
+          "cell_index": 12,
+          "line": 275,
+          "code": "# Print the number of videos that have been transcribed"
+        },
+        {
+          "cell_index": 19,
+          "line": 423,
+          "code": "    # Check if the video has been transcribed"
+        },
+        {
+          "cell_index": 19,
+          "line": 424,
+          "code": "    if video_id in transcribed_video_ids:"
+        },
+        {
+          "cell_index": 19,
+          "line": 435,
+          "code": "    # Download the audio from the video"
+        },
+        {
+          "cell_index": 19,
+          "line": 436,
+          "code": "    wav_file = download_youtube_audio(url, video_id)"
+        },
+        {
+          "cell_index": 19,
+          "line": 444,
+          "code": "    # Process the audio to generate the transcript"
+        },
+        {
+          "cell_index": 19,
+          "line": 446,
+          "code": "    json_text = process_audio(wav_file=wav_file, client=client)"
+        }
+      ]
+    },
+    {
+      "path": "notebooks/03_FE_01_03-Preprocess_transcript_data.ipynb",
+      "total_lines": 1678,
+      "inspection_method": "Source code only; notebook outputs, literals containing identities, non-ASCII prompts, and credentials excluded.",
+      "selected_source_lines": [
+        {
+          "cell_index": 1,
+          "line": 24,
+          "code": "# !pip install yt-dlp"
+        },
+        {
+          "cell_index": 3,
+          "line": 44,
+          "code": "import yt_dlp"
+        },
+        {
+          "cell_index": 3,
+          "line": 56,
+          "code": "# Create audio folder if not exists"
+        },
+        {
+          "cell_index": 3,
+          "line": 57,
+          "code": "if not os.path.exists('../data/audio'):"
+        },
+        {
+          "cell_index": 3,
+          "line": 58,
+          "code": "    os.makedirs('../data/audio')"
+        },
+        {
+          "cell_index": 5,
+          "line": 81,
+          "code": "Generate a transcript of the speech. The speech is in Vietnamese. If there is no speech in the file, return None."
+        },
+        {
+          "cell_index": 5,
+          "line": 82,
+          "code": "Then generate 3 takeaways from the speech. The takeaways should be concise and informative, written in Vietnamese."
+        },
+        {
+          "cell_index": 5,
+          "line": 83,
+          "code": "Check if the speech contains calls to action (CTA) sentences."
+        },
+        {
+          "cell_index": 5,
+          "line": 84,
+          "code": "Check if the speech contains elements of curiosity gap."
+        },
+        {
+          "cell_index": 5,
+          "line": 88,
+          "code": "    \"transcript\": \"The transcript of the speech\","
+        },
+        {
+          "cell_index": 7,
+          "line": 130,
+          "code": "def download_youtube_audio(url: str, video_id: str) -> str:"
+        },
+        {
+          "cell_index": 7,
+          "line": 131,
+          "code": "    # Define the file path for the target audio file"
+        },
+        {
+          "cell_index": 7,
+          "line": 132,
+          "code": "    output_path: str = f\"../data/audio/{video_id}.wav\""
+        },
+        {
+          "cell_index": 7,
+          "line": 134,
+          "code": "    # Check if the video is already downloaded"
+        },
+        {
+          "cell_index": 7,
+          "line": 139,
+          "code": "    # Download the audio from the YouTube video"
+        },
+        {
+          "cell_index": 7,
+          "line": 142,
+          "code": "        'format': 'bestaudio/best',"
+        },
+        {
+          "cell_index": 7,
+          "line": 144,
+          "code": "            'key': 'FFmpegExtractAudio',"
+        },
+        {
+          "cell_index": 7,
+          "line": 150,
+          "code": "    with yt_dlp.YoutubeDL(ydl_opts) as ydl:"
+        },
+        {
+          "cell_index": 7,
+          "line": 152,
+          "code": "            ydl.download([url])"
+        },
+        {
+          "cell_index": 7,
+          "line": 172,
+          "code": "def process_audio(wav_file: str) -> str:"
+        },
+        {
+          "cell_index": 7,
+          "line": 173,
+          "code": "    # Open the audio file and read the content"
+        },
+        {
+          "cell_index": 7,
+          "line": 179,
+          "code": "        response = client.models.generate_content("
+        },
+        {
+          "cell_index": 7,
+          "line": 180,
+          "code": "            model='gemini-2.0-flash',"
+        },
+        {
+          "cell_index": 7,
+          "line": 185,
+          "code": "                    mime_type='audio/wav',"
+        },
+        {
+          "cell_index": 9,
+          "line": 270,
+          "code": "video_df = pd.read_csv(\"../data/interim/top_20_weekly_videos.csv\","
+        },
+        {
+          "cell_index": 12,
+          "line": 331,
+          "code": "    # Download the audio from the video"
+        },
+        {
+          "cell_index": 12,
+          "line": 332,
+          "code": "    wav_file = download_youtube_audio(url, video_id)"
+        },
+        {
+          "cell_index": 12,
+          "line": 337,
+          "code": "    # Process the audio to generate the transcript"
+        },
+        {
+          "cell_index": 12,
+          "line": 338,
+          "code": "    json_text = process_audio(wav_file)"
+        },
+        {
+          "cell_index": 19,
+          "line": 474,
+          "code": "# Files with \"no speech\""
+        },
+        {
+          "cell_index": 19,
+          "line": 475,
+          "code": "files_no_speech: List[str] = []"
+        },
+        {
+          "cell_index": 19,
+          "line": 490,
+          "code": "        # Check if the file contains \"no speech\""
+        },
+        {
+          "cell_index": 19,
+          "line": 491,
+          "code": "        if \"speech\" in json_text.lower():"
+        },
+        {
+          "cell_index": 19,
+          "line": 493,
+          "code": "            files_no_speech.append(json_file)"
+        },
+        {
+          "cell_index": 19,
+          "line": 537,
+          "code": "    len(files_not_end_with_curly_brace) - len(files_no_speech)"
+        },
+        {
+          "cell_index": 23,
+          "line": 592,
+          "code": "len(files_no_speech)#, files_no_speech"
+        },
+        {
+          "cell_index": 33,
+          "line": 727,
+          "code": "transcript_df.to_parquet(\"../transcripts.parquet\", index=False)"
+        },
+        {
+          "cell_index": 34,
+          "line": 757,
+          "code": "new_df = pd.read_parquet(\"../transcripts.parquet\")"
+        },
+        {
+          "cell_index": 37,
+          "line": 868,
+          "code": "full_df = pd.read_parquet(\"../preprocessed_videos.parquet\")"
+        },
+        {
+          "cell_index": 43,
+          "line": 1061,
+          "code": "filtered_videos_df.to_parquet("
+        },
+        {
+          "cell_index": 44,
+          "line": 1096,
+          "code": "pd.read_parquet(\"../transcript_video_6_authors.parquet\").info()"
+        },
+        {
+          "cell_index": 47,
+          "line": 1191,
+          "code": "video_df = pd.read_parquet(\"../top_viewed_videos.parquet\")"
+        },
+        {
+          "cell_index": 51,
+          "line": 1562,
+          "code": "# Top 20% weekly videos with transcripts"
+        },
+        {
+          "cell_index": 51,
+          "line": 1563,
+          "code": "video_transcript_df.to_parquet("
+        },
+        {
+          "cell_index": 51,
+          "line": 1564,
+          "code": "    \"../top_20_percent_weekly_videos_transcripts.parquet\", index=False)"
+        },
+        {
+          "cell_index": 52,
+          "line": 1648,
+          "code": "pd.read_parquet("
+        },
+        {
+          "cell_index": 52,
+          "line": 1649,
+          "code": "    \"../top_20_percent_weekly_videos_transcripts.parquet\").info()"
+        }
+      ]
+    },
+    {
+      "path": "notebooks/03_FE_02_01-Extract_food_location_colab.ipynb",
+      "total_lines": 536,
+      "inspection_method": "Source code only; notebook outputs, literals containing identities, non-ASCII prompts, and credentials excluded.",
+      "selected_source_lines": [
+        {
+          "cell_index": 6,
+          "line": 93,
+          "code": "# video_df = pd.read_parquet(\"top_20_percent_weekly_videos_transcripts.parquet\")"
+        },
+        {
+          "cell_index": 6,
+          "line": 94,
+          "code": "video_df = pd.read_parquet(\"small_weekly_videos_transcripts.parquet\")"
+        },
+        {
+          "cell_index": 6,
+          "line": 98,
+          "code": "# video_df = video_df.sort_values("
+        },
+        {
+          "cell_index": 17,
+          "line": 335,
+          "code": "        response = client.models.generate_content("
+        },
+        {
+          "cell_index": 17,
+          "line": 336,
+          "code": "            model='gemini-2.0-flash',"
+        },
+        {
+          "cell_index": 20,
+          "line": 427,
+          "code": "# response = client.models.generate_content("
+        },
+        {
+          "cell_index": 20,
+          "line": 428,
+          "code": "#     model='gemini-2.0-flash',"
+        },
+        {
+          "cell_index": 21,
+          "line": 458,
+          "code": "    # Process the audio to generate the transcript"
+        }
+      ]
+    },
+    {
+      "path": "src/crawler/crawler.py",
+      "total_lines": 157,
+      "inspection_method": "Source code only; notebook outputs, literals containing identities, non-ASCII prompts, and credentials excluded.",
+      "selected_source_lines": [
+        {
+          "line": 8,
+          "code": "from yt_dlp import YoutubeDL"
+        },
+        {
+          "line": 54,
+          "code": "def extract_video_contents(username, video_id, download_folder=None):"
+        },
+        {
+          "line": 55,
+          "code": "    video_path = os.path.join(download_folder, f'{username}_{video_id}.mp4')"
+        },
+        {
+          "line": 58,
+          "code": "            file_path = f'{download_folder}/%(uploader)s_%(id)s.%(ext)s' if download_folder else '%(uploader)s_%(id)s.%(ext)s'"
+        },
+        {
+          "line": 62,
+          "code": "                ydl.download([video_url])"
+        },
+        {
+          "line": 70,
+          "code": "    # audio_text = \"\""
+        },
+        {
+          "line": 79,
+          "code": "    # return {\"image_captions\": image_captions, \"audio_transcribe\": audio_text}"
+        },
+        {
+          "line": 82,
+          "code": "async def get_info_users(usernames, days=0, weeks=0, months=0, download_video=False):"
+        },
+        {
+          "line": 95,
+          "code": "            downloaded = 0"
+        },
+        {
+          "line": 99,
+          "code": "                if is_within_range(video_data[\"createTime\"], days=days, weeks=weeks, months=months):"
+        },
+        {
+          "line": 106,
+          "code": "                        collect_time = {\"collectTime\": get_current_timestamp()}"
+        },
+        {
+          "line": 109,
+          "code": "                        downloaded += 1"
+        },
+        {
+          "line": 114,
+          "code": "                            {\"username\": video.author.username, \"id\": video.id, \"createTime\": video.create_time})"
+        }
+      ]
+    }
+  ],
+  "full_metadata_csv_summary": {
+    "path": "data/processed/cleaned_video_info.csv",
+    "method": "Full single metadata CSV streamed in memory, capped at 64 MiB; no raw records written; unique IDs used only transiently for aggregate counts.",
+    "bytes_read": 56371774,
+    "sha256": "ce76aa4acaf6bbc5b2c8976f206710cb7693eae5328bfb913cc15aabbb73e102",
+    "read_to_eof": true,
+    "column_count": 52,
+    "valid_rows": 70996,
+    "malformed_rows": 0,
+    "unique_video_ids": 70996,
+    "duplicate_nonempty_video_ids": 0,
+    "missing_video_ids": 0,
+    "unique_author_ids": 264,
+    "ranges": {
+      "createTime": {
+        "min": "2023-11-25 09:54:39",
+        "max": "2025-03-19 09:54:50"
+      },
+      "collectTime": {
+        "min": "2025-03-19 09:51:53",
+        "max": "2025-03-19 09:59:46"
+      }
+    },
+    "missing_counts": {
+      "CategoryType": 0,
+      "author.downloadSetting": 0,
+      "author.duetSetting": 0,
+      "author.id": 0,
+      "author.nickname": 0,
+      "author.openFavorite": 0,
+      "author.secUid": 0,
+      "author.signature": 0,
+      "author.stitchSetting": 0,
+      "author.uniqueId": 0,
+      "author.verified": 0,
+      "authorStats.diggCount": 0,
+      "authorStats.followerCount": 0,
+      "authorStats.followingCount": 0,
+      "authorStats.heartCount": 0,
+      "authorStats.videoCount": 0,
+      "createTime": 0,
+      "desc": 0,
+      "diversificationId": 0,
+      "isAd": 0,
+      "itemCommentStatus": 0,
+      "music.authorName": 0,
+      "music.duration": 0,
+      "music.id": 0,
+      "music.isCopyrighted": 0,
+      "music.original": 0,
+      "music.title": 0,
+      "statsV2.collectCount": 0,
+      "statsV2.commentCount": 0,
+      "statsV2.diggCount": 0,
+      "statsV2.playCount": 0,
+      "statsV2.shareCount": 0,
+      "textLanguage": 0,
+      "textTranslatable": 0,
+      "video.VQScore": 0,
+      "video.bitrate": 0,
+      "video.claInfo.enableAutoCaption": 0,
+      "video.claInfo.hasOriginalAudio": 0,
+      "video.codecType": 0,
+      "video.definition": 0,
+      "video.duration": 0,
+      "video.encodedType": 0,
+      "video.height": 0,
+      "video.id": 0,
+      "video.ratio": 0,
+      "video.videoQuality": 0,
+      "video.volumeInfo.Loudness": 0,
+      "video.volumeInfo.Peak": 0,
+      "video.width": 0,
+      "collectTime": 0,
+      "hashtags": 378,
+      "hashtag_count": 0
+    }
+  },
+  "parquet_footer_inspection": [
+    {
+      "path": "data/processed/cleaned_video_info.parquet",
+      "method": "Parquet Thrift Compact footer parsed from one response held only in memory; response capped at 16MiB because the endpoint rejected HTTP suffix ranges (501).",
+      "bytes_read": 10514398,
+      "footer_bytes": 29821,
+      "num_rows": 70996,
+      "row_groups": 1,
+      "leaf_column_count": 55,
+      "created_by": "parquet-cpp-arrow version 19.0.1",
+      "schema": [
+        {
+          "name": "schema",
+          "physical_type": null,
+          "repetition": 0,
+          "children": 55,
+          "converted_type": null
+        },
+        {
+          "name": "CategoryType",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.downloadSetting",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.duetSetting",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.id",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.nickname",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.openFavorite",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.secUid",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.signature",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.stitchSetting",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.uniqueId",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "author.verified",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "authorStats.diggCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.followerCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.followingCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.heartCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.videoCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "createTime",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "desc",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "diversificationId",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "isAd",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "itemCommentStatus",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "music.authorName",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "music.duration",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "music.id",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "music.isCopyrighted",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "music.original",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "music.title",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "statsV2.collectCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.commentCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.diggCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.playCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.shareCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "textLanguage",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "textTranslatable",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.VQScore",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "video.bitrate",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "video.claInfo.enableAutoCaption",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.claInfo.hasOriginalAudio",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.codecType",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.definition",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.duration",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "video.encodedType",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.height",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "video.id",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.ratio",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.videoQuality",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.volumeInfo.Loudness",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "video.volumeInfo.Peak",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "video.width",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "collectTime",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "hashtags",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "hashtag_count",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "createTime_year",
+          "physical_type": 1,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "createTime_week",
+          "physical_type": 1,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 13
+        },
+        {
+          "name": "year_week",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        }
+      ],
+      "top_level_column_count": 55,
+      "top_level_columns": [
+        "CategoryType",
+        "author.downloadSetting",
+        "author.duetSetting",
+        "author.id",
+        "author.nickname",
+        "author.openFavorite",
+        "author.secUid",
+        "author.signature",
+        "author.stitchSetting",
+        "author.uniqueId",
+        "author.verified",
+        "authorStats.diggCount",
+        "authorStats.followerCount",
+        "authorStats.followingCount",
+        "authorStats.heartCount",
+        "authorStats.videoCount",
+        "createTime",
+        "desc",
+        "diversificationId",
+        "isAd",
+        "itemCommentStatus",
+        "music.authorName",
+        "music.duration",
+        "music.id",
+        "music.isCopyrighted",
+        "music.original",
+        "music.title",
+        "statsV2.collectCount",
+        "statsV2.commentCount",
+        "statsV2.diggCount",
+        "statsV2.playCount",
+        "statsV2.shareCount",
+        "textLanguage",
+        "textTranslatable",
+        "video.VQScore",
+        "video.bitrate",
+        "video.claInfo.enableAutoCaption",
+        "video.claInfo.hasOriginalAudio",
+        "video.codecType",
+        "video.definition",
+        "video.duration",
+        "video.encodedType",
+        "video.height",
+        "video.id",
+        "video.ratio",
+        "video.videoQuality",
+        "video.volumeInfo.Loudness",
+        "video.volumeInfo.Peak",
+        "video.width",
+        "collectTime",
+        "hashtags",
+        "hashtag_count",
+        "createTime_year",
+        "createTime_week",
+        "year_week"
+      ]
+    },
+    {
+      "path": "data/processed/cleaned_user_info.parquet",
+      "method": "Parquet Thrift Compact footer parsed from one response held only in memory; response capped at 16MiB because the endpoint rejected HTTP suffix ranges (501).",
+      "bytes_read": 94656,
+      "footer_bytes": 16529,
+      "num_rows": 264,
+      "row_groups": 1,
+      "leaf_column_count": 30,
+      "created_by": "parquet-cpp-arrow version 19.0.1",
+      "schema": [
+        {
+          "name": "schema",
+          "physical_type": null,
+          "repetition": 0,
+          "children": 30,
+          "converted_type": null
+        },
+        {
+          "name": "stats.diggCount",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "stats.followerCount",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "stats.followingCount",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "stats.friendCount",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "stats.heart",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "stats.heartCount",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "stats.videoCount",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "user.commerceUserInfo.commerceUser",
+          "physical_type": 0,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "user.downloadSetting",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.duetSetting",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.followingVisibility",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.id",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.nickNameModifyTime",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.nickname",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.openFavorite",
+          "physical_type": 0,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "user.profileTab.showPlayListTab",
+          "physical_type": 0,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "user.secUid",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.signature",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.stitchSetting",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.ttSeller",
+          "physical_type": 0,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "user.uniqueId",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "user.verified",
+          "physical_type": 0,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "avg_videos_per_week",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "avg_collects_per_video",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "avg_comments_per_video",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "avg_diggs_per_video",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "avg_plays_per_video",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "avg_shares_per_video",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "avg_video_duration",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "avg_hashtags_per_video",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        }
+      ],
+      "top_level_column_count": 30,
+      "top_level_columns": [
+        "stats.diggCount",
+        "stats.followerCount",
+        "stats.followingCount",
+        "stats.friendCount",
+        "stats.heart",
+        "stats.heartCount",
+        "stats.videoCount",
+        "user.commerceUserInfo.commerceUser",
+        "user.downloadSetting",
+        "user.duetSetting",
+        "user.followingVisibility",
+        "user.id",
+        "user.nickNameModifyTime",
+        "user.nickname",
+        "user.openFavorite",
+        "user.profileTab.showPlayListTab",
+        "user.secUid",
+        "user.signature",
+        "user.stitchSetting",
+        "user.ttSeller",
+        "user.uniqueId",
+        "user.verified",
+        "avg_videos_per_week",
+        "avg_collects_per_video",
+        "avg_comments_per_video",
+        "avg_diggs_per_video",
+        "avg_plays_per_video",
+        "avg_shares_per_video",
+        "avg_video_duration",
+        "avg_hashtags_per_video"
+      ]
+    },
+    {
+      "path": "data/content_analysis/content_analysis_data.parquet",
+      "method": "Parquet Thrift Compact footer parsed from one response held only in memory; response capped at 16MiB because the endpoint rejected HTTP suffix ranges (501).",
+      "bytes_read": 6737248,
+      "footer_bytes": 27365,
+      "num_rows": 3004,
+      "row_groups": 1,
+      "leaf_column_count": 49,
+      "created_by": "parquet-cpp-arrow version 19.0.1",
+      "schema": [
+        {
+          "name": "schema",
+          "physical_type": null,
+          "repetition": 0,
+          "children": 46,
+          "converted_type": null
+        },
+        {
+          "name": "categories",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "audience_target",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "body_analysis",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 4,
+          "converted_type": null
+        },
+        {
+          "name": "desc",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "impact_level",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "step",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "viewer_emotion",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "content_style",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "cta_content",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "cta_type",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "emotion_keywords",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "has_cta",
+          "physical_type": 0,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "highlight_sentences",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "hook_content",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "hook_type",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "pacing",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "structure_style",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "summarization",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "tone_of_voice",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.id",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "desc",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "transcript",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "takeaways",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "weekly_score_rank",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "isAd",
+          "physical_type": 0,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "video.duration",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.playCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.diggCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.commentCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.shareCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.collectCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.diggCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.followerCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.followingCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.heartCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.videoCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "createTime",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "hashtags",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "hashtag_count",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "highlight_phrases",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "year",
+          "physical_type": 1,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 13
+        },
+        {
+          "name": "week",
+          "physical_type": 1,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 13
+        },
+        {
+          "name": "engagement_rate",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "transcript_len",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "cta_count",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "transcript_word_count",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "word_per_second",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "desc_clean",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "desc_word_count",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "author.uniqueId",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        }
+      ],
+      "top_level_column_count": 46,
+      "top_level_columns": [
+        "categories",
+        "audience_target",
+        "body_analysis",
+        "content_style",
+        "cta_content",
+        "cta_type",
+        "emotion_keywords",
+        "has_cta",
+        "highlight_sentences",
+        "hook_content",
+        "hook_type",
+        "pacing",
+        "structure_style",
+        "summarization",
+        "tone_of_voice",
+        "video.id",
+        "desc",
+        "transcript",
+        "takeaways",
+        "weekly_score_rank",
+        "isAd",
+        "video.duration",
+        "statsV2.playCount",
+        "statsV2.diggCount",
+        "statsV2.commentCount",
+        "statsV2.shareCount",
+        "statsV2.collectCount",
+        "authorStats.diggCount",
+        "authorStats.followerCount",
+        "authorStats.followingCount",
+        "authorStats.heartCount",
+        "authorStats.videoCount",
+        "createTime",
+        "hashtags",
+        "hashtag_count",
+        "highlight_phrases",
+        "year",
+        "week",
+        "engagement_rate",
+        "transcript_len",
+        "cta_count",
+        "transcript_word_count",
+        "word_per_second",
+        "desc_clean",
+        "desc_word_count",
+        "author.uniqueId"
+      ]
+    },
+    {
+      "path": "data/ScriptGen-data/script_gendata.parquet",
+      "method": "Parquet Thrift Compact footer parsed from one response held only in memory; response capped at 16MiB because the endpoint rejected HTTP suffix ranges (501).",
+      "bytes_read": 6423256,
+      "footer_bytes": 30815,
+      "num_rows": 2652,
+      "row_groups": 1,
+      "leaf_column_count": 48,
+      "created_by": "parquet-cpp-arrow version 19.0.1",
+      "schema": [
+        {
+          "name": "schema",
+          "physical_type": null,
+          "repetition": 0,
+          "children": 45,
+          "converted_type": null
+        },
+        {
+          "name": "categories",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "audience_target",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "body_analysis",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 4,
+          "converted_type": null
+        },
+        {
+          "name": "desc",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "impact_level",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "step",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "viewer_emotion",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "content_style",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "cta_content",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "cta_type",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "emotion_keywords",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "has_cta",
+          "physical_type": 0,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "highlight_sentences",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "hook_content",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "hook_type",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "pacing",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "structure_style",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "summarization",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "tone_of_voice",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "video.id",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "desc",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "transcript",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "takeaways",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "weekly_score_rank",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "isAd",
+          "physical_type": 0,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "video.duration",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.playCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.diggCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.commentCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.shareCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "statsV2.collectCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.diggCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.followerCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.followingCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.heartCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "authorStats.videoCount",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "createTime",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "hashtags",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "hashtag_count",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "highlight_phrases",
+          "physical_type": null,
+          "repetition": 1,
+          "children": 1,
+          "converted_type": 3
+        },
+        {
+          "name": "list",
+          "physical_type": null,
+          "repetition": 2,
+          "children": 1,
+          "converted_type": null
+        },
+        {
+          "name": "element",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "year",
+          "physical_type": 1,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 13
+        },
+        {
+          "name": "week",
+          "physical_type": 1,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 13
+        },
+        {
+          "name": "engagement_rate",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "transcript_len",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "cta_count",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "transcript_word_count",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "word_per_second",
+          "physical_type": 5,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        },
+        {
+          "name": "desc_clean",
+          "physical_type": 6,
+          "repetition": 1,
+          "children": null,
+          "converted_type": 0
+        },
+        {
+          "name": "desc_word_count",
+          "physical_type": 2,
+          "repetition": 1,
+          "children": null,
+          "converted_type": null
+        }
+      ],
+      "top_level_column_count": 45,
+      "top_level_columns": [
+        "categories",
+        "audience_target",
+        "body_analysis",
+        "content_style",
+        "cta_content",
+        "cta_type",
+        "emotion_keywords",
+        "has_cta",
+        "highlight_sentences",
+        "hook_content",
+        "hook_type",
+        "pacing",
+        "structure_style",
+        "summarization",
+        "tone_of_voice",
+        "video.id",
+        "desc",
+        "transcript",
+        "takeaways",
+        "weekly_score_rank",
+        "isAd",
+        "video.duration",
+        "statsV2.playCount",
+        "statsV2.diggCount",
+        "statsV2.commentCount",
+        "statsV2.shareCount",
+        "statsV2.collectCount",
+        "authorStats.diggCount",
+        "authorStats.followerCount",
+        "authorStats.followingCount",
+        "authorStats.heartCount",
+        "authorStats.videoCount",
+        "createTime",
+        "hashtags",
+        "hashtag_count",
+        "highlight_phrases",
+        "year",
+        "week",
+        "engagement_rate",
+        "transcript_len",
+        "cta_count",
+        "transcript_word_count",
+        "word_per_second",
+        "desc_clean",
+        "desc_word_count"
+      ]
+    }
+  ],
+  "raw_json_schema_sample": {
+    "source_directory": "data/raw/",
+    "blob_sha": "3b69294592d94e1009e50a57fa687917456983e3",
+    "bytes": 46714,
+    "top_level_type": "array",
+    "top_level_keys": null,
+    "array_key": null,
+    "array_items": 2,
+    "first_record_field_types": {
+      "AIGCDescription": "string",
+      "CategoryType": "number",
+      "anchors": "array",
+      "author": "object",
+      "authorStats": "object",
+      "backendSourceEventTracking": "string",
+      "collected": "boolean",
+      "contents": "array",
+      "createTime": "number",
+      "desc": "string",
+      "digged": "boolean",
+      "diversificationId": "number",
+      "duetDisplay": "number",
+      "duetEnabled": "boolean",
+      "forFriend": "boolean",
+      "id": "string",
+      "itemCommentStatus": "number",
+      "item_control": "object",
+      "music": "object",
+      "officalItem": "boolean",
+      "originalItem": "boolean",
+      "privateItem": "boolean",
+      "secret": "boolean",
+      "shareEnabled": "boolean",
+      "stats": "object",
+      "statsV2": "object",
+      "stitchDisplay": "number",
+      "stitchEnabled": "boolean",
+      "textLanguage": "string",
+      "textTranslatable": "boolean",
+      "video": "object",
+      "videoSuggestWordsList": "object",
+      "collectTime": "number"
+    },
+    "first_record_nested_keys": {
+      "author": [
+        "avatarLarger",
+        "avatarMedium",
+        "avatarThumb",
+        "commentSetting",
+        "downloadSetting",
+        "duetSetting",
+        "ftc",
+        "id",
+        "isADVirtual",
+        "isEmbedBanned",
+        "nickname",
+        "openFavorite",
+        "privateAccount",
+        "relation",
+        "secUid",
+        "secret",
+        "signature",
+        "stitchSetting",
+        "uniqueId",
+        "verified"
+      ],
+      "authorStats": [
+        "diggCount",
+        "followerCount",
+        "followingCount",
+        "friendCount",
+        "heart",
+        "heartCount",
+        "videoCount"
+      ],
+      "item_control": [
+        "can_repost"
+      ],
+      "music": [
+        "authorName",
+        "coverLarge",
+        "coverMedium",
+        "coverThumb",
+        "duration",
+        "id",
+        "isCopyrighted",
+        "original",
+        "playUrl",
+        "title"
+      ],
+      "stats": [
+        "collectCount",
+        "commentCount",
+        "diggCount",
+        "playCount",
+        "shareCount"
+      ],
+      "statsV2": [
+        "collectCount",
+        "commentCount",
+        "diggCount",
+        "playCount",
+        "repostCount",
+        "shareCount"
+      ],
+      "video": [
+        "VQScore",
+        "bitrate",
+        "bitrateInfo",
+        "claInfo",
+        "codecType",
+        "cover",
+        "definition",
+        "downloadAddr",
+        "duration",
+        "dynamicCover",
+        "encodeUserTag",
+        "encodedType",
+        "format",
+        "height",
+        "id",
+        "originCover",
+        "playAddr",
+        "ratio",
+        "videoQuality",
+        "volumeInfo",
+        "width",
+        "zoomCover"
+      ],
+      "videoSuggestWordsList": [
+        "video_suggest_words_struct"
+      ]
+    },
+    "raw_values_and_creator_path_redacted": true
+  },
+  "media_directory_counts": {
+    "data/raw": 4
+  },
+  "upstream_matching_gold_paths": [],
+  "upstream_legacy_location_table_paths": [
+    {
+      "path": "src/app/trend_analysis/data/final_location_food_data.parquet",
+      "size": 18891787
+    }
+  ],
+  "preprocessing_provenance": {
+    "path": "notebooks/02_DEP_01-Preprocess_video_data.ipynb",
+    "selected_cells": [
+      {
+        "cell_index": 47,
+        "source": [
+          {
+            "line": 4057,
+            "code": "# Get the number of columns before dropping"
+          },
+          {
+            "line": 4058,
+            "code": "n_cols_before = video_df.shape[1]"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 4060,
+            "code": "# Drop columns with missing rate greater than 70%"
+          },
+          {
+            "line": 4061,
+            "code": "video_df = video_df.drop(columns=columns_missing_above_threshold,"
+          },
+          {
+            "line": 4062,
+            "code": "                         axis=1, errors=\"ignore\")"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 2902,
+            "code": "# Print confirmation"
+          }
+        ]
+      },
+      {
+        "cell_index": 113,
+        "source": [
+          {
+            "line": 6525,
+            "code": "# Get the name of numerical columns"
+          },
+          {
+            "line": 6526,
+            "code": "num_cols = video_df.select_dtypes(include=[np.number]).columns"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 6528,
+            "code": "# Fill missing values in numerical columns with the median"
+          },
+          {
+            "line": 6529,
+            "code": "for col in num_cols:"
+          },
+          {
+            "line": 6530,
+            "code": "    if video_df[col].isna().sum() > 0:"
+          },
+          {
+            "line": 6531,
+            "code": "        median_value = video_df[col].median()"
+          },
+          {
+            "line": 6532,
+            "code": "        video_df[col] = video_df[col].fillna(median_value)"
+          }
+        ]
+      },
+      {
+        "cell_index": 116,
+        "source": [
+          {
+            "line": 6555,
+            "code": "# Get the list of non-numerical columns"
+          },
+          {
+            "line": 6556,
+            "code": "non_num_cols = video_df.select_dtypes("
+          },
+          {
+            "line": 6557,
+            "code": "    exclude=[np.number, np.datetime64]).columns"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 6559,
+            "code": "# Fill missing values in non-numerical columns with \"others\""
+          },
+          {
+            "line": 6560,
+            "code": "for col in non_num_cols:"
+          },
+          {
+            "line": 6530,
+            "code": "    if video_df[col].isna().sum() > 0:"
+          },
+          {
+            "line": 6562,
+            "code": "        video_df[col] = video_df[col].fillna(\"others\")"
+          }
+        ]
+      },
+      {
+        "cell_index": 149,
+        "source": [
+          {
+            "line": 7775,
+            "code": "# Top percentile videos"
+          },
+          {
+            "line": 7776,
+            "code": "# top_percentile = 0.1"
+          },
+          {
+            "line": 7777,
+            "code": "top_percentile = 0.2"
+          },
+          {
+            "line": 7778,
+            "code": "# Minimum number of videos to keep"
+          },
+          {
+            "line": 7779,
+            "code": "# min_videos = 50"
+          },
+          {
+            "line": 7780,
+            "code": "min_videos = 100"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7782,
+            "code": "# List to contain the top 10% most viewed videos"
+          },
+          {
+            "line": 7783,
+            "code": "top_20_percent_videos = []"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7785,
+            "code": "# Loop through each \"year_week\""
+          },
+          {
+            "line": 7786,
+            "code": "for year_week in sorted(video_df['year_week'].unique()):"
+          },
+          {
+            "line": 7787,
+            "code": "    # Get the videos for the current \"year_week\""
+          },
+          {
+            "line": 7788,
+            "code": "    videos: pd.DataFrame = video_df[video_df['year_week'] == year_week]"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7790,
+            "code": "    # Calculate the number of videos to keep (top `top_percentile` percent)"
+          },
+          {
+            "line": 7791,
+            "code": "    # Make sure that there are at least `min_videos` videos"
+          },
+          {
+            "line": 7792,
+            "code": "    num_top_videos = int(max(len(videos) * top_percentile, min_videos))"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7794,
+            "code": "    # Get the top 10% most viewed videos"
+          },
+          {
+            "line": 7795,
+            "code": "    top_videos = videos.nlargest(num_top_videos, 'statsV2.playCount')"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7797,
+            "code": "    # Append the top videos to the list"
+          },
+          {
+            "line": 7798,
+            "code": "    top_20_percent_videos.append(top_videos)"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7800,
+            "code": "# Concatenate all top videos into a single DataFrame"
+          },
+          {
+            "line": 7801,
+            "code": "top_20_percent_videos_df = pd.concat(top_20_percent_videos, ignore_index=True)"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7803,
+            "code": "# Sort the DataFrame by \"year_week\" and \"statsV2.playCount\""
+          },
+          {
+            "line": 7804,
+            "code": "top_20_percent_videos_df = top_20_percent_videos_df.sort_values("
+          },
+          {
+            "line": 7805,
+            "code": "    by=['year_week', 'statsV2.playCount'], ascending=[True, False])"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7807,
+            "code": "# Reset the index"
+          },
+          {
+            "line": 7808,
+            "code": "top_20_percent_videos_df = top_20_percent_videos_df.reset_index(drop=True)"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7810,
+            "code": "# Print the shape of the DataFrame"
+          },
+          {
+            "line": 24,
+            "code": ""
+          },
+          {
+            "line": 7813,
+            "code": "# Print the first 5 rows of the DataFrame"
+          },
+          {
+            "line": 7814,
+            "code": "top_20_percent_videos_df.head()"
+          }
+        ]
+      }
+    ]
+  },
+  "local_data_presence": {
+    "checked_at": "2026-11-17T02:49:02.029Z",
+    "present": [
+      "data/corpus/20261116_v1/manifest.json",
+      "data/evaluation/v1/queries.jsonl"
+    ],
+    "absent": [
+      "data/raw",
+      "data/interim",
+      "data/processed",
+      "data/transcripts",
+      "data/legacy_app_data",
+      "data/content_analysis",
+      "data/raw_incremental",
+      "data/corpus/20261116_v1/dim_creators.parquet",
+      "data/corpus/20261116_v1/fact_videos.parquet"
+    ],
+    "scope": "Current project checkout only; no claim about other disks or owner backups."
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "benchmark_id": "retrieval_v2",
+  "metric_schema_version": 2,
+  "corpus_snapshot_id": "20261117_recovered_v1",
+  "evaluated_at": "2026-11-17T05:59:21.537973+00:00",
+  "indexed_videos": 21748,
+  "queries_file": "data\\evaluation\\v1\\queries.jsonl",
+  "evaluation": {
+    "label_source": "lexical_metadata_weak_labels",
+    "independent_relevance_judgments": false,
+    "limitation": "Keyword/metadata weak labels measure regression against these rules, not independently annotated relevance quality or current trends.",
+    "aggregation": "macro over queries with at least one relevant video",
+    "zero_relevant_policy": "exclude and report count; all-empty inputs yield zero metrics",
+    "metric_definitions": {
+      "recall_at_10": "relevant retrieved in top 10 / all relevant video IDs",
+      "precision_at_10": "relevant retrieved in top 10 / 10 (missing slots count as non-relevant)",
+      "recall_at_10_ceiling": "macro mean of min(10, relevant count) / relevant count"
+    },
+    "relevant_video_counts": {
+      "q01": 1011,
+      "q02": 1,
+      "q03": 179,
+      "q04": 12,
+      "q05": 62,
+      "q06": 67,
+      "q07": 138,
+      "q08": 15,
+      "q09": 112,
+      "q10": 215,
+      "q11": 272,
+      "q12": 46,
+      "q13": 33,
+      "q14": 231,
+      "q15": 4,
+      "q16": 320
+    }
+  },
+  "provenance": {
+    "corpus_manifest_sha256": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+    "corpus_files_sha256": {
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "1bfc6c6f819b4c0176345029e5ae4e630a4e9c0438c89548aab893e1d30c1ecd"
+    },
+    "queries_sha256": "fffeec843da264e398f6c3f3fe8e057cac2b35d2345a9d42eb4a4de50d46ed98",
+    "index_files_sha256": {
+      "bm25-receipt.json": "97fdeb649d267e31114fb6d7eccea927c713fac34e8d2ca1178f363e8f825ccb",
+      "video_ids.json": "0af8ecbc4527086616359495b39a9d81a2334cbeb15dbbdb6b6fa69660a71cee",
+      "vocab.json": "ab18f0979b5624186b10f04470d03b0bbfc6d6345f1ea3bd6e08cd3a95934ffc",
+      "bm25_csr.npz": "184728bd872aa25d1512d149bedcf4421cae91b0faa856fb04fa11f1a63cb205"
+    },
+    "code_files_sha256": {
+      "pipelines/benchmark_retrieval/__main__.py": "a1611027cfd8b15f272fef24bf0c25e0bac5de8fbd513b87c870e09a3431265e",
+      "packages/retrieval/service.py": "2eb90994d7f2adfb527e6d58bf802f5968f70fc6bca18c63bf39c5650217d502",
+      "packages/retrieval/sparse/bm25.py": "69b04addbba91b8a222d24e61224fc827a8e8fc04ee45948b654741bf35f3834",
+      "packages/retrieval/fusion/rrf.py": "f8822d3c6f3306c535f06fecae899b87d240157d6e1e5336959ba1d3fcb173e9",
+      "packages/retrieval/rerank/scorer.py": "b704d949f61bd1ddf639de2f1f935115e123361cbd7167e0084728517406ac0b"
+    },
+    "configuration": {
+      "mode": "bm25",
+      "top_k": 10,
+      "index_receipt": {
+        "index_type": "okapi_bm25_vn_nfc_csr",
+        "corpus_snapshot_id": "20261117_recovered_v1",
+        "created_at": "2026-11-17T05:59:02.535593+00:00",
+        "document_count": 21748,
+        "vocab_size": 391043,
+        "postings_count": 9464226,
+        "avgdl": 309.4,
+        "k1": 1.5,
+        "b": 0.75
+      }
+    }
+  },
+  "configurations": {
+    "bm25_viral_boost": {
+      "query_count": 16,
+      "input_query_count": 16,
+      "zero_relevant_query_count": 0,
+      "recall_at_10": 0.1837,
+      "precision_at_10": 0.6,
+      "recall_at_10_ceiling": 0.2948,
+      "mrr_at_10": 0.8875,
+      "ndcg_at_10": 0.6962,
+      "mean_latency_ms": 17.24,
+      "p95_latency_ms": 37.04
+    },
+    "bm25_viral_boost_reranked": {
+      "query_count": 16,
+      "input_query_count": 16,
+      "zero_relevant_query_count": 0,
+      "recall_at_10": 0.1901,
+      "precision_at_10": 0.6438,
+      "recall_at_10_ceiling": 0.2948,
+      "mrr_at_10": 0.8127,
+      "ndcg_at_10": 0.7083,
+      "mean_latency_ms": 67.52,
+      "p95_latency_ms": 86.73
+    }
+  }
+}

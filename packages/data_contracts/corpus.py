@@ -17,6 +17,8 @@ class CorpusManifest(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     snapshot_id: str
+    parent_snapshot_id: str | None = None
+    parent_manifest_sha256: str | None = Field(default=None, min_length=64, max_length=64)
     created_at: str
     date_window_start: str
     date_window_end: str

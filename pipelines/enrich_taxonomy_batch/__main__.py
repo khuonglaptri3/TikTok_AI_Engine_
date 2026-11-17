@@ -14,7 +14,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Optional resumable Gemini Free-Tier batch enricher for unspecified price/occasion rows."
     )
-    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261116_v1"))
+    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
     parser.add_argument("--checkpoint", type=Path, default=Path("artifacts/enrichment/checkpoint.jsonl"))
     parser.add_argument("--limit", type=int, default=20, help="Max videos to enrich in this bounded Free-Tier run.")
     parser.add_argument("--dry-run", action="store_true", help="Inspect candidate rows without calling Gemini API.")

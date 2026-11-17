@@ -1,0 +1,526 @@
+{
+  "created_on": "2026-11-17",
+  "authorization": "Owner requested equal split; estimates include reciprocal peer review, integration, annotation and gates. No human availability or skill segregation is inferred.",
+  "plan_path": "docs/planning/TikTok_AI_Engine_Milestone.md",
+  "unit": {
+    "person_days_per_point": 0.5,
+    "meaning": "Prospective estimate, not measured equal hours or committed calendar capacity."
+  },
+  "contributors": {
+    "K": {
+      "name": "Trần Đình Khương",
+      "github": null
+    },
+    "N": {
+      "name": "Nguyễn Việt Nguyên",
+      "github": "https://github.com/NguyenVietNguyen2612"
+    }
+  },
+  "tasks": [
+    {
+      "id": "M0.1",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "historical_core",
+      "owner_delivery_points": 6,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 6,
+        "N": 2
+      },
+      "estimated_days_by_contributor": {
+        "K": 3.0,
+        "N": 1.0
+      },
+      "total_points": 8,
+      "dependencies_and_parallel_boundary": "START; input recovery/inventory; parallel M0.2",
+      "report_path": "docs/reports/milestones/M0.1/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M0.2",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "historical_core",
+      "owner_delivery_points": 4,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 4
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 2.0
+      },
+      "total_points": 6,
+      "dependencies_and_parallel_boundary": "START; contracts; parallel M0.1",
+      "report_path": "docs/reports/milestones/M0.2/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M0.3",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "historical_core",
+      "owner_delivery_points": 3,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 3,
+        "N": 3
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.5,
+        "N": 1.5
+      },
+      "total_points": 6,
+      "dependencies_and_parallel_boundary": "M0.2; API packaging and independent demo integration",
+      "report_path": "docs/reports/milestones/M0.3/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M0.G",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "historical_core",
+      "owner_delivery_points": 2,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 2
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 1.0
+      },
+      "total_points": 4,
+      "dependencies_and_parallel_boundary": "M0.1–M0.3",
+      "report_path": "docs/reports/milestones/M0.G/README.md",
+      "current_gate_result": "NOT_RUN"
+    },
+    {
+      "id": "M1.1",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "historical_core",
+      "owner_delivery_points": 4,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 4
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 2.0
+      },
+      "total_points": 6,
+      "dependencies_and_parallel_boundary": "M0.2; taxonomy audit parallel M1.2 input recovery",
+      "report_path": "docs/reports/milestones/M1.1/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M1.2",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "historical_core",
+      "owner_delivery_points": 7,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 7,
+        "N": 3
+      },
+      "estimated_days_by_contributor": {
+        "K": 3.5,
+        "N": 1.5
+      },
+      "total_points": 10,
+      "dependencies_and_parallel_boundary": "M0.1, M1.1; snapshot publication",
+      "report_path": "docs/reports/milestones/M1.2/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M1.G",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "historical_core",
+      "owner_delivery_points": 2,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 2
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 1.0
+      },
+      "total_points": 4,
+      "dependencies_and_parallel_boundary": "M0.G, M1.1–M1.2",
+      "report_path": "docs/reports/milestones/M1.G/README.md",
+      "current_gate_result": "NOT_RUN"
+    },
+    {
+      "id": "M2.1",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "historical_core",
+      "owner_delivery_points": 6,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 6
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 3.0
+      },
+      "total_points": 8,
+      "dependencies_and_parallel_boundary": "M1.2; parallel M2.2",
+      "report_path": "docs/reports/milestones/M2.1/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M2.2",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "historical_core",
+      "owner_delivery_points": 9,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 9,
+        "N": 3
+      },
+      "estimated_days_by_contributor": {
+        "K": 4.5,
+        "N": 1.5
+      },
+      "total_points": 12,
+      "dependencies_and_parallel_boundary": "M1.2; retrieval metrics/judgments",
+      "report_path": "docs/reports/milestones/M2.2/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M2.3",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "historical_core",
+      "owner_delivery_points": 9,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 3,
+        "N": 9
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.5,
+        "N": 4.5
+      },
+      "total_points": 12,
+      "dependencies_and_parallel_boundary": "M0.3, M2.1–M2.2; guardrail work may start on fixed fixtures",
+      "report_path": "docs/reports/milestones/M2.3/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M2.G",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "historical_core",
+      "owner_delivery_points": 2,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 2
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 1.0
+      },
+      "total_points": 4,
+      "dependencies_and_parallel_boundary": "M1.G, M2.1–M2.3",
+      "report_path": "docs/reports/milestones/M2.G/README.md",
+      "current_gate_result": "NOT_RUN"
+    },
+    {
+      "id": "M3.1",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 7,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 3,
+        "N": 7
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.5,
+        "N": 3.5
+      },
+      "total_points": 10,
+      "dependencies_and_parallel_boundary": "M1.2; repair may proceed before G2; required before real ingest",
+      "report_path": "docs/reports/milestones/M3.1/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M3.2",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 7,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 7,
+        "N": 3
+      },
+      "estimated_days_by_contributor": {
+        "K": 3.5,
+        "N": 1.5
+      },
+      "total_points": 10,
+      "dependencies_and_parallel_boundary": "M0.G, M3.1; worker can develop on fixtures in parallel",
+      "report_path": "docs/reports/milestones/M3.2/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M3.3",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 4,
+      "peer_review_and_integration_points": 4,
+      "points_by_contributor": {
+        "K": 4,
+        "N": 4
+      },
+      "estimated_days_by_contributor": {
+        "K": 2.0,
+        "N": 2.0
+      },
+      "total_points": 8,
+      "dependencies_and_parallel_boundary": "M2.G, M3.1–M3.2; capped shared pilot/integration",
+      "report_path": "docs/reports/milestones/M3.3/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M3.G",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 2,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 2
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 1.0
+      },
+      "total_points": 4,
+      "dependencies_and_parallel_boundary": "M3.3; decides additional collection budget",
+      "report_path": "docs/reports/milestones/M3.G/README.md",
+      "current_gate_result": "NOT_RUN"
+    },
+    {
+      "id": "M4.1",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 9,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 9,
+        "N": 3
+      },
+      "estimated_days_by_contributor": {
+        "K": 4.5,
+        "N": 1.5
+      },
+      "total_points": 12,
+      "dependencies_and_parallel_boundary": "M3.G; CPU/audio evaluation; parallel M5.1–M5.2",
+      "report_path": "docs/reports/milestones/M4.1/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M4.2",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 7,
+      "peer_review_and_integration_points": 1,
+      "points_by_contributor": {
+        "K": 1,
+        "N": 7
+      },
+      "estimated_days_by_contributor": {
+        "K": 0.5,
+        "N": 3.5
+      },
+      "total_points": 8,
+      "dependencies_and_parallel_boundary": "M1.G; observable flags/lexical study; audio only after M4.1",
+      "report_path": "docs/reports/milestones/M4.2/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M4.G",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 2,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 2
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 1.0
+      },
+      "total_points": 4,
+      "dependencies_and_parallel_boundary": "M4.1–M4.2",
+      "report_path": "docs/reports/milestones/M4.G/README.md",
+      "current_gate_result": "NOT_RUN"
+    },
+    {
+      "id": "M5.1",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 9,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 3,
+        "N": 9
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.5,
+        "N": 4.5
+      },
+      "total_points": 12,
+      "dependencies_and_parallel_boundary": "M3.G; independent comment annotation",
+      "report_path": "docs/reports/milestones/M5.1/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M5.2",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 9,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 9,
+        "N": 3
+      },
+      "estimated_days_by_contributor": {
+        "K": 4.5,
+        "N": 1.5
+      },
+      "total_points": 12,
+      "dependencies_and_parallel_boundary": "M3.G; aspect annotation can parallel M5.1; filtered gap waits for its labels",
+      "report_path": "docs/reports/milestones/M5.2/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M5.G",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 2,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 2
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 1.0
+      },
+      "total_points": 4,
+      "dependencies_and_parallel_boundary": "M5.1–M5.2",
+      "report_path": "docs/reports/milestones/M5.G/README.md",
+      "current_gate_result": "NOT_RUN"
+    },
+    {
+      "id": "M6.1",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 7,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 3,
+        "N": 7
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.5,
+        "N": 3.5
+      },
+      "total_points": 10,
+      "dependencies_and_parallel_boundary": "M2.G; optional text-only spike; multimodal acceptance waits for M4.G/M5.G",
+      "report_path": "docs/reports/milestones/M6.1/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M6.2",
+      "primary_owner": "K",
+      "peer_reviewer": "N",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 7,
+      "peer_review_and_integration_points": 3,
+      "points_by_contributor": {
+        "K": 7,
+        "N": 3
+      },
+      "estimated_days_by_contributor": {
+        "K": 3.5,
+        "N": 1.5
+      },
+      "total_points": 10,
+      "dependencies_and_parallel_boundary": "M4.G, M5.G; M6.1 accepted backend or documented BM25 retention",
+      "report_path": "docs/reports/milestones/M6.2/README.md",
+      "current_gate_result": null
+    },
+    {
+      "id": "M6.G",
+      "primary_owner": "N",
+      "peer_reviewer": "K",
+      "phase": "conditional_fresh_and_multimodal",
+      "owner_delivery_points": 2,
+      "peer_review_and_integration_points": 2,
+      "points_by_contributor": {
+        "K": 2,
+        "N": 2
+      },
+      "estimated_days_by_contributor": {
+        "K": 1.0,
+        "N": 1.0
+      },
+      "total_points": 4,
+      "dependencies_and_parallel_boundary": "M6.1–M6.2 and all release prerequisites",
+      "report_path": "docs/reports/milestones/M6.G/README.md",
+      "current_gate_result": "NOT_RUN"
+    }
+  ],
+  "totals": {
+    "points": 188,
+    "estimated_person_days": 94.0,
+    "points_by_contributor": {
+      "K": 94,
+      "N": 94
+    },
+    "estimated_days_by_contributor": {
+      "K": 47.0,
+      "N": 47.0
+    },
+    "share_by_contributor": {
+      "K": 0.5,
+      "N": 0.5
+    },
+    "core_points_by_contributor": {
+      "K": 40,
+      "N": 40
+    },
+    "conditional_points_by_contributor": {
+      "K": 54,
+      "N": 54
+    }
+  },
+  "status_note": "Planning arithmetic only. No future human review, annotation, gate, hosting or provider run is claimed complete."
+}

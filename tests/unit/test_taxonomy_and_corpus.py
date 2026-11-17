@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from packages.common.settings import AppSettings
+
 from packages.data_contracts.corpus import CorpusManifest
 from packages.taxonomy import (
     classify_duration_bucket,
@@ -77,7 +79,7 @@ def test_taxonomy_extractors_and_zero_division_guards() -> None:
 
 
 def test_built_gold_corpus_snapshot_integrity() -> None:
-    corpus_dir = Path("data/corpus/20261116_v1")
+    corpus_dir = AppSettings().corpus_dir
     manifest_path = corpus_dir / "manifest.json"
     assert manifest_path.is_file(), "Gold corpus manifest.json must exist"
 

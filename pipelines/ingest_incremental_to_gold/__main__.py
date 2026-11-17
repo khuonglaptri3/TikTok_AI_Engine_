@@ -11,13 +11,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Convert 4-month incremental JSONL batch into extended Gold Corpus snapshot."
     )
-    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261116_v1"))
+    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
     parser.add_argument(
         "--incremental-jsonl",
         type=Path,
         default=Path("data/raw_incremental/batch_latest/videos_4m.jsonl"),
     )
-    parser.add_argument("--output-corpus", type=Path, default=Path("data/corpus/20261116_v2_4m"))
+    parser.add_argument("--output-corpus", type=Path, default=Path("data/corpus/20261117_incremental_v1"))
     args = parser.parse_args()
 
     manifest = ingest_incremental_batch_to_gold(

@@ -35,7 +35,7 @@ def test_api_endpoints_and_gradio_demo_mount_end_to_end() -> None:
 
             r_eval = await client.get("/api/v1/evaluation/summary")
             assert r_eval.status_code == 200
-            assert r_eval.json()["benchmark_id"] == "retrieval_v1"
+            assert r_eval.json()["benchmark_id"] == "retrieval_v2"
 
             # 3. Niche micro-benchmark
             r_bench = await client.post(

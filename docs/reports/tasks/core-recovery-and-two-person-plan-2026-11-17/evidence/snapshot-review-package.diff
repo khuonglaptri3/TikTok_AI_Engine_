@@ -1,0 +1,378 @@
+diff --git a/pipelines/build_gold_corpus/builder.py b/pipelines/build_gold_corpus/builder.py
+index a7b27c4..d5739be 100644
+--- a/pipelines/build_gold_corpus/builder.py
++++ b/pipelines/build_gold_corpus/builder.py
+@@ -185,9 +185,16 @@ def _sha256_file(path: Path) -> str:
+ 
+ 
+ def build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str | None = None) -> CorpusManifest:
++    from packages.common.snapshots import snapshot_workspace
++
++    with snapshot_workspace(output_dir) as staging_dir:
++        manifest = _build_gold_corpus(root_dir, staging_dir, snapshot_id or output_dir.name)
++    return manifest
++
++
++def _build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str) -> CorpusManifest:
+     """Build immutable Gold Parquet corpus from read-only upstream datasets."""
+-    output_dir.mkdir(parents=True, exist_ok=True)
+-    snap_id = snapshot_id or output_dir.name
++    snap_id = snapshot_id
+ 
+     user_parquet = root_dir / "data/processed/cleaned_user_info.parquet"
+     video_parquet = root_dir / "data/processed/cleaned_video_info.parquet"
+diff --git a/pipelines/ingest_incremental_to_gold/converter.py b/pipelines/ingest_incremental_to_gold/converter.py
+index 8ab37be..db8feae 100644
+--- a/pipelines/ingest_incremental_to_gold/converter.py
++++ b/pipelines/ingest_incremental_to_gold/converter.py
+@@ -13,8 +13,9 @@ import pyarrow.parquet as pq
+ 
+ from packages.absa import analyze_koc_vs_viewer_absa
+ from packages.analytics import load_verified_corpus
++from packages.common.snapshots import snapshot_workspace
+ from packages.data_contracts.corpus import CorpusFileChecksum, CorpusManifest
+-from packages.data_contracts.multimodal import RawIncrementalVideoRecord, VoiceSegmentRecord
++from packages.data_contracts.multimodal import RawCommentInput, RawIncrementalVideoRecord, VoiceSegmentRecord
+ from packages.seeding import detect_seeding_comments
+ from packages.taxonomy import (
+     classify_duration_bucket,
+@@ -96,13 +97,30 @@ def ingest_incremental_batch_to_gold(
+     base_corpus_dir: Path,
+     incremental_jsonl: Path,
+     output_corpus_dir: Path,
++    *,
++    update_existing: bool = False,
++) -> CorpusManifest:
++    with snapshot_workspace(output_corpus_dir) as staging_dir:
++        manifest = _ingest_incremental_batch_to_gold(
++            base_corpus_dir, incremental_jsonl, staging_dir,
++            snapshot_id=output_corpus_dir.name, update_existing=update_existing,
++        )
++    return manifest
++
++
++def _ingest_incremental_batch_to_gold(
++    base_corpus_dir: Path,
++    incremental_jsonl: Path,
++    output_corpus_dir: Path,
++    *,
++    snapshot_id: str,
++    update_existing: bool,
+ ) -> CorpusManifest:
+     """Dual-Sink Converter:
+     1) Appends normalized 49-column rows to fact_videos.parquet (+ dim_creators.parquet) for RAG/Benchmarks.
+     2) Populates fact_voice_segments.parquet, fact_comments.parquet, and fact_absa_reviews.parquet for 4M modules.
+     """
+     base_manifest, df_creators, df_videos = load_verified_corpus(base_corpus_dir)
+-    output_corpus_dir.mkdir(parents=True, exist_ok=True)
+ 
+     raw_records = [
+         RawIncrementalVideoRecord.model_validate_json(line)
+@@ -111,6 +129,13 @@ def ingest_incremental_batch_to_gold(
+     ]
+ 
+     existing_vids = set(df_videos["video_id"].astype(str).tolist())
++    base_videos = {str(row["video_id"]): row for row in df_videos.to_dict(orient="records")}
++    base_multimodal: dict[str, pd.DataFrame] = {}
++    declared = {entry.filename for entry in base_manifest.files}
++    for name in ("fact_voice_segments.parquet", "fact_comments.parquet", "fact_absa_reviews.parquet"):
++        # Only load tables covered by the verified base manifest.
++        if name in declared:
++            base_multimodal[name] = pd.read_parquet(base_corpus_dir / name)
+     creator_medians: dict[str, float] = dict(
+         zip(df_creators["author_id"].astype(str), df_creators["median_play_count"].astype(float))
+     )
+@@ -121,10 +146,38 @@ def ingest_incremental_batch_to_gold(
+     voice_rows: list[dict[str, Any]] = []
+     comment_rows: list[dict[str, Any]] = []
+     absa_rows: list[dict[str, Any]] = []
++    replaced_voice_ids: set[str] = set()
++    processed_ids: set[str] = set()
+ 
+     for rec in raw_records:
+-        if rec.video_id in existing_vids:
++        if rec.video_id in processed_ids:
++            continue
++        processed_ids.add(rec.video_id)
++        is_existing = rec.video_id in existing_vids
++        if is_existing and not update_existing:
+             continue
++        old_row = base_videos.get(rec.video_id)
++        replace_voice = old_row is None or bool(rec.whisper_segments) or (
++            bool(rec.transcript.strip()) and rec.transcript != old_row.get("transcript")
++        )
++        if old_row is not None:
++            # Enrichment preserves the observed metadata/counters; it cannot replace
++            # historical observations with the defaults of a sparse ASR/comment record.
++            fields = RawIncrementalVideoRecord.model_fields
++            preserved = {key: old_row[key] for key in fields if key in old_row and key not in {
++                "transcript", "pitch_std", "energy_cv", "comments", "whisper_segments", "audio_path",
++            }}
++            rec = rec.model_copy(update=preserved)
++            if not rec.transcript.strip():
++                rec = rec.model_copy(update={"transcript": str(old_row.get("transcript") or "")})
++            old_comments = base_multimodal.get("fact_comments.parquet")
++            merged_comments: dict[str, RawCommentInput] = {}
++            if old_comments is not None:
++                for item in old_comments[old_comments["video_id"] == rec.video_id].to_dict(orient="records"):
++                    comment = RawCommentInput.model_validate(item)
++                    merged_comments[comment.comment_id] = comment
++            merged_comments.update({comment.comment_id: comment for comment in rec.comments})
++            rec = rec.model_copy(update={"comments": list(merged_comments.values())})
+         existing_vids.add(rec.video_id)
+ 
+         tier = classify_follower_tier(rec.follower_count)
+@@ -230,6 +283,13 @@ def ingest_incremental_batch_to_gold(
+                 "rag_document": rag_doc,
+             }
+         )
++        if old_row is not None:
++            # Only text-derived columns are replaced during explicit enrichment.
++            derived = {"has_transcript", "transcript", "word_count", "word_per_second", "has_cta",
++                       "has_curiosity_gap", "hook_text", "body_beats", "cta_text", "rag_document"}
++            updated = dict(old_row)
++            updated.update({key: new_video_rows[-1][key] for key in derived})
++            new_video_rows[-1] = updated
+ 
+         if rec.author_id not in existing_aids:
+             existing_aids.add(rec.author_id)
+@@ -254,8 +314,10 @@ def ingest_incremental_batch_to_gold(
+             )
+ 
+         # Sink 2: Multimodal tables (Voice Segments + Seeding Comments + KOC-vs-Viewer ABSA)
+-        for seg in _build_voice_segments(rec, wps):
+-            voice_rows.append(seg.model_dump())
++        if replace_voice:
++            replaced_voice_ids.add(rec.video_id)
++            for seg in _build_voice_segments(rec, wps):
++                voice_rows.append(seg.model_dump())
+ 
+         cleansed_comments = detect_seeding_comments(rec.video_id, rec.comments)
+         for c_rec in cleansed_comments:
+@@ -293,11 +355,11 @@ def ingest_incremental_batch_to_gold(
+         if new_creator_rows
+         else df_creators
+     )
+-    df_out_videos = (
+-        pd.concat([df_videos, pd.DataFrame(new_video_rows)[df_videos.columns]], ignore_index=True)
+-        if new_video_rows
+-        else df_videos
+-    )
++    updated_video_ids = {str(row["video_id"]) for row in new_video_rows}
++    df_out_videos = pd.concat([
++        df_videos[~df_videos["video_id"].isin(updated_video_ids)],
++        pd.DataFrame(new_video_rows).reindex(columns=df_videos.columns),
++    ], ignore_index=True) if new_video_rows else df_videos
+ 
+     df_voice = pd.DataFrame(voice_rows) if voice_rows else pd.DataFrame(
+         columns=["segment_id", "video_id", "seq_no", "start_sec", "end_sec", "timestamp_source", "text", "words_per_sec", "pitch_std", "energy_cv"]
+@@ -309,6 +371,17 @@ def ingest_incremental_batch_to_gold(
+         columns=["video_id", "koc_taste", "koc_price", "koc_hygiene", "koc_service", "viewer_taste", "viewer_price", "viewer_hygiene", "viewer_service", "pr_hype_gap", "undisclosed_pr_risk", "viewer_pain_points", "clean_comment_count", "seeding_comment_count"]
+     )
+ 
++    def _carry_forward(name: str, fresh: pd.DataFrame, replace_ids: set[str]) -> pd.DataFrame:
++        old = base_multimodal.get(name)
++        if old is None:
++            return fresh
++        retained = old[~old["video_id"].isin(replace_ids)]
++        return pd.concat([retained, fresh], ignore_index=True) if len(fresh) else retained.copy()
++
++    df_voice = _carry_forward("fact_voice_segments.parquet", df_voice, replaced_voice_ids)
++    df_comments = _carry_forward("fact_comments.parquet", df_comments, updated_video_ids)
++    df_absa = _carry_forward("fact_absa_reviews.parquet", df_absa, updated_video_ids)
++
+     tables = [
+         ("dim_creators.parquet", df_out_creators),
+         ("fact_videos.parquet", df_out_videos),
+@@ -332,7 +405,7 @@ def ingest_incremental_batch_to_gold(
+         )
+ 
+     manifest = CorpusManifest(
+-        snapshot_id=output_corpus_dir.name,
++        snapshot_id=snapshot_id,
+         created_at=datetime.now(timezone.utc).isoformat(),
+         date_window_start=base_manifest.date_window_start,
+         date_window_end=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+@@ -344,7 +417,7 @@ def ingest_incremental_batch_to_gold(
+         files=checksums,
+         caveats=[
+             *base_manifest.caveats,
+-            f"Includes {len(new_video_rows)} fresh 4-month incremental multimodal videos converted via Dual-Sink pipeline.",
++            f"Applied {len(new_video_rows)} incremental video records; explicit enrichment={update_existing}. Parent snapshot={base_manifest.snapshot_id}.",
+         ],
+     )
+     (output_corpus_dir / "manifest.json").write_text(
+
+--- /dev/null
++++ packages/common/snapshots.py
+@@ -0,0 +1,32 @@
++"""Publish complete Gold directories without replacing a named snapshot."""
++
++from __future__ import annotations
++
++from collections.abc import Iterator
++from contextlib import contextmanager
++from pathlib import Path
++from tempfile import TemporaryDirectory
++
++
++@contextmanager
++def snapshot_workspace(destination: Path) -> Iterator[Path]:
++    target = destination.resolve()
++    if destination.is_symlink() or target.exists():
++        raise FileExistsError(f"Snapshot already exists; choose a new output ID: {destination}")
++    target.parent.mkdir(parents=True, exist_ok=True)
++    lock = target.parent / f".{target.name}.publish.lock"
++    # Exclusive creation serializes cooperating publishers for the same snapshot ID.
++    handle = lock.open("x", encoding="utf-8")
++    try:
++        with handle:
++            with TemporaryDirectory(prefix=f".{target.name}.staging-", dir=target.parent) as stage_name:
++                stage = Path(stage_name)
++                yield stage
++                if not (stage / "manifest.json").is_file():
++                    raise ValueError("A complete snapshot manifest is required before publication")
++                if target.exists():
++                    raise FileExistsError(f"Snapshot appeared during build: {destination}")
++                stage.rename(target)
++    finally:
++        # The owned handle is closed before unlink, including on build failures.
++        lock.unlink(missing_ok=True)
+
+--- /dev/null
++++ tests/unit/test_snapshot_continuity.py
+@@ -0,0 +1,134 @@
++from __future__ import annotations
++
++import hashlib
++import json
++from pathlib import Path
++
++import pandas as pd
++import pytest
++
++from packages.data_contracts.multimodal import RawCommentInput, RawIncrementalVideoRecord, RawWhisperSegment
++from pipelines.build_gold_corpus.builder import build_gold_corpus
++from pipelines.ingest_incremental_to_gold import ingest_incremental_batch_to_gold
++
++
++def _hashes(folder: Path) -> dict[str, str]:
++    return {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in folder.iterdir() if p.is_file()}
++
++
++@pytest.fixture
++def base_snapshot(tmp_path: Path) -> Path:
++    base = tmp_path / "base"
++    base.mkdir()
++    creators = pd.DataFrame([{
++        "author_id": "a1", "unique_id": "fixture_creator", "nickname": "Fixture", "verified": False,
++        "commerce_user": False, "tt_seller": False, "follower_count": 1000, "follower_tier": "micro",
++        "heart_count": 1000, "lifetime_video_count": 1, "sample_video_count": 1, "median_play_count": 1000.0,
++        "median_engagement_rate": 0.1, "median_duration_sec": 30.0, "avg_videos_per_week": 1.0,
++    }])
++    videos = pd.DataFrame([{
++        "video_id": "base_video", "author_id": "a1", "author_handle": "fixture_creator", "author_nickname": "Fixture",
++        "tiktok_url": "https://www.tiktok.com/@fixture_creator/video/base_video", "follower_count": 1000,
++        "follower_tier": "micro", "create_time": "2026-11-01T00:00:00+00:00", "create_hour": 0,
++        "year_week": "Y2026_W44", "play_count": 1000, "digg_count": 100, "comment_count": 0,
++        "share_count": 0, "collect_count": 0, "engagement_rate": 0.1, "viral_multiplier": 1.0,
++        "is_ad": False, "is_ec_video": False, "playlist_id": None, "duration_sec": 30,
++        "duration_bucket": "short_20_45s", "caption": "Synthetic fixture", "hashtags": [], "hashtag_count": 0,
++        "has_transcript": False, "transcript": "", "word_count": 0, "word_per_second": 0.0,
++        "has_cta": False, "has_curiosity_gap": False, "poi_id": None, "poi_name": None,
++        "poi_address": None, "poi_city": None, "poi_category_tiny": None, "city_norm": None,
++        "district_norm": None, "region": "unknown", "location_source": "unknown", "video_format": "Review món ăn",
++        "food_category": "Ẩm thực Tổng hợp", "dishes": [], "price_tier": "unspecified", "occasions": [],
++        "hook_text": "", "body_beats": [], "cta_text": "", "rag_document": "",
++    }])
++    files = []
++    for name, frame in [("dim_creators.parquet", creators), ("fact_videos.parquet", videos)]:
++        path = base / name
++        frame.to_parquet(path, index=False)
++        files.append({"filename": name, "rows": len(frame), "columns": len(frame.columns),
++                      "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "size_bytes": path.stat().st_size})
++    (base / "manifest.json").write_text(json.dumps({
++        "snapshot_id": "base", "created_at": "2026-11-17T00:00:00+00:00",
++        "date_window_start": "2026-11-01", "date_window_end": "2026-11-01", "total_creators": 1,
++        "total_videos": 1, "transcribed_videos": 0, "poi_tagged_videos": 0, "ec_tagged_videos": 0,
++        "files": files, "caveats": ["Independent synthetic fixture."],
++    }), encoding="utf-8")
++    return base
++
++
++def _batch(tmp_path: Path, video_id: str, *, text: str = "Phở bò thơm ngon giá hợp lý.", comment_id: str | None = None) -> Path:
++    rec = RawIncrementalVideoRecord(
++        video_id=video_id, author_id="a1", author_handle="fixture_creator", create_time="2026-11-10T00:00:00+00:00",
++        caption="Synthetic phở bò fixture", duration_sec=30, play_count=2000,
++        transcript=text, whisper_segments=[RawWhisperSegment(start_sec=0, end_sec=4, text=text)],
++        comments=[RawCommentInput(comment_id=comment_id or f"{video_id}_comment", text="Giá hợp lý")],
++    )
++    path = tmp_path / f"{video_id}_{comment_id or 'initial'}.jsonl"
++    path.write_text(rec.model_dump_json(exclude_unset=True) + "\n", encoding="utf-8")
++    return path
++
++
++def test_second_batch_preserves_every_sink_and_base_bytes(base_snapshot: Path, tmp_path: Path) -> None:
++    before = _hashes(base_snapshot)
++    v2, v3 = tmp_path / "v2", tmp_path / "v3"
++    ingest_incremental_batch_to_gold(base_snapshot, _batch(tmp_path, "A"), v2)
++    ingest_incremental_batch_to_gold(v2, _batch(tmp_path, "B"), v3)
++    assert set(pd.read_parquet(v3 / "fact_videos.parquet")["video_id"]) == {"base_video", "A", "B"}
++    for name in ["fact_voice_segments.parquet", "fact_comments.parquet", "fact_absa_reviews.parquet"]:
++        assert set(pd.read_parquet(v3 / name)["video_id"]) == {"A", "B"}
++    assert _hashes(base_snapshot) == before
++
++
++@pytest.mark.parametrize("replay", [False, True], ids=["empty", "replay"])
++def test_replay_or_empty_batch_retains_multimodal_rows(base_snapshot: Path, tmp_path: Path, replay: bool) -> None:
++    first = _batch(tmp_path, "A")
++    v2, out = tmp_path / "v2", tmp_path / "next"
++    ingest_incremental_batch_to_gold(base_snapshot, first, v2)
++    empty = tmp_path / "empty.jsonl"
++    empty.write_text("", encoding="utf-8")
++    ingest_incremental_batch_to_gold(v2, first if replay else empty, out)
++    for name in ["fact_voice_segments.parquet", "fact_comments.parquet", "fact_absa_reviews.parquet"]:
++        assert set(pd.read_parquet(out / name)["video_id"]) == {"A"}
++    assert len(pd.read_parquet(out / "fact_videos.parquet")) == 2
++
++
++def test_explicit_enrichment_updates_existing_transcript_and_preserves_old_comments(base_snapshot: Path, tmp_path: Path) -> None:
++    v2, out = tmp_path / "v2", tmp_path / "enriched"
++    ingest_incremental_batch_to_gold(base_snapshot, _batch(tmp_path, "A"), v2)
++    ingest_incremental_batch_to_gold(
++        v2, _batch(tmp_path, "A", text="Phở bò có nước dùng thơm và thịt mềm.", comment_id="A_second"), out,
++        update_existing=True,
++    )
++    videos = pd.read_parquet(out / "fact_videos.parquet")
++    assert len(videos) == 2
++    assert videos.loc[videos["video_id"] == "A", "transcript"].iloc[0] == "Phở bò có nước dùng thơm và thịt mềm."
++    assert set(pd.read_parquet(out / "fact_comments.parquet")["comment_id"]) == {"A_comment", "A_second"}
++    assert len(pd.read_parquet(out / "fact_absa_reviews.parquet")) == 1
++
++
++def test_converter_rejects_existing_output_without_changing_it(base_snapshot: Path, tmp_path: Path) -> None:
++    before = _hashes(base_snapshot)
++    with pytest.raises(FileExistsError):
++        ingest_incremental_batch_to_gold(base_snapshot, _batch(tmp_path, "A"), base_snapshot)
++    assert _hashes(base_snapshot) == before
++
++
++def test_historical_builder_rejects_published_output_before_loading_inputs(base_snapshot: Path, tmp_path: Path) -> None:
++    before = _hashes(base_snapshot)
++    with pytest.raises(FileExistsError):
++        build_gold_corpus(tmp_path / "missing_sources", base_snapshot)
++    assert _hashes(base_snapshot) == before
++
++
++def test_failed_historical_build_does_not_publish_partial_snapshot(tmp_path: Path) -> None:
++    out = tmp_path / "failed_snapshot"
++    with pytest.raises(FileNotFoundError):
++        build_gold_corpus(tmp_path / "missing_sources", out)
++    assert not out.exists()
++
++
++def test_failed_build_releases_publication_lock_for_retry(tmp_path: Path) -> None:
++    out = tmp_path / "retry_snapshot"
++    for _ in range(2):
++        with pytest.raises(FileNotFoundError):
++            build_gold_corpus(tmp_path / "missing_sources", out)

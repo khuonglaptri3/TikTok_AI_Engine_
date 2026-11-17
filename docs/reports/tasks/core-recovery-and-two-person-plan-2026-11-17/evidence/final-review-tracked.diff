@@ -1,0 +1,2031 @@
+diff --git a/.env.example b/.env.example
+index 291220a..37657b8 100644
+--- a/.env.example
++++ b/.env.example
+@@ -3,9 +3,9 @@ GEMINI_API_KEY=
+ 
+ # === Application Profile ===
+ TIKTOK_RAG_ENV=local
+-TIKTOK_RAG_CORPUS_DIR=data/corpus/20261116_v1
+-TIKTOK_RAG_BM25_INDEX_DIR=artifacts/indexes/bm25-v1
+-TIKTOK_RAG_BENCHMARK_REPORT_PATH=artifacts/benchmarks/retrieval_v1.json
++TIKTOK_RAG_CORPUS_DIR=data/corpus/20261117_recovered_v1
++TIKTOK_RAG_BM25_INDEX_DIR=artifacts/indexes/bm25-v2
++TIKTOK_RAG_BENCHMARK_REPORT_PATH=artifacts/benchmarks/retrieval_v2.json
+ 
+ # === Docker Infrastructure (Qdrant + Redis) ===
+ TIKTOK_RAG_QDRANT_URL=http://127.0.0.1:6333
+diff --git a/AGENTS.md b/AGENTS.md
+index 26986f3..64ee49c 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -1,10 +1,10 @@
+-# Owner scope - AI modules and simple demonstration (2026-11-16)
++# Team scope - AI modules and simple demonstration (2026-11-17)
+ 
+-This project (`TikTok_AI_Engine_`) is implemented by one AI Engineer (Trần Đình Khương). Deliver the selected AI modules, serve their results through typed AI APIs, and connect those APIs to one simple UI for demonstration.
++This project (`TikTok_AI_Engine_`) is delivered by two equal contributors, Trần Đình Khương and Nguyễn Việt Nguyên ([NguyenVietNguyen2612](https://github.com/NguyenVietNguyen2612)). Split estimated delivery, evaluation, integration and reciprocal review effort equally across the active plan; do not infer skill tiers from public profiles. Deliver the selected AI modules, serve their results through typed AI APIs, and connect those APIs to one simple UI for demonstration.
+ 
+ - Build the AI logic, relevant data preparation, hybrid retrieval/model workflows, multimodal evaluation, inference serving, bounded failures, and per-module latency measurements (`ms`).
+ - Use one lightweight Gradio UI (`/demo/`) mounted over ASGI transport to present actual AI outputs, citations, Niche Micro-Benchmarks, ABSA/Seeding diagnostics, errors, and stage timings. Do not add login, accounts, user-role workspaces, or a product session system.
+-- Product CRUD, creator/merchant billing portals, operational ad-buying actions, enterprise cloud administration, and business-pilot KPI studies are excluded from the active project plan. There is no assumed backend contributor and no backend handoff guide to produce.
++- Product CRUD, creator/merchant billing portals, operational ad-buying actions, enterprise cloud administration, and business-pilot KPI studies are excluded from the active project plan. Both contributors share typed AI API and demo integration work; no separate product-backend handoff guide is required.
+ - **Dual-Tier Data Preservation & Incremental Discipline:**
+   1. **Historical Corpus (`1.50 GB`, `37,840` files, `2023-11` to `2025-03`):** Preserve 100% of original raw/interim/legacy files untouched on local disk (never re-crawl historical videos). Serve downstream analytics and RAG exclusively from immutable, SHA256-verified Gold Parquet snapshots (`data/corpus/<snapshot-id>/`).
+   2. **Fresh Rolling 4-Month Stream (`data/raw_incremental/`):** Crawl only the latest 4-month window (`Metadata + 64kbps .mp3 Audio + Comments`) and run the **Dual-Sink Normalization Pipeline** (`pipelines.ingest_incremental_to_gold`) to both (a) append normalized 49-column rows into `fact_videos.parquet` for RAG/Trend freshness and (b) populate `fact_voice_segments.parquet`, `fact_comments.parquet`, and `fact_absa_reviews.parquet` for Voice Prosody, Seeding Detection, and KOC-vs-Viewer ABSA.
+diff --git a/README.md b/README.md
+index 9715528..cad7b80 100644
+--- a/README.md
++++ b/README.md
+@@ -15,13 +15,15 @@ This README presents the overall project vision, dual-stream data architecture,
+ 
+ > **Measure Niche Benchmarks → Retrieve Viral Evidence → Synthesize Cited Scripts → Audit Seeding & KOC-vs-Viewer ABSA**
+ 
++The current delivery sequence is a CPU/offline historical core, followed by gated fresh-data and multimodal evaluation. Trần Đình Khương and Nguyễn Việt Nguyên share delivery, evaluation, integration and reciprocal review equally in the [active plan](docs/planning/TikTok_AI_Engine_Milestone.md). See the [recovery report](docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/README.md) for measured results and remaining work. Historical statistics are descriptive; script outputs are creative drafts with structural checks. Comment/aspect scores are heuristic diagnostics pending independent labels.
++
+ ### Three Core Value Layers
+ 
+ | Value Layer | Core Question | Technical Mechanism | Data Scope | System Output |
+ | :--- | :--- | :--- | :--- | :--- |
+-| **Quantitative Niche Benchmarks** | *"What duration, speaking pace, and posting hours win in this micro-niche?"* | Columnar PyArrow/DuckDB IQR & Median Aggregation + 6-Axis F&B Taxonomy | `70,996+` Videos & `23,448` Official GPS POIs | Empirical IQR duration, `median_word_per_second`, top hours, top POI venues. |
+-| **Qualitative Evidence & Script RAG** | *"How do breakout videos structure their Hook/Body/CTA, and how should I script mine?"* | NFC Vietnamese CSR BM25 + Qdrant Dense + RRF + `viral_multiplier` Boost + Pacing Guardrails | `21,748+` Spoken Vietnamese Transcripts | Cited `EvidenceCard`s, 4-beat `mm:ss` scripts, camera/audio notes, anti-cliché audit. |
+-| **Multimodal Trust & ABSA Radar** | *"Is this KOC review over-hyped PR, and what do real non-seeding diners complain about?"* | Comment Seeding Clustering + 4-Aspect ABSA (`Taste`, `Price`, `Hygiene`, `Service`) + Whisper/Librosa | Rolling **4-Month Fresh Stream** (`Audio + Comments`) | `PR Hype Gap`, `Undisclosed PR Risk`, cleansed comments, viewer pain-points. |
++| **Quantitative Niche Benchmarks** | *"What duration, transcript density, and posting hours appear in this historical niche?"* | PyArrow/pandas IQR & Median Aggregation + 6-Axis F&B Taxonomy | Historical video metadata, transcripts and platform POIs; counts verified in the recovery report | Empirical duration IQR, whitespace units/second, observed hours and POI venues. |
++| **Qualitative Evidence & Script RAG** | *"How do reference videos structure their Hook/Body/CTA, and how might I draft mine?"* | NFC Vietnamese CSR BM25 + phrase/viral reranking; dense/RRF evaluation is conditional | Historical Vietnamese transcripts | Cited `EvidenceCard`s, creative 4-beat `mm:ss` drafts, camera/audio notes and structural checks; factual support requires review. |
++| **Multimodal Trust & ABSA Radar** | *"How do creator speech and retained comments differ on observed aspects?"* | Comment-pattern rules + 4-Aspect ABSA (`Taste`, `Price`, `Hygiene`, `Service`); audio evaluation planned | Manual/synthetic demonstration inputs today; bounded **4-Month Fresh Stream** planned | Heuristic sentiment discrepancies, comment flags and source diagnostics; no verified diner, bot or hidden-sponsorship classification. |
+ 
+ ---
+ 
+@@ -36,7 +38,7 @@ flowchart LR
+     end
+ 
+     subgraph Fresh4M ["2. Rolling 4-Month Incremental Stream"]
+-        F1["pipelines.crawl_incremental (Metadata + 64kbps Audio + Comments)"]
++        F1["Planned bounded collector; current CLI provides synthetic fixtures"]
+     end
+ 
+     subgraph Gold ["3. Immutable SHA256 Gold Snapshots (data/corpus/)"]
+@@ -77,10 +79,10 @@ TikTok_AI_Engine_/
+ │   ├── llm/                               # Sliding-window RPM BoundedGeminiClient, domain gate, timeline/cliché guardrails
+ │   └── script_engine/                     # Citation-grounded script synthesis orchestrator (gemini_free & $0 offline_grounded)
+ ├── pipelines/
+-│   ├── build_gold_corpus/                 # Builds historical Gold snapshot (20261116_v1) + SHA256 manifest.json
++│   ├── build_gold_corpus/                 # Builds new historical Gold snapshots + SHA256 manifest.json
+ │   ├── build_dense_sparse_index/          # Builds 391K-term NFC Vietnamese CSR BM25 index (21,748 videos)
+-│   ├── benchmark_retrieval/               # Freezes Recall@10, MRR@10, nDCG@10, p95 latency into artifacts/benchmarks/
+-│   ├── crawl_incremental/                 # Rolling 4-month crawler (skips >120d & historical IDs; fetches audio + comments)
++│   ├── benchmark_retrieval/               # Versions Recall@10, Precision@10, MRR@10, nDCG@10 and artifact receipts
++│   ├── crawl_incremental/                 # Cutoff/skip helpers and synthetic fixture CLI; live worker remains planned
+ │   ├── ingest_incremental_to_gold/        # Dual-Sink converter appending 4M batch into fact_videos + multimodal tables
+ │   └── enrich_taxonomy_batch/             # Optional resumable Free-Tier Gemini batch taxonomy enricher
+ ├── docs/
+@@ -98,6 +100,9 @@ TikTok_AI_Engine_/
+ 
+ ### 1. Environment Setup
+ ```bash
++python3 -m venv .venv
++# Activate .venv using your shell, then install the API/demo and verification tools:
++python3 -m pip install '.[dev]'
+ cp .env.example .env
+ # Optional: set GEMINI_API_KEY in .env to enable live 'gemini_free' generation.
+ # All analytics, BM25/RRF retrieval, Seeding/ABSA radar, and 'offline_grounded' script synthesis run 100% locally at $0.
+@@ -105,6 +110,9 @@ cp .env.example .env
+ 
+ ### 2. Build Local Gold Artifacts & Run Verification Gates
+ *(Requires local `data/` directory containing the preserved upstream datasets)*
++
++The builder also needs the preserved legacy location table under `data/legacy_app_data/trend_analysis/`. The [recovery evidence](docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-review.md) records the pinned source and integrity method. Builds create `data/corpus/20261117_recovered_v1`, `artifacts/indexes/bm25-v2` and `artifacts/benchmarks/retrieval_v2.json`. Existing Gold snapshots and benchmark receipts are rejected on collision; reuse verified artifacts or supply a new output path and matching environment settings. Standard Recall@10 uses all relevant documents as its denominator; the frozen keyword labels are a regression set, with independent relevance evaluation still pending.
++
+ ```bash
+ python3 scripts/dev.py check-secrets
+ python3 scripts/dev.py build-corpus
+@@ -114,12 +122,14 @@ python3 scripts/dev.py typecheck
+ python3 scripts/dev.py test
+ ```
+ 
+-### 3. Test 4-Month Incremental Dual-Sink Pipeline
++### 3. Test Incremental Dual-Sink Ingestion With Synthetic Inputs
+ ```bash
+ python3 -m pipelines.crawl_incremental --seed-demo-batch
+-python3 -m pipelines.ingest_incremental_to_gold --output-corpus data/corpus/20261116_v2_4m
++python3 -m pipelines.ingest_incremental_to_gold --output-corpus data/corpus/20261117_incremental_v1
+ ```
+ 
++For another batch, pass the preceding snapshot with `--base-corpus`, a new `--output-corpus`, and the batch path with `--incremental-jsonl`. The Python API `ingest_incremental_batch_to_gold(..., update_existing=True)` permits explicit transcript/comment enrichment while retaining base observations. Synthetic fixtures do not demonstrate a live crawl or current trends.
++
+ ### 4. Launch API & 4-Tab Gradio Studio
+ ```bash
+ python3 scripts/dev.py run-demo
+diff --git a/ReFactor_structure/04_IMPLEMENTATION_PLAN.md b/ReFactor_structure/04_IMPLEMENTATION_PLAN.md
+index 2c56cc8..5202e41 100644
+--- a/ReFactor_structure/04_IMPLEMENTATION_PLAN.md
++++ b/ReFactor_structure/04_IMPLEMENTATION_PLAN.md
+@@ -1,97 +1,106 @@
+-# ViralFoodRAG (SenticRAG-Aligned Refactor) Implementation Plan
++# Recovery-first two-person execution companion
+ 
+-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
++> **For agentic workers:** Use `superpowers:executing-plans` or the explicitly selected reviewed execution method. Read the task's canonical specification/plan before implementation. Preserve existing authorization; no new approval is needed for already authorized routine recovery/fixes.
+ 
+-**Goal:** Refactor `21KHDL-TikTok-Analytics` into a production-grade, SenticRAG-aligned AI Engineering monorepo with zero data loss across all 1.50 GB (`37,840` files) of existing assets, unified Gold Parquet corpus (`70,996` videos, `23,448` restored GPS POIs, `~22,516` merged transcripts), Hybrid Retrieval + Reranking, Niche Analytics, Grounded Script Synthesis, and a typed FastAPI + Gradio (`/demo/`) runtime.
++- Revision: 2026-11-17 (Asia/Saigon).
++- Authoritative scope, allocation and gates: [active milestone plan](../docs/planning/TikTok_AI_Engine_Milestone.md).
++- Contributors: Trần Đình Khương (K) and Nguyễn Việt Nguyên (N); 94 estimated points / 47 person-days each, including reciprocal review/integration/gates. No skill tiers are inferred from the public profile.
++- Current activity: [authorized recovery task](../docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/README.md), with its [specification](../docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/superpowers/spec.md) and [implementation plan](../docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/superpowers/plan.md).
+ 
+-**Architecture:** Modular Python 3.11+ monorepo split into `packages/` (strict Pydantic v2 contracts, settings, taxonomy, columnar analytics, BM25 + Qdrant hybrid retrieval, bounded Gemini LLM client & guardrails, script orchestrator), `pipelines/` (offline reproducible CLIs), `apps/api` (FastAPI), and `apps/demo` (Gradio mounted on `/demo/` via ASGI transport), backed by `infra/compose/docker-compose.yml` (`Qdrant` + `Redis` + `API`).
++**Goal:** Reproduce and correct the historical CPU analytics/BM25/script/API/Gradio core first, then decide bounded fresh-data and multimodal experiments from observed evidence.
+ 
+-**Tech Stack:** Python 3.11+, FastAPI, Gradio, Pydantic v2, PyArrow/Pandas (+ DuckDB/Qdrant/Redis adapters), Google GenAI SDK (`google-genai`), Pytest, Mypy.
++**Architecture:** Immutable provenance-bound Gold snapshots feed typed domain packages, reproducible CLI pipelines, FastAPI and one ASGI-mounted Gradio `/demo/`. Local BM25 and offline drafting are the baseline. Audio, dense indexes, live providers and public hosting are conditional capabilities with their own acceptance evidence.
+ 
+-**Spec:** `ReFactor_structure/03_AI_ENGINEER_ARCHITECTURE_SPEC.md`
++**Tech stack:** Python 3.11+, Pydantic v2, pandas/PyArrow/SciPy, FastAPI/Gradio, pytest and project-configured mypy; optional crawling/ASR/dense dependencies only when used.
+ 
+-## Global Constraints
++**Spec:** The current recovery specification governs present fixes. Each later task creates its own `docs/reports/milestones/<ID>/superpowers/spec.md` and `plan.md` at task start. Legacy [architecture text](03_AI_ENGINEER_ARCHITECTURE_SPEC.md) remains historical design context where it disagrees with the active plan.
+ 
+-- **100% Data Preservation:** Never delete or overwrite any file inside `data/` (`37,837` files, `1,475,677,482` bytes). Preserve `src/app/trend_analysis/data/*` and `src/app/video_analysis/data/*` into `data/legacy_app_data/` and keep archived copies under `archive/legacy_coursework/`.
+-- **Secret Hygiene:** Purge all hardcoded `AIzaSy*` and third-party API keys across all 16 legacy files; enforce via `scripts/check_secrets.py` (`0` leaks allowed). Keep `GEMINI_API_KEY` solely in `.env` (gitignored).
+-- **Zero Paid Spend:** Cap Gemini usage to owner's Free-Tier (`<= 2` calls per generation turn, sliding-window RPM guard, explicit `QuotaBlockedError` / `ProviderUnavailableError` without paid fallback).
+-- **Fail-Closed Integrity:** Verify `manifest.json` SHA256 checksums on corpus load; never fabricate metrics or silently fall back to synthetic mock results on live routes.
++## Global constraints
+ 
+-## Review Focus
++- Preserve original local raw/interim/legacy bytes; no historical TikTok recrawl. Distinguish pinned upstream inventory from the unverified earlier owner-copy scope.
++- Use a new output ID, reject collisions, validate complete table/schema/hash sets before publication and retain parent/input/code lineage. Never rewrite a published base snapshot.
++- USD 0 provider/GPU/hosting spend; offline default, <= 2 optional free-tier LLM calls per turn, actual project-aware sliding-window rate limit, bounded typed failures and no paid fallback.
++- Never replace live outputs with authored fixtures or call a source ID proof of claim support. Present historical descriptive summaries, source-supported facts and creative directions accurately.
++- Preserve prior reports/raw evidence. Store each started task's single current report with sibling `evidence/` and `superpowers/{spec.md,plan.md}`; no empty future bundles or backdated provenance.
++- This companion does not claim any unchecked item below is implemented or accepted. Existing code and the prior checked plan are historical inputs, not a reason to skip current verification.
+ 
+-- Missing `GEMINI_API_KEY` at runtime: `/api/v1/analytics/niche-benchmark` and `/api/v1/retrieval/search` must still work 100% locally; `/api/v1/script/generate` must return a clear, typed `PROVIDER_KEY_MISSING` error (or explicit `deterministic_outline` mode when requested) without crashing.
+-- Location dish-name ambiguity (e.g., *"Bún đậu Hà Nội ở Quận 7"*): `location_poi.py` must prioritize GPS `poi_city` / district-to-city resolution (`quận 7` -> `hồ chí minh`) over noisy speech city mentions.
+-- Division-by-zero on creator/video metrics: `play_count == 0` or `duration_sec == 0` must never produce `inf` or `NaN` in `engagement_rate`, `viral_multiplier`, or `word_per_second`.
+-- Vietnamese diacritics & NFC/NFD Unicode normalization in BM25 lexical search: equivalent Unicode forms must tokenize identically while preserving Vietnamese tones.
+-- Legacy coursework archival: moving `src/` and `notebooks/` to `archive/legacy_coursework/` must not break any data file path or delete `ReFactor_structure/`.
++## Review focus
+ 
+----
++1. Repeated ingestion, replay, empty batches and same-video enrichment must retain every base multimodal table and leave originals unchanged.
++2. Empty/uncited/mistimed drafts, no-answer requests and invalid citations must fail or abstain; arbitrary evidence associations and unsupported firsthand assertions must not pass.
++3. Conventional Recall@10, independent query judgments and exact corpus/index/query receipts must remain distinct from weak-label frozen regression.
++4. Fresh capture requires a real invoked worker and transcript-before-search dependency; cutoff helpers and synthetic fixture success are insufficient.
++5. Unknown aspects/intent, estimated timestamp provenance and resource/provider/host limits must remain visible; missing data cannot become neutral sentiment or hidden-intent truth.
+ 
+-### Task 1: Secret Sanitization, Non-Destructive Legacy Archival & Monorepo Scaffold (`M0`)
++## Execution waves
+ 
+-**Files:**
+-- Create: `scripts/check_secrets.py`, `scripts/dev.py`, `.env.example`, `.gitignore`, `.dockerignore`, `Makefile`, `pyproject.toml`, `AGENTS.md`
+-- Create: `infra/compose/docker-compose.yml`, `infra/docker/Dockerfile.api`, `configs/retrieval/default.json`
+-- Move (non-destructive): `notebooks/`, `reports/`, `slides/`, `development/`, `src/`, `Team-Plan-and-Work-Distribution.md`, `packages.txt` -> `archive/legacy_coursework/` (after scrubbing all 16 files' hardcoded keys and copying `src/app/*/data/*` to `data/legacy_app_data/`)
+-- Test: `tests/unit/test_secret_hygiene.py`
++The authoritative task table defines exact K/N effort and dependencies. W1 starts after verified checkouts and actual capacity agreement; W1–W12+ are indicative windows. The complete research scope is not an eight-week commitment. Every owner submits evidence for the other contributor's review and reproduction; release integration waits for that review.
+ 
+-- [x] **Step 1:** Scrub all hardcoded API keys in the 16 legacy files, preserve `src/app/*/data/*` into `data/legacy_app_data/`, archive legacy coursework into `archive/legacy_coursework/`, and verify `data/` byte count is unchanged (`>= 1,475,677,482` bytes).
+-- [x] **Step 2:** Create `scripts/check_secrets.py`, `.env.example`, `.gitignore`, `.dockerignore`, `pyproject.toml`, `Makefile`, `scripts/dev.py`, `AGENTS.md`, and `infra/` Docker files.
+-- [x] **Step 3:** Write and run `tests/unit/test_secret_hygiene.py` verifying zero leaked `AIzaSy` keys across the entire workspace.
++### Wave 1 — recover inputs and foundation (M0/M1; indicative W1–W2)
+ 
+----
++**Owners/review:** K leads M0.1/M0.3/M1.2, N leads M0.2/M1.1; gate owners/reviewers are in the active plan.
+ 
+-### Task 2: Common Settings, Telemetry & Canonical Data Contracts (`M0`)
++**Files and interfaces:** `packages/common/`, `packages/data_contracts/`, `packages/taxonomy/`, `pipelines/build_gold_corpus/`, `pyproject.toml`, `infra/docker/Dockerfile.api`, `apps/api/`, `apps/demo/`; source/input inventories and a new verified snapshot are the outputs consumed by M2.
+ 
+-**Files:**
+-- Create: `packages/__init__.py`, `packages/common/settings/__init__.py`, `packages/common/logging/__init__.py`, `packages/common/exceptions/__init__.py`
+-- Create: `packages/data_contracts/__init__.py`, `packages/data_contracts/corpus.py`, `packages/data_contracts/query.py`, `packages/data_contracts/analytics.py`, `packages/data_contracts/retrieval.py`, `packages/data_contracts/script.py`, `packages/data_contracts/errors.py`
+-- Test: `tests/contract/test_data_contracts.py`
++- [ ] Inventory every pre-existing original by relative path/size/SHA256; recover missing permitted assets from pinned revision `f142e5656a220f94f8024de168b0832754b3bd9e` without overwriting different content. Record missing/failed/source-license evidence.
++- [ ] Reproduce the snapshot collision/publication and packaging defects with meaningful failing checks before production changes. Revalidate contract bounds, taxonomy unknowns and nonfinite-value handling.
++- [ ] Implement minimal fixes; build a new immutable Gold output and verify complete tables/schema/keys/counts/hashes, original-byte preservation and per-field lineage. Do not force unverified old counts to match.
++- [ ] Reproduce clean install/import, source/package build and actual ASGI API/Gradio behavior with no provider call. Record whether Docker-engine execution is available separately.
++- [ ] Review the 120-record taxonomy/lineage sample, publish G0/G1 evidence and decisions under the actual task bundles. Link the existing M0.1 historical report rather than pretending it was newly executed.
+ 
+-- [x] **Step 1:** Implement typed environment settings loader (`AppSettings`), stage timer (`StageTimer`), and bounded domain exceptions.
+-- [x] **Step 2:** Implement strict Pydantic v2 contracts for corpus records, niche queries, micro-benchmarks, evidence citations, grounded script responses, and canonical errors.
+-- [x] **Step 3:** Run `pytest tests/contract/test_data_contracts.py -v` and verify schema validation & edge-case guards.
++### Wave 2 — correct and accept the historical core (M2; indicative W2–W4)
+ 
+----
++**Owners/review:** N leads M2.1/M2.3, K leads M2.2; other contributor reviews each.
+ 
+-### Task 3: Vietnamese F&B Taxonomy & Unified Gold Corpus Pipeline (`M1`)
++**Files and interfaces:** `packages/analytics/`, `packages/retrieval/`, `packages/llm/guardrails/verifier.py`, `packages/script_engine/`, `pipelines/benchmark_retrieval/`, `tests/unit/`, `tests/eval/`, `data/evaluation/` and versioned evaluation receipts; consumes the verified M1 snapshot and produces the G2 accepted local demonstration.
+ 
+-**Files:**
+-- Create: `packages/taxonomy/__init__.py`, `packages/taxonomy/context_enums.py`, `packages/taxonomy/food_hierarchy.py`, `packages/taxonomy/location_poi.py`, `packages/taxonomy/rule_extractor.py`
+-- Create: `pipelines/__init__.py`, `pipelines/build_gold_corpus/__init__.py`, `pipelines/build_gold_corpus/builder.py`, `pipelines/build_gold_corpus/__main__.py`
+-- Create: `pipelines/enrich_taxonomy_batch/__init__.py`, `pipelines/enrich_taxonomy_batch/__main__.py`
+-- Test: `tests/unit/test_taxonomy_and_corpus.py`
++- [ ] Observe hand-checkable metric regressions fail; correct Recall@10's denominator to all relevant documents and preserve the old artifact as historical evidence. Keep rankings/qrels/query/index/corpus/code provenance.
++- [ ] Observe empty/uncited/mistimed/no-evidence script cases fail before guardrail fixes; remove arbitrary fallback citations and unsupported firsthand claims. Test supported ordinary drafts and no-answer behavior after the fixes.
++- [ ] Independently author/freeze 40 queries (20 development / 20 locked test), blind pooled relevance judgments, adjudicate disagreement and record missing judgments. Each person authors half and both contribute review.
++- [ ] Measure analytics/BM25 current latency with hardware, 100 warm requests and concurrency 1; report thresholds and failure honestly. Qualify historical cohorts and support counts rather than claiming causal optimization/current trends.
++- [ ] Double-review 30 scripts for factual source support and creative-direction separation; structural citation/timeline checks remain separate from entailment evidence.
++- [ ] Run full pytest, configured mypy, secret scanner, clean package/source check and recovered-corpus API/demo smoke. Record exact outcomes and G2 acceptance; a passing historical core closes no fresh-data/trust gate automatically.
+ 
+-- [x] **Step 1:** Implement POI-priority location resolver (`quận 7` + `hà nội` -> `hồ chí minh`), 7-category food hierarchy mapper, regex/rule extractors (`price_tier`, `occasion`, `duration_bucket`, `hook_text`, `cta_text`), and safe `engagement_rate` / `viral_multiplier` formulas.
+-- [x] **Step 2:** Implement and execute `python3 -m pipelines.build_gold_corpus --output data/corpus/20261116_v1` merging `final_raw_videos.csv` (`23,448` POIs), `cleaned_video_info.parquet` (`70,996` rows), `cleaned_user_info.parquet` (`264` rows), `data/transcripts/*.json` (`23,122` files), `final_location_food_data.parquet` (`14,252` rows), and `content_analysis_data.parquet` (`3,004` rows), emitting `manifest.json` with SHA256 hashes.
+-- [x] **Step 3:** Run `pytest tests/unit/test_taxonomy_and_corpus.py -v` against both unit fixtures and the built `data/corpus/20261116_v1` snapshot.
++The current recovery task can supply dated fixes/rebuild evidence to these tasks. Independent human judgments and per-task acceptance remain future work unless actually performed; automated synthetic tests do not replace them.
+ 
+----
++### Wave 3 — safe ingest and one real vertical slice (M3; indicative W5–W6)
+ 
+-### Task 4: Niche Analytics Engine & Hybrid Retrieval + Reranking (`M2` & `M3a`)
++**Owners/review:** N leads M3.1/M3.3, K leads M3.2; M3.3 has equal pilot/integration effort. Repairs may start early; real pilot acceptance waits for G2 and safe ingest.
+ 
+-**Files:**
+-- Create: `packages/analytics/__init__.py`, `packages/analytics/engine.py`
+-- Create: `packages/retrieval/__init__.py`, `packages/retrieval/sparse/bm25.py`, `packages/retrieval/dense/qdrant_adapter.py`, `packages/retrieval/fusion/rrf.py`, `packages/retrieval/rerank/scorer.py`, `packages/retrieval/service.py`
+-- Create: `pipelines/build_dense_sparse_index/__init__.py`, `pipelines/build_dense_sparse_index/__main__.py`
+-- Create: `pipelines/benchmark_retrieval/__init__.py`, `pipelines/benchmark_retrieval/__main__.py`, `data/evaluation/v1/queries.jsonl`
+-- Test: `tests/unit/test_analytics_and_retrieval.py`, `tests/eval/test_retrieval_benchmark.py`
++**Files and interfaces:** `pipelines/ingest_incremental_to_gold/`, `pipelines/crawl_incremental/`, `packages/data_contracts/multimodal.py`, `tests/unit/test_incremental_absa_seeding.py` and new focused tests; consumes base snapshot/historical-ID set and produces a new snapshot with available modal tables plus real capture receipts.
+ 
+-- [x] **Step 1:** Implement fail-closed corpus loader (verifying `manifest.json` SHA256) and `NicheAnalyticsEngine` computing median views, IQR duration, median `word_per_second`, optimal hashtag IQR, top posting hours by median views, and top POI neighborhoods.
+-- [x] **Step 2:** Implement NFC-normalized Vietnamese BM25 index builder/searcher, Qdrant HTTP adapter (graceful status reporting when Docker Qdrant is offline, full hybrid RRF when online), `viral_multiplier` log-boost, and local phrase/overlap + optional Cross-Encoder reranker.
+-- [x] **Step 3:** Build `artifacts/indexes/bm25-v1` over all `~22,516` transcribed videos, run `pipelines.benchmark_retrieval` to freeze real metrics into `artifacts/benchmarks/retrieval_v1.json`, and verify via `pytest`.
++- [ ] First observe A/B/replay/empty/enrichment retention checks fail; fix keyed merge/deduplication across video, voice, comment and ABSA tables and safe new-output publication. Verify unchanged base bytes.
++- [ ] Implement an invoked live worker with bounded discovery/retries/resume and per-item success/failure provenance; keep fixture mode explicitly labeled. Test as-of 120-day cutoff and historical-ID exclusion.
++- [ ] Pilot at most 5 creators / 50 candidates / 30 successes / 60 audio minutes / 1,000 comments / one two-hour capture session. No successful yield is guaranteed.
++- [ ] Transcribe at most 10 videos / 20 audio minutes before asserting searchability. Verify at least 5 real fresh transcribed videos resolve through search, or record BLOCKED/insufficient yield without authored replacements.
++- [ ] Measure capture/audio/comment coverage, wall time, disk/RAM, ASR real-time factor and annotation minutes; G3 decides any further bounded workload. Do not expand collection automatically.
+ 
+----
++### Wave 4 — independently evaluate audio and diagnostics (M4/M5; indicative W6–W9)
+ 
+-### Task 5: Bounded Gemini Client, Grounded Script Engine, FastAPI & Gradio `/demo/` (`M3b` & `M4`)
++**Owners/review:** K leads M4.1/M5.2, N leads M4.2/M5.1; independent reference/annotation/review work is budgeted for both.
+ 
+-**Files:**
+-- Create: `packages/llm/clients/gemini.py`, `packages/llm/prompts/templates.py`, `packages/llm/guardrails/verifier.py`
+-- Create: `packages/script_engine/service.py`
+-- Create: `apps/api/app/main.py`, `apps/api/app/routers/health.py`, `apps/api/app/routers/analytics.py`, `apps/api/app/routers/retrieval.py`, `apps/api/app/routers/script.py`
+-- Create: `apps/demo/main.py`, `apps/demo/ui.py`, `apps/demo/presentation.py`, `README.md`
+-- Test: `tests/unit/test_script_guardrails.py`, `tests/smoke/test_api_and_demo.py`
++**Files and interfaces:** audio adapters/pipelines when begun, `packages/data_contracts/multimodal.py`, `packages/seeding/`, `packages/absa/`, corresponding API/presentation tests and task-local annotation/evaluation evidence; consumes real pilot audio/comments and produces qualified timestamp/observable-pattern/aspect evidence.
+ 
+-- [x] **Step 1:** Implement bounded Gemini client (reads `GEMINI_API_KEY` solely from settings/.env, Redis/in-memory RPM limiter, 0 paid fallback), deterministic grounded fallback blueprint when key is absent or `mode="offline_grounded"`, `mm:ss` timeline recalculator, and cliché/citation guardrail verifier.
+-- [x] **Step 2:** Implement FastAPI app factory (`/health/live`, `/health/ready`, `/api/v1/demo/modules`, `/api/v1/analytics/niche-benchmark`, `/api/v1/retrieval/search`, `/api/v1/script/generate`, `/api/v1/evaluation/summary`) and mount the 3-tab Gradio workspace at `/demo/` via ASGI transport.
+-- [x] **Step 3:** Update root `README.md` (preserving clean SenticRAG overview style), run full `pytest`, `mypy`, `scripts/check_secrets.py`, and verify 100% preservation of all original `37,840` data files.
++- [ ] Validate `0 <= start < end <= duration` and provenance before indexing. Evaluate <= 60 audio minutes with <= 20 reference minutes / >= 50 utterances; record CER/WER, boundary error, real-time factor and peak RAM/disk. Keep interpolated historical offsets visibly estimated.
++- [ ] Replace hidden-intent sponsorship claims with observed disclosure/commerce flags and qualified promotional-language indicators. Review the bounded 100-text sample; hidden-intent supervised training stays deferred without verified labels.
++- [ ] Double-annotate <= 300 real comments (minimum 150 for gate), use thread/video holdouts and evaluate observable duplicate/contact/noise classes. Do not call repeated praise proof of bots or paid seeding.
++- [ ] Double-annotate <= 200 ABSA text units across >= 10 videos (minimum 120), freeze video-disjoint partitions and retain source IDs/spans/aspect support. Missing aspect is unknown; unsupported comparisons abstain.
++- [ ] Report precision/recall/F1, uncertainty, agreement, before/after-filter discrepancies and threshold sensitivity against the exact plan criteria; G4/G5 accept only supported features and visibly limit unaccepted ones.
++
++### Wave 5 — measure optional complexity and release (M6; indicative W9–W12+)
++
++**Owners/review:** N leads M6.1/M6.G, K leads M6.2; other person reviews/integrates each.
++
++**Files and interfaces:** `packages/retrieval/dense/`, `packages/retrieval/fusion/`, indexing CLI if a populated pilot is justified, typed Q&A contracts/routes and `apps/demo/`; final accepted backend may remain BM25. Canonical M6 reports contain release measurements and decisions.
++
++- [ ] Pilot one CPU embedding model on <= 5,000 records with corpus/filter/query parity; compare populated BM25/dense/RRF runs on frozen independent queries. Record quality differences/uncertainty, build/index/model cost and latency/RAM. Retain the simpler baseline if extra complexity is unjustified.
++- [ ] Integrate accepted evidence into one API/demo and double-review 30 held-out questions including >= 10 insufficient-evidence cases. Verify source resolution, fact support/coverage, temporal provenance, no fabricated offsets and bounded abstention.
++- [ ] Measure total/per-stage offline latency separately from artifact startup or optional provider time. Run all current project checks and validate reports, links, hashes, unresolved issues and task/index status consistency.
++- [ ] Assess public hosting separately against current official genuinely-free eligibility, no-billing/overage/upgrade path, rights/privacy, measured RAM/disk/cold-start fit and sleep/quota limits. No candidate accepted means public hosting BLOCKED; local release remains valid within its accepted scope.
++- [ ] Record G6's actual accepted feature set and exclusions. Provider eligibility/quota is checked immediately before any optional live free-tier run; no publication/spend is authorized by this companion alone.
++
++## Verification and status discipline
++
++Use test-driven development for substantive behavior fixes: write meaningful regression, observe RED, implement minimal fix, observe GREEN and run appropriate broader checks. Documentation-only edits use direct arithmetic/link/layout/source-preservation checks; no mirrored implementation tests are needed. Apply `verification-before-completion` before any success claim. No commit/push/deployment is required for the current recovery task; follow its explicit boundaries.
++
++The old fully checked refactor plan is preserved byte-for-byte as [historical source](../docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-refactor-implementation-plan.md), with [hashes](../docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-plan-preservation.json). Its prior counts, dense/neural completion language and checks are not new acceptance evidence. The active milestone plan controls IDs, owners/reviewers, exact effort, bounded samples, prospective thresholds and truthful statuses.
+diff --git a/apps/demo/presentation.py b/apps/demo/presentation.py
+index 6f2d9e4..7ad5949 100644
+--- a/apps/demo/presentation.py
++++ b/apps/demo/presentation.py
+@@ -11,21 +11,22 @@ def format_benchmark_markdown(bench: dict[str, Any]) -> str:
+     tags = ", ".join(f"`#{t}`" for t in (bench.get("top_hashtags") or [])[:6]) or "Không có"
+     pois = " • ".join((bench.get("top_poi_venues") or [])[:5]) or "Không có POI định vị trong lát cắt này"
+     applied = bench.get("applied_filters") or {}
+-    filter_desc = ", ".join(f"`{k}={v}`" for k, v in applied.items()) if applied else "Toàn bộ kho dữ liệu (70,996 video)"
++    filter_desc = ", ".join(f"`{k}={v}`" for k, v in applied.items()) if applied else "Toàn bộ kho dữ liệu"
+ 
+     return (
+-        f"### Chuẩn Thực Nghiệm Của Ngách (Niche Micro-Benchmark)\n"
++        f"### Thống Kê Mô Tả Ngách Trong Kho Lịch Sử\n"
+         f"- **Lát cắt dữ liệu:** {filter_desc}\n"
+         f"- **Quy mô mẫu:** `{bench.get('matched_videos', 0):,}` video "
+         f"(`{bench.get('transcribed_videos', 0):,}` có lời thoại • `{bench.get('poi_tagged_videos', 0):,}` gắn GPS POI)\n"
+         f"- **Lượt xem trung vị / P75:** `{int(bench.get('median_plays', 0)):,}` / `{int(bench.get('p75_plays', 0)):,}` views "
+         f"(Tương tác trung vị: `{bench.get('median_engagement_rate', 0.0) * 100:.2f}%`)\n"
+-        f"- **Thời lượng tối ưu (IQR Q25 – Trung vị – Q75):** `{bench.get('duration_q25_sec', 0):.0f}s` – "
++        f"- **Phân bố thời lượng (IQR Q25 – Trung vị – Q75):** `{bench.get('duration_q25_sec', 0):.0f}s` – "
+         f"**`{bench.get('duration_median_sec', 0):.0f}s`** – `{bench.get('duration_q75_sec', 0):.0f}s`\n"
+-        f"- **Tốc độ thoại chuẩn ngách:** `{bench.get('median_word_per_second', 0):.2f}` từ/giây "
++        f"- **Mật độ lời thoại ước tính:** `{bench.get('median_word_per_second', 0):.2f}` đơn vị cách trắng/giây "
+         f"• **Số lượng Hashtag IQR:** `{bench.get('hashtag_q25', 0)}–{bench.get('hashtag_q75', 0)}` thẻ ({tags})\n"
+-        f"- **Khung giờ đăng hiệu quả nhất:** {hours_str}\n"
+-        f"- **Địa điểm POI nổi bật:** {pois}"
++        f"- **Giờ đăng có lượt xem trung vị cao trong mẫu:** {hours_str}\n"
++        f"- **POI do nền tảng ghi nhận:** {pois}\n"
++        "_Thống kê lịch sử có thiên lệch chọn mẫu; không chứng minh tác động tăng viral hay xu hướng hiện tại._"
+     )
+ 
+ 
+@@ -64,7 +65,8 @@ def format_script_markdown(resp: dict[str, Any]) -> str:
+     tags = " ".join(f"#{t}" for t in (resp.get("recommended_hashtags") or []))
+ 
+     lines = [
+-        f"### Kịch Bản Đề Xuất (`mode={resp.get('generation_mode')}`, model=`{resp.get('model_used')}`)",
++        f"### Bản Nháp Kịch Bản (`mode={resp.get('generation_mode')}`, model=`{resp.get('model_used')}`)",
++        "_Nội dung sáng tạo từ nguồn tham khảo lịch sử; cần kiểm chứng nhận định và trải nghiệm trước khi sử dụng._",
+         f"**Bối cảnh quay:** {resp.get('setting')}  \n**Giọng điệu (Persona):** {resp.get('persona_tone')}",
+         "#### 3 Phương Án Hook Mở Đầu (0–4s)",
+         hooks_md,
+@@ -86,9 +88,9 @@ def format_script_markdown(resp: dict[str, Any]) -> str:
+     pac = "\n".join(f"- **Nhịp dựng:** {x}" for x in (sa.get("pacing_and_editing") or []))
+ 
+     guard = resp.get("guardrail") or {}
+-    badge = "ĐẠT CHUẨN" if guard.get("passed") else "CẦN LƯU Ý"
++    badge = "ĐẠT KIỂM TRA CẤU TRÚC" if guard.get("passed") else "CẦN CHỈNH SỬA"
+     warn_list = guard.get("warnings") or []
+-    warn_md = "\n".join(f"  - ⚠️ {w}" for w in warn_list) if warn_list else "  - Không phát hiện câu sáo rỗng; 100% trích dẫn khớp kho bằng chứng."
++    warn_md = "\n".join(f"  - ⚠️ {w}" for w in warn_list) if warn_list else "  - Chưa có kết quả xác minh nội dung từng nhận định."
+ 
+     lines.extend(
+         [
+@@ -123,11 +125,12 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True)
+     comments = data.get("comments") or []
+ 
+     lines = [
+-        "### Đối Chiếu ABSA 4 Khía Cạnh (KOC Lời Thoại vs. Bình Luận Sạch) & Quét Seeding",
+-        f"- **Độ lệch Quảng cáo (`PR Hype Gap`):** `{gap:+.2f}` • **Rủi ro Booking Ngầm (`Undisclosed PR Risk`):** `{risk * 100:.1f}%`",
++        "### Chẩn Đoán ABSA Và Mẫu Bình Luận (Baseline Heuristic)",
++        "_Điểm chưa được hiệu chuẩn trên nhãn độc lập; không xác minh khách thật, bot, seeding hay tài trợ không công khai._",
++        f"- **Chênh lệch điểm cảm xúc heuristic:** `{gap:+.2f}` • **Chỉ số quảng bá heuristic:** `{risk:.2f}` (không phải xác suất)",
+         f"- **Bình luận hợp lệ:** `{comp.get('clean_comment_count', 0)}` • **Bình luận nghi Seeding/Spam bị lọc:** `{comp.get('seeding_comment_count', 0)}`",
+         "",
+-        "| Khía cạnh (Aspect) | Điểm KOC (Voice) | Điểm Khách Thật (Clean Comments) | Nhận định |",
++        "| Khía cạnh (Aspect) | Điểm lời thoại | Điểm bình luận giữ lại | Chênh lệch |",
+         "| :--- | :---: | :---: | :--- |",
+     ]
+     for key, label in (
+@@ -138,7 +141,7 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True)
+     ):
+         ks = float(koc.get(key) or 0.0)
+         vs = float(viewer.get(key) or 0.0)
+-        note = "⚠️ KOC khen cao hơn thực tế" if (ks - vs) >= 0.45 else "✅ Đồng thuận tương đối"
++        note = f"{ks - vs:+.2f}; cần kiểm tra nguồn và độ phủ khía cạnh"
+         lines.append(f"| **{label}** | `{ks:+.2f}` | `{vs:+.2f}` | {note} |")
+ 
+     if pains:
+diff --git a/apps/demo/ui.py b/apps/demo/ui.py
+index 63ed512..fbc678a 100644
+--- a/apps/demo/ui.py
++++ b/apps/demo/ui.py
+@@ -233,9 +233,10 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
+                     outputs=[e_bench, e_cards, e_timings],
+                 )
+ 
+-            with gr.Tab("3. Seeding & ABSA Trust Radar (4-Month Stream)"):
++            with gr.Tab("3. Comment Patterns & ABSA (Heuristic Baseline)"):
++                gr.Markdown("Dữ liệu nhập tay; các giá trị điền sẵn là ví dụ tổng hợp, không phải kết quả crawl thực tế.")
+                 t_cap = gr.Textbox(
+-                    label="Caption Video (4-Month Fresh Review)",
++                    label="Caption video cần phân tích",
+                     value="Khai trương lẩu bò mắm ruốc Quận 10 giảm giá 20% ngon xuất sắc",
+                 )
+                 t_tr = gr.Textbox(
+@@ -255,7 +256,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
+                     ),
+                 )
+                 hide_seed_chk = gr.Checkbox(value=True, label="Ẩn bình luận Seeding / Spam khỏi danh sách hiển thị")
+-                audit_btn = gr.Button("🛡️ Quét Seeding & Đối Chiếu ABSA (KOC vs. Thực Khách)", variant="primary")
++                audit_btn = gr.Button("Phân Tích Mẫu Bình Luận Và Điểm ABSA", variant="primary")
+                 t_audit_timings = gr.Markdown()
+                 t_audit_md = gr.Markdown()
+                 audit_btn.click(
+diff --git a/docs/planning/TikTok_AI_Engine_Milestone.md b/docs/planning/TikTok_AI_Engine_Milestone.md
+index 61bc175..0a7cd9a 100644
+--- a/docs/planning/TikTok_AI_Engine_Milestone.md
++++ b/docs/planning/TikTok_AI_Engine_Milestone.md
+@@ -1,235 +1,138 @@
+-# TikTok_AI_Engine_ — AI engineering milestone plan
++# TikTok_AI_Engine_ — balanced two-person AI delivery plan
+ 
+-- Revision: DUAL_STREAM_FNB_INTELLIGENCE_2026_11_16; M0–M2 historical Gold corpus, Niche Micro-Benchmarks, Vietnamese BM25/RRF retrieval, and Grounded Script Engine baseline verified; M3–M6 4-month multimodal incremental stream scaffolded.
+-- Delivery: Typed AI domain packages, reproducible offline CLI pipelines, FastAPI endpoints, and one lightweight ASGI-mounted Gradio demonstration UI (`/demo/`).
+-- Owner: Trần Đình Khương; one AI Engineer; no additional contributor is assumed.
+-- Reference window: 16 November 2026 to 08 January 2027, 8 working weeks.
++- Revision: RECOVERY_FIRST_EQUAL_TEAM_2026_11_17, authored on 2026-11-17 (Asia/Saigon).
++- Contributors: **Trần Đình Khương (K)** and **Nguyễn Việt Nguyên (N)** ([public profile](https://github.com/NguyenVietNguyen2612)). The owner explicitly requested equal work. Names/profile identity establish no skill ranking, specialization, availability, or commitment from the other person.
++- Delivery: a reproducible local CPU historical analytics, lexical retrieval, qualified script-drafting API, and one ASGI-mounted Gradio demonstration (`/demo/`); later multimodal experiments are conditional.
++- Estimated allocation: **188 effort points = 94 person-days total; K = 94 points / 47 days, N = 94 points / 47 days (50% each)**. One point is an estimated half person-day. Delivery, documentation, peer review, integration, annotation and gates are included. These are planning estimates, not equal measured hours or a calendar promise.
++- Current acceptance: **IN_PROGRESS for recovery/core revalidation; G0–G6 NOT_RUN**. Existing source and historical completion assertions are distinguished below from newly accepted tasks.
+ 
+-[Resources & Deployment](TikTok_AI_Engine_Resources_and_Deployment.md) · [Milestone Reports](../reports/milestones/README.md) · [Case Studies](../reports/Case_Study/README.md) · [Data Card](../data-cards/tiktok_fnb_corpus_v1.md)
++[Resources](TikTok_AI_Engine_Resources_and_Deployment.md) · [Milestone reports](../reports/milestones/README.md) · [Audit](../reports/tasks/docs-refactor-feasibility-2026-11-17/README.md) · [Current recovery task](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/README.md) · [Machine-checkable allocation](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/two-person-allocation.json)
+ 
+-## 1. Active scope
++## 1. Scope and evidence baseline
+ 
+-Implement and evaluate an end-to-end Vietnamese TikTok Food & Beverage (F&B) AI Engine unifying **Creator-Side Viral Content Intelligence** and **Consumer-Side Review Trust & Multimodal ABSA**:
++The two contributors share AI logic, data preparation, evaluation, typed APIs and demonstration integration. Ownership below assigns a bounded deliverable and the other person as peer reviewer; it does not divide the team into inferred AI/backend skill tiers. Product CRUD, login/accounts, billing portals, ad-buying operations, enterprise administration and business-pilot KPI studies remain excluded.
+ 
+-1. **Historical Macro Intelligence (`1.50 GB`, `70,996` videos, `2023-11` to `2025-03`):** Immutable Gold Parquet corpus (`dim_creators` + `fact_videos` with `23,448` recovered official TikTok GPS POIs and `21,748` clean Vietnamese transcripts), Columnar Niche Micro-Benchmarking, Vietnamese NFC Hybrid Retrieval (`BM25 CSR + Qdrant Dense + RRF + Phrase/Aspect Reranking`), and Citation-Grounded Script Synthesis with deterministic `mm:ss` pacing guardrails.
+-2. **Rolling 4-Month Incremental Multimodal Stream (`data/raw_incremental/`):** Never re-crawl historical videos. Collect only the latest 4-month window (`Metadata + 64kbps .mp3 Audio + Top Viewer Comments`) and process through a **Dual-Sink Normalization Pipeline** that:
+-   - **Sink A (Corpus Continuity):** Converts fresh 4-month videos into the canonical 49-column `fact_videos` schema to keep RAG and Niche Benchmarks current.
+-   - **Sink B (Multimodal Trust Modules):** Populates `fact_voice_segments` (`Whisper` word/segment timestamps + `Librosa` prosody), `fact_comments` (`Seeding & Spam Clustering`), and `fact_absa_reviews` (`4-Aspect KOC Voice vs. Clean Viewer Comment Sentiment` + `PR Hype Gap` + `Undisclosed Sponsorship Risk`).
++The [2026-11-17 audit](../reports/tasks/docs-refactor-feasibility-2026-11-17/README.md) is the baseline for this revision. It found a substantial implemented historical core and reproduced snapshot/ingestion/script-validation defects. Its existing suite result was 15 passed / 5 failed because required heavy data were absent; mypy passed for 74 source files. Those are dated audit results, not this plan's new verification. Recovery/fixes are authorized and underway in the linked recovery task; integrate its actual final evidence before changing any gate.
+ 
+-User authentication, role workspaces, merchant billing CRUD, automated ad-buying actions, and paid GPU/API plans are excluded. Online LLM orchestration is capped at `USD 0` using only the owner's Gemini Free-Tier API (`<= 2` calls per turn, sliding-window RPM limiter, explicit `offline_grounded` `$0` fallback).
++Historical metadata inspection at pinned source revision `f142e5656a220f94f8024de168b0832754b3bd9e` found 70,996 unique video IDs, 264 authors and dates from 2023-11-25 to 2025-03-19. Engagement comes from one March 2025 capture. The upstream tree had 37,837 data files / 1,475,677,482 logical bytes; the prior owner-copy claim was 37,840 files / approximately 1.50 GB. These inventory scopes differ. Recover and hash accessible files without asserting that the unavailable original owner inventory was freshly verified. Preserve every existing original byte, never re-crawl historical videos, and record source reuse/redistribution terms as unresolved until established.
+ 
+-## 2. Current status and stage windows
++Historical reports/manifests claim 21,748 accepted transcripts and 23,448 POI-bearing records. Parsing/refusal filtering is not speech accuracy; restored platform POI metadata is not proof of venue presence. Rebuild counts from available inputs and publish field lineage, coverage, unknowns and sampled error. SHA256 verifies bytes, not semantic labels or corpus representativeness. No complete aligned historical audio/comment corpus or verified sponsorship/seeding labels is assumed.
+ 
+-M0.1–M0.3: COMPLETE; M1.1–M1.2: COMPLETE (`70,996` clean videos, `264` creators, `23,448` GPS POIs, `21,748` speech transcripts verified by SHA256 `manifest.json`). M2.1–M2.3: COMPLETE (`391,042`-term NFC BM25 CSR index, frozen `retrieval_v1.json` benchmark at `Recall@10 = 0.7094`, `MRR@10 = 0.8127`, `nDCG@10 = 0.7083`, `p95 = 21.0 ms`, and Grounded Script Engine + Gradio `/demo/`). M3.1–M3.2 contracts, seeding cleanser, 4-aspect ABSA baseline, and Dual-Sink 4-month incremental pipelines are implemented and unit-tested; live 4-month crawl execution (`M3.3`) and Qdrant dense/Whisper batch runs (`M4`–`M6`) remain `NOT_STARTED` for upcoming milestones. Gates `G0`–`G6` remain explicit review checkpoints.
++All production analytics/RAG consume immutable, verified Gold snapshots in `data/corpus/<snapshot-id>/`. Fresh capture is a separate, bounded rolling **120-day operational window**, with its as-of time recorded; 120 days is the implementation rule for the project's approximate four-month stream. Preserve metadata, audio and comments under `data/raw_incremental/`, then publish canonical 49-column video rows and available voice/comment/ABSA tables with lineage. Missing modalities remain missing.
+ 
+-| Stage | AI result | Start window | End window |
++## 2. Status model, workload and sequence
++
++`IN_PROGRESS` means implementation or acceptance repair has begun. `NOT_STARTED` means the revised deliverable has not begun. Gates use `NOT_RUN`, `PASS` or `BLOCKED` according to actual review evidence. A historical implementation assertion is retained in the archived prior plan; it is not a substitute for current acceptance. No new milestone is marked COMPLETE in this rewrite.
++
++| Stage | Evidence at revision time | Revised acceptance status | Indicative window |
+ | --- | --- | --- | --- |
+-| M0 | Legacy audit, secret hygiene, canonical contracts and API/demo foundation | 16/11/2026 | 18/11/2026 |
+-| M1 | Unified Historical Gold Corpus (`71K` videos, `23.4K` GPS POIs) & F&B Taxonomy | 19/11/2026 | 23/11/2026 |
+-| M2 | Columnar Niche Micro-Benchmarks, Vietnamese Hybrid RAG & Grounded Script Engine | 24/11/2026 | 30/11/2026 |
+-| M3 | Rolling 4-Month Incremental Crawler (`Audio + Comments`) & Dual-Sink Lakehouse | 01/12/2026 | 08/12/2026 |
+-| M4 | Whisper Segment Timestamps, Librosa Voice Prosody & Undisclosed PR Detector | 09/12/2026 | 16/12/2026 |
+-| M5 | Comment Seeding Cleanser & 4-Aspect KOC-vs-Viewer ABSA Intelligence | 17/12/2026 | 24/12/2026 |
+-| M6 | Timestamped Multimodal Voice RAG on Qdrant & End-to-End Verification Release | 28/12/2026 | 08/01/2027 |
+-
+-## 3. Task definitions
+-
+-### M0 — Legacy audit, secret hygiene, canonical contracts and API/demo foundation
+-
+-#### M0.1 — Audit legacy repository, sanitize secrets and preserve 1.50 GB dataset
+-- Window: 16/11/2026; allocation 0.5 day(s).
+-- Dependency: START. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE. See [M0.1 report](../reports/milestones/M0.1/README.md).
+-- Work: Audit legacy coursework limitations, purge all hardcoded API keys, archive legacy code non-destructively, and verify 100% preservation of all `37,840` data files (`1.50 GB`).
+-- Output: Architecture audit (`ReFactor_structure/`), `scripts/check_secrets.py`, preserved `data/` & `archive/legacy_coursework/`.
+-- Acceptance: Zero hardcoded keys across workspace; zero original data files deleted or mutated.
+-
+-#### M0.2 — Lock canonical Pydantic v2 contracts and bounded settings
+-- Window: 16/11/2026; allocation 0.5 day(s).
+-- Dependency: M0.1. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE.
+-- Work: Define strict Pydantic v2 schemas (`corpus`, `query`, `analytics`, `retrieval`, `script`, `multimodal`, `errors`), `.env` loader (`AppSettings`), `StageTimer`, and domain exceptions.
+-- Output: `packages/common/` and `packages/data_contracts/`.
+-- Acceptance: Contract tests validate schema invariants, bounds, and fail-closed error payloads.
+-
+-#### M0.3 — Set up FastAPI boundary and ASGI-mounted Gradio `/demo/` workspace
+-- Window: 16/11/2026; allocation 0.5 day(s).
+-- Dependency: M0.2. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE.
+-- Work: Build single-port FastAPI service (`/health/live`, `/health/ready`, `/api/v1/*`) and mount thin Gradio 6 UI at `/demo/` calling FastAPI via in-process ASGI transport.
+-- Output: `apps/api/`, `apps/demo/`, `tests/smoke/test_api_and_demo.py`.
+-- Acceptance: Smoke suite exercises health, readiness, valid/invalid requests, and `/demo/` HTTP 200 without external network dependency.
+-
+-#### M0.G — G0: foundation, secret hygiene and contract gate review
+-- Window: 18/11/2026; allocation 0.5 day(s).
+-- Dependency: M0.3. Owner: Trần Đình Khương, AI Engineer.
+-- Status: NOT_RUN.
+-- Work: Formal gate audit of M0.1–M0.3 deliverables and remaining effort re-estimation.
+-- Output: `docs/reports/milestones/M0.G/README.md`.
+-- Acceptance: `check_secrets.py`, `mypy`, and contract/smoke suites pass cleanly.
+-
+-### M1 — Unified Historical Gold Corpus & Vietnamese F&B Taxonomy
+-
+-#### M1.1 — Implement 6-axis Vietnamese F&B Taxonomy and GPS POI location resolver
+-- Window: 19/11/2026; allocation 1.0 day(s).
+-- Dependency: M0.2. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE.
+-- Work: Implement GPS POI priority resolver (fixing dish-name vs. district collisions such as *"Bún đậu Hà Nội ở Quận 7"* -> `hồ chí minh`), 5 video formats, 8 food categories, 6 price tiers, 8 occasions, and script anatomy extractor (`hook_text`, `body_beats`, `cta_text`).
+-- Output: `packages/taxonomy/`.
+-- Acceptance: Unit tests verify location disambiguation, zero-division guards, and script anatomy extraction.
+-
+-#### M1.2 — Build immutable Historical Gold Parquet snapshot (`20261116_v1`)
+-- Window: 20/11/2026; allocation 1.0 day(s).
+-- Dependency: M1.1. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE.
+-- Work: Non-destructively join `cleaned_video_info.parquet` (`70,996` rows), `cleaned_user_info.parquet` (`264` creators), `final_raw_videos.csv` (`23,448` GPS POIs, `5,798` `is_ec_video`), `23,122` transcript JSONs (`strict=False` + LLM-refusal filtering -> `21,748` valid speech transcripts), and legacy food/content tables.
+-- Output: `pipelines/build_gold_corpus/`, `data/corpus/20261116_v1/{dim_creators.parquet, fact_videos.parquet, manifest.json}`.
+-- Acceptance: Startup loader verifies SHA256 checksums fail-closed; exact row/column counts match `manifest.json`.
+-
+-#### M1.G — G1: historical Gold corpus and taxonomy provenance gate
+-- Window: 23/11/2026; allocation 0.5 day(s).
+-- Dependency: M1.2. Owner: Trần Đình Khương, AI Engineer.
+-- Status: NOT_RUN.
+-- Work: Audit Gold corpus distributions, location coverage, and caveats documentation.
+-- Output: `docs/reports/milestones/M1.G/README.md`.
+-- Acceptance: Reproducible Gold snapshot build and verified data card.
+-
+-### M2 — Columnar Niche Micro-Benchmarks, Hybrid RAG & Grounded Script Engine
+-
+-#### M2.1 — Build Columnar Niche Micro-Benchmark Engine
+-- Window: 24/11/2026; allocation 1.0 day(s).
+-- Dependency: M1.2. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE.
+-- Work: Compute empirical niche medians & IQRs (`median_plays`, `duration_q25..q75`, `median_word_per_second`, hashtag IQR, top posting hours, top GPS POI venues) with transparent filter relaxation.
+-- Output: `packages/analytics/engine.py`, `POST /api/v1/analytics/niche-benchmark`.
+-- Acceptance: Sub-50ms columnar slice aggregation with valid IQR ordering and per-stage `timings_ms`.
+-
+-#### M2.2 — Build Vietnamese NFC BM25 CSR Index, Qdrant Adapter, RRF & Reranker
+-- Window: 25/11/2026 to 26/11/2026; allocation 1.5 day(s).
+-- Dependency: M1.2. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE (BM25 + Viral Boost + Phrase/Aspect Reranker verified; live Docker Qdrant dense indexing deferred to M6.1).
+-- Work: Build pickle-free CSR Okapi BM25 over `391,042` NFC Vietnamese unigrams/bigrams (`21,748` videos), creator-normalized `viral_multiplier` log-boost, field-aware phrase/aspect reranker, and frozen retrieval evaluation harness.
+-- Output: `packages/retrieval/`, `pipelines/build_dense_sparse_index/`, `pipelines/benchmark_retrieval/`, `artifacts/benchmarks/retrieval_v1.json`.
+-- Acceptance: `Recall@10 = 0.7094`, `MRR@10 = 0.8127`, `nDCG@10 = 0.7083`, `p95 = 21.0 ms` verified by `tests/eval/test_retrieval_benchmark.py`.
+-
+-#### M2.3 — Build Bounded Grounded Script Engine & Timeline/Cliché Guardrails
+-- Window: 27/11/2026 to 30/11/2026; allocation 1.5 day(s).
+-- Dependency: M2.1, M2.2. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE.
+-- Work: Implement sliding-window RPM `BoundedGeminiClient` (`gemini_free`) + `$0` deterministic `offline_grounded` blueprint synthesizer, exact `mm:ss` beat timeline recalculator from niche `word_per_second`, citation validator, and anti-cliché filter.
+-- Output: `packages/llm/`, `packages/script_engine/`, `POST /api/v1/script/generate`.
+-- Acceptance: Hallucinated `video_id` citations are stripped, cliché filler phrases are flagged, and missing `GEMINI_API_KEY` returns typed `503 PROVIDER_KEY_MISSING`.
+-
+-### M3 — Rolling 4-Month Incremental Crawler & Dual-Sink Lakehouse
+-
+-#### M3.1 — Define multimodal Star Schema contracts & Dual-Sink converter
+-- Window: 01/12/2026 to 02/12/2026; allocation 1.5 day(s).
+-- Dependency: M1.2. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE (scaffold & unit tests verified).
+-- Work: Define `RawIncrementalVideoRecord`, `VoiceSegmentRecord` (`fact_voice_segments`), `CommentRecord` (`fact_comments`), and `AbsaComparisonRecord` (`fact_absa_reviews`); implement `pipelines/ingest_incremental_to_gold/` converting fresh 4-month crawls simultaneously into canonical 49-column `fact_videos` AND multimodal trust tables.
+-- Output: `packages/data_contracts/multimodal.py`, `pipelines/ingest_incremental_to_gold/`.
+-- Acceptance: Fresh incremental batch appends cleanly to `fact_videos.parquet` without mutating historical `data/` files and emits SHA256-verified multimodal tables.
+-
+-#### M3.2 — Implement Rolling 4-Month Incremental Crawler (`Metadata + 64kbps Audio + Comments`)
+-- Window: 03/12/2026 to 04/12/2026; allocation 1.5 day(s).
+-- Dependency: M3.1. Owner: Trần Đình Khương, AI Engineer.
+-- Status: COMPLETE (CLI & cutoff filter implemented; live network crawl scheduled in M3.3).
+-- Work: Build `pipelines/crawl_incremental/` enforcing a strict `120-day` rolling cutoff (`create_time >= now - 120d`) and skipping any `video_id` already present in the historical `70,996` corpus; extract `yt-dlp` audio-only `.mp3` (`~500 KB`) and top viewer comments into `data/raw_incremental/`.
+-- Output: `pipelines/crawl_incremental/`.
+-- Acceptance: Historical videos older than 4 months are strictly skipped; incremental batches persist resumable JSONL manifests.
+-
+-#### M3.3 — Execute 4-month fresh F&B cohort capture & build Gold Corpus `v2`
+-- Window: 07/12/2026 to 08/12/2026; allocation 1.5 day(s).
+-- Dependency: M3.2. Owner: Trần Đình Khương, AI Engineer.
+-- Status: NOT_STARTED.
+-- Work: Run `pipelines.crawl_incremental` across active Vietnamese F&B creators for the past 4 months, execute `pipelines.ingest_incremental_to_gold`, and rebuild BM25/Qdrant indexes over combined historical + fresh corpus.
+-- Output: `data/corpus/<v2-snapshot>/` and M3.3 ingestion report.
+-- Acceptance: Zero historical re-crawling; fresh 4-month videos searchable in RAG Script Engine and populated in `fact_comments`.
+-
+-### M4 — Whisper Segment Timestamps, Librosa Voice Prosody & Undisclosed PR Detector
+-
+-#### M4.1 — CPU Whisper segment timestamping & Librosa voice prosody extraction
+-- Window: 09/12/2026 to 11/12/2026; allocation 2.0 day(s).
+-- Dependency: M3.3. Owner: Trần Đình Khương, AI Engineer.
+-- Status: NOT_STARTED.
+-- Work: Run `faster-whisper` (`int8` CPU) on 4-month `.mp3` audio for exact `start_sec..end_sec` utterance segments alongside `Librosa` (`pitch_std`, `energy_cv`, `pause_ratio`); backfill sentence-level `wps_estimated` segments for the `21,748` historical transcripts.
+-- Output: Populated `fact_voice_segments.parquet` (`whisper_exact` + `wps_estimated`).
+-- Acceptance: Every indexed utterance resolves to `[video_id, start_sec, end_sec, timestamp_source]`.
+-
+-#### M4.2 — Supervised Undisclosed Sponsorship / PR Detector (`4,779` `is_ad` labels)
+-- Window: 14/12/2026 to 16/12/2026; allocation 2.0 day(s).
+-- Dependency: M4.1. Owner: Trần Đình Khương, AI Engineer.
+-- Status: NOT_STARTED.
+-- Work: Train and calibrate a lightweight CPU classifier using the `4,779` `is_ad=True` and `5,798` `is_ec_video=True` historical disclosures plus prosody/lexical features to score `undisclosed_pr_risk` on unlabelled restaurant reviews.
+-- Output: Model card, evaluation metrics (`ROC-AUC`, `PR-AUC`, `Brier`), and `packages/absa/` integration.
+-- Acceptance: Held-out creator-split evaluation reported honestly without data leakage.
+-
+-### M5 — Comment Seeding Cleanser & 4-Aspect KOC-vs-Viewer ABSA Intelligence
+-
+-#### M5.1 — Comment Seeding & Bot Clustering Cleanser
+-- Window: 17/12/2026 to 18/12/2026; allocation 1.5 day(s).
+-- Dependency: M3.1. Owner: Trần Đình Khương, AI Engineer.
+-- Status: IN_PROGRESS (lexical/shingle baseline + API live in `packages/seeding/`; ONNX `BGE-M3` dense clustering upgrade in M5.1b).
+-- Work: Detect template seeding bursts, phone/link spam, and semantic near-duplicate comments (`is_seeding`, `seeding_reason`, `cluster_id`).
+-- Output: `packages/seeding/`, `fact_comments.parquet` cleansing metrics.
+-- Acceptance: Precision/Recall evaluated on manually audited Vietnamese TikTok comment slice.
+-
+-#### M5.2 — 4-Aspect F&B ABSA (`Taste`, `Price`, `Hygiene`, `Service`) & `PR Hype Gap`
+-- Window: 21/12/2026 to 24/12/2026; allocation 2.5 day(s).
+-- Dependency: M5.1. Owner: Trần Đình Khương, AI Engineer.
+-- Status: IN_PROGRESS (lexicon baseline + `/api/v1/trust/audit-video` + Gradio Tab 4 live; batched Gemini Flash structured calibration in M5.2b).
+-- Work: Score KOC spoken transcript vs. non-seeding viewer comments across 4 F&B aspects, compute `pr_hype_gap`, and feed negative viewer pain-points back into `GroundedScriptEngine`.
+-- Output: `packages/absa/`, `fact_absa_reviews.parquet`, frozen ABSA Macro-F1 evaluation.
+-- Acceptance: `PR Hype Gap` highlights KOC-vs-viewer discrepancies with exact comment/utterance citations.
+-
+-### M6 — Timestamped Multimodal Voice RAG on Qdrant & End-to-End Release
+-
+-#### M6.1 — Populate Docker Qdrant Hybrid Collections (`utterance_segments` + `clean_reviews`)
+-- Window: 28/12/2026 to 31/12/2026; allocation 2.5 day(s).
+-- Dependency: M4.1, M5.2. Owner: Trần Đình Khương, AI Engineer.
+-- Status: NOT_STARTED.
+-- Work: Index dense (`multilingual-e5-base` / `BGE-M3`) + sparse vectors into Qdrant with payload filters (`city_norm`, `food_category`, `price_tier`, `is_seeding=False`) and benchmark `BM25` vs `Dense` vs `Hybrid RRF`.
+-- Output: Qdrant indexing pipeline and `retrieval_v2.json` benchmark report.
+-- Acceptance: Hybrid retrieval outperforms standalone BM25 on semantic/synonym Vietnamese F&B queries.
+-
+-#### M6.2 — Timestamped Voice & Review Q&A Assistant + Final Gate `G6`
+-- Window: 04/01/2027 to 08/01/2027; allocation 3.0 day(s).
+-- Dependency: M6.1. Owner: Trần Đình Khương, AI Engineer.
+-- Status: NOT_STARTED.
+-- Work: Serve grounded diner/creator Q&A returning `[🎬 @handle | mm:ss-mm:ss]` citations alongside clean viewer consensus; complete reproducible release bundle and `M6.G` gate review.
+-- Output: `/api/v1/chat/timestamped-rag`, updated Gradio `/demo/`, and `M6.G` report.
+-- Acceptance: Citation completeness `>= 95%`, zero fabricated timestamps, `$0` Free-Tier compliance verified.
+-
+-## 4. AI acceptance gates
+-
+-| Gate | Acceptance | Task |
+-| --- | --- | --- |
+-| G0 | Secret hygiene (`0` leaks), strict Pydantic contracts, single-port FastAPI + Gradio `/demo/` smoke verified. | M0.G |
+-| G1 | `1.50 GB` upstream preservation, `70,996`-row SHA256 Gold corpus, and GPS POI disambiguation verified. | M1.G |
+-| G2 | Niche Micro-Benchmarks, Vietnamese BM25/RRF retrieval (`MRR@10 >= 0.75`), and Grounded Script Guardrails verified. | M2.G |
+-| G3 | Rolling 4-month incremental capture appends cleanly to Gold corpus without re-crawling historical videos. | M3.G |
+-| G4 | Utterance timestamps (`whisper_exact` + `wps_estimated`) and Undisclosed PR Detector calibrated on held-out creators. | M4.G |
+-| G5 | Comment Seeding Cleanser and 4-aspect KOC-vs-Viewer ABSA (`PR Hype Gap`) verified on audited F&B benchmarks. | M5.G |
+-| G6 | Qdrant Hybrid Timestamped Voice RAG, full test pyramid, and `$0` Free-Tier demonstration bundle verified. | M6.G |
+-
+-## 5. AI capability traceability
+-
+-| Capability | Active tasks | Expected evidence |
+-| --- | --- | --- |
+-| Foundation & Secret Hygiene | M0.1, M0.2, M0.3 | `check_secrets.py`, Pydantic v2 contracts, ASGI smoke tests |
+-| Historical Gold Lakehouse | M1.1, M1.2 | `20261116_v1/manifest.json`, `23,448` GPS POIs, `21,748` transcripts |
+-| Niche Analytics & Script RAG | M2.1, M2.2, M2.3 | `retrieval_v1.json`, `mm:ss` pacing guardrails, cited scripts |
+-| 4-Month Dual-Sink Ingestion | M3.1, M3.2, M3.3 | `pipelines/crawl_incremental/`, `pipelines/ingest_incremental_to_gold/` |
+-| Voice Prosody & PR Detection | M4.1, M4.2 | `fact_voice_segments.parquet`, `is_ad` calibrated classifier |
+-| Seeding & KOC-vs-Viewer ABSA | M5.1, M5.2 | `packages/seeding/`, `packages/absa/`, `POST /api/v1/trust/audit-video` |
+-| Timestamped Multimodal RAG | M6.1, M6.2 | Qdrant hybrid collections, `[mm:ss]` grounded citations |
+-
+-## 6. Planning decisions
+-
+-| Decision | Current rule |
+-| --- | --- |
+-| Scope | One AI Engineer implements and demonstrates AI modules; no CRUD accounts, login, or backend handoff docs. |
+-| Historical Data (`1.50 GB`) | Strictly read-only, never re-crawled, gitignored from remote, served via SHA256-verified Gold Parquet snapshots. |
+-| Fresh Data (`4-Month Window`) | Crawl only `create_time >= now - 120 days`; normalize into both `fact_videos` (for RAG) and multimodal trust tables. |
+-| Cost & Secrets | `USD 0` spend cap; `GEMINI_API_KEY` in `.env` only; `<= 2` LLM calls/turn; deterministic `$0` offline modes always available. |
+-| Reporting | Every started milestone task follows `AGENTS.md` (`docs/reports/milestones/<TASK-ID>/{README.md, evidence/, superpowers/}`) in English. |
++| M0 | Contracts, API/Gradio and scanner exist; packaging/import defects were audited. | IN_PROGRESS; revalidate foundation and recovery. | W1–W2 |
++| M1 | Taxonomy and Gold builder exist; manifests were available, heavy inputs required recovery. | IN_PROGRESS; verify preserved inputs and a new immutable build. | W1–W2 |
++| M2 | Analytics, BM25 and offline drafting exist; metric/guardrail defects and weak qrels were audited. | IN_PROGRESS; correct, reproduce and independently evaluate. | W2–W4 |
++| M3 | Cutoff/audio helpers, authored fixtures and converter exist; live worker is incomplete. | IN_PROGRESS for ingestion repair; acquisition pilot NOT_STARTED. | W5–W6, after G2 |
++| M4 | Proposed audio/prosody and sponsorship-intent research lack required evidence. | NOT_STARTED; hidden-intent target deferred. | W6–W8, after pilot |
++| M5 | Heuristic duplication/spam and lexicon ABSA exist; real-data accuracy/spans are unverified. | IN_PROGRESS for baseline repair; independent evaluation NOT_STARTED. | W6–W9, after pilot |
++| M6 | Qdrant adapter exists; populated dense index, validated timestamped Q&A and hosting are unaccepted. | NOT_STARTED. | W9–W12+, conditional |
++
++W1 starts when both contributors have a verified checkout and agree their actual capacity. Windows show sequencing, not committed dates. The historical core through G2 budgets 40 points / 20 days per person. Conditional M3–M6 budget 54 points / 27 days per person. Combined work is roughly ten full working weeks per person before availability, access, retry or research uncertainty; the W1–W12+ horizon permits overlap but does not guarantee the complete research scope in eight weeks. Re-estimate after each pilot/gate; reduce scope or extend time openly rather than silently dropping evaluation.
++
++Each task's K/N points include its primary delivery work and the other person's independent checks/integration work. Gate points include evidence assembly, independent review, failure triage and a decision. Task rows are the canonical numerical allocation; [allocation JSON](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/two-person-allocation.json) records the same figures. Both contributors own substantial implementation and evaluation in multiple stages.
++
++| Task | Primary owner | Peer reviewer | K points | N points | Dependencies / parallel boundary |
++| --- | --- | --- | ---: | ---: | --- |
++| M0.1 | K | N | 6 | 2 | START; input recovery/inventory; parallel M0.2 |
++| M0.2 | N | K | 2 | 4 | START; contracts; parallel M0.1 |
++| M0.3 | K | N | 3 | 3 | M0.2; API packaging and independent demo integration |
++| M0.G | N | K | 2 | 2 | M0.1–M0.3 |
++| M1.1 | N | K | 2 | 4 | M0.2; taxonomy audit parallel M1.2 input recovery |
++| M1.2 | K | N | 7 | 3 | M0.1, M1.1; snapshot publication |
++| M1.G | K | N | 2 | 2 | M0.G, M1.1–M1.2 |
++| M2.1 | N | K | 2 | 6 | M1.2; parallel M2.2 |
++| M2.2 | K | N | 9 | 3 | M1.2; retrieval metrics/judgments |
++| M2.3 | N | K | 3 | 9 | M0.3, M2.1–M2.2; guardrail work may start on fixed fixtures |
++| M2.G | N | K | 2 | 2 | M1.G, M2.1–M2.3 |
++| M3.1 | N | K | 3 | 7 | M1.2; repair may proceed before G2; required before real ingest |
++| M3.2 | K | N | 7 | 3 | M0.G, M3.1; worker can develop on fixtures in parallel |
++| M3.3 | N | K | 4 | 4 | M2.G, M3.1–M3.2; capped shared pilot/integration |
++| M3.G | K | N | 2 | 2 | M3.3; decides additional collection budget |
++| M4.1 | K | N | 9 | 3 | M3.G; CPU/audio evaluation; parallel M5.1–M5.2 |
++| M4.2 | N | K | 1 | 7 | M1.G; observable flags/lexical study; audio only after M4.1 |
++| M4.G | N | K | 2 | 2 | M4.1–M4.2 |
++| M5.1 | N | K | 3 | 9 | M3.G; independent comment annotation |
++| M5.2 | K | N | 9 | 3 | M3.G; aspect annotation can parallel M5.1; filtered gap waits for its labels |
++| M5.G | K | N | 2 | 2 | M5.1–M5.2 |
++| M6.1 | N | K | 3 | 7 | M2.G; optional text-only spike; multimodal acceptance waits for M4.G/M5.G |
++| M6.2 | K | N | 7 | 3 | M4.G, M5.G; M6.1 accepted backend or documented BM25 retention |
++| M6.G | N | K | 2 | 2 | M6.1–M6.2 and all release prerequisites |
++| **Total** | **Shared delivery** | **Reciprocal review** | **94** | **94** | **188 points / 94 person-days; 50% each** |
++
++Parallel work uses separate branches and immutable fixture/input versions. Shared contracts, snapshot IDs, query judgments and API fields are agreed before dependent integration. An owner publishes a reviewable change and evidence; the other person reviews it, reproduces its key check and records open findings. Neither person can approve their own task alone. Integrate only accepted changes; unresolved findings block the relevant gate. If actual effort diverges, rebalance remaining delivery and review work jointly and update the arithmetic; no reassignment is based on profile assumptions.
++
++## 3. Task deliverables and measurable acceptance
++
++Every ID below maps to the future or existing canonical report `docs/reports/milestones/<ID>/README.md`. The relative report path is shown as code until its bundle actually begins; do not create empty future bundles. At task start create its `superpowers/spec.md`, `superpowers/plan.md` and `evidence/workflow.md`; record actual skills, authorization, commands, environment, input/code hashes, independent review and outcomes. Task reports/index must agree. The current cross-task recovery bundle may supply linked evidence, but cannot silently close these individual acceptance criteria.
++
++### M0 — recovered foundation
++
++- **M0.1 — preservation and recovery (IN_PROGRESS).** Report: `../reports/milestones/M0.1/README.md` (existing historical report). Recover permitted historical assets from the pinned source/owner copy; inventory exact path/bytes/SHA256 and compare all pre-existing originals before/after. Keep the 37,837 upstream and 37,840 owner-copy scopes separate. Acceptance: no differing existing original overwritten, provenance/failed/missing assets enumerated, source terms recorded, scanner exits 0; inability to prove an old inventory remains an evidence gap rather than a new preservation claim. N independently checks recovery receipts.
++- **M0.2 — contracts and bounded settings (IN_PROGRESS).** Report: `../reports/milestones/M0.2/README.md`. Revalidate `packages/common/` and `packages/data_contracts/`, explicit missing-key/quota/error payloads, durations and missing/unknown fields. Acceptance: executable contract tests reject malformed/boundary inputs, timings use `ms`, no NaN/Inf escapes, and no credentials enter logs. K reviews API compatibility.
++- **M0.3 — installable API/demo foundation (IN_PROGRESS).** Report: `../reports/milestones/M0.3/README.md`. Align base/demo dependency profiles and Docker source packaging; keep one FastAPI process with ASGI Gradio `/demo/`. Acceptance: clean declared-profile install/import, package/source build, `/health/live`, readiness, valid/invalid API and `/demo/` smoke checks pass without provider calls. Distinguish source-package check from an actual Docker engine/image run if unavailable. N reproduces integration independently.
++- **M0.G — G0 foundation decision (NOT_RUN).** Report: `../reports/milestones/M0.G/README.md`. Acceptance: M0.1–M0.3 evidence reviewed; scanner, project mypy and contract/smoke checks pass on a recorded revision/environment; package limitations explicitly recorded. No live provider or hosting eligibility is inferred.
++
++### M1 — historical Gold and qualified metadata
++
++- **M1.1 — taxonomy/lineage audit (IN_PROGRESS).** Report: `../reports/milestones/M1.1/README.md`. Verify city/dish disambiguation, safe ratios, anatomy and unknowns; sample 120 stratified records across city/category/transcript availability. Both annotate 30 overlapping records and report agreement/errors; N covers the remaining sample with K's review. Acceptance: per-field source and coverage, sampled error counts/denominators, unknown handling and corrected documentation; no claim that machine labels are ground truth or POIs prove attendance.
++- **M1.2 — immutable historical snapshot (IN_PROGRESS).** Report: `../reports/milestones/M1.2/README.md`. Build a new snapshot ID using `pipelines/build_gold_corpus/`; never overwrite an existing output/base. Acceptance: reject collisions, stage and verify all tables before publication, retain source/parent/code provenance, enforce schema/key counts and SHA256, fail closed on corruption, compare all original bytes. Publish actual metadata/transcript/POI counts with discrepancies; no requirement to reproduce an unverified historical count by force. N verifies a reproducible build/receipt.
++- **M1.G — G1 corpus decision (NOT_RUN).** Report: `../reports/milestones/M1.G/README.md`. Acceptance: G0 passes; M1.1–M1.2 lineage, build, integrity, coverage and qualified data card pass review. Missing source rights blocks public corpus redistribution; a documented local-only demonstration can remain in scope.
++
++### M2 — accepted historical core
++
++- **M2.1 — descriptive niche benchmarks (IN_PROGRESS).** Report: `../reports/milestones/M2.1/README.md`. Validate quantiles, filter relaxation and sparse-slice abstention in `packages/analytics/`; expose cohort date, observation/capture date where available, support `n` and missingness. Acceptance: hand-checkable aggregates/IQR ordering, zero-division tests, and no optimum/causal/current-trend wording. Record warm/cold p50/p95 over at least 100 fixed requests, hardware and concurrency 1; provisional local p95 budget 250 ms excluding load, with failures reported rather than rewritten as successes. K reviews evidence and wording.
++- **M2.2 — corrected BM25 evaluation and relevance pilot (IN_PROGRESS).** Report: `../reports/milestones/M2.2/README.md`. Preserve old `retrieval_v1.json` as historical; version standard Recall@10 = hits / all relevant documents, Precision@10, MRR@10 and nDCG@10, rankings/qrels/queries, corpus/index/code receipts. Existing 16 keyword-derived queries remain weak-label regression only. Independently author 40 new queries (20 development / 20 locked test) covering synonyms, Vietnamese Unicode, negation, filters and no-answer. Each person authors half; both judge a blinded top-10 pool from BM25 and the phrase-reranked variant, adjudicate disagreements and publish judgment completeness/uncertainty. Recall over that judged pool is qualified as pooled recall, not exhaustive corpus recall; unjudged documents are not verified negatives. Acceptance: hand-calculated metric tests pass, disjoint frozen dev/test and per-query results exist; a provisional test MRR@10 >= 0.60 and nDCG@10 >= 0.50 on answerable queries, no fabricated support for no-answer queries, and CPU p95 <= 500 ms on 100 warm requests. Report failure honestly; never tune on the locked test or force a reranking win. These pilot thresholds qualify this cohort, not population accuracy.
++- **M2.3 — qualified scripts and structural guardrails (IN_PROGRESS).** Report: `../reports/milestones/M2.3/README.md`. Reject empty, uncited required factual content and wrong-duration scripts; never attach arbitrary source IDs. Creative staging is labeled as a draft; remove unsupported firsthand freshness/taste/quality assertions. Acceptance: regressions cover empty/foreign-ID/no-evidence/timing cases; total timeline within max(2 seconds, 5% of requested duration), valid source membership and required-content coverage reported separately. Both review 30 held-out drafts (15 authored queries each), annotate factual claims/source excerpts and creative directions; require zero fabricated IDs, >= 90% supported factual claims and >= 90% factual citation coverage on that sample. Structural tests alone do not establish entailment. Offline works with zero calls; provider-path missing-key/quota/timeout are bounded and <= 2 calls/turn with no paid fallback. K independently reviews guardrail and claim-audit results.
++- **M2.G — G2 historical demonstration decision (NOT_RUN).** Report: `../reports/milestones/M2.G/README.md`. Acceptance: G1 passes; M2.1–M2.3 independently reviewed; full pytest, configured mypy, scanner, clean package/source build and actual recovered-corpus ASGI demo pass at a pinned revision. Include timings, weak-label versus human-judged results and remaining limitations. Passing G2 accepts the narrow historical local core, not multimodal trust, current trends, live collection or public hosting.
++
++### M3 — safe ingestion and bounded fresh-data feasibility
++
++- **M3.1 — repeated dual-sink ingestion (IN_PROGRESS).** Report: `../reports/milestones/M3.1/README.md`. Repair `pipelines/ingest_incremental_to_gold/` before real capture. Acceptance: A, B, replay, empty batch and explicit same-video transcript/comment enrichment retain/deduplicate keyed video, voice, comment and ABSA rows; base bytes stay identical; collisions fail; only complete verified new snapshots publish. Test missing modalities and interrupted publication. K independently checks base preservation and replay receipts.
++- **M3.2 — actual bounded collector worker (NOT_STARTED; helpers/fixtures exist).** Report: `../reports/milestones/M3.2/README.md`. Implement an invoked discovery/metadata/audio/comment worker with resume, capped retries, per-item failures and idempotent manifests; authored fixture mode stays visibly separate. Acceptance: as-of/cutoff tests enforce the 120-day window and skip every historical ID, manifests distinguish requested/succeeded/failed/skipped, 64 kbps audio conversion is recorded where available, and no historical TikTok recrawl or unlimited discovery occurs. N reviews cutoff, failure and resume behavior before network pilot.
++- **M3.3 — capped capture-to-transcript-to-search pilot (NOT_STARTED).** Report: `../reports/milestones/M3.3/README.md`. Maximum 5 creators, 50 candidate fresh videos, 30 successful videos, 60 audio minutes, 1,000 comments and one bounded two-hour capture session. Limits are ceilings, not guaranteed yield. Both contribute integration and inspect half the successful sample. Produce transcripts for at most 10 videos / 20 audio minutes before searchability acceptance using a measured CPU ASR pilot; full M4 processing follows later. Acceptance: real non-synthetic receipts, coverage/failure rates, actual disk/RAM/time, repeatable ingest and at least 5 real fresh transcribed videos searchable with correct source IDs. Less yield or inaccessible acquisition records BLOCKED with narrower/offline scope; no fake replacement data. No further collection until G3.
++- **M3.G — G3 acquisition/resource decision (NOT_RUN).** Report: `../reports/milestones/M3.G/README.md`. Acceptance: repeated ingest passes and M3.3 meets its minimum vertical slice; measure audio real-time factor (wall seconds / audio seconds), capture yield, comment coverage and annotation time. Estimate further batches from observed throughput plus retry/review cost. Do not expand beyond this pilot without an explicit new bounded budget; if access fails, retain the accepted historical core and defer fresh modules.
++
++### M4 — audio-derived evidence and observable promotion indicators
++
++- **M4.1 — timestamp/prosody CPU evaluation (NOT_STARTED).** Report: `../reports/milestones/M4.1/README.md`. Process only the successful pilot audio (<= 60 minutes); select <= 20 minutes and at least 50 utterances for two-person reference review. Measure ASR CER/WER with stated tokenization, boundary absolute error, real-time factor and peak RAM/disk. Enforce `0 <= start < end <= media_duration`; label ASR boundaries `audio_derived` estimates and historical interpolation `wps_estimated`, never exact speech timing. Acceptance: 100% temporal invariants/source resolvability, median manually checked boundary error <= 1 second and p95 <= 3 seconds; if unmet, abstain from precise playback claims. Pilot processing budget <= 4 CPU hours and <= 8 GiB peak RAM; exceeding it triggers model/sample reduction. Prosody is descriptive; it is not intent evidence. N reviews references/errors.
++- **M4.2 — observed disclosure/commerce and promotional language (NOT_STARTED; undisclosed sponsorship deferred).** Report: `../reports/milestones/M4.2/README.md`. Separate observed `is_ad`/commerce flags from lexical promotional indicators; retain unknowns. Review 100 historical texts (50 per person; 30 double-reviewed) for explicitly observable wording/flags, errors and domain differences. Acceptance: no output calls flag prediction a probability of undisclosed sponsorship; no unlabeled item is treated as a verified negative, no flag-derived feature leakage and no historical-prosody join without audio. A classifier is optional only after a target/data decision and grouped held-out evaluation; report PR-AUC/Brier only for genuinely labeled targets. Hidden-intent training stays deferred without independently verified sponsorship ground truth. K checks target validity and report claims.
++- **M4.G — G4 audio/target decision (NOT_RUN).** Report: `../reports/milestones/M4.G/README.md`. Acceptance: timestamp quality/resource limits and observed-target wording meet M4.1–M4.2 criteria, or specific features abstain and remain unaccepted. A gate cannot convert disclosed-ad flags into undisclosed-sponsorship labels.
++
++### M5 — independently evaluated comment/aspect diagnostics
++
++- **M5.1 — duplicate/contact/noise indicators (IN_PROGRESS; existing heuristic baseline).** Report: `../reports/milestones/M5.1/README.md`. Preserve originals and reasons; use observable duplicate, contact/link and noise labels. Do not assert bots, payment, coordinated seeding or verified diner identity. Independently sample up to 300 real pilot comments (minimum 150 for a quality gate), double-annotate them with written guidelines, keep ambiguous/unknown intent and adjudicate disagreements. Split by video/thread before tuning. Acceptance: report class counts, agreement, per-class precision/recall/F1 and bootstrap uncertainty on a frozen held-out third; automated filtering requires macro precision >= 0.85 and recall >= 0.60 for these observable classes, otherwise show diagnostic flags without filtering. K reviews label leakage, organic-duplicate false positives and filter sensitivity.
++- **M5.2 — four-aspect sentiment with source spans (IN_PROGRESS; existing lexicon baseline).** Report: `../reports/milestones/M5.2/README.md`. Preserve aspect presence/unknown separately from observed neutral, comment/utterance IDs, offsets and support counts for Taste, Price, Hygiene and Service. Compare creator speech and comments only on supported overlapping aspects; call the result a sentiment discrepancy, not deception, hygiene truth or diner consensus. Double-annotate <= 200 text units across >= 10 videos from the pilot (minimum 120 units); freeze video-disjoint development/held-out partitions before tuning. Acceptance: aspect detection macro-F1 >= 0.65, sentiment macro-F1 >= 0.60 on observed aspects, per-aspect coverage/class counts, >= 95% audited source-span validity; unsupported/low-support comparisons abstain (minimum 3 comments for an aspect summary). Publish before/after-filter gaps and threshold sensitivity. N reviews missing-aspect behavior, annotations and exact source resolution; model/Gemini agreement alone is not gold truth.
++- **M5.G — G5 trust-diagnostic decision (NOT_RUN).** Report: `../reports/milestones/M5.G/README.md`. Acceptance: independently annotated data, real sample provenance, uncertainty, spans, abstention and filter sensitivity meet M5.1–M5.2 criteria. Insufficient real data or quality keeps automatic trust claims/filtering unaccepted; baseline demonstrations must display those limits.
++
++### M6 — optional neural retrieval and final local release
++
++- **M6.1 — measured dense/hybrid comparison (NOT_STARTED).** Report: `../reports/milestones/M6.1/README.md`. Select one CPU-feasible embedding model and at most 5,000 eligible text/segment records for a measured pilot, with a populated versioned index and identical corpus/filter/query parity across BM25, dense and RRF. Reuse the frozen human-judged M2 test without tuning; add fresh timestamped questions only with independently judged evidence. Acceptance: report paired nDCG/MRR differences and uncertainty, index bytes/build time, RAM and p50/p95; provisional warm retrieval p95 <= 1,000 ms / peak RAM <= 8 GiB. Keep the simplest backend if dense/hybrid has no justified quality/resource gain. Hybrid superiority is an empirical question, not a required positive result. K reviews parity and cost evidence; unpopulated adapters are not completed hybrid retrieval.
++- **M6.2 — source-resolving Q&A/demo integration (NOT_STARTED).** Report: `../reports/milestones/M6.2/README.md`. Integrate only accepted capabilities into typed APIs and the one Gradio UI, using accepted BM25 if neural gain is absent. Evaluate 30 held-out questions including >= 10 no-answer/insufficient-evidence cases; both inspect every answer's IDs/spans and temporal provenance. Acceptance: 100% source identity/resolution and no fabricated timestamps; >= 95% factual citation coverage, >= 90% supported factual claims, 100% bounded insufficient-evidence behavior on the 10 no-answer cases; no interpolated offset presented as audio-exact. Record total/stage latency, offline request p95 <= 5 seconds excluding artifact startup on 30 repetitions, hardware and concurrency 1; generation/provider timing is separate. N reviews integration and error states.
++- **M6.G — G6 release and hosting decision (NOT_RUN).** Report: `../reports/milestones/M6.G/README.md`. Acceptance: all released features have passing prior gates, current full tests/mypy/scanner/package checks, reproducible CPU setup, valid reports/links/hashes and unresolved issues listed. Local demonstration is the baseline. Public hosting is a separate conditional decision requiring current documented eligibility for a genuinely free tier with no paid-plan prerequisite/add-on/overage/automatic upgrade, resolved source redistribution/privacy, measured artifact/RAM/storage/cold-start fit and honest sleep/quota limits. No accepted candidate means public hosting BLOCKED, not a failed historical core or an assumed deployment. Provider model/project eligibility and actual quota are checked immediately before optional free live use; offline remains sufficient for release.
++
++## 4. Gate decisions and interpretation
++
++| Gate | Own report ID | Required decision | Current result |
++| --- | --- | --- | --- |
++| G0 | M0.G | Foundation, secret hygiene, contracts, packaging, API/demo | NOT_RUN |
++| G1 | M1.G | Preserved accessible sources, immutable Gold, qualified lineage | NOT_RUN |
++| G2 | M2.G | Correct metrics, independent pilot judgments, structural/claim audit, real-data historical demo | NOT_RUN |
++| G3 | M3.G | Bounded real capture-to-transcript-to-search and measured capacity | NOT_RUN |
++| G4 | M4.G | Audio timing/provenance and observable promotion target | NOT_RUN |
++| G5 | M5.G | Qualified comment/aspect diagnostics on independent real labels | NOT_RUN |
++| G6 | M6.G | Accepted feature set, reproducible local release; separate hosting eligibility | NOT_RUN |
++
++Every threshold is a prospective pilot acceptance rule, not a measured result or universal scientific claim. Small samples produce broad uncertainty; publish denominators, exclusions and disagreements. Gate failure is a result to preserve. A complete research evaluation, causal viral uplift, real-time trend forecasting, actual diner consensus, hidden sponsorship detection and bot coordination are not promised by this demonstration.
++
++## 5. Cost, handoff and provenance
++
++Authorized provider/GPU/hosting spend is **USD 0**. The default workflow is CPU/offline; online synthesis, if separately run within scope, uses only an eligible owner Gemini free-tier project, at most two calls per turn with a conservative sliding-window limiter and explicit missing-key/quota/provider errors. Never treat a hardcoded model or RPM value as a guaranteed current entitlement; fail closed and keep credentials solely in gitignored `.env`. No automatic paid fallback, upgrade or paid inference.
++
++Historical plan/resource/refactor text was copied byte-for-byte before this revision to the recovery task's [evidence archive](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-plan-preservation.json). [Rewrite notes](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/plan-rewrite-notes.md) explain scope choices, actual workflow and validation. Earlier audit/report assertions are not backdated or silently overwritten. The [execution companion](../../ReFactor_structure/04_IMPLEMENTATION_PLAN.md) points to this plan; this file is authoritative if legacy refactor documents disagree.
+diff --git a/docs/planning/TikTok_AI_Engine_Resources_and_Deployment.md b/docs/planning/TikTok_AI_Engine_Resources_and_Deployment.md
+index 2ab6028..619a951 100644
+--- a/docs/planning/TikTok_AI_Engine_Resources_and_Deployment.md
++++ b/docs/planning/TikTok_AI_Engine_Resources_and_Deployment.md
+@@ -1,42 +1,95 @@
+-# TikTok_AI_Engine_ — AI development and demonstration resources
++# TikTok_AI_Engine_ — CPU resources and conditional deployment
+ 
+-- Owner decision: 2026-11-16; one AI Engineer (Trần Đình Khương), modular AI packages/pipelines, FastAPI, and one ASGI-mounted Gradio UI (`/demo/`).
+-- Current [milestone plan](TikTok_AI_Engine_Milestone.md) and [AGENTS.md](../../AGENTS.md) define the active scope and reporting rules.
++- Revision date: 2026-11-17 (Asia/Saigon).
++- Team: Trần Đình Khương and Nguyễn Việt Nguyên; equal estimated delivery, evaluation, integration and reciprocal review effort under the [authoritative milestone plan](TikTok_AI_Engine_Milestone.md).
++- Accepted operating assumption: local CPU, offline, typed FastAPI and one ASGI-mounted Gradio `/demo/`. **No public host or live provider profile is accepted by this document.**
++- Requirement and reporting rules: [AGENTS.md](../../AGENTS.md); [audit baseline](../reports/tasks/docs-refactor-feasibility-2026-11-17/README.md); [current recovery evidence](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/README.md).
+ 
+-## 1. Local CPU-first development
++## 1. Local development and shared reproducibility
+ 
+-Use available local CPU resources and measure every active stage via `StageTimer` (`ms`). Keep Python 3.11+ compatibility across core packages (`fastapi`, `pydantic`, `gradio`, `pandas`, `pyarrow`, `numpy`, `httpx`). Heavy optional runtime dependencies (`qdrant-client`, `redis`, `faster-whisper`, `librosa`, `yt-dlp`, `TikTokApi`) are isolated behind clean adapters so core analytics, Vietnamese NFC BM25 CSR search (`p95 = 21.0 ms`), Seeding/ABSA baselines, and `$0` `offline_grounded` script generation run immediately without requiring GPU hardware or Docker daemons.
++Use Python 3.11+ compatible source and a declared dependency profile. Record the actual Python, package lock/resolution, OS, CPU model/core count, RAM, storage and code revision with every fresh verification. Each contributor must reproduce the other's key checks; the allocation already includes this work. Profile installation and commands against the current `pyproject.toml` and root [Quickstart](../../README.md), not old pass claims.
+ 
+-## 2. Model & storage execution profile
++The API/demo imports must match the installed dependency profile. The image source/package build must include the required `apps`, `packages` and `pipelines` source. A wheel/source-context build is not an actual Docker-engine image run; record each separately. The recovery task repairs the audited packaging defects; until its evidence is integrated, do not call the container path verified.
+ 
+-| Component | Local development | Optional Docker / Online profile |
++| Component | Required core profile | Conditional experiment / resource decision |
+ | --- | --- | --- |
+-| Gold Corpus & Niche Analytics | In-process PyArrow/Pandas over Snappy Parquet (`data/corpus/<snapshot>/`) | Optional DuckDB SQL / read-only volume mount |
+-| Sparse & Dense Retrieval | Local pickle-free CSR Okapi BM25 (`artifacts/indexes/bm25-v1/`) + Phrase/Aspect Reranker | Docker `Qdrant v1.20.0` (`Hybrid RRF` + payload filters) |
+-| Voice & Seeding / ABSA | Rule/shingle Seeding Cleanser + Vietnamese F&B 4-Aspect Lexicon Baseline (`$0`) | CPU `faster-whisper` (`int8`) + `Librosa` + ONNX `BGE-M3` + batched Gemini Free-Tier |
+-| Grounded Script Synthesis | `offline_grounded` blueprint synthesizer (`$0`, zero API calls) | `gemini_free` (`gemini-2.5-flash`, `<= 2` calls/turn, `15 RPM` sliding window) |
+-| API & Demo UI | Single Uvicorn process serving FastAPI + `/demo/` Gradio 6 workspace | `infra/compose/docker-compose.yml` (`qdrant` + `redis` + `api`) |
+-
+-## 3. Dual-tier data storage & Git hygiene
+-
+-1. **Git-Tracked Artifacts (`< 1 MB`):** Source code (`apps/`, `packages/`, `pipelines/`), tests (`tests/`), planning & milestone reports (`docs/`), corpus checksum manifests (`data/corpus/*/manifest.json`), evaluation queries (`data/evaluation/v1/queries.jsonl`), and frozen JSON benchmark reports (`artifacts/benchmarks/*.json`).
+-2. **Local-Only Gitignored Assets (`~1.56 GB`):**
+-   - Upstream historical datasets (`data/raw/`, `data/interim/`, `data/processed/`, `data/transcripts/`, `data/foods-and-locations/`, `data/content_analysis/`, `data/legacy_app_data/`) and `archive/legacy_coursework/`.
+-   - Fresh 4-month incremental captures (`data/raw_incremental/`), Gold Parquet binaries (`data/corpus/*/*.parquet`), and compiled CSR index binaries (`artifacts/indexes/`).
+-   - Recreate Gold Parquet and BM25 index artifacts deterministically on any machine holding `data/` via:
+-     ```bash
+-     python3 scripts/dev.py build-corpus
+-     python3 scripts/dev.py build-index
+-     python3 scripts/dev.py benchmark
+-     ```
+-
+-## 4. Measurements & cost discipline
+-
+-- Record active stage latencies (`domain_gate_ms`, `filter_ms`, `bm25_ms`, `fusion_ms`, `rerank_ms`, `llm_synthesis_ms`, `guardrail_ms`, `total_ms`) separately from frozen offline evaluation reports (`artifacts/benchmarks/`).
+-- Authorized cloud/GPU spend is strictly `USD 0`. Free-Tier Gemini quota exhaustion returns bounded `429 QUOTA_BLOCKED`; missing `.env` key returns `503 PROVIDER_KEY_MISSING`. Never enable paid fallbacks or hardcode keys in source files.
+-
+-## 5. Official references
+-
+-- [FastAPI Response Models](https://fastapi.tiangolo.com/tutorial/response-model/)
+-- [Gradio Mounting inside FastAPI](https://www.gradio.app/docs/gradio/mount_gradio_app)
+-- [Qdrant Hybrid & Filtered Search Documentation](https://qdrant.tech/documentation/concepts/hybrid-queries/)
++| Data and analytics | PyArrow/Pandas over verified immutable Parquet; descriptive cohort counts/quantiles | DuckDB only if a measured query/memory need justifies it |
++| Retrieval | Local pickle-free BM25 CSR and lexical phrase/aspect reranking | One CPU embedding model and populated dense/Qdrant pilot only after parity and held-out comparison |
++| Script drafting | Explicit `offline_grounded`, zero external calls, qualified creative directions and structural checks | Eligible owner Gemini free-tier project only after current model/project/quota check; never a paid fallback |
++| Comment/aspect diagnostics | Observable rule/lexicon baseline; preserve source spans, unknowns and insufficient evidence | Independently annotated real comments/aspects before automated filtering or accuracy claims; model agreement alone is not gold |
++| Audio | No historical audio assumed; source text retrieval remains usable | Pilot audio only, CPU ASR/prosody with measured throughput, boundary error and RAM; optional dependencies stay isolated |
++| API/demo | One Uvicorn/FastAPI process with ASGI-mounted Gradio `/demo/`; no account/session product | Local Docker optional; public host requires the separate G6 eligibility/resource decision |
++
++Qdrant, Redis, ASR and crawling are optional infrastructure or dependencies. Neither a reachable adapter nor a fixture demonstrates populated hybrid retrieval or a working live worker. Core offline analytics/search/drafting must not require their daemons, external credentials or network access. Existing frozen 21 ms retrieval is historical weak-label evaluation evidence; it is not this revision's current latency promise.
++
++## 2. Preserved data, generated artifacts and rights
++
++Preserve all original local raw/interim/legacy bytes and never re-crawl historical TikTok videos. The audit corroborated 37,837 upstream data files / 1,475,677,482 logical bytes at pinned revision `f142e5656a220f94f8024de168b0832754b3bd9e`; the prior 37,840 owner-copy inventory used a different scope and remains separately qualified. Recovery must inventory actual paths, bytes and SHA256, record which existing files were untouched, and avoid claiming an old inventory comparison that is unavailable.
++
++| Asset | Storage / Git treatment | Reproducibility and disclosure requirement |
++| --- | --- | --- |
++| Source, tests, task plans/reports and small evaluation receipts | Git-tracked where allowed by repository rules | Pin source revision, record actual commands/environments and preserve historical evaluation versions |
++| Historical raw/interim/processed/transcript/legacy payloads | Local-only, gitignored; retain owners' original copies | Pinned source/owner provenance and input inventories; parse/filter acceptance is not speech accuracy |
++| Gold snapshot | `data/corpus/<new-id>/`; heavy Parquet local-only | Reject output collisions; stage all tables, validate keys/schema/hash and publish only complete snapshots; parent/input/code lineage |
++| BM25/dense artifacts | `artifacts/indexes/<version>/`, heavy binaries local-only | Bind to corpus/input hashes, model/tokenizer version, query/qrel revision and actual build receipt |
++| Fresh capture | `data/raw_incremental/`, local-only | 120-day operational cutoff/as-of, historical-ID exclusion, bounded requested/success/failure records, audio/comment coverage and original source IDs |
++| Human annotation | Local evidence; publish only permitted/redacted summaries | Guidelines, sample/partition provenance, two-person judgments, disagreements/adjudication and uncertainty |
++| Provider secrets | Solely gitignored `.env` | Never log keys or commit them; run `python3 scripts/check_secrets.py` before any commit |
++
++Source access does not establish a redistribution license. The audit found no upstream root dataset license; resolve terms before shipping raw text/audio/comments, derived examples or a public artifact containing them. Public deployment also requires minimizing personal data and checking what its logs/caches expose. This is a specific unresolved release input, not an assumption that the repository's MIT declaration licenses upstream data.
++
++Follow the current root Quickstart for fresh snapshot IDs and rebuild commands. Do not rerun historical commands against an already published output path. A missing asset must produce a bounded readiness/error state rather than a live-route synthetic replacement. Local storage requirements are measured after recovery; the approximate historical 1.50 GB claim excludes new Gold/index copies, package/model caches and audio, so it is not a full disk budget.
++
++## 3. Bounded capacity and quality measurements
++
++The two-person plan budgets 94 estimated points / 47 person-days each, including review, annotation, integration and gate work. Actual availability and CPU throughput remain unknown. The relative W1–W12+ windows are indicative, and the whole multimodal research scope is not promised in eight weeks.
++
++| Pilot or check | Bound / provisional acceptance | Required measurements |
++| --- | --- | --- |
++| Historical analytics | 100 fixed requests, concurrency 1; warm p95 <= 250 ms excluding artifact load | Hardware, cold/warm p50/p95, support counts and cohort/observation dates |
++| Historical BM25 | 40 independently authored queries (20 dev / 20 locked test), blinded pooled judgments; 100 warm requests, p95 <= 500 ms | Conventional Recall@10, Precision@10, MRR/nDCG, per-query results, qrel completeness, uncertainty and corpus/index/query/code hashes |
++| Fresh capture | <= 5 creators / 50 candidates / 30 successes / 60 audio minutes / 1,000 comments / one two-hour capture session | Yield, skip/failure reasons, metadata/audio/comment coverage, wall time and storage; minimum 5 real transcribed searchable videos for the vertical slice |
++| Early transcription | <= 10 videos / 20 audio minutes before accepting searchability | CPU ASR model, wall/audio real-time factor, peak RAM, actual transcript coverage and source resolution |
++| Audio evaluation | <= 60 captured audio minutes; <= 20 reference minutes / >= 50 utterances; <= 4 CPU hours / <= 8 GiB peak RAM | CER/WER with tokenization, median/p95 boundary errors, interval bounds; target median <= 1 s / p95 <= 3 s or abstain from precise timing |
++| Comment labels | <= 300 comments, minimum 150 for a quality gate, double annotation and video/thread holdout | Observable label definitions, agreement, class precision/recall/F1, bootstrap uncertainty and filter sensitivity |
++| ABSA labels | <= 200 units across >= 10 videos, minimum 120 units, double annotation and video-disjoint holdout | Aspect presence/polarity, source-span validity, per-aspect coverage and before/after-filter discrepancy |
++| Dense experiment | <= 5,000 records, one CPU model, corpus/query parity; warm p95 <= 1,000 ms / <= 8 GiB peak RAM | Build time, model/index/cache bytes, quality differences/uncertainty; retain BM25 if no justified gain |
++| Integrated offline demo | 30 held-out questions and 30 timing repetitions, concurrency 1; request p95 <= 5 s excluding startup | Source/temporal/claim coverage, no-answer behavior, per-stage and total latency, artifact-load/cold-start time |
++
++These are prospective pilot limits/thresholds from the plan, not observed throughput or calibrated accuracy. The milestone plan has the complete sample/quality criteria. Publish failed targets and reduce the sample/model/features or extend the schedule; never silently promote fixture results to live acceptance. Additional collection/model batches need an explicit measured bound after G3. Estimate audio work as audio duration × observed real-time factor, then add retry, review, annotation and integration effort.
++
++Retain `StageTimer` measurements in milliseconds: domain/filter/retrieval/fusion/rerank/synthesis/guardrail and total where executed. Separate artifact startup, network/provider wait and offline computation; do not attribute an omitted stage a measured zero. Track successful requests and failures separately, with repetition count and warm/cold state. Historical engagement supports retrospective associations; no real-time forecast or causal viral uplift is accepted from a single capture.
++
++## 4. Zero-spend provider contract
++
++Authorized provider/GPU/hosting spend is **USD 0**. Offline operation needs no key and remains a sufficient release path. Optional online synthesis uses only the owner's currently eligible Gemini free-tier API project and a model explicitly confirmed eligible immediately before use. Model availability, retirement and project quota can change; the former fixed model/15 RPM settings are configuration values, not guaranteed entitlements.
++
++Enforce <= 2 LLM calls per turn, a conservative sliding-window RPM limiter below the actual project quota, bounded timeout/retry and explicit `ProviderKeyMissingError`, `QuotaBlockedError` and provider-unavailable handling. Missing key must not crash offline analytics/search. Missing eligible free quota/model must fail closed or return an explicitly requested offline draft; never silently enable billing, paid fallback, account upgrades or paid GPU. No live LLM call or expenditure is evidenced by this documentation rewrite.
++
++## 5. Public hosting remains a measured candidate decision
++
++The audit recorded time-sensitive hosting/provider restrictions against official documentation on 2026-11-17; see its [external evidence and links](../reports/tasks/docs-refactor-feasibility-2026-11-17/evidence/external-and-runtime-review.md). This guide does not assert that an ordinary Gradio/Docker host is currently free. No host is selected, deployed or accepted. Local execution remains available when no eligible host fits.
++
++M6.G must record a candidate comparison and actual small-profile measurement before any public release:
++
++| Candidate evidence | Pass condition | Current state |
++| --- | --- | --- |
++| Official current eligibility/terms | Genuinely free account/tier; no paid prerequisite, add-on, overage or automatic upgrade; record check date and direct official links | NOT_RUN |
++| Resource/storage fit | Measured artifact/model/image bytes, RAM peak and disk/cache fit within stated limits; no assumed persistent disk | NOT_RUN |
++| Sleep, cold start and quotas | Document suspension/eviction, idle sleep, cold-start time, CPU/RAM/network/build/request limits and expected availability honestly | NOT_RUN |
++| Artifact rights/privacy | Source reuse/redistribution and personal-data exposure resolved for the actual hosted profile | BLOCKED pending evidence |
++| Runtime and cost controls | Offline core works on candidate, bounded errors/readiness visible, no paid fallback or billing/overage path | NOT_RUN |
++| Acceptance | Both contributors review measured evidence; owner approves any public publish separately | NOT_RUN |
++
++If a candidate cannot fit the full corpus, a smaller permitted immutable demonstration snapshot requires its own provenance and qualified coverage; it is not silently equivalent to the whole historical corpus. A host failure blocks public hosting only. Do not mark a local AI core incomplete merely because public hosting is unavailable, and do not call a local smoke check a deployed service.
++
++## 6. Provenance and operational references
++
++The exact prior resource guide is preserved in the recovery task's [source archive](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-resources-and-deployment.md), with [preservation hashes](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-plan-preservation.json). New documentation is dated; frozen measurements and historical reports remain historical.
++
++- [FastAPI response models](https://fastapi.tiangolo.com/tutorial/response-model/)
++- [Gradio mounting in FastAPI](https://www.gradio.app/docs/gradio/mount_gradio_app)
++- [Qdrant hybrid queries](https://qdrant.tech/documentation/concepts/hybrid-queries/)
++- [Current milestone gates and task owners](TikTok_AI_Engine_Milestone.md)
++
++References identify implementation documentation; they do not certify current provider/hosting eligibility. Check official service terms at the decision point and retain the dated evidence in M6.G.
+diff --git a/docs/reports/milestones/README.md b/docs/reports/milestones/README.md
+index c5f74b5..81d2c71 100644
+--- a/docs/reports/milestones/README.md
++++ b/docs/reports/milestones/README.md
+@@ -6,6 +6,8 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
+ | --- | --- | --- | --- |
+ | M0.1 | Legacy repository audit, secret sanitization, 1.50 GB data preservation, and Gold RAG monorepo baseline | COMPLETE | [Read results](M0.1/README.md) |
+ 
++Independent cross-project assessments are listed in [task reports](../tasks/README.md). Their conclusions do not change milestone status or pass a gate.
++
+ Apply the exact layout defined in [AGENTS.md](../../../AGENTS.md) to all subsequent tasks (`M1.1`, `M2.2`, `M3.1`, etc.):
+ 
+ ```text
+diff --git a/infra/compose/docker-compose.yml b/infra/compose/docker-compose.yml
+index ce4c1df..c7b4c72 100644
+--- a/infra/compose/docker-compose.yml
++++ b/infra/compose/docker-compose.yml
+@@ -35,8 +35,8 @@ services:
+       TIKTOK_RAG_ENV: docker
+       TIKTOK_RAG_REDIS_URL: redis://redis:6379/0
+       TIKTOK_RAG_QDRANT_URL: http://qdrant:6333
+-      TIKTOK_RAG_CORPUS_DIR: data/corpus/20261116_v1
+-      TIKTOK_RAG_BM25_INDEX_DIR: artifacts/indexes/bm25-v1
++      TIKTOK_RAG_CORPUS_DIR: data/corpus/20261117_recovered_v1
++      TIKTOK_RAG_BM25_INDEX_DIR: artifacts/indexes/bm25-v2
+     ports:
+       - "8000:8000"
+     volumes:
+diff --git a/infra/docker/Dockerfile.api b/infra/docker/Dockerfile.api
+index 3368efe..1b9c867 100644
+--- a/infra/docker/Dockerfile.api
++++ b/infra/docker/Dockerfile.api
+@@ -10,6 +10,7 @@ RUN useradd --create-home --shell /bin/bash appuser
+ COPY pyproject.toml README.md ./
+ COPY packages ./packages
+ COPY apps ./apps
++COPY pipelines ./pipelines
+ COPY configs ./configs
+ 
+ RUN pip install --no-cache-dir --upgrade pip && \
+diff --git a/packages/analytics/engine.py b/packages/analytics/engine.py
+index d4ca960..2c5f0f6 100644
+--- a/packages/analytics/engine.py
++++ b/packages/analytics/engine.py
+@@ -51,6 +51,12 @@ def load_verified_corpus(corpus_dir: Path) -> tuple[CorpusManifest, pd.DataFrame
+     except Exception as exc:
+         raise CorpusNotReadyError(f"Invalid corpus manifest at {manifest_path}: {exc}") from exc
+ 
++    names = [entry.filename for entry in manifest.files]
++    required = {"dim_creators.parquet", "fact_videos.parquet"}
++    if not required.issubset(names) or len(names) != len(set(names)):
++        raise CorpusNotReadyError("Manifest must cover each required corpus table exactly once")
++    if any(Path(name).name != name or "\\" in name or "/" in name for name in names):
++        raise CorpusNotReadyError("Manifest table names must be local filenames")
+     for f_entry in manifest.files:
+         file_path = corpus_dir / f_entry.filename
+         if not file_path.is_file():
+diff --git a/packages/common/settings/__init__.py b/packages/common/settings/__init__.py
+index 3144160..293281a 100644
+--- a/packages/common/settings/__init__.py
++++ b/packages/common/settings/__init__.py
+@@ -33,9 +33,9 @@ class AppSettings(BaseModel):
+     llm_deadline_seconds: float = Field(default=30.0, gt=0.0, le=120.0)
+     rate_limit_rpm: int = Field(default=15, ge=1, le=300)
+ 
+-    corpus_dir: Path = Field(default=Path("data/corpus/20261116_v1"))
+-    bm25_index_dir: Path = Field(default=Path("artifacts/indexes/bm25-v1"))
+-    benchmark_report_path: Path = Field(default=Path("artifacts/benchmarks/retrieval_v1.json"))
++    corpus_dir: Path = Field(default=Path("data/corpus/20261117_recovered_v1"))
++    bm25_index_dir: Path = Field(default=Path("artifacts/indexes/bm25-v2"))
++    benchmark_report_path: Path = Field(default=Path("artifacts/benchmarks/retrieval_v2.json"))
+ 
+     qdrant_url: str = Field(default="http://127.0.0.1:6333")
+     qdrant_collection: str = Field(default="tiktok_fnb_videos_v1")
+@@ -63,10 +63,10 @@ class AppSettings(BaseModel):
+             max_llm_calls_per_turn=int(_get("TIKTOK_RAG_MAX_LLM_CALLS_PER_TURN", "2")),
+             llm_deadline_seconds=float(_get("TIKTOK_RAG_LLM_DEADLINE_SECONDS", "30.0")),
+             rate_limit_rpm=int(_get("TIKTOK_RAG_RATE_LIMIT_RPM", "15")),
+-            corpus_dir=Path(_get("TIKTOK_RAG_CORPUS_DIR", "data/corpus/20261116_v1")),
+-            bm25_index_dir=Path(_get("TIKTOK_RAG_BM25_INDEX_DIR", "artifacts/indexes/bm25-v1")),
++            corpus_dir=Path(_get("TIKTOK_RAG_CORPUS_DIR", "data/corpus/20261117_recovered_v1")),
++            bm25_index_dir=Path(_get("TIKTOK_RAG_BM25_INDEX_DIR", "artifacts/indexes/bm25-v2")),
+             benchmark_report_path=Path(
+-                _get("TIKTOK_RAG_BENCHMARK_REPORT_PATH", "artifacts/benchmarks/retrieval_v1.json")
++                _get("TIKTOK_RAG_BENCHMARK_REPORT_PATH", "artifacts/benchmarks/retrieval_v2.json")
+             ),
+             qdrant_url=_get("TIKTOK_RAG_QDRANT_URL", "http://127.0.0.1:6333"),
+             qdrant_collection=_get("TIKTOK_RAG_QDRANT_COLLECTION", "tiktok_fnb_videos_v1"),
+diff --git a/packages/data_contracts/corpus.py b/packages/data_contracts/corpus.py
+index 4fec5d0..def685c 100644
+--- a/packages/data_contracts/corpus.py
++++ b/packages/data_contracts/corpus.py
+@@ -17,6 +17,8 @@ class CorpusManifest(BaseModel):
+     model_config = ConfigDict(frozen=True)
+ 
+     snapshot_id: str
++    parent_snapshot_id: str | None = None
++    parent_manifest_sha256: str | None = Field(default=None, min_length=64, max_length=64)
+     created_at: str
+     date_window_start: str
+     date_window_end: str
+diff --git a/packages/data_contracts/script.py b/packages/data_contracts/script.py
+index 72262c5..da8eee7 100644
+--- a/packages/data_contracts/script.py
++++ b/packages/data_contracts/script.py
+@@ -1,5 +1,7 @@
+ from __future__ import annotations
+ 
++from typing import Literal
++
+ from pydantic import BaseModel, ConfigDict, Field
+ 
+ from packages.data_contracts.analytics import NicheBenchmarkSummary
+@@ -36,6 +38,10 @@ class GuardrailReport(BaseModel):
+     valid_citations_ratio: float = Field(ge=0.0, le=1.0)
+     cliche_phrases_detected: list[str]
+     warnings: list[str]
++    citation_coverage_ratio: float = Field(default=0.0, ge=0.0, le=1.0)
++    timing_valid: bool = False
++    grounding_verified: Literal[False] = False
++    validation_scope: Literal["structure_citations_timing"] = "structure_citations_timing"
+ 
+ 
+ class GroundedScriptResponse(BaseModel):
+@@ -54,3 +60,5 @@ class GroundedScriptResponse(BaseModel):
+     evidence_cards: list[EvidenceCard]
+     guardrail: GuardrailReport
+     timings_ms: dict[str, float]
++    draft_status: Literal["creative_draft"] = "creative_draft"
++    grounding_verified: Literal[False] = False
+diff --git a/packages/llm/guardrails/verifier.py b/packages/llm/guardrails/verifier.py
+index ec28e56..16225e9 100644
+--- a/packages/llm/guardrails/verifier.py
++++ b/packages/llm/guardrails/verifier.py
+@@ -34,7 +34,6 @@ def recalculate_timeline_and_verify(
+ 
+     total_citations = 0
+     valid_citations = 0
+-    fallback_vid = next(iter(valid_evidence_ids), "")
+ 
+     all_text_parts = list(hook_options)
+ 
+@@ -47,7 +46,8 @@ def recalculate_timeline_and_verify(
+         end_sec = cursor_sec + beat_dur
+         cursor_sec = end_sec
+ 
+-        raw_cites = b.get("cited_video_ids") or []
++        submitted = b.get("cited_video_ids")
++        raw_cites = submitted if isinstance(submitted, list) else []
+         clean_cites: list[str] = []
+         for cid in raw_cites:
+             cid_s = str(cid).strip()
+@@ -59,9 +59,6 @@ def recalculate_timeline_and_verify(
+                 if cid_s not in clean_cites:
+                     clean_cites.append(cid_s)
+ 
+-        if not clean_cites and fallback_vid:
+-            clean_cites = [fallback_vid]
+-
+         verified_beats.append(
+             ScriptBeat(
+                 section_title=str(b.get("section_title") or f"Phần {idx}"),
+@@ -79,19 +76,28 @@ def recalculate_timeline_and_verify(
+     total_words = sum(beat.word_count for beat in verified_beats)
+     estimated_sec = round(cursor_sec, 1)
+     delta_sec = round(estimated_sec - target_duration_sec, 1)
+-    cite_ratio = round(valid_citations / total_citations, 3) if total_citations > 0 else (1.0 if valid_evidence_ids else 0.0)
++    cite_ratio = round(valid_citations / total_citations, 3) if total_citations > 0 else 0.0
++    covered_beats = sum(bool(beat.cited_video_ids) for beat in verified_beats)
++    coverage = covered_beats / len(verified_beats) if verified_beats else 0.0
++    complete_content = bool(verified_beats) and all(beat.word_count > 0 for beat in verified_beats)
++    timing_valid = target_duration_sec > 0 and abs(delta_sec) <= max(2.0, target_duration_sec * 0.05)
+ 
+     warnings: list[str] = []
+     if detected_cliches:
+         warnings.append(f"Phát hiện cụm từ sáo rỗng cần tránh: {', '.join(detected_cliches)}")
+-    if abs(delta_sec) > max(15.0, target_duration_sec * 0.35):
++    if not timing_valid:
+         warnings.append(
+             f"Thời lượng ước tính ({estimated_sec}s) lệch {delta_sec:+.1f}s so với mục tiêu ({target_duration_sec}s) ở tốc độ {effective_wps:.2f} từ/giây."
+         )
+     if cite_ratio < 1.0:
+         warnings.append("Một số mã trích dẫn video không khớp kho bằng chứng đã được lọc bỏ tự động.")
++    if not complete_content:
++        warnings.append("Kịch bản cần có lời thoại không rỗng trong mọi phân đoạn.")
++    if coverage < 1.0:
++        warnings.append("Một số phân đoạn chưa có video tham chiếu; hệ thống không tự gán nguồn.")
++    warnings.append("Kiểm tra cấu trúc, mã nguồn và thời lượng; chưa xác minh nội dung từng nhận định với nguồn.")
+ 
+-    passed = (len(detected_cliches) == 0) and (cite_ratio >= 0.8)
++    passed = complete_content and timing_valid and not detected_cliches and cite_ratio == 1.0 and coverage == 1.0
+     report = GuardrailReport(
+         passed=passed,
+         estimated_duration_sec=estimated_sec,
+@@ -101,5 +107,7 @@ def recalculate_timeline_and_verify(
+         valid_citations_ratio=cite_ratio,
+         cliche_phrases_detected=detected_cliches,
+         warnings=warnings,
++        citation_coverage_ratio=coverage,
++        timing_valid=timing_valid,
+     )
+     return verified_beats, report
+diff --git a/packages/script_engine/service.py b/packages/script_engine/service.py
+index d345aa6..2124a44 100644
+--- a/packages/script_engine/service.py
++++ b/packages/script_engine/service.py
+@@ -5,7 +5,11 @@ from typing import Any
+ from packages.analytics import NicheAnalyticsEngine
+ from packages.common.logging import StageTimer
+ from packages.data_contracts.analytics import NicheBenchmarkSummary
+-from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest, ScriptGenerationRequest
++from packages.data_contracts.query import (
++    NicheQueryFilter,
++    RetrievalRequest,
++    ScriptGenerationRequest,
++)
+ from packages.data_contracts.retrieval import EvidenceCard
+ from packages.data_contracts.script import GroundedScriptResponse, ShootingAdvice
+ from packages.llm import (
+@@ -106,52 +110,65 @@ class GroundedScriptEngine:
+         id1 = c1.citation.video_id if c1 else id0
+         id2 = c2.citation.video_id if c2 else id0
+ 
+-        ref_hook_0 = c0.hook_text[:110] if (c0 and c0.hook_text) else f"Khám phá {dish_focus} đáng thử tại {city_focus}"
++        ref_hook_0 = c0.hook_text[:110] if (c0 and c0.hook_text) else f"Tìm hiểu {dish_focus} tại {city_focus}"
+         hook_options = [
+-            f"Một tọa độ {dish_focus} tại {city_focus} đang được dân sành ăn truyền tai nhau — thực tế có xứng đáng với mức giá?",
+-            f"Cầm ngân sách hợp lý đi thử {dish_focus} theo gợi ý thực tế: phần ăn đầy đặn và hương vị ra sao?",
+-            f"Lấy cảm hứng mở đầu trực diện như @{c0.citation.author_handle if c0 else 'creator'}: '{ref_hook_0}'",
++            f"Nếu quay về {dish_focus} tại {city_focus}, bạn muốn kiểm tra hương vị hay mức giá trước?",
++            f"Cùng lên ý tưởng tìm hiểu {dish_focus}: cần ghi lại điều gì để người xem tự đánh giá?",
++            f"Mở đầu tham khảo từ kho @{c0.citation.author_handle if c0 else 'creator'}: '{ref_hook_0}'",
+         ]
+ 
+-        # Calibrate word count per beat to match target_duration_sec * median_wps
+-        wps = max(2.4, min(benchmark.median_word_per_second, 4.2))
++        # Whitespace-token pacing is an estimate, not measured acoustic alignment.
++        wps = max(2.0, min(benchmark.median_word_per_second, 5.0))
+         target_words = max(55, int(round(target_duration_sec * wps)))
+ 
+         beat1_text = (
+-            f"Hôm nay mình ghé trải nghiệm {dish_focus} tại {city_focus} theo đúng đề bài '{brief[:90]}'. "
+-            f"Ngay từ cái nhìn đầu tiên, phần nguyên liệu được chuẩn bị rất tươi và lên màu bắt mắt."
++            f"Hôm nay mình lên ý tưởng tìm hiểu {dish_focus} tại {city_focus}. "
++            "Khi quay thực tế, mình sẽ ghi lại món ăn và bảng giá trước khi đưa ra nhận xét. "
++            "Bạn muốn biết điều gì về món này?"
+         )
+         ev_detail_1 = (
+             c0.body_beats[0]
+             if (c0 and c0.body_beats)
+-            else "Phần nước dùng và gia vị được cân chỉnh vừa vặn, giữ được độ tươi tự nhiên của nguyên liệu."
++            else "Chưa có trích đoạn đủ chi tiết để mô tả món ăn."
+         )
+         beat2_text = (
+-            f"Điểm đáng chú ý đầu tiên nằm ở khâu chế biến và bày trí: {ev_detail_1} "
+-            f"Khi quay cận cảnh lúc món vừa dọn ra còn nóng hổi, mùi thơm dậy lên rất rõ ràng."
++            f"Kho lời thoại tham khảo có đoạn: {ev_detail_1} "
++            "Đây là thông tin trong nguồn cũ, cần kiểm tra lại khi đến quay. "
++            "Mình sẽ ghi hình phần chế biến nếu được phép và mô tả đúng những gì quan sát được."
+         )
+         ev_detail_2 = (
+             c1.body_beats[0]
+             if (c1 and c1.body_beats)
+-            else "Kết cấu món ăn có sự tương phản rõ giữa độ giòn bên ngoài và vị đậm đà bên trong."
++            else "Chưa có thêm trích đoạn độc lập về trải nghiệm món ăn."
+         )
+         beat3_text = (
+-            f"Thử trực tiếp từng thành phần để kiểm chứng chất lượng: {ev_detail_2} "
+-            f"Xét về khẩu phần và trải nghiệm thực tế trong phân khúc {effective_filters.price_tier or 'phổ thông'}, mức giá này hoàn toàn hợp lý."
++            f"Một ý khác trong nguồn tham khảo: {ev_detail_2} "
++            "Khi thử món, mình sẽ tách nhận xét về hương vị, khẩu phần và mức giá đang niêm yết. "
++            "Những nhận định này cần trải nghiệm thực tế trước khi đưa vào bản quay cuối."
+         )
+         beat4_text = (
+-            f"Tổng kết lại, đây là lựa chọn {dish_focus} rất đáng lưu vào danh sách khi bạn cần một bữa ăn chất lượng tại {city_focus}. "
+-            f"Bạn đã từng thử kiểu chế biến này chưa, bình luận địa chỉ quen thuộc của bạn bên dưới nhé!"
++            f"Sau khi quay và kiểm tra thông tin, mình sẽ tổng kết điểm phù hợp của {dish_focus} với nhu cầu người xem. "
++            "Phần kết sẽ nêu rõ thời điểm trải nghiệm và điều còn chưa xác minh. "
++            "Bạn muốn mình tìm hiểu thêm chi tiết nào?"
+         )
+ 
+         # Pad middle beat slightly if target_duration_sec > 55s so pacing matches target duration
+         current_words = sum(len(t.split()) for t in (beat1_text, beat2_text, beat3_text, beat4_text))
+         if target_words - current_words >= 25 and c2 and c2.transcript_excerpt:
+             beat3_text += (
+-                " Ngoài ra bạn nên đi vào khung giờ sớm một chút để món lên nhanh, giữ trọn độ nóng giòn "
+-                "và dễ chọn được góc ngồi thoáng đãng khi đi cùng bạn bè."
++                " Có thể bổ sung cảnh bảng giá, khẩu phần và phần trả lời của người bán nếu được đồng ý. "
++                "Mình sẽ ghi rõ thông tin nào được quan sát và thông tin nào chỉ lấy từ nguồn tham khảo."
+             )
+ 
++        # Keep short requests within their spoken-word budget. Longer drafts may
++        # deliberately fail the timing check instead of padding with invented facts.
++        dialogue_texts = [beat1_text, beat2_text, beat3_text, beat4_text]
++        if sum(len(text.split()) for text in dialogue_texts) > target_words:
++            budgets = [max(1, target_words // 4)] * 3
++            budgets.append(max(1, target_words - sum(budgets)))
++            dialogue_texts = [" ".join(text.split()[:budget]) for text, budget in zip(dialogue_texts, budgets)]
++        beat1_text, beat2_text, beat3_text, beat4_text = dialogue_texts
++
+         if fmt == "Hướng dẫn nấu ăn":
+             setting = "Gian bếp gia đình gọn gàng, ánh sáng chếch 45 độ chiếu rõ thớt sơ chế và chảo nấu."
+             cam_angles = [
+@@ -169,11 +186,13 @@ class GroundedScriptEngine:
+ 
+         hashtags = benchmark.top_hashtags[:6] or ["ancungtiktok", "reviewanngon", "foodtiktok"]
+         return {
++            "draft_status": "creative_draft",
++            "grounding_verified": False,
+             "hook_options": hook_options,
+-            "caption_draft": f"Trải nghiệm thực tế {dish_focus} tại {city_focus} — chi tiết hương vị và mức giá cho mọi người tham khảo!",
++            "caption_draft": f"Bản nháp về {dish_focus} tại {city_focus}, lấy ý tưởng từ nguồn tham khảo lịch sử; cần kiểm chứng trước khi quay.",
+             "recommended_hashtags": hashtags,
+             "setting": setting,
+-            "persona_tone": "Chân thực, trực diện vào chất lượng món & giá cả, miêu tả vị giác cụ thể",
++            "persona_tone": "Bản nháp sáng tạo; tách nguồn tham khảo và nhận xét cần trải nghiệm thực tế",
+             "beats": [
+                 {
+                     "section_title": "1. Hook mở đầu (0-5s giữ chân)",
+@@ -208,7 +227,7 @@ class GroundedScriptEngine:
+                 ],
+                 "pacing_and_editing": [
+                     f"Tốc độ thoại mục tiêu của ngách: ~{benchmark.median_word_per_second} từ/giây; cắt bỏ toàn bộ khoảng nghỉ thở thừa >0.3s",
+-                    f"Thời lượng tối ưu của ngách nằm trong khoảng {benchmark.duration_q25_sec:.0f}s - {benchmark.duration_q75_sec:.0f}s (trung vị {benchmark.duration_median_sec:.0f}s)",
++                    f"Phân bố thời lượng lịch sử của lát cắt: {benchmark.duration_q25_sec:.0f}s - {benchmark.duration_q75_sec:.0f}s (trung vị {benchmark.duration_median_sec:.0f}s); không chứng minh thời lượng tối ưu",
+                 ],
+             },
+         }
+diff --git a/pipelines/benchmark_retrieval/__init__.py b/pipelines/benchmark_retrieval/__init__.py
+index 69743a4..ab15fe5 100644
+--- a/pipelines/benchmark_retrieval/__init__.py
++++ b/pipelines/benchmark_retrieval/__init__.py
+@@ -1 +1 @@
+-"""Offline Retrieval & Reranking Evaluation Harness (Recall@10, MRR@10, nDCG@10)."""
++"""Offline weak-label retrieval regression (Recall/P/MRR/nDCG at 10)."""
+diff --git a/pipelines/benchmark_retrieval/__main__.py b/pipelines/benchmark_retrieval/__main__.py
+index 92bd58b..e9d0526 100644
+--- a/pipelines/benchmark_retrieval/__main__.py
++++ b/pipelines/benchmark_retrieval/__main__.py
+@@ -1,9 +1,10 @@
+ from __future__ import annotations
+ 
+ import argparse
++import hashlib
+ import json
+ import math
+-from datetime import datetime, timezone
++from datetime import UTC, datetime
+ from pathlib import Path
+ from typing import Any
+ 
+@@ -15,7 +16,7 @@ from packages.retrieval import HybridRetrievalService
+ 
+ 
+ def _ensure_eval_queries(queries_path: Path, df_videos: pd.DataFrame) -> list[dict[str, Any]]:
+-    """Build or load independent metadata-verified Vietnamese F&B evaluation queries."""
++    """Build or load keyword/metadata weak labels, not independent relevance judgments."""
+     if queries_path.is_file():
+         return [
+             json.loads(line)
+@@ -81,9 +82,13 @@ def _evaluate_run(
+     k: int = 10,
+ ) -> dict[str, float]:
+     recalls: list[float] = []
++    precisions: list[float] = []
++    recall_ceilings: list[float] = []
+     mrrs: list[float] = []
+     ndcgs: list[float] = []
+     latencies: list[float] = []
++    if k <= 0:
++        raise ValueError("Metric cutoff k must be positive")
+ 
+     for q in queries:
+         rel_set = set(q["relevant_video_ids"])
+@@ -102,9 +107,11 @@ def _evaluate_run(
+         retrieved_ids = [card.citation.video_id for card in resp.items[:k]]
+         hits = [1 if vid in rel_set else 0 for vid in retrieved_ids]
+ 
+-        # Recall@K (capped denominator at min(|rel|, K) for standard bounded top-K recall, plus hit_rate@K)
+-        denom = min(len(rel_set), k)
+-        recalls.append(sum(hits) / max(denom, 1))
++        # Standard recall counts all relevant documents; missing result slots
++        # are non-relevant for precision. A perfect top-k can still recall <1.
++        recalls.append(sum(hits) / len(rel_set))
++        precisions.append(sum(hits) / k)
++        recall_ceilings.append(min(len(rel_set), k) / len(rel_set))
+ 
+         # MRR@K
+         rr = 0.0
+@@ -125,23 +132,45 @@ def _evaluate_run(
+     p95_idx = min(len(sorted_lat) - 1, int(0.95 * len(sorted_lat)))
+     return {
+         "query_count": len(recalls),
+-        "recall_at_10": round(sum(recalls) / n, 4),
+-        "mrr_at_10": round(sum(mrrs) / n, 4),
+-        "ndcg_at_10": round(sum(ndcgs) / n, 4),
++        "input_query_count": len(queries),
++        "zero_relevant_query_count": len(queries) - len(recalls),
++        f"recall_at_{k}": round(sum(recalls) / n, 4),
++        f"precision_at_{k}": round(sum(precisions) / n, 4),
++        f"recall_at_{k}_ceiling": round(sum(recall_ceilings) / n, 4),
++        f"mrr_at_{k}": round(sum(mrrs) / n, 4),
++        f"ndcg_at_{k}": round(sum(ndcgs) / n, 4),
+         "mean_latency_ms": round(sum(latencies) / max(len(latencies), 1), 2),
+         "p95_latency_ms": round(sorted_lat[p95_idx], 2),
+     }
+ 
+ 
++def _sha256_file(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
+ def main() -> None:
+     parser = argparse.ArgumentParser(description="Benchmark Vietnamese BM25 + Reranking retrieval quality.")
+-    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261116_v1"))
+-    parser.add_argument("--bm25", "--index", dest="bm25", type=Path, default=Path("artifacts/indexes/bm25-v1"))
++    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
++    parser.add_argument("--bm25", "--index", dest="bm25", type=Path, default=Path("artifacts/indexes/bm25-v2"))
+     parser.add_argument("--queries", type=Path, default=Path("data/evaluation/v1/queries.jsonl"))
+-    parser.add_argument("--output", type=Path, default=Path("artifacts/benchmarks/retrieval_v1.json"))
++    parser.add_argument("--benchmark-id", default="retrieval_v2")
++    parser.add_argument("--output", type=Path, help="New receipt path (default: artifacts/benchmarks/<benchmark-id>.json); existing files are never replaced.")
+     args = parser.parse_args()
++    if not args.benchmark_id or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-" for c in args.benchmark_id):
++        parser.error("benchmark-id must contain only letters, digits, underscores, dots or hyphens")
++    output = args.output or Path("artifacts/benchmarks") / f"{args.benchmark_id}.json"
++    if output.exists():
++        raise FileExistsError(f"Benchmark receipt already exists: {output}")
+ 
+     manifest, _, df_videos = load_verified_corpus(args.corpus)
++    receipt_path = args.bm25 / "bm25-receipt.json"
++    index_receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
++    if index_receipt.get("corpus_snapshot_id") != manifest.snapshot_id:
++        raise ValueError("Index receipt corpus snapshot does not match the verified corpus snapshot")
+     queries = _ensure_eval_queries(args.queries, df_videos)
+     service = HybridRetrievalService.from_dirs(df_videos=df_videos, bm25_dir=args.bm25)
+ 
+@@ -149,19 +178,57 @@ def main() -> None:
+     bm25_reranked = _evaluate_run(service, queries, rerank=True, k=10)
+ 
+     report = {
+-        "benchmark_id": "retrieval_v1",
++        "benchmark_id": args.benchmark_id,
++        "metric_schema_version": 2,
+         "corpus_snapshot_id": manifest.snapshot_id,
+-        "evaluated_at": datetime.now(timezone.utc).isoformat(),
++        "evaluated_at": datetime.now(UTC).isoformat(),
+         "indexed_videos": int(df_videos["has_transcript"].sum()),
+         "queries_file": str(args.queries),
++        "evaluation": {
++            "label_source": "lexical_metadata_weak_labels",
++            "independent_relevance_judgments": False,
++            "limitation": "Keyword/metadata weak labels measure regression against these rules, not independently annotated relevance quality or current trends.",
++            "aggregation": "macro over queries with at least one relevant video",
++            "zero_relevant_policy": "exclude and report count; all-empty inputs yield zero metrics",
++            "metric_definitions": {
++                "recall_at_10": "relevant retrieved in top 10 / all relevant video IDs",
++                "precision_at_10": "relevant retrieved in top 10 / 10 (missing slots count as non-relevant)",
++                "recall_at_10_ceiling": "macro mean of min(10, relevant count) / relevant count",
++            },
++            "relevant_video_counts": {
++                str(q.get("query_id", i)): len(set(q["relevant_video_ids"]))
++                for i, q in enumerate(queries, start=1)
++            },
++        },
++        "provenance": {
++            "corpus_manifest_sha256": _sha256_file(args.corpus / "manifest.json"),
++            "corpus_files_sha256": {entry.filename: entry.sha256 for entry in manifest.files},
++            "queries_sha256": _sha256_file(args.queries),
++            "index_files_sha256": {
++                filename: _sha256_file(args.bm25 / filename)
++                for filename in ("bm25-receipt.json", "video_ids.json", "vocab.json", "bm25_csr.npz")
++            },
++            "code_files_sha256": {
++                filename: _sha256_file(Path(__file__).resolve().parents[2] / filename)
++                for filename in (
++                    "pipelines/benchmark_retrieval/__main__.py",
++                    "packages/retrieval/service.py",
++                    "packages/retrieval/sparse/bm25.py",
++                    "packages/retrieval/fusion/rrf.py",
++                    "packages/retrieval/rerank/scorer.py",
++                )
++            },
++            "configuration": {"mode": "bm25", "top_k": 10, "index_receipt": index_receipt},
++        },
+         "configurations": {
+             "bm25_viral_boost": bm25_only,
+             "bm25_viral_boost_reranked": bm25_reranked,
+         },
+     }
+ 
+-    args.output.parent.mkdir(parents=True, exist_ok=True)
+-    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
++    output.parent.mkdir(parents=True, exist_ok=True)
++    with output.open("x", encoding="utf-8") as stream:
++        stream.write(json.dumps(report, ensure_ascii=False, indent=2))
+     print(json.dumps(report, ensure_ascii=False, indent=2))
+ 
+ 
+diff --git a/pipelines/build_dense_sparse_index/__main__.py b/pipelines/build_dense_sparse_index/__main__.py
+index 91a235c..6b23600 100644
+--- a/pipelines/build_dense_sparse_index/__main__.py
++++ b/pipelines/build_dense_sparse_index/__main__.py
+@@ -10,8 +10,8 @@ from packages.retrieval.sparse.bm25 import BM25Index
+ 
+ def main() -> None:
+     parser = argparse.ArgumentParser(description="Build Vietnamese NFC BM25 sparse index over Gold corpus.")
+-    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261116_v1"))
+-    parser.add_argument("--output", type=Path, default=Path("artifacts/indexes/bm25-v1"))
++    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
++    parser.add_argument("--output", type=Path, default=Path("artifacts/indexes/bm25-v2"))
+     args = parser.parse_args()
+ 
+     manifest, _, df_videos = load_verified_corpus(args.corpus)
+diff --git a/pipelines/build_gold_corpus/__main__.py b/pipelines/build_gold_corpus/__main__.py
+index d1907f9..2a4547e 100644
+--- a/pipelines/build_gold_corpus/__main__.py
++++ b/pipelines/build_gold_corpus/__main__.py
+@@ -18,7 +18,7 @@ def main() -> None:
+     parser.add_argument(
+         "--output",
+         type=Path,
+-        default=Path("data/corpus/20261116_v1"),
++        default=Path("data/corpus/20261117_recovered_v1"),
+         help="Output snapshot directory.",
+     )
+     args = parser.parse_args()
+diff --git a/pipelines/build_gold_corpus/builder.py b/pipelines/build_gold_corpus/builder.py
+index a7b27c4..f4f91b2 100644
+--- a/pipelines/build_gold_corpus/builder.py
++++ b/pipelines/build_gold_corpus/builder.py
+@@ -185,9 +185,19 @@ def _sha256_file(path: Path) -> str:
+ 
+ 
+ def build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str | None = None) -> CorpusManifest:
++    from packages.common.snapshots import snapshot_workspace
++
++    with snapshot_workspace(output_dir) as staging_dir:
++        manifest = _build_gold_corpus(root_dir, staging_dir, snapshot_id or output_dir.name)
++        from packages.analytics import load_verified_corpus
++
++        load_verified_corpus(staging_dir)
++    return manifest
++
++
++def _build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str) -> CorpusManifest:
+     """Build immutable Gold Parquet corpus from read-only upstream datasets."""
+-    output_dir.mkdir(parents=True, exist_ok=True)
+-    snap_id = snapshot_id or output_dir.name
++    snap_id = snapshot_id
+ 
+     user_parquet = root_dir / "data/processed/cleaned_user_info.parquet"
+     video_parquet = root_dir / "data/processed/cleaned_video_info.parquet"
+diff --git a/pipelines/crawl_incremental/__main__.py b/pipelines/crawl_incremental/__main__.py
+index 80a4247..a4365d9 100644
+--- a/pipelines/crawl_incremental/__main__.py
++++ b/pipelines/crawl_incremental/__main__.py
+@@ -96,7 +96,7 @@ def main() -> None:
+     parser = argparse.ArgumentParser(
+         description="Crawl fresh 4-month TikTok F&B videos (never re-crawls historical 1.50 GB corpus)."
+     )
+-    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261116_v1"))
++    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
+     parser.add_argument("--output-dir", type=Path, default=Path("data/raw_incremental/batch_latest"))
+     parser.add_argument("--window-days", type=int, default=120, help="Rolling window in days (default: 120 = 4 months).")
+     parser.add_argument(
+diff --git a/pipelines/enrich_taxonomy_batch/__main__.py b/pipelines/enrich_taxonomy_batch/__main__.py
+index 2bd67fe..70d4096 100644
+--- a/pipelines/enrich_taxonomy_batch/__main__.py
++++ b/pipelines/enrich_taxonomy_batch/__main__.py
+@@ -14,7 +14,7 @@ def main() -> None:
+     parser = argparse.ArgumentParser(
+         description="Optional resumable Gemini Free-Tier batch enricher for unspecified price/occasion rows."
+     )
+-    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261116_v1"))
++    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
+     parser.add_argument("--checkpoint", type=Path, default=Path("artifacts/enrichment/checkpoint.jsonl"))
+     parser.add_argument("--limit", type=int, default=20, help="Max videos to enrich in this bounded Free-Tier run.")
+     parser.add_argument("--dry-run", action="store_true", help="Inspect candidate rows without calling Gemini API.")
+diff --git a/pipelines/ingest_incremental_to_gold/__main__.py b/pipelines/ingest_incremental_to_gold/__main__.py
+index 1b2d2bd..3aaed3f 100644
+--- a/pipelines/ingest_incremental_to_gold/__main__.py
++++ b/pipelines/ingest_incremental_to_gold/__main__.py
+@@ -11,13 +11,13 @@ def main() -> None:
+     parser = argparse.ArgumentParser(
+         description="Convert 4-month incremental JSONL batch into extended Gold Corpus snapshot."
+     )
+-    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261116_v1"))
++    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
+     parser.add_argument(
+         "--incremental-jsonl",
+         type=Path,
+         default=Path("data/raw_incremental/batch_latest/videos_4m.jsonl"),
+     )
+-    parser.add_argument("--output-corpus", type=Path, default=Path("data/corpus/20261116_v2_4m"))
++    parser.add_argument("--output-corpus", type=Path, default=Path("data/corpus/20261117_incremental_v1"))
+     args = parser.parse_args()
+ 
+     manifest = ingest_incremental_batch_to_gold(
+diff --git a/pipelines/ingest_incremental_to_gold/converter.py b/pipelines/ingest_incremental_to_gold/converter.py
+index 8ab37be..8a6fbda 100644
+--- a/pipelines/ingest_incremental_to_gold/converter.py
++++ b/pipelines/ingest_incremental_to_gold/converter.py
+@@ -13,8 +13,9 @@ import pyarrow.parquet as pq
+ 
+ from packages.absa import analyze_koc_vs_viewer_absa
+ from packages.analytics import load_verified_corpus
++from packages.common.snapshots import snapshot_workspace
+ from packages.data_contracts.corpus import CorpusFileChecksum, CorpusManifest
+-from packages.data_contracts.multimodal import RawIncrementalVideoRecord, VoiceSegmentRecord
++from packages.data_contracts.multimodal import RawCommentInput, RawIncrementalVideoRecord, VoiceSegmentRecord
+ from packages.seeding import detect_seeding_comments
+ from packages.taxonomy import (
+     classify_duration_bucket,
+@@ -96,13 +97,32 @@ def ingest_incremental_batch_to_gold(
+     base_corpus_dir: Path,
+     incremental_jsonl: Path,
+     output_corpus_dir: Path,
++    *,
++    update_existing: bool = False,
++) -> CorpusManifest:
++    with snapshot_workspace(output_corpus_dir) as staging_dir:
++        manifest = _ingest_incremental_batch_to_gold(
++            base_corpus_dir, incremental_jsonl, staging_dir,
++            snapshot_id=output_corpus_dir.name, update_existing=update_existing,
++        )
++        load_verified_corpus(staging_dir)
++    return manifest
++
++
++def _ingest_incremental_batch_to_gold(
++    base_corpus_dir: Path,
++    incremental_jsonl: Path,
++    output_corpus_dir: Path,
++    *,
++    snapshot_id: str,
++    update_existing: bool,
+ ) -> CorpusManifest:
+     """Dual-Sink Converter:
+     1) Appends normalized 49-column rows to fact_videos.parquet (+ dim_creators.parquet) for RAG/Benchmarks.
+     2) Populates fact_voice_segments.parquet, fact_comments.parquet, and fact_absa_reviews.parquet for 4M modules.
+     """
+     base_manifest, df_creators, df_videos = load_verified_corpus(base_corpus_dir)
+-    output_corpus_dir.mkdir(parents=True, exist_ok=True)
++    parent_manifest_sha256 = _sha256_file(base_corpus_dir / "manifest.json")
+ 
+     raw_records = [
+         RawIncrementalVideoRecord.model_validate_json(line)
+@@ -111,6 +131,13 @@ def ingest_incremental_batch_to_gold(
+     ]
+ 
+     existing_vids = set(df_videos["video_id"].astype(str).tolist())
++    base_videos = {str(row["video_id"]): row for row in df_videos.to_dict(orient="records")}
++    base_multimodal: dict[str, pd.DataFrame] = {}
++    declared = {entry.filename for entry in base_manifest.files}
++    for name in ("fact_voice_segments.parquet", "fact_comments.parquet", "fact_absa_reviews.parquet"):
++        # Only load tables covered by the verified base manifest.
++        if name in declared:
++            base_multimodal[name] = pd.read_parquet(base_corpus_dir / name)
+     creator_medians: dict[str, float] = dict(
+         zip(df_creators["author_id"].astype(str), df_creators["median_play_count"].astype(float))
+     )
+@@ -121,10 +148,45 @@ def ingest_incremental_batch_to_gold(
+     voice_rows: list[dict[str, Any]] = []
+     comment_rows: list[dict[str, Any]] = []
+     absa_rows: list[dict[str, Any]] = []
++    replaced_voice_ids: set[str] = set()
++    processed_ids: set[str] = set()
+ 
+     for rec in raw_records:
+-        if rec.video_id in existing_vids:
++        if rec.video_id in processed_ids:
+             continue
++        processed_ids.add(rec.video_id)
++        is_existing = rec.video_id in existing_vids
++        if is_existing and not update_existing:
++            continue
++        old_row = base_videos.get(rec.video_id)
++        transcript_changed = bool(rec.transcript.strip()) and (
++            old_row is None or rec.transcript != old_row.get("transcript")
++        )
++        replace_voice = old_row is None or bool(rec.whisper_segments) or (
++            bool(rec.transcript.strip()) and rec.transcript != old_row.get("transcript")
++        )
++        if old_row is not None:
++            # Enrichment preserves the observed metadata/counters; it cannot replace
++            # historical observations with the defaults of a sparse ASR/comment record.
++            fields = RawIncrementalVideoRecord.model_fields
++            preserved = {key: old_row[key] for key in fields if key in old_row and key not in {
++                "transcript", "pitch_std", "energy_cv", "comments", "whisper_segments", "audio_path",
++            }}
++            rec = rec.model_copy(update=preserved)
++            if not rec.transcript.strip():
++                rec = rec.model_copy(update={"transcript": str(old_row.get("transcript") or "")})
++            old_comments = base_multimodal.get("fact_comments.parquet")
++            merged_comments: dict[str, RawCommentInput] = {}
++            if old_comments is not None:
++                for item in old_comments[old_comments["video_id"] == rec.video_id].to_dict(orient="records"):
++                    comment = RawCommentInput.model_validate(item)
++                    merged_comments[comment.comment_id] = comment
++            for comment in rec.comments:
++                previous = merged_comments.get(comment.comment_id)
++                merged_comments[comment.comment_id] = (
++                    previous.model_copy(update=comment.model_dump(exclude_unset=True)) if previous is not None else comment
++                )
++            rec = rec.model_copy(update={"comments": list(merged_comments.values())})
+         existing_vids.add(rec.video_id)
+ 
+         tier = classify_follower_tier(rec.follower_count)
+@@ -230,6 +292,14 @@ def ingest_incremental_batch_to_gold(
+                 "rag_document": rag_doc,
+             }
+         )
++        if old_row is not None:
++            # Only text-derived columns are replaced during explicit enrichment.
++            derived = {"has_transcript", "transcript", "word_count", "word_per_second", "has_cta",
++                       "has_curiosity_gap", "hook_text", "body_beats", "cta_text", "rag_document"}
++            updated = dict(old_row)
++            if transcript_changed:
++                updated.update({key: new_video_rows[-1][key] for key in derived})
++            new_video_rows[-1] = updated
+ 
+         if rec.author_id not in existing_aids:
+             existing_aids.add(rec.author_id)
+@@ -254,8 +324,10 @@ def ingest_incremental_batch_to_gold(
+             )
+ 
+         # Sink 2: Multimodal tables (Voice Segments + Seeding Comments + KOC-vs-Viewer ABSA)
+-        for seg in _build_voice_segments(rec, wps):
+-            voice_rows.append(seg.model_dump())
++        if replace_voice:
++            replaced_voice_ids.add(rec.video_id)
++            for seg in _build_voice_segments(rec, wps):
++                voice_rows.append(seg.model_dump())
+ 
+         cleansed_comments = detect_seeding_comments(rec.video_id, rec.comments)
+         for c_rec in cleansed_comments:
+@@ -293,11 +365,11 @@ def ingest_incremental_batch_to_gold(
+         if new_creator_rows
+         else df_creators
+     )
+-    df_out_videos = (
+-        pd.concat([df_videos, pd.DataFrame(new_video_rows)[df_videos.columns]], ignore_index=True)
+-        if new_video_rows
+-        else df_videos
+-    )
++    updated_video_ids = {str(row["video_id"]) for row in new_video_rows}
++    df_out_videos = pd.concat([
++        df_videos[~df_videos["video_id"].isin(updated_video_ids)],
++        pd.DataFrame(new_video_rows).reindex(columns=df_videos.columns),
++    ], ignore_index=True) if new_video_rows else df_videos
+ 
+     df_voice = pd.DataFrame(voice_rows) if voice_rows else pd.DataFrame(
+         columns=["segment_id", "video_id", "seq_no", "start_sec", "end_sec", "timestamp_source", "text", "words_per_sec", "pitch_std", "energy_cv"]
+@@ -309,6 +381,17 @@ def ingest_incremental_batch_to_gold(
+         columns=["video_id", "koc_taste", "koc_price", "koc_hygiene", "koc_service", "viewer_taste", "viewer_price", "viewer_hygiene", "viewer_service", "pr_hype_gap", "undisclosed_pr_risk", "viewer_pain_points", "clean_comment_count", "seeding_comment_count"]
+     )
+ 
++    def _carry_forward(name: str, fresh: pd.DataFrame, replace_ids: set[str]) -> pd.DataFrame:
++        old = base_multimodal.get(name)
++        if old is None:
++            return fresh
++        retained = old[~old["video_id"].isin(replace_ids)]
++        return pd.concat([retained, fresh], ignore_index=True) if len(fresh) else retained.copy()
++
++    df_voice = _carry_forward("fact_voice_segments.parquet", df_voice, replaced_voice_ids)
++    df_comments = _carry_forward("fact_comments.parquet", df_comments, updated_video_ids)
++    df_absa = _carry_forward("fact_absa_reviews.parquet", df_absa, updated_video_ids)
++
+     tables = [
+         ("dim_creators.parquet", df_out_creators),
+         ("fact_videos.parquet", df_out_videos),
+@@ -332,7 +415,9 @@ def ingest_incremental_batch_to_gold(
+         )
+ 
+     manifest = CorpusManifest(
+-        snapshot_id=output_corpus_dir.name,
++        snapshot_id=snapshot_id,
++        parent_snapshot_id=base_manifest.snapshot_id,
++        parent_manifest_sha256=parent_manifest_sha256,
+         created_at=datetime.now(timezone.utc).isoformat(),
+         date_window_start=base_manifest.date_window_start,
+         date_window_end=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+@@ -344,7 +429,7 @@ def ingest_incremental_batch_to_gold(
+         files=checksums,
+         caveats=[
+             *base_manifest.caveats,
+-            f"Includes {len(new_video_rows)} fresh 4-month incremental multimodal videos converted via Dual-Sink pipeline.",
++            f"Applied {len(new_video_rows)} incremental video records; explicit enrichment={update_existing}. Parent snapshot={base_manifest.snapshot_id}.",
+         ],
+     )
+     (output_corpus_dir / "manifest.json").write_text(
+diff --git a/pyproject.toml b/pyproject.toml
+index 56f93b6..9d93590 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -29,12 +29,12 @@ dependencies = [
+     "pyarrow>=14.0.0",
+     "scipy>=1.11.0",
+     "google-genai>=1.0.0",
++    "gradio>=6.0.0",
+ ]
+ 
+ [project.optional-dependencies]
+-demo = [
+-    "gradio>=6.0.0",
+-]
++# Kept as an installation alias for existing .[demo] commands.
++demo = []
+ infra = [
+     "qdrant-client>=1.12.0",
+     "redis>=5.0.0",
+diff --git a/scripts/dev.py b/scripts/dev.py
+index cd5bd36..2e653ed 100644
+--- a/scripts/dev.py
++++ b/scripts/dev.py
+@@ -40,7 +40,7 @@ def main() -> int:
+     if args.command == "check-secrets":
+         return _run([py, "scripts/check_secrets.py"])
+     if args.command == "build-corpus":
+-        return _run([py, "-m", "pipelines.build_gold_corpus", "--output", "data/corpus/20261116_v1"])
++        return _run([py, "-m", "pipelines.build_gold_corpus", "--output", "data/corpus/20261117_recovered_v1"])
+     if args.command == "build-index":
+         return _run(
+             [
+@@ -48,9 +48,9 @@ def main() -> int:
+                 "-m",
+                 "pipelines.build_dense_sparse_index",
+                 "--corpus",
+-                "data/corpus/20261116_v1",
++                "data/corpus/20261117_recovered_v1",
+                 "--output",
+-                "artifacts/indexes/bm25-v1",
++                "artifacts/indexes/bm25-v2",
+             ]
+         )
+     if args.command == "benchmark":
+@@ -60,11 +60,11 @@ def main() -> int:
+                 "-m",
+                 "pipelines.benchmark_retrieval",
+                 "--corpus",
+-                "data/corpus/20261116_v1",
++                "data/corpus/20261117_recovered_v1",
+                 "--index",
+-                "artifacts/indexes/bm25-v1",
++                "artifacts/indexes/bm25-v2",
+                 "--output",
+-                "artifacts/benchmarks/retrieval_v1.json",
++                "artifacts/benchmarks/retrieval_v2.json",
+             ]
+         )
+     if args.command == "crawl-4m-demo":
+@@ -76,7 +76,7 @@ def main() -> int:
+                 "-m",
+                 "pipelines.ingest_incremental_to_gold",
+                 "--output-corpus",
+-                "data/corpus/20261116_v2_4m",
++                "data/corpus/20261117_incremental_v1",
+             ]
+         )
+     if args.command == "lint":
+diff --git a/tests/eval/test_retrieval_benchmark.py b/tests/eval/test_retrieval_benchmark.py
+index f2cc43b..3c482a1 100644
+--- a/tests/eval/test_retrieval_benchmark.py
++++ b/tests/eval/test_retrieval_benchmark.py
+@@ -1,10 +1,19 @@
+ from __future__ import annotations
+ 
++import hashlib
+ import json
+ from pathlib import Path
+ 
++import pandas as pd
++import pytest
+ 
+-def test_retrieval_benchmark_report_meets_quality_and_latency_gates() -> None:
++from packages.data_contracts.corpus import CorpusManifest
++from packages.retrieval import BM25Index
++from pipelines.benchmark_retrieval.__main__ import main
++
++
++def test_historical_v1_preserves_recorded_rank_and_latency_regression() -> None:
++    """Historical weak labels retain rank checks; its capped recall is not standard recall."""
+     report_path = Path("artifacts/benchmarks/retrieval_v1.json")
+     assert report_path.is_file(), "Benchmark report must exist; run pipelines.benchmark_retrieval"
+ 
+@@ -16,3 +25,98 @@ def test_retrieval_benchmark_report_meets_quality_and_latency_gates() -> None:
+     assert reranked["mrr_at_10"] >= 0.50
+     assert reranked["ndcg_at_10"] >= 0.35
+     assert reranked["p95_latency_ms"] <= 2000.0
++
++
++@pytest.fixture
++def benchmark_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
++    corpus_dir = tmp_path / "corpus"
++    corpus_dir.mkdir()
++    videos = pd.DataFrame(
++        [{"video_id": "v1", "caption": "noodle", "transcript": "noodle", "has_transcript": True}]
++    )
++    creators = pd.DataFrame([{"author_handle": "fixture"}])
++    videos.to_parquet(corpus_dir / "fact_videos.parquet", index=False)
++    creators.to_parquet(corpus_dir / "dim_creators.parquet", index=False)
++    manifest = CorpusManifest(
++        snapshot_id="fixture-v2",
++        created_at="2026-11-17T00:00:00Z",
++        date_window_start="2023-11-01",
++        date_window_end="2025-03-31",
++        total_creators=1,
++        total_videos=1,
++        transcribed_videos=1,
++        poi_tagged_videos=0,
++        ec_tagged_videos=0,
++        files=[
++            {
++                "filename": name,
++                "rows": 1,
++                "columns": columns,
++                "size_bytes": (corpus_dir / name).stat().st_size,
++                "sha256": hashlib.sha256((corpus_dir / name).read_bytes()).hexdigest(),
++            }
++            for name, columns in [("dim_creators.parquet", 1), ("fact_videos.parquet", 4)]
++        ],
++        caveats=["Controlled fixture, not a relevance-quality measurement."],
++    )
++    (corpus_dir / "manifest.json").write_text(manifest.model_dump_json(), encoding="utf-8")
++    index_dir = tmp_path / "index"
++    BM25Index.build(["v1"], ["noodle"]).save(index_dir, corpus_snapshot_id="fixture-v2")
++    queries = tmp_path / "queries.jsonl"
++    queries.write_text(
++        json.dumps({"query_id": "q1", "query": "noodle", "relevant_video_ids": ["v1", "v2"]}) + "\n",
++        encoding="utf-8",
++    )
++    return corpus_dir, index_dir, queries
++
++
++def test_versioned_report_binds_correct_metrics_to_inputs(
++    benchmark_inputs: tuple[Path, Path, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
++) -> None:
++    corpus, index, queries = benchmark_inputs
++    output = tmp_path / "retrieval_v2.json"
++    monkeypatch.setattr(
++        "sys.argv",
++        [
++            "benchmark", "--corpus", str(corpus), "--index", str(index), "--queries", str(queries),
++            "--benchmark-id", "retrieval_v2", "--output", str(output),
++        ],
++    )
++    main()
++    report = json.loads(output.read_text(encoding="utf-8"))
++    assert report["benchmark_id"] == "retrieval_v2"
++    assert report["metric_schema_version"] == 2
++    assert report["evaluation"]["independent_relevance_judgments"] is False
++    assert report["evaluation"]["label_source"] == "lexical_metadata_weak_labels"
++    assert report["evaluation"]["relevant_video_counts"] == {"q1": 2}
++    metrics = report["configurations"]["bm25_viral_boost_reranked"]
++    assert metrics["recall_at_10"] == 0.5
++    assert metrics["precision_at_10"] == 0.1
++    provenance = report["provenance"]
++    assert provenance["queries_sha256"] == hashlib.sha256(queries.read_bytes()).hexdigest()
++    assert provenance["corpus_manifest_sha256"] == hashlib.sha256((corpus / "manifest.json").read_bytes()).hexdigest()
++    assert provenance["index_files_sha256"]["bm25-receipt.json"] == hashlib.sha256((index / "bm25-receipt.json").read_bytes()).hexdigest()
++    assert provenance["code_files_sha256"]["pipelines/benchmark_retrieval/__main__.py"] == hashlib.sha256(Path("pipelines/benchmark_retrieval/__main__.py").read_bytes()).hexdigest()
++    before = output.read_bytes()
++    # A repeated invocation cannot erase an existing measurement receipt.
++    with pytest.raises(FileExistsError):
++        main()
++    assert output.read_bytes() == before
++
++
++def test_report_rejects_index_receipt_for_a_different_corpus(
++    benchmark_inputs: tuple[Path, Path, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
++) -> None:
++    corpus, index, queries = benchmark_inputs
++    receipt_path = index / "bm25-receipt.json"
++    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
++    receipt["corpus_snapshot_id"] = "wrong-corpus"
++    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
++    output = tmp_path / "mismatched.json"
++    monkeypatch.setattr(
++        "sys.argv",
++        ["benchmark", "--corpus", str(corpus), "--index", str(index), "--queries", str(queries), "--output", str(output)],
++    )
++    with pytest.raises(ValueError, match="snapshot"):
++        main()
++    assert not output.exists()
+diff --git a/tests/smoke/test_api_and_demo.py b/tests/smoke/test_api_and_demo.py
+index 7ed36fa..698a504 100644
+--- a/tests/smoke/test_api_and_demo.py
++++ b/tests/smoke/test_api_and_demo.py
+@@ -35,7 +35,7 @@ def test_api_endpoints_and_gradio_demo_mount_end_to_end() -> None:
+ 
+             r_eval = await client.get("/api/v1/evaluation/summary")
+             assert r_eval.status_code == 200
+-            assert r_eval.json()["benchmark_id"] == "retrieval_v1"
++            assert r_eval.json()["benchmark_id"] == "retrieval_v2"
+ 
+             # 3. Niche micro-benchmark
+             r_bench = await client.post(
+diff --git a/tests/unit/test_analytics_and_retrieval.py b/tests/unit/test_analytics_and_retrieval.py
+index 7332088..3892bad 100644
+--- a/tests/unit/test_analytics_and_retrieval.py
++++ b/tests/unit/test_analytics_and_retrieval.py
+@@ -5,6 +5,8 @@ from pathlib import Path
+ 
+ import pytest
+ 
++from packages.common.settings import AppSettings
++
+ from packages.analytics import NicheAnalyticsEngine
+ from packages.common.exceptions import CorpusNotReadyError, IndexNotReadyError
+ from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest
+@@ -24,8 +26,8 @@ def test_fail_closed_corpus_loader_rejects_missing_manifest(tmp_path: Path) -> N
+ 
+ 
+ def test_niche_analytics_and_hybrid_retrieval_end_to_end() -> None:
+-    corpus_dir = Path("data/corpus/20261116_v1")
+-    bm25_dir = Path("artifacts/indexes/bm25-v1")
++    corpus_dir = AppSettings().corpus_dir
++    bm25_dir = AppSettings().bm25_index_dir
+ 
+     engine = NicheAnalyticsEngine.from_corpus_dir(corpus_dir)
+     bench = engine.compute_benchmark(
+diff --git a/tests/unit/test_incremental_absa_seeding.py b/tests/unit/test_incremental_absa_seeding.py
+index cb7e3e9..ffa8f55 100644
+--- a/tests/unit/test_incremental_absa_seeding.py
++++ b/tests/unit/test_incremental_absa_seeding.py
+@@ -97,7 +97,7 @@ def test_dual_sink_incremental_ingestion_and_trust_api(tmp_path: Path) -> None:
+             }
+         ]
+     )
+-    df_v = pd.read_parquet("data/corpus/20261116_v1/fact_videos.parquet").head(3).copy()
++    df_v = pd.read_parquet(AppSettings().corpus_dir / "fact_videos.parquet").head(3).copy()
+     p_c = base_dir / "dim_creators.parquet"
+     p_v = base_dir / "fact_videos.parquet"
+     df_c.to_parquet(p_c, index=False)
+diff --git a/tests/unit/test_script_guardrails.py b/tests/unit/test_script_guardrails.py
+index 5f3beec..9cee8b3 100644
+--- a/tests/unit/test_script_guardrails.py
++++ b/tests/unit/test_script_guardrails.py
+@@ -71,3 +71,58 @@ def test_timeline_recalculator_and_anti_cliche_citation_guardrail() -> None:
+     assert report.valid_citations_ratio < 1.0
+     assert "ngon gì đâu luôn á" in report.cliche_phrases_detected
+     assert report.passed is False
++
++
++def test_guardrail_does_not_assign_retrieved_ids_to_uncited_text() -> None:
++    beats, report = recalculate_timeline_and_verify(
++        [{"dialogue": "Một bản nháp chưa có nguồn hỗ trợ."}], [], 10, 3.0, {"available_but_unrelated"},
++    )
++    assert beats[0].cited_video_ids == []
++    assert report.valid_citations_ratio == 0.0
++    assert report.passed is False
++
++
++def test_empty_script_cannot_pass_even_when_sources_exist() -> None:
++    _, report = recalculate_timeline_and_verify([], [], 45, 3.0, {"v1"})
++    assert report.passed is False
++    assert report.total_words == 0
++
++
++def test_duration_mismatch_prevents_structural_pass() -> None:
++    _, report = recalculate_timeline_and_verify(
++        [{"dialogue": "Một lời thoại ngắn.", "cited_video_ids": ["v1"]}], [], 300, 3.0, {"v1"},
++    )
++    assert report.passed is False
++
++
++def test_duration_tolerance_matches_two_seconds_or_five_percent() -> None:
++    _, report = recalculate_timeline_and_verify(
++        [{"dialogue": " ".join(["món"] * 100), "cited_video_ids": ["v1"]}], [], 45, 2.0, {"v1"},
++    )
++    assert report.estimated_duration_sec == 50.0
++    assert report.timing_valid is False
++    assert report.passed is False
++
++
++def test_each_beat_requires_nonempty_dialogue_and_citation() -> None:
++    _, report = recalculate_timeline_and_verify(
++        [{"dialogue": "", "cited_video_ids": ["v1"]}], [], 10, 3.0, {"v1"},
++    )
++    assert report.passed is False
++
++
++def test_valid_structural_pass_does_not_claim_factual_grounding() -> None:
++    beats, report = recalculate_timeline_and_verify(
++        [{"dialogue": "Một hai ba bốn năm sáu bảy tám chín mười", "cited_video_ids": ["v1"]}], [], 5, 2.0, {"v1"},
++    )
++    assert beats[0].time_range == "00:00-00:05"
++    assert report.passed is True
++    assert report.model_dump()["grounding_verified"] is False
++
++
++def test_one_uncited_beat_cannot_hide_behind_other_valid_beats() -> None:
++    _, report = recalculate_timeline_and_verify(
++        [{"dialogue": "Một hai ba bốn năm sáu", "cited_video_ids": ["v1"]},
++         {"dialogue": "Bảy tám chín mười mười một"}], [], 10, 2.0, {"v1"},
++    )
++    assert report.passed is False
+diff --git a/tests/unit/test_taxonomy_and_corpus.py b/tests/unit/test_taxonomy_and_corpus.py
+index 401b7e6..4042785 100644
+--- a/tests/unit/test_taxonomy_and_corpus.py
++++ b/tests/unit/test_taxonomy_and_corpus.py
+@@ -4,6 +4,8 @@ from pathlib import Path
+ 
+ import pandas as pd
+ 
++from packages.common.settings import AppSettings
++
+ from packages.data_contracts.corpus import CorpusManifest
+ from packages.taxonomy import (
+     classify_duration_bucket,
+@@ -77,7 +79,7 @@ def test_taxonomy_extractors_and_zero_division_guards() -> None:
+ 
+ 
+ def test_built_gold_corpus_snapshot_integrity() -> None:
+-    corpus_dir = Path("data/corpus/20261116_v1")
++    corpus_dir = AppSettings().corpus_dir
+     manifest_path = corpus_dir / "manifest.json"
+     assert manifest_path.is_file(), "Gold corpus manifest.json must exist"
+ 

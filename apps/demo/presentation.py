@@ -11,21 +11,22 @@ def format_benchmark_markdown(bench: dict[str, Any]) -> str:
     tags = ", ".join(f"`#{t}`" for t in (bench.get("top_hashtags") or [])[:6]) or "Không có"
     pois = " • ".join((bench.get("top_poi_venues") or [])[:5]) or "Không có POI định vị trong lát cắt này"
     applied = bench.get("applied_filters") or {}
-    filter_desc = ", ".join(f"`{k}={v}`" for k, v in applied.items()) if applied else "Toàn bộ kho dữ liệu (70,996 video)"
+    filter_desc = ", ".join(f"`{k}={v}`" for k, v in applied.items()) if applied else "Toàn bộ kho dữ liệu"
 
     return (
-        f"### Chuẩn Thực Nghiệm Của Ngách (Niche Micro-Benchmark)\n"
+        f"### Thống Kê Mô Tả Ngách Trong Kho Lịch Sử\n"
         f"- **Lát cắt dữ liệu:** {filter_desc}\n"
         f"- **Quy mô mẫu:** `{bench.get('matched_videos', 0):,}` video "
         f"(`{bench.get('transcribed_videos', 0):,}` có lời thoại • `{bench.get('poi_tagged_videos', 0):,}` gắn GPS POI)\n"
         f"- **Lượt xem trung vị / P75:** `{int(bench.get('median_plays', 0)):,}` / `{int(bench.get('p75_plays', 0)):,}` views "
         f"(Tương tác trung vị: `{bench.get('median_engagement_rate', 0.0) * 100:.2f}%`)\n"
-        f"- **Thời lượng tối ưu (IQR Q25 – Trung vị – Q75):** `{bench.get('duration_q25_sec', 0):.0f}s` – "
+        f"- **Phân bố thời lượng (IQR Q25 – Trung vị – Q75):** `{bench.get('duration_q25_sec', 0):.0f}s` – "
         f"**`{bench.get('duration_median_sec', 0):.0f}s`** – `{bench.get('duration_q75_sec', 0):.0f}s`\n"
-        f"- **Tốc độ thoại chuẩn ngách:** `{bench.get('median_word_per_second', 0):.2f}` từ/giây "
+        f"- **Mật độ lời thoại ước tính:** `{bench.get('median_word_per_second', 0):.2f}` đơn vị cách trắng/giây "
         f"• **Số lượng Hashtag IQR:** `{bench.get('hashtag_q25', 0)}–{bench.get('hashtag_q75', 0)}` thẻ ({tags})\n"
-        f"- **Khung giờ đăng hiệu quả nhất:** {hours_str}\n"
-        f"- **Địa điểm POI nổi bật:** {pois}"
+        f"- **Giờ đăng có lượt xem trung vị cao trong mẫu:** {hours_str}\n"
+        f"- **POI do nền tảng ghi nhận:** {pois}\n"
+        "_Thống kê lịch sử có thiên lệch chọn mẫu; không chứng minh tác động tăng viral hay xu hướng hiện tại._"
     )
 
 
@@ -64,7 +65,8 @@ def format_script_markdown(resp: dict[str, Any]) -> str:
     tags = " ".join(f"#{t}" for t in (resp.get("recommended_hashtags") or []))
 
     lines = [
-        f"### Kịch Bản Đề Xuất (`mode={resp.get('generation_mode')}`, model=`{resp.get('model_used')}`)",
+        f"### Bản Nháp Kịch Bản (`mode={resp.get('generation_mode')}`, model=`{resp.get('model_used')}`)",
+        "_Nội dung sáng tạo từ nguồn tham khảo lịch sử; cần kiểm chứng nhận định và trải nghiệm trước khi sử dụng._",
         f"**Bối cảnh quay:** {resp.get('setting')}  \n**Giọng điệu (Persona):** {resp.get('persona_tone')}",
         "#### 3 Phương Án Hook Mở Đầu (0–4s)",
         hooks_md,
@@ -86,9 +88,9 @@ def format_script_markdown(resp: dict[str, Any]) -> str:
     pac = "\n".join(f"- **Nhịp dựng:** {x}" for x in (sa.get("pacing_and_editing") or []))
 
     guard = resp.get("guardrail") or {}
-    badge = "ĐẠT CHUẨN" if guard.get("passed") else "CẦN LƯU Ý"
+    badge = "ĐẠT KIỂM TRA CẤU TRÚC" if guard.get("passed") else "CẦN CHỈNH SỬA"
     warn_list = guard.get("warnings") or []
-    warn_md = "\n".join(f"  - ⚠️ {w}" for w in warn_list) if warn_list else "  - Không phát hiện câu sáo rỗng; 100% trích dẫn khớp kho bằng chứng."
+    warn_md = "\n".join(f"  - ⚠️ {w}" for w in warn_list) if warn_list else "  - Chưa có kết quả xác minh nội dung từng nhận định."
 
     lines.extend(
         [
@@ -123,11 +125,12 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True)
     comments = data.get("comments") or []
 
     lines = [
-        "### Đối Chiếu ABSA 4 Khía Cạnh (KOC Lời Thoại vs. Bình Luận Sạch) & Quét Seeding",
-        f"- **Độ lệch Quảng cáo (`PR Hype Gap`):** `{gap:+.2f}` • **Rủi ro Booking Ngầm (`Undisclosed PR Risk`):** `{risk * 100:.1f}%`",
+        "### Chẩn Đoán ABSA Và Mẫu Bình Luận (Baseline Heuristic)",
+        "_Điểm chưa được hiệu chuẩn trên nhãn độc lập; không xác minh khách thật, bot, seeding hay tài trợ không công khai._",
+        f"- **Chênh lệch điểm cảm xúc heuristic:** `{gap:+.2f}` • **Chỉ số quảng bá heuristic:** `{risk:.2f}` (không phải xác suất)",
         f"- **Bình luận hợp lệ:** `{comp.get('clean_comment_count', 0)}` • **Bình luận nghi Seeding/Spam bị lọc:** `{comp.get('seeding_comment_count', 0)}`",
         "",
-        "| Khía cạnh (Aspect) | Điểm KOC (Voice) | Điểm Khách Thật (Clean Comments) | Nhận định |",
+        "| Khía cạnh (Aspect) | Điểm lời thoại | Điểm bình luận giữ lại | Chênh lệch |",
         "| :--- | :---: | :---: | :--- |",
     ]
     for key, label in (
@@ -138,7 +141,7 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True)
     ):
         ks = float(koc.get(key) or 0.0)
         vs = float(viewer.get(key) or 0.0)
-        note = "⚠️ KOC khen cao hơn thực tế" if (ks - vs) >= 0.45 else "✅ Đồng thuận tương đối"
+        note = f"{ks - vs:+.2f}; cần kiểm tra nguồn và độ phủ khía cạnh"
         lines.append(f"| **{label}** | `{ks:+.2f}` | `{vs:+.2f}` | {note} |")
 
     if pains:

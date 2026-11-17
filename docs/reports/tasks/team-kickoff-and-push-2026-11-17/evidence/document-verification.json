@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "canonical_layout": true,
+  "local_links_checked": 40,
+  "broken_links": [],
+  "byte_filter_red_failures": 53,
+  "byte_filter_green_checked": 129
+}

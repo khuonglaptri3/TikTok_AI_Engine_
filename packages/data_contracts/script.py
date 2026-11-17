@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from packages.data_contracts.analytics import NicheBenchmarkSummary
@@ -36,6 +38,10 @@ class GuardrailReport(BaseModel):
     valid_citations_ratio: float = Field(ge=0.0, le=1.0)
     cliche_phrases_detected: list[str]
     warnings: list[str]
+    citation_coverage_ratio: float = Field(default=0.0, ge=0.0, le=1.0)
+    timing_valid: bool = False
+    grounding_verified: Literal[False] = False
+    validation_scope: Literal["structure_citations_timing"] = "structure_citations_timing"
 
 
 class GroundedScriptResponse(BaseModel):
@@ -54,3 +60,5 @@ class GroundedScriptResponse(BaseModel):
     evidence_cards: list[EvidenceCard]
     guardrail: GuardrailReport
     timings_ms: dict[str, float]
+    draft_status: Literal["creative_draft"] = "creative_draft"
+    grounding_verified: Literal[False] = False

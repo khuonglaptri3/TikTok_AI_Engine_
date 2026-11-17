@@ -1,0 +1,1212 @@
+diff --git a/.env.example b/.env.example
+index 291220a..37657b8 100644
+--- a/.env.example
++++ b/.env.example
+@@ -3,9 +3,9 @@ GEMINI_API_KEY=
+ 
+ # === Application Profile ===
+ TIKTOK_RAG_ENV=local
+-TIKTOK_RAG_CORPUS_DIR=data/corpus/20261116_v1
+-TIKTOK_RAG_BM25_INDEX_DIR=artifacts/indexes/bm25-v1
+-TIKTOK_RAG_BENCHMARK_REPORT_PATH=artifacts/benchmarks/retrieval_v1.json
++TIKTOK_RAG_CORPUS_DIR=data/corpus/20261117_recovered_v1
++TIKTOK_RAG_BM25_INDEX_DIR=artifacts/indexes/bm25-v2
++TIKTOK_RAG_BENCHMARK_REPORT_PATH=artifacts/benchmarks/retrieval_v2.json
+ 
+ # === Docker Infrastructure (Qdrant + Redis) ===
+ TIKTOK_RAG_QDRANT_URL=http://127.0.0.1:6333
+diff --git a/apps/demo/presentation.py b/apps/demo/presentation.py
+index 6f2d9e4..7ad5949 100644
+--- a/apps/demo/presentation.py
++++ b/apps/demo/presentation.py
+@@ -11,21 +11,22 @@ def format_benchmark_markdown(bench: dict[str, Any]) -> str:
+     tags = ", ".join(f"`#{t}`" for t in (bench.get("top_hashtags") or [])[:6]) or "Không có"
+     pois = " • ".join((bench.get("top_poi_venues") or [])[:5]) or "Không có POI định vị trong lát cắt này"
+     applied = bench.get("applied_filters") or {}
+-    filter_desc = ", ".join(f"`{k}={v}`" for k, v in applied.items()) if applied else "Toàn bộ kho dữ liệu (70,996 video)"
++    filter_desc = ", ".join(f"`{k}={v}`" for k, v in applied.items()) if applied else "Toàn bộ kho dữ liệu"
+ 
+     return (
+-        f"### Chuẩn Thực Nghiệm Của Ngách (Niche Micro-Benchmark)\n"
++        f"### Thống Kê Mô Tả Ngách Trong Kho Lịch Sử\n"
+         f"- **Lát cắt dữ liệu:** {filter_desc}\n"
+         f"- **Quy mô mẫu:** `{bench.get('matched_videos', 0):,}` video "
+         f"(`{bench.get('transcribed_videos', 0):,}` có lời thoại • `{bench.get('poi_tagged_videos', 0):,}` gắn GPS POI)\n"
+         f"- **Lượt xem trung vị / P75:** `{int(bench.get('median_plays', 0)):,}` / `{int(bench.get('p75_plays', 0)):,}` views "
+         f"(Tương tác trung vị: `{bench.get('median_engagement_rate', 0.0) * 100:.2f}%`)\n"
+-        f"- **Thời lượng tối ưu (IQR Q25 – Trung vị – Q75):** `{bench.get('duration_q25_sec', 0):.0f}s` – "
++        f"- **Phân bố thời lượng (IQR Q25 – Trung vị – Q75):** `{bench.get('duration_q25_sec', 0):.0f}s` – "
+         f"**`{bench.get('duration_median_sec', 0):.0f}s`** – `{bench.get('duration_q75_sec', 0):.0f}s`\n"
+-        f"- **Tốc độ thoại chuẩn ngách:** `{bench.get('median_word_per_second', 0):.2f}` từ/giây "
++        f"- **Mật độ lời thoại ước tính:** `{bench.get('median_word_per_second', 0):.2f}` đơn vị cách trắng/giây "
+         f"• **Số lượng Hashtag IQR:** `{bench.get('hashtag_q25', 0)}–{bench.get('hashtag_q75', 0)}` thẻ ({tags})\n"
+-        f"- **Khung giờ đăng hiệu quả nhất:** {hours_str}\n"
+-        f"- **Địa điểm POI nổi bật:** {pois}"
++        f"- **Giờ đăng có lượt xem trung vị cao trong mẫu:** {hours_str}\n"
++        f"- **POI do nền tảng ghi nhận:** {pois}\n"
++        "_Thống kê lịch sử có thiên lệch chọn mẫu; không chứng minh tác động tăng viral hay xu hướng hiện tại._"
+     )
+ 
+ 
+@@ -64,7 +65,8 @@ def format_script_markdown(resp: dict[str, Any]) -> str:
+     tags = " ".join(f"#{t}" for t in (resp.get("recommended_hashtags") or []))
+ 
+     lines = [
+-        f"### Kịch Bản Đề Xuất (`mode={resp.get('generation_mode')}`, model=`{resp.get('model_used')}`)",
++        f"### Bản Nháp Kịch Bản (`mode={resp.get('generation_mode')}`, model=`{resp.get('model_used')}`)",
++        "_Nội dung sáng tạo từ nguồn tham khảo lịch sử; cần kiểm chứng nhận định và trải nghiệm trước khi sử dụng._",
+         f"**Bối cảnh quay:** {resp.get('setting')}  \n**Giọng điệu (Persona):** {resp.get('persona_tone')}",
+         "#### 3 Phương Án Hook Mở Đầu (0–4s)",
+         hooks_md,
+@@ -86,9 +88,9 @@ def format_script_markdown(resp: dict[str, Any]) -> str:
+     pac = "\n".join(f"- **Nhịp dựng:** {x}" for x in (sa.get("pacing_and_editing") or []))
+ 
+     guard = resp.get("guardrail") or {}
+-    badge = "ĐẠT CHUẨN" if guard.get("passed") else "CẦN LƯU Ý"
++    badge = "ĐẠT KIỂM TRA CẤU TRÚC" if guard.get("passed") else "CẦN CHỈNH SỬA"
+     warn_list = guard.get("warnings") or []
+-    warn_md = "\n".join(f"  - ⚠️ {w}" for w in warn_list) if warn_list else "  - Không phát hiện câu sáo rỗng; 100% trích dẫn khớp kho bằng chứng."
++    warn_md = "\n".join(f"  - ⚠️ {w}" for w in warn_list) if warn_list else "  - Chưa có kết quả xác minh nội dung từng nhận định."
+ 
+     lines.extend(
+         [
+@@ -123,11 +125,12 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True)
+     comments = data.get("comments") or []
+ 
+     lines = [
+-        "### Đối Chiếu ABSA 4 Khía Cạnh (KOC Lời Thoại vs. Bình Luận Sạch) & Quét Seeding",
+-        f"- **Độ lệch Quảng cáo (`PR Hype Gap`):** `{gap:+.2f}` • **Rủi ro Booking Ngầm (`Undisclosed PR Risk`):** `{risk * 100:.1f}%`",
++        "### Chẩn Đoán ABSA Và Mẫu Bình Luận (Baseline Heuristic)",
++        "_Điểm chưa được hiệu chuẩn trên nhãn độc lập; không xác minh khách thật, bot, seeding hay tài trợ không công khai._",
++        f"- **Chênh lệch điểm cảm xúc heuristic:** `{gap:+.2f}` • **Chỉ số quảng bá heuristic:** `{risk:.2f}` (không phải xác suất)",
+         f"- **Bình luận hợp lệ:** `{comp.get('clean_comment_count', 0)}` • **Bình luận nghi Seeding/Spam bị lọc:** `{comp.get('seeding_comment_count', 0)}`",
+         "",
+-        "| Khía cạnh (Aspect) | Điểm KOC (Voice) | Điểm Khách Thật (Clean Comments) | Nhận định |",
++        "| Khía cạnh (Aspect) | Điểm lời thoại | Điểm bình luận giữ lại | Chênh lệch |",
+         "| :--- | :---: | :---: | :--- |",
+     ]
+     for key, label in (
+@@ -138,7 +141,7 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True)
+     ):
+         ks = float(koc.get(key) or 0.0)
+         vs = float(viewer.get(key) or 0.0)
+-        note = "⚠️ KOC khen cao hơn thực tế" if (ks - vs) >= 0.45 else "✅ Đồng thuận tương đối"
++        note = f"{ks - vs:+.2f}; cần kiểm tra nguồn và độ phủ khía cạnh"
+         lines.append(f"| **{label}** | `{ks:+.2f}` | `{vs:+.2f}` | {note} |")
+ 
+     if pains:
+diff --git a/apps/demo/ui.py b/apps/demo/ui.py
+index 63ed512..fbc678a 100644
+--- a/apps/demo/ui.py
++++ b/apps/demo/ui.py
+@@ -233,9 +233,10 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
+                     outputs=[e_bench, e_cards, e_timings],
+                 )
+ 
+-            with gr.Tab("3. Seeding & ABSA Trust Radar (4-Month Stream)"):
++            with gr.Tab("3. Comment Patterns & ABSA (Heuristic Baseline)"):
++                gr.Markdown("Dữ liệu nhập tay; các giá trị điền sẵn là ví dụ tổng hợp, không phải kết quả crawl thực tế.")
+                 t_cap = gr.Textbox(
+-                    label="Caption Video (4-Month Fresh Review)",
++                    label="Caption video cần phân tích",
+                     value="Khai trương lẩu bò mắm ruốc Quận 10 giảm giá 20% ngon xuất sắc",
+                 )
+                 t_tr = gr.Textbox(
+@@ -255,7 +256,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
+                     ),
+                 )
+                 hide_seed_chk = gr.Checkbox(value=True, label="Ẩn bình luận Seeding / Spam khỏi danh sách hiển thị")
+-                audit_btn = gr.Button("🛡️ Quét Seeding & Đối Chiếu ABSA (KOC vs. Thực Khách)", variant="primary")
++                audit_btn = gr.Button("Phân Tích Mẫu Bình Luận Và Điểm ABSA", variant="primary")
+                 t_audit_timings = gr.Markdown()
+                 t_audit_md = gr.Markdown()
+                 audit_btn.click(
+diff --git a/infra/compose/docker-compose.yml b/infra/compose/docker-compose.yml
+index ce4c1df..c7b4c72 100644
+--- a/infra/compose/docker-compose.yml
++++ b/infra/compose/docker-compose.yml
+@@ -35,8 +35,8 @@ services:
+       TIKTOK_RAG_ENV: docker
+       TIKTOK_RAG_REDIS_URL: redis://redis:6379/0
+       TIKTOK_RAG_QDRANT_URL: http://qdrant:6333
+-      TIKTOK_RAG_CORPUS_DIR: data/corpus/20261116_v1
+-      TIKTOK_RAG_BM25_INDEX_DIR: artifacts/indexes/bm25-v1
++      TIKTOK_RAG_CORPUS_DIR: data/corpus/20261117_recovered_v1
++      TIKTOK_RAG_BM25_INDEX_DIR: artifacts/indexes/bm25-v2
+     ports:
+       - "8000:8000"
+     volumes:
+diff --git a/infra/docker/Dockerfile.api b/infra/docker/Dockerfile.api
+index 3368efe..1b9c867 100644
+--- a/infra/docker/Dockerfile.api
++++ b/infra/docker/Dockerfile.api
+@@ -10,6 +10,7 @@ RUN useradd --create-home --shell /bin/bash appuser
+ COPY pyproject.toml README.md ./
+ COPY packages ./packages
+ COPY apps ./apps
++COPY pipelines ./pipelines
+ COPY configs ./configs
+ 
+ RUN pip install --no-cache-dir --upgrade pip && \
+diff --git a/packages/analytics/engine.py b/packages/analytics/engine.py
+index d4ca960..2c5f0f6 100644
+--- a/packages/analytics/engine.py
++++ b/packages/analytics/engine.py
+@@ -51,6 +51,12 @@ def load_verified_corpus(corpus_dir: Path) -> tuple[CorpusManifest, pd.DataFrame
+     except Exception as exc:
+         raise CorpusNotReadyError(f"Invalid corpus manifest at {manifest_path}: {exc}") from exc
+ 
++    names = [entry.filename for entry in manifest.files]
++    required = {"dim_creators.parquet", "fact_videos.parquet"}
++    if not required.issubset(names) or len(names) != len(set(names)):
++        raise CorpusNotReadyError("Manifest must cover each required corpus table exactly once")
++    if any(Path(name).name != name or "\\" in name or "/" in name for name in names):
++        raise CorpusNotReadyError("Manifest table names must be local filenames")
+     for f_entry in manifest.files:
+         file_path = corpus_dir / f_entry.filename
+         if not file_path.is_file():
+diff --git a/packages/common/settings/__init__.py b/packages/common/settings/__init__.py
+index 3144160..293281a 100644
+--- a/packages/common/settings/__init__.py
++++ b/packages/common/settings/__init__.py
+@@ -33,9 +33,9 @@ class AppSettings(BaseModel):
+     llm_deadline_seconds: float = Field(default=30.0, gt=0.0, le=120.0)
+     rate_limit_rpm: int = Field(default=15, ge=1, le=300)
+ 
+-    corpus_dir: Path = Field(default=Path("data/corpus/20261116_v1"))
+-    bm25_index_dir: Path = Field(default=Path("artifacts/indexes/bm25-v1"))
+-    benchmark_report_path: Path = Field(default=Path("artifacts/benchmarks/retrieval_v1.json"))
++    corpus_dir: Path = Field(default=Path("data/corpus/20261117_recovered_v1"))
++    bm25_index_dir: Path = Field(default=Path("artifacts/indexes/bm25-v2"))
++    benchmark_report_path: Path = Field(default=Path("artifacts/benchmarks/retrieval_v2.json"))
+ 
+     qdrant_url: str = Field(default="http://127.0.0.1:6333")
+     qdrant_collection: str = Field(default="tiktok_fnb_videos_v1")
+@@ -63,10 +63,10 @@ class AppSettings(BaseModel):
+             max_llm_calls_per_turn=int(_get("TIKTOK_RAG_MAX_LLM_CALLS_PER_TURN", "2")),
+             llm_deadline_seconds=float(_get("TIKTOK_RAG_LLM_DEADLINE_SECONDS", "30.0")),
+             rate_limit_rpm=int(_get("TIKTOK_RAG_RATE_LIMIT_RPM", "15")),
+-            corpus_dir=Path(_get("TIKTOK_RAG_CORPUS_DIR", "data/corpus/20261116_v1")),
+-            bm25_index_dir=Path(_get("TIKTOK_RAG_BM25_INDEX_DIR", "artifacts/indexes/bm25-v1")),
++            corpus_dir=Path(_get("TIKTOK_RAG_CORPUS_DIR", "data/corpus/20261117_recovered_v1")),
++            bm25_index_dir=Path(_get("TIKTOK_RAG_BM25_INDEX_DIR", "artifacts/indexes/bm25-v2")),
+             benchmark_report_path=Path(
+-                _get("TIKTOK_RAG_BENCHMARK_REPORT_PATH", "artifacts/benchmarks/retrieval_v1.json")
++                _get("TIKTOK_RAG_BENCHMARK_REPORT_PATH", "artifacts/benchmarks/retrieval_v2.json")
+             ),
+             qdrant_url=_get("TIKTOK_RAG_QDRANT_URL", "http://127.0.0.1:6333"),
+             qdrant_collection=_get("TIKTOK_RAG_QDRANT_COLLECTION", "tiktok_fnb_videos_v1"),
+diff --git a/packages/data_contracts/corpus.py b/packages/data_contracts/corpus.py
+index 4fec5d0..def685c 100644
+--- a/packages/data_contracts/corpus.py
++++ b/packages/data_contracts/corpus.py
+@@ -17,6 +17,8 @@ class CorpusManifest(BaseModel):
+     model_config = ConfigDict(frozen=True)
+ 
+     snapshot_id: str
++    parent_snapshot_id: str | None = None
++    parent_manifest_sha256: str | None = Field(default=None, min_length=64, max_length=64)
+     created_at: str
+     date_window_start: str
+     date_window_end: str
+diff --git a/packages/data_contracts/script.py b/packages/data_contracts/script.py
+index 72262c5..da8eee7 100644
+--- a/packages/data_contracts/script.py
++++ b/packages/data_contracts/script.py
+@@ -1,5 +1,7 @@
+ from __future__ import annotations
+ 
++from typing import Literal
++
+ from pydantic import BaseModel, ConfigDict, Field
+ 
+ from packages.data_contracts.analytics import NicheBenchmarkSummary
+@@ -36,6 +38,10 @@ class GuardrailReport(BaseModel):
+     valid_citations_ratio: float = Field(ge=0.0, le=1.0)
+     cliche_phrases_detected: list[str]
+     warnings: list[str]
++    citation_coverage_ratio: float = Field(default=0.0, ge=0.0, le=1.0)
++    timing_valid: bool = False
++    grounding_verified: Literal[False] = False
++    validation_scope: Literal["structure_citations_timing"] = "structure_citations_timing"
+ 
+ 
+ class GroundedScriptResponse(BaseModel):
+@@ -54,3 +60,5 @@ class GroundedScriptResponse(BaseModel):
+     evidence_cards: list[EvidenceCard]
+     guardrail: GuardrailReport
+     timings_ms: dict[str, float]
++    draft_status: Literal["creative_draft"] = "creative_draft"
++    grounding_verified: Literal[False] = False
+diff --git a/packages/llm/guardrails/verifier.py b/packages/llm/guardrails/verifier.py
+index ec28e56..b6888c8 100644
+--- a/packages/llm/guardrails/verifier.py
++++ b/packages/llm/guardrails/verifier.py
+@@ -34,7 +34,6 @@ def recalculate_timeline_and_verify(
+ 
+     total_citations = 0
+     valid_citations = 0
+-    fallback_vid = next(iter(valid_evidence_ids), "")
+ 
+     all_text_parts = list(hook_options)
+ 
+@@ -47,7 +46,8 @@ def recalculate_timeline_and_verify(
+         end_sec = cursor_sec + beat_dur
+         cursor_sec = end_sec
+ 
+-        raw_cites = b.get("cited_video_ids") or []
++        submitted = b.get("cited_video_ids")
++        raw_cites = submitted if isinstance(submitted, list) else []
+         clean_cites: list[str] = []
+         for cid in raw_cites:
+             cid_s = str(cid).strip()
+@@ -59,9 +59,6 @@ def recalculate_timeline_and_verify(
+                 if cid_s not in clean_cites:
+                     clean_cites.append(cid_s)
+ 
+-        if not clean_cites and fallback_vid:
+-            clean_cites = [fallback_vid]
+-
+         verified_beats.append(
+             ScriptBeat(
+                 section_title=str(b.get("section_title") or f"Phần {idx}"),
+@@ -79,19 +76,28 @@ def recalculate_timeline_and_verify(
+     total_words = sum(beat.word_count for beat in verified_beats)
+     estimated_sec = round(cursor_sec, 1)
+     delta_sec = round(estimated_sec - target_duration_sec, 1)
+-    cite_ratio = round(valid_citations / total_citations, 3) if total_citations > 0 else (1.0 if valid_evidence_ids else 0.0)
++    cite_ratio = round(valid_citations / total_citations, 3) if total_citations > 0 else 0.0
++    covered_beats = sum(bool(beat.cited_video_ids) for beat in verified_beats)
++    coverage = covered_beats / len(verified_beats) if verified_beats else 0.0
++    complete_content = bool(verified_beats) and all(beat.word_count > 0 for beat in verified_beats)
++    timing_valid = target_duration_sec > 0 and abs(delta_sec) <= max(2.0, target_duration_sec * 0.20)
+ 
+     warnings: list[str] = []
+     if detected_cliches:
+         warnings.append(f"Phát hiện cụm từ sáo rỗng cần tránh: {', '.join(detected_cliches)}")
+-    if abs(delta_sec) > max(15.0, target_duration_sec * 0.35):
++    if not timing_valid:
+         warnings.append(
+             f"Thời lượng ước tính ({estimated_sec}s) lệch {delta_sec:+.1f}s so với mục tiêu ({target_duration_sec}s) ở tốc độ {effective_wps:.2f} từ/giây."
+         )
+     if cite_ratio < 1.0:
+         warnings.append("Một số mã trích dẫn video không khớp kho bằng chứng đã được lọc bỏ tự động.")
++    if not complete_content:
++        warnings.append("Kịch bản cần có lời thoại không rỗng trong mọi phân đoạn.")
++    if coverage < 1.0:
++        warnings.append("Một số phân đoạn chưa có video tham chiếu; hệ thống không tự gán nguồn.")
++    warnings.append("Kiểm tra cấu trúc, mã nguồn và thời lượng; chưa xác minh nội dung từng nhận định với nguồn.")
+ 
+-    passed = (len(detected_cliches) == 0) and (cite_ratio >= 0.8)
++    passed = complete_content and timing_valid and not detected_cliches and cite_ratio == 1.0 and coverage == 1.0
+     report = GuardrailReport(
+         passed=passed,
+         estimated_duration_sec=estimated_sec,
+@@ -101,5 +107,7 @@ def recalculate_timeline_and_verify(
+         valid_citations_ratio=cite_ratio,
+         cliche_phrases_detected=detected_cliches,
+         warnings=warnings,
++        citation_coverage_ratio=coverage,
++        timing_valid=timing_valid,
+     )
+     return verified_beats, report
+diff --git a/packages/script_engine/service.py b/packages/script_engine/service.py
+index d345aa6..32e7c4f 100644
+--- a/packages/script_engine/service.py
++++ b/packages/script_engine/service.py
+@@ -106,52 +106,65 @@ class GroundedScriptEngine:
+         id1 = c1.citation.video_id if c1 else id0
+         id2 = c2.citation.video_id if c2 else id0
+ 
+-        ref_hook_0 = c0.hook_text[:110] if (c0 and c0.hook_text) else f"Khám phá {dish_focus} đáng thử tại {city_focus}"
++        ref_hook_0 = c0.hook_text[:110] if (c0 and c0.hook_text) else f"Tìm hiểu {dish_focus} tại {city_focus}"
+         hook_options = [
+-            f"Một tọa độ {dish_focus} tại {city_focus} đang được dân sành ăn truyền tai nhau — thực tế có xứng đáng với mức giá?",
+-            f"Cầm ngân sách hợp lý đi thử {dish_focus} theo gợi ý thực tế: phần ăn đầy đặn và hương vị ra sao?",
+-            f"Lấy cảm hứng mở đầu trực diện như @{c0.citation.author_handle if c0 else 'creator'}: '{ref_hook_0}'",
++            f"Nếu quay về {dish_focus} tại {city_focus}, bạn muốn kiểm tra hương vị hay mức giá trước?",
++            f"Cùng lên ý tưởng tìm hiểu {dish_focus}: cần ghi lại điều gì để người xem tự đánh giá?",
++            f"Mở đầu tham khảo từ kho @{c0.citation.author_handle if c0 else 'creator'}: '{ref_hook_0}'",
+         ]
+ 
+-        # Calibrate word count per beat to match target_duration_sec * median_wps
+-        wps = max(2.4, min(benchmark.median_word_per_second, 4.2))
++        # Whitespace-token pacing is an estimate, not measured acoustic alignment.
++        wps = max(2.0, min(benchmark.median_word_per_second, 5.0))
+         target_words = max(55, int(round(target_duration_sec * wps)))
+ 
+         beat1_text = (
+-            f"Hôm nay mình ghé trải nghiệm {dish_focus} tại {city_focus} theo đúng đề bài '{brief[:90]}'. "
+-            f"Ngay từ cái nhìn đầu tiên, phần nguyên liệu được chuẩn bị rất tươi và lên màu bắt mắt."
++            f"Hôm nay mình lên ý tưởng tìm hiểu {dish_focus} tại {city_focus}. "
++            "Khi quay thực tế, mình sẽ ghi lại món ăn và bảng giá trước khi đưa ra nhận xét. "
++            "Bạn muốn biết điều gì về món này?"
+         )
+         ev_detail_1 = (
+             c0.body_beats[0]
+             if (c0 and c0.body_beats)
+-            else "Phần nước dùng và gia vị được cân chỉnh vừa vặn, giữ được độ tươi tự nhiên của nguyên liệu."
++            else "Chưa có trích đoạn đủ chi tiết để mô tả món ăn."
+         )
+         beat2_text = (
+-            f"Điểm đáng chú ý đầu tiên nằm ở khâu chế biến và bày trí: {ev_detail_1} "
+-            f"Khi quay cận cảnh lúc món vừa dọn ra còn nóng hổi, mùi thơm dậy lên rất rõ ràng."
++            f"Kho lời thoại tham khảo có đoạn: {ev_detail_1} "
++            "Đây là thông tin trong nguồn cũ, cần kiểm tra lại khi đến quay. "
++            "Mình sẽ ghi hình phần chế biến nếu được phép và mô tả đúng những gì quan sát được."
+         )
+         ev_detail_2 = (
+             c1.body_beats[0]
+             if (c1 and c1.body_beats)
+-            else "Kết cấu món ăn có sự tương phản rõ giữa độ giòn bên ngoài và vị đậm đà bên trong."
++            else "Chưa có thêm trích đoạn độc lập về trải nghiệm món ăn."
+         )
+         beat3_text = (
+-            f"Thử trực tiếp từng thành phần để kiểm chứng chất lượng: {ev_detail_2} "
+-            f"Xét về khẩu phần và trải nghiệm thực tế trong phân khúc {effective_filters.price_tier or 'phổ thông'}, mức giá này hoàn toàn hợp lý."
++            f"Một ý khác trong nguồn tham khảo: {ev_detail_2} "
++            "Khi thử món, mình sẽ tách nhận xét về hương vị, khẩu phần và mức giá đang niêm yết. "
++            "Những nhận định này cần trải nghiệm thực tế trước khi đưa vào bản quay cuối."
+         )
+         beat4_text = (
+-            f"Tổng kết lại, đây là lựa chọn {dish_focus} rất đáng lưu vào danh sách khi bạn cần một bữa ăn chất lượng tại {city_focus}. "
+-            f"Bạn đã từng thử kiểu chế biến này chưa, bình luận địa chỉ quen thuộc của bạn bên dưới nhé!"
++            f"Sau khi quay và kiểm tra thông tin, mình sẽ tổng kết điểm phù hợp của {dish_focus} với nhu cầu người xem. "
++            "Phần kết sẽ nêu rõ thời điểm trải nghiệm và điều còn chưa xác minh. "
++            "Bạn muốn mình tìm hiểu thêm chi tiết nào?"
+         )
+ 
+         # Pad middle beat slightly if target_duration_sec > 55s so pacing matches target duration
+         current_words = sum(len(t.split()) for t in (beat1_text, beat2_text, beat3_text, beat4_text))
+         if target_words - current_words >= 25 and c2 and c2.transcript_excerpt:
+             beat3_text += (
+-                " Ngoài ra bạn nên đi vào khung giờ sớm một chút để món lên nhanh, giữ trọn độ nóng giòn "
+-                "và dễ chọn được góc ngồi thoáng đãng khi đi cùng bạn bè."
++                " Có thể bổ sung cảnh bảng giá, khẩu phần và phần trả lời của người bán nếu được đồng ý. "
++                "Mình sẽ ghi rõ thông tin nào được quan sát và thông tin nào chỉ lấy từ nguồn tham khảo."
+             )
+ 
++        # Keep short requests within their spoken-word budget. Longer drafts may
++        # deliberately fail the timing check instead of padding with invented facts.
++        dialogue_texts = [beat1_text, beat2_text, beat3_text, beat4_text]
++        if sum(len(text.split()) for text in dialogue_texts) > target_words:
++            budgets = [max(1, target_words // 4)] * 3
++            budgets.append(max(1, target_words - sum(budgets)))
++            dialogue_texts = [" ".join(text.split()[:budget]) for text, budget in zip(dialogue_texts, budgets)]
++        beat1_text, beat2_text, beat3_text, beat4_text = dialogue_texts
++
+         if fmt == "Hướng dẫn nấu ăn":
+             setting = "Gian bếp gia đình gọn gàng, ánh sáng chếch 45 độ chiếu rõ thớt sơ chế và chảo nấu."
+             cam_angles = [
+@@ -169,11 +182,13 @@ class GroundedScriptEngine:
+ 
+         hashtags = benchmark.top_hashtags[:6] or ["ancungtiktok", "reviewanngon", "foodtiktok"]
+         return {
++            "draft_status": "creative_draft",
++            "grounding_verified": False,
+             "hook_options": hook_options,
+-            "caption_draft": f"Trải nghiệm thực tế {dish_focus} tại {city_focus} — chi tiết hương vị và mức giá cho mọi người tham khảo!",
++            "caption_draft": f"Bản nháp về {dish_focus} tại {city_focus}, lấy ý tưởng từ nguồn tham khảo lịch sử; cần kiểm chứng trước khi quay.",
+             "recommended_hashtags": hashtags,
+             "setting": setting,
+-            "persona_tone": "Chân thực, trực diện vào chất lượng món & giá cả, miêu tả vị giác cụ thể",
++            "persona_tone": "Bản nháp sáng tạo; tách nguồn tham khảo và nhận xét cần trải nghiệm thực tế",
+             "beats": [
+                 {
+                     "section_title": "1. Hook mở đầu (0-5s giữ chân)",
+@@ -208,7 +223,7 @@ class GroundedScriptEngine:
+                 ],
+                 "pacing_and_editing": [
+                     f"Tốc độ thoại mục tiêu của ngách: ~{benchmark.median_word_per_second} từ/giây; cắt bỏ toàn bộ khoảng nghỉ thở thừa >0.3s",
+-                    f"Thời lượng tối ưu của ngách nằm trong khoảng {benchmark.duration_q25_sec:.0f}s - {benchmark.duration_q75_sec:.0f}s (trung vị {benchmark.duration_median_sec:.0f}s)",
++                    f"Phân bố thời lượng lịch sử của lát cắt: {benchmark.duration_q25_sec:.0f}s - {benchmark.duration_q75_sec:.0f}s (trung vị {benchmark.duration_median_sec:.0f}s); không chứng minh thời lượng tối ưu",
+                 ],
+             },
+         }
+diff --git a/pipelines/benchmark_retrieval/__init__.py b/pipelines/benchmark_retrieval/__init__.py
+index 69743a4..ab15fe5 100644
+--- a/pipelines/benchmark_retrieval/__init__.py
++++ b/pipelines/benchmark_retrieval/__init__.py
+@@ -1 +1 @@
+-"""Offline Retrieval & Reranking Evaluation Harness (Recall@10, MRR@10, nDCG@10)."""
++"""Offline weak-label retrieval regression (Recall/P/MRR/nDCG at 10)."""
+diff --git a/pipelines/benchmark_retrieval/__main__.py b/pipelines/benchmark_retrieval/__main__.py
+index 92bd58b..e9d0526 100644
+--- a/pipelines/benchmark_retrieval/__main__.py
++++ b/pipelines/benchmark_retrieval/__main__.py
+@@ -1,9 +1,10 @@
+ from __future__ import annotations
+ 
+ import argparse
++import hashlib
+ import json
+ import math
+-from datetime import datetime, timezone
++from datetime import UTC, datetime
+ from pathlib import Path
+ from typing import Any
+ 
+@@ -15,7 +16,7 @@ from packages.retrieval import HybridRetrievalService
+ 
+ 
+ def _ensure_eval_queries(queries_path: Path, df_videos: pd.DataFrame) -> list[dict[str, Any]]:
+-    """Build or load independent metadata-verified Vietnamese F&B evaluation queries."""
++    """Build or load keyword/metadata weak labels, not independent relevance judgments."""
+     if queries_path.is_file():
+         return [
+             json.loads(line)
+@@ -81,9 +82,13 @@ def _evaluate_run(
+     k: int = 10,
+ ) -> dict[str, float]:
+     recalls: list[float] = []
++    precisions: list[float] = []
++    recall_ceilings: list[float] = []
+     mrrs: list[float] = []
+     ndcgs: list[float] = []
+     latencies: list[float] = []
++    if k <= 0:
++        raise ValueError("Metric cutoff k must be positive")
+ 
+     for q in queries:
+         rel_set = set(q["relevant_video_ids"])
+@@ -102,9 +107,11 @@ def _evaluate_run(
+         retrieved_ids = [card.citation.video_id for card in resp.items[:k]]
+         hits = [1 if vid in rel_set else 0 for vid in retrieved_ids]
+ 
+-        # Recall@K (capped denominator at min(|rel|, K) for standard bounded top-K recall, plus hit_rate@K)
+-        denom = min(len(rel_set), k)
+-        recalls.append(sum(hits) / max(denom, 1))
++        # Standard recall counts all relevant documents; missing result slots
++        # are non-relevant for precision. A perfect top-k can still recall <1.
++        recalls.append(sum(hits) / len(rel_set))
++        precisions.append(sum(hits) / k)
++        recall_ceilings.append(min(len(rel_set), k) / len(rel_set))
+ 
+         # MRR@K
+         rr = 0.0
+@@ -125,23 +132,45 @@ def _evaluate_run(
+     p95_idx = min(len(sorted_lat) - 1, int(0.95 * len(sorted_lat)))
+     return {
+         "query_count": len(recalls),
+-        "recall_at_10": round(sum(recalls) / n, 4),
+-        "mrr_at_10": round(sum(mrrs) / n, 4),
+-        "ndcg_at_10": round(sum(ndcgs) / n, 4),
++        "input_query_count": len(queries),
++        "zero_relevant_query_count": len(queries) - len(recalls),
++        f"recall_at_{k}": round(sum(recalls) / n, 4),
++        f"precision_at_{k}": round(sum(precisions) / n, 4),
++        f"recall_at_{k}_ceiling": round(sum(recall_ceilings) / n, 4),
++        f"mrr_at_{k}": round(sum(mrrs) / n, 4),
++        f"ndcg_at_{k}": round(sum(ndcgs) / n, 4),
+         "mean_latency_ms": round(sum(latencies) / max(len(latencies), 1), 2),
+         "p95_latency_ms": round(sorted_lat[p95_idx], 2),
+     }
+ 
+ 
++def _sha256_file(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
+ def main() -> None:
+     parser = argparse.ArgumentParser(description="Benchmark Vietnamese BM25 + Reranking retrieval quality.")
+-    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261116_v1"))
+-    parser.add_argument("--bm25", "--index", dest="bm25", type=Path, default=Path("artifacts/indexes/bm25-v1"))
++    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
++    parser.add_argument("--bm25", "--index", dest="bm25", type=Path, default=Path("artifacts/indexes/bm25-v2"))
+     parser.add_argument("--queries", type=Path, default=Path("data/evaluation/v1/queries.jsonl"))
+-    parser.add_argument("--output", type=Path, default=Path("artifacts/benchmarks/retrieval_v1.json"))
++    parser.add_argument("--benchmark-id", default="retrieval_v2")
++    parser.add_argument("--output", type=Path, help="New receipt path (default: artifacts/benchmarks/<benchmark-id>.json); existing files are never replaced.")
+     args = parser.parse_args()
++    if not args.benchmark_id or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-" for c in args.benchmark_id):
++        parser.error("benchmark-id must contain only letters, digits, underscores, dots or hyphens")
++    output = args.output or Path("artifacts/benchmarks") / f"{args.benchmark_id}.json"
++    if output.exists():
++        raise FileExistsError(f"Benchmark receipt already exists: {output}")
+ 
+     manifest, _, df_videos = load_verified_corpus(args.corpus)
++    receipt_path = args.bm25 / "bm25-receipt.json"
++    index_receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
++    if index_receipt.get("corpus_snapshot_id") != manifest.snapshot_id:
++        raise ValueError("Index receipt corpus snapshot does not match the verified corpus snapshot")
+     queries = _ensure_eval_queries(args.queries, df_videos)
+     service = HybridRetrievalService.from_dirs(df_videos=df_videos, bm25_dir=args.bm25)
+ 
+@@ -149,19 +178,57 @@ def main() -> None:
+     bm25_reranked = _evaluate_run(service, queries, rerank=True, k=10)
+ 
+     report = {
+-        "benchmark_id": "retrieval_v1",
++        "benchmark_id": args.benchmark_id,
++        "metric_schema_version": 2,
+         "corpus_snapshot_id": manifest.snapshot_id,
+-        "evaluated_at": datetime.now(timezone.utc).isoformat(),
++        "evaluated_at": datetime.now(UTC).isoformat(),
+         "indexed_videos": int(df_videos["has_transcript"].sum()),
+         "queries_file": str(args.queries),
++        "evaluation": {
++            "label_source": "lexical_metadata_weak_labels",
++            "independent_relevance_judgments": False,
++            "limitation": "Keyword/metadata weak labels measure regression against these rules, not independently annotated relevance quality or current trends.",
++            "aggregation": "macro over queries with at least one relevant video",
++            "zero_relevant_policy": "exclude and report count; all-empty inputs yield zero metrics",
++            "metric_definitions": {
++                "recall_at_10": "relevant retrieved in top 10 / all relevant video IDs",
++                "precision_at_10": "relevant retrieved in top 10 / 10 (missing slots count as non-relevant)",
++                "recall_at_10_ceiling": "macro mean of min(10, relevant count) / relevant count",
++            },
++            "relevant_video_counts": {
++                str(q.get("query_id", i)): len(set(q["relevant_video_ids"]))
++                for i, q in enumerate(queries, start=1)
++            },
++        },
++        "provenance": {
++            "corpus_manifest_sha256": _sha256_file(args.corpus / "manifest.json"),
++            "corpus_files_sha256": {entry.filename: entry.sha256 for entry in manifest.files},
++            "queries_sha256": _sha256_file(args.queries),
++            "index_files_sha256": {
++                filename: _sha256_file(args.bm25 / filename)
++                for filename in ("bm25-receipt.json", "video_ids.json", "vocab.json", "bm25_csr.npz")
++            },
++            "code_files_sha256": {
++                filename: _sha256_file(Path(__file__).resolve().parents[2] / filename)
++                for filename in (
++                    "pipelines/benchmark_retrieval/__main__.py",
++                    "packages/retrieval/service.py",
++                    "packages/retrieval/sparse/bm25.py",
++                    "packages/retrieval/fusion/rrf.py",
++                    "packages/retrieval/rerank/scorer.py",
++                )
++            },
++            "configuration": {"mode": "bm25", "top_k": 10, "index_receipt": index_receipt},
++        },
+         "configurations": {
+             "bm25_viral_boost": bm25_only,
+             "bm25_viral_boost_reranked": bm25_reranked,
+         },
+     }
+ 
+-    args.output.parent.mkdir(parents=True, exist_ok=True)
+-    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
++    output.parent.mkdir(parents=True, exist_ok=True)
++    with output.open("x", encoding="utf-8") as stream:
++        stream.write(json.dumps(report, ensure_ascii=False, indent=2))
+     print(json.dumps(report, ensure_ascii=False, indent=2))
+ 
+ 
+diff --git a/pipelines/build_dense_sparse_index/__main__.py b/pipelines/build_dense_sparse_index/__main__.py
+index 91a235c..6b23600 100644
+--- a/pipelines/build_dense_sparse_index/__main__.py
++++ b/pipelines/build_dense_sparse_index/__main__.py
+@@ -10,8 +10,8 @@ from packages.retrieval.sparse.bm25 import BM25Index
+ 
+ def main() -> None:
+     parser = argparse.ArgumentParser(description="Build Vietnamese NFC BM25 sparse index over Gold corpus.")
+-    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261116_v1"))
+-    parser.add_argument("--output", type=Path, default=Path("artifacts/indexes/bm25-v1"))
++    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
++    parser.add_argument("--output", type=Path, default=Path("artifacts/indexes/bm25-v2"))
+     args = parser.parse_args()
+ 
+     manifest, _, df_videos = load_verified_corpus(args.corpus)
+diff --git a/pipelines/build_gold_corpus/__main__.py b/pipelines/build_gold_corpus/__main__.py
+index d1907f9..2a4547e 100644
+--- a/pipelines/build_gold_corpus/__main__.py
++++ b/pipelines/build_gold_corpus/__main__.py
+@@ -18,7 +18,7 @@ def main() -> None:
+     parser.add_argument(
+         "--output",
+         type=Path,
+-        default=Path("data/corpus/20261116_v1"),
++        default=Path("data/corpus/20261117_recovered_v1"),
+         help="Output snapshot directory.",
+     )
+     args = parser.parse_args()
+diff --git a/pipelines/build_gold_corpus/builder.py b/pipelines/build_gold_corpus/builder.py
+index a7b27c4..f4f91b2 100644
+--- a/pipelines/build_gold_corpus/builder.py
++++ b/pipelines/build_gold_corpus/builder.py
+@@ -185,9 +185,19 @@ def _sha256_file(path: Path) -> str:
+ 
+ 
+ def build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str | None = None) -> CorpusManifest:
++    from packages.common.snapshots import snapshot_workspace
++
++    with snapshot_workspace(output_dir) as staging_dir:
++        manifest = _build_gold_corpus(root_dir, staging_dir, snapshot_id or output_dir.name)
++        from packages.analytics import load_verified_corpus
++
++        load_verified_corpus(staging_dir)
++    return manifest
++
++
++def _build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str) -> CorpusManifest:
+     """Build immutable Gold Parquet corpus from read-only upstream datasets."""
+-    output_dir.mkdir(parents=True, exist_ok=True)
+-    snap_id = snapshot_id or output_dir.name
++    snap_id = snapshot_id
+ 
+     user_parquet = root_dir / "data/processed/cleaned_user_info.parquet"
+     video_parquet = root_dir / "data/processed/cleaned_video_info.parquet"
+diff --git a/pipelines/crawl_incremental/__main__.py b/pipelines/crawl_incremental/__main__.py
+index 80a4247..a4365d9 100644
+--- a/pipelines/crawl_incremental/__main__.py
++++ b/pipelines/crawl_incremental/__main__.py
+@@ -96,7 +96,7 @@ def main() -> None:
+     parser = argparse.ArgumentParser(
+         description="Crawl fresh 4-month TikTok F&B videos (never re-crawls historical 1.50 GB corpus)."
+     )
+-    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261116_v1"))
++    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
+     parser.add_argument("--output-dir", type=Path, default=Path("data/raw_incremental/batch_latest"))
+     parser.add_argument("--window-days", type=int, default=120, help="Rolling window in days (default: 120 = 4 months).")
+     parser.add_argument(
+diff --git a/pipelines/enrich_taxonomy_batch/__main__.py b/pipelines/enrich_taxonomy_batch/__main__.py
+index 2bd67fe..70d4096 100644
+--- a/pipelines/enrich_taxonomy_batch/__main__.py
++++ b/pipelines/enrich_taxonomy_batch/__main__.py
+@@ -14,7 +14,7 @@ def main() -> None:
+     parser = argparse.ArgumentParser(
+         description="Optional resumable Gemini Free-Tier batch enricher for unspecified price/occasion rows."
+     )
+-    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261116_v1"))
++    parser.add_argument("--corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
+     parser.add_argument("--checkpoint", type=Path, default=Path("artifacts/enrichment/checkpoint.jsonl"))
+     parser.add_argument("--limit", type=int, default=20, help="Max videos to enrich in this bounded Free-Tier run.")
+     parser.add_argument("--dry-run", action="store_true", help="Inspect candidate rows without calling Gemini API.")
+diff --git a/pipelines/ingest_incremental_to_gold/__main__.py b/pipelines/ingest_incremental_to_gold/__main__.py
+index 1b2d2bd..3aaed3f 100644
+--- a/pipelines/ingest_incremental_to_gold/__main__.py
++++ b/pipelines/ingest_incremental_to_gold/__main__.py
+@@ -11,13 +11,13 @@ def main() -> None:
+     parser = argparse.ArgumentParser(
+         description="Convert 4-month incremental JSONL batch into extended Gold Corpus snapshot."
+     )
+-    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261116_v1"))
++    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
+     parser.add_argument(
+         "--incremental-jsonl",
+         type=Path,
+         default=Path("data/raw_incremental/batch_latest/videos_4m.jsonl"),
+     )
+-    parser.add_argument("--output-corpus", type=Path, default=Path("data/corpus/20261116_v2_4m"))
++    parser.add_argument("--output-corpus", type=Path, default=Path("data/corpus/20261117_incremental_v1"))
+     args = parser.parse_args()
+ 
+     manifest = ingest_incremental_batch_to_gold(
+diff --git a/pipelines/ingest_incremental_to_gold/converter.py b/pipelines/ingest_incremental_to_gold/converter.py
+index 8ab37be..8a6fbda 100644
+--- a/pipelines/ingest_incremental_to_gold/converter.py
++++ b/pipelines/ingest_incremental_to_gold/converter.py
+@@ -13,8 +13,9 @@ import pyarrow.parquet as pq
+ 
+ from packages.absa import analyze_koc_vs_viewer_absa
+ from packages.analytics import load_verified_corpus
++from packages.common.snapshots import snapshot_workspace
+ from packages.data_contracts.corpus import CorpusFileChecksum, CorpusManifest
+-from packages.data_contracts.multimodal import RawIncrementalVideoRecord, VoiceSegmentRecord
++from packages.data_contracts.multimodal import RawCommentInput, RawIncrementalVideoRecord, VoiceSegmentRecord
+ from packages.seeding import detect_seeding_comments
+ from packages.taxonomy import (
+     classify_duration_bucket,
+@@ -96,13 +97,32 @@ def ingest_incremental_batch_to_gold(
+     base_corpus_dir: Path,
+     incremental_jsonl: Path,
+     output_corpus_dir: Path,
++    *,
++    update_existing: bool = False,
++) -> CorpusManifest:
++    with snapshot_workspace(output_corpus_dir) as staging_dir:
++        manifest = _ingest_incremental_batch_to_gold(
++            base_corpus_dir, incremental_jsonl, staging_dir,
++            snapshot_id=output_corpus_dir.name, update_existing=update_existing,
++        )
++        load_verified_corpus(staging_dir)
++    return manifest
++
++
++def _ingest_incremental_batch_to_gold(
++    base_corpus_dir: Path,
++    incremental_jsonl: Path,
++    output_corpus_dir: Path,
++    *,
++    snapshot_id: str,
++    update_existing: bool,
+ ) -> CorpusManifest:
+     """Dual-Sink Converter:
+     1) Appends normalized 49-column rows to fact_videos.parquet (+ dim_creators.parquet) for RAG/Benchmarks.
+     2) Populates fact_voice_segments.parquet, fact_comments.parquet, and fact_absa_reviews.parquet for 4M modules.
+     """
+     base_manifest, df_creators, df_videos = load_verified_corpus(base_corpus_dir)
+-    output_corpus_dir.mkdir(parents=True, exist_ok=True)
++    parent_manifest_sha256 = _sha256_file(base_corpus_dir / "manifest.json")
+ 
+     raw_records = [
+         RawIncrementalVideoRecord.model_validate_json(line)
+@@ -111,6 +131,13 @@ def ingest_incremental_batch_to_gold(
+     ]
+ 
+     existing_vids = set(df_videos["video_id"].astype(str).tolist())
++    base_videos = {str(row["video_id"]): row for row in df_videos.to_dict(orient="records")}
++    base_multimodal: dict[str, pd.DataFrame] = {}
++    declared = {entry.filename for entry in base_manifest.files}
++    for name in ("fact_voice_segments.parquet", "fact_comments.parquet", "fact_absa_reviews.parquet"):
++        # Only load tables covered by the verified base manifest.
++        if name in declared:
++            base_multimodal[name] = pd.read_parquet(base_corpus_dir / name)
+     creator_medians: dict[str, float] = dict(
+         zip(df_creators["author_id"].astype(str), df_creators["median_play_count"].astype(float))
+     )
+@@ -121,10 +148,45 @@ def ingest_incremental_batch_to_gold(
+     voice_rows: list[dict[str, Any]] = []
+     comment_rows: list[dict[str, Any]] = []
+     absa_rows: list[dict[str, Any]] = []
++    replaced_voice_ids: set[str] = set()
++    processed_ids: set[str] = set()
+ 
+     for rec in raw_records:
+-        if rec.video_id in existing_vids:
++        if rec.video_id in processed_ids:
+             continue
++        processed_ids.add(rec.video_id)
++        is_existing = rec.video_id in existing_vids
++        if is_existing and not update_existing:
++            continue
++        old_row = base_videos.get(rec.video_id)
++        transcript_changed = bool(rec.transcript.strip()) and (
++            old_row is None or rec.transcript != old_row.get("transcript")
++        )
++        replace_voice = old_row is None or bool(rec.whisper_segments) or (
++            bool(rec.transcript.strip()) and rec.transcript != old_row.get("transcript")
++        )
++        if old_row is not None:
++            # Enrichment preserves the observed metadata/counters; it cannot replace
++            # historical observations with the defaults of a sparse ASR/comment record.
++            fields = RawIncrementalVideoRecord.model_fields
++            preserved = {key: old_row[key] for key in fields if key in old_row and key not in {
++                "transcript", "pitch_std", "energy_cv", "comments", "whisper_segments", "audio_path",
++            }}
++            rec = rec.model_copy(update=preserved)
++            if not rec.transcript.strip():
++                rec = rec.model_copy(update={"transcript": str(old_row.get("transcript") or "")})
++            old_comments = base_multimodal.get("fact_comments.parquet")
++            merged_comments: dict[str, RawCommentInput] = {}
++            if old_comments is not None:
++                for item in old_comments[old_comments["video_id"] == rec.video_id].to_dict(orient="records"):
++                    comment = RawCommentInput.model_validate(item)
++                    merged_comments[comment.comment_id] = comment
++            for comment in rec.comments:
++                previous = merged_comments.get(comment.comment_id)
++                merged_comments[comment.comment_id] = (
++                    previous.model_copy(update=comment.model_dump(exclude_unset=True)) if previous is not None else comment
++                )
++            rec = rec.model_copy(update={"comments": list(merged_comments.values())})
+         existing_vids.add(rec.video_id)
+ 
+         tier = classify_follower_tier(rec.follower_count)
+@@ -230,6 +292,14 @@ def ingest_incremental_batch_to_gold(
+                 "rag_document": rag_doc,
+             }
+         )
++        if old_row is not None:
++            # Only text-derived columns are replaced during explicit enrichment.
++            derived = {"has_transcript", "transcript", "word_count", "word_per_second", "has_cta",
++                       "has_curiosity_gap", "hook_text", "body_beats", "cta_text", "rag_document"}
++            updated = dict(old_row)
++            if transcript_changed:
++                updated.update({key: new_video_rows[-1][key] for key in derived})
++            new_video_rows[-1] = updated
+ 
+         if rec.author_id not in existing_aids:
+             existing_aids.add(rec.author_id)
+@@ -254,8 +324,10 @@ def ingest_incremental_batch_to_gold(
+             )
+ 
+         # Sink 2: Multimodal tables (Voice Segments + Seeding Comments + KOC-vs-Viewer ABSA)
+-        for seg in _build_voice_segments(rec, wps):
+-            voice_rows.append(seg.model_dump())
++        if replace_voice:
++            replaced_voice_ids.add(rec.video_id)
++            for seg in _build_voice_segments(rec, wps):
++                voice_rows.append(seg.model_dump())
+ 
+         cleansed_comments = detect_seeding_comments(rec.video_id, rec.comments)
+         for c_rec in cleansed_comments:
+@@ -293,11 +365,11 @@ def ingest_incremental_batch_to_gold(
+         if new_creator_rows
+         else df_creators
+     )
+-    df_out_videos = (
+-        pd.concat([df_videos, pd.DataFrame(new_video_rows)[df_videos.columns]], ignore_index=True)
+-        if new_video_rows
+-        else df_videos
+-    )
++    updated_video_ids = {str(row["video_id"]) for row in new_video_rows}
++    df_out_videos = pd.concat([
++        df_videos[~df_videos["video_id"].isin(updated_video_ids)],
++        pd.DataFrame(new_video_rows).reindex(columns=df_videos.columns),
++    ], ignore_index=True) if new_video_rows else df_videos
+ 
+     df_voice = pd.DataFrame(voice_rows) if voice_rows else pd.DataFrame(
+         columns=["segment_id", "video_id", "seq_no", "start_sec", "end_sec", "timestamp_source", "text", "words_per_sec", "pitch_std", "energy_cv"]
+@@ -309,6 +381,17 @@ def ingest_incremental_batch_to_gold(
+         columns=["video_id", "koc_taste", "koc_price", "koc_hygiene", "koc_service", "viewer_taste", "viewer_price", "viewer_hygiene", "viewer_service", "pr_hype_gap", "undisclosed_pr_risk", "viewer_pain_points", "clean_comment_count", "seeding_comment_count"]
+     )
+ 
++    def _carry_forward(name: str, fresh: pd.DataFrame, replace_ids: set[str]) -> pd.DataFrame:
++        old = base_multimodal.get(name)
++        if old is None:
++            return fresh
++        retained = old[~old["video_id"].isin(replace_ids)]
++        return pd.concat([retained, fresh], ignore_index=True) if len(fresh) else retained.copy()
++
++    df_voice = _carry_forward("fact_voice_segments.parquet", df_voice, replaced_voice_ids)
++    df_comments = _carry_forward("fact_comments.parquet", df_comments, updated_video_ids)
++    df_absa = _carry_forward("fact_absa_reviews.parquet", df_absa, updated_video_ids)
++
+     tables = [
+         ("dim_creators.parquet", df_out_creators),
+         ("fact_videos.parquet", df_out_videos),
+@@ -332,7 +415,9 @@ def ingest_incremental_batch_to_gold(
+         )
+ 
+     manifest = CorpusManifest(
+-        snapshot_id=output_corpus_dir.name,
++        snapshot_id=snapshot_id,
++        parent_snapshot_id=base_manifest.snapshot_id,
++        parent_manifest_sha256=parent_manifest_sha256,
+         created_at=datetime.now(timezone.utc).isoformat(),
+         date_window_start=base_manifest.date_window_start,
+         date_window_end=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+@@ -344,7 +429,7 @@ def ingest_incremental_batch_to_gold(
+         files=checksums,
+         caveats=[
+             *base_manifest.caveats,
+-            f"Includes {len(new_video_rows)} fresh 4-month incremental multimodal videos converted via Dual-Sink pipeline.",
++            f"Applied {len(new_video_rows)} incremental video records; explicit enrichment={update_existing}. Parent snapshot={base_manifest.snapshot_id}.",
+         ],
+     )
+     (output_corpus_dir / "manifest.json").write_text(
+diff --git a/pyproject.toml b/pyproject.toml
+index 56f93b6..9d93590 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -29,12 +29,12 @@ dependencies = [
+     "pyarrow>=14.0.0",
+     "scipy>=1.11.0",
+     "google-genai>=1.0.0",
++    "gradio>=6.0.0",
+ ]
+ 
+ [project.optional-dependencies]
+-demo = [
+-    "gradio>=6.0.0",
+-]
++# Kept as an installation alias for existing .[demo] commands.
++demo = []
+ infra = [
+     "qdrant-client>=1.12.0",
+     "redis>=5.0.0",
+diff --git a/scripts/dev.py b/scripts/dev.py
+index cd5bd36..2e653ed 100644
+--- a/scripts/dev.py
++++ b/scripts/dev.py
+@@ -40,7 +40,7 @@ def main() -> int:
+     if args.command == "check-secrets":
+         return _run([py, "scripts/check_secrets.py"])
+     if args.command == "build-corpus":
+-        return _run([py, "-m", "pipelines.build_gold_corpus", "--output", "data/corpus/20261116_v1"])
++        return _run([py, "-m", "pipelines.build_gold_corpus", "--output", "data/corpus/20261117_recovered_v1"])
+     if args.command == "build-index":
+         return _run(
+             [
+@@ -48,9 +48,9 @@ def main() -> int:
+                 "-m",
+                 "pipelines.build_dense_sparse_index",
+                 "--corpus",
+-                "data/corpus/20261116_v1",
++                "data/corpus/20261117_recovered_v1",
+                 "--output",
+-                "artifacts/indexes/bm25-v1",
++                "artifacts/indexes/bm25-v2",
+             ]
+         )
+     if args.command == "benchmark":
+@@ -60,11 +60,11 @@ def main() -> int:
+                 "-m",
+                 "pipelines.benchmark_retrieval",
+                 "--corpus",
+-                "data/corpus/20261116_v1",
++                "data/corpus/20261117_recovered_v1",
+                 "--index",
+-                "artifacts/indexes/bm25-v1",
++                "artifacts/indexes/bm25-v2",
+                 "--output",
+-                "artifacts/benchmarks/retrieval_v1.json",
++                "artifacts/benchmarks/retrieval_v2.json",
+             ]
+         )
+     if args.command == "crawl-4m-demo":
+@@ -76,7 +76,7 @@ def main() -> int:
+                 "-m",
+                 "pipelines.ingest_incremental_to_gold",
+                 "--output-corpus",
+-                "data/corpus/20261116_v2_4m",
++                "data/corpus/20261117_incremental_v1",
+             ]
+         )
+     if args.command == "lint":
+diff --git a/tests/eval/test_retrieval_benchmark.py b/tests/eval/test_retrieval_benchmark.py
+index f2cc43b..3c482a1 100644
+--- a/tests/eval/test_retrieval_benchmark.py
++++ b/tests/eval/test_retrieval_benchmark.py
+@@ -1,10 +1,19 @@
+ from __future__ import annotations
+ 
++import hashlib
+ import json
+ from pathlib import Path
+ 
++import pandas as pd
++import pytest
+ 
+-def test_retrieval_benchmark_report_meets_quality_and_latency_gates() -> None:
++from packages.data_contracts.corpus import CorpusManifest
++from packages.retrieval import BM25Index
++from pipelines.benchmark_retrieval.__main__ import main
++
++
++def test_historical_v1_preserves_recorded_rank_and_latency_regression() -> None:
++    """Historical weak labels retain rank checks; its capped recall is not standard recall."""
+     report_path = Path("artifacts/benchmarks/retrieval_v1.json")
+     assert report_path.is_file(), "Benchmark report must exist; run pipelines.benchmark_retrieval"
+ 
+@@ -16,3 +25,98 @@ def test_retrieval_benchmark_report_meets_quality_and_latency_gates() -> None:
+     assert reranked["mrr_at_10"] >= 0.50
+     assert reranked["ndcg_at_10"] >= 0.35
+     assert reranked["p95_latency_ms"] <= 2000.0
++
++
++@pytest.fixture
++def benchmark_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
++    corpus_dir = tmp_path / "corpus"
++    corpus_dir.mkdir()
++    videos = pd.DataFrame(
++        [{"video_id": "v1", "caption": "noodle", "transcript": "noodle", "has_transcript": True}]
++    )
++    creators = pd.DataFrame([{"author_handle": "fixture"}])
++    videos.to_parquet(corpus_dir / "fact_videos.parquet", index=False)
++    creators.to_parquet(corpus_dir / "dim_creators.parquet", index=False)
++    manifest = CorpusManifest(
++        snapshot_id="fixture-v2",
++        created_at="2026-11-17T00:00:00Z",
++        date_window_start="2023-11-01",
++        date_window_end="2025-03-31",
++        total_creators=1,
++        total_videos=1,
++        transcribed_videos=1,
++        poi_tagged_videos=0,
++        ec_tagged_videos=0,
++        files=[
++            {
++                "filename": name,
++                "rows": 1,
++                "columns": columns,
++                "size_bytes": (corpus_dir / name).stat().st_size,
++                "sha256": hashlib.sha256((corpus_dir / name).read_bytes()).hexdigest(),
++            }
++            for name, columns in [("dim_creators.parquet", 1), ("fact_videos.parquet", 4)]
++        ],
++        caveats=["Controlled fixture, not a relevance-quality measurement."],
++    )
++    (corpus_dir / "manifest.json").write_text(manifest.model_dump_json(), encoding="utf-8")
++    index_dir = tmp_path / "index"
++    BM25Index.build(["v1"], ["noodle"]).save(index_dir, corpus_snapshot_id="fixture-v2")
++    queries = tmp_path / "queries.jsonl"
++    queries.write_text(
++        json.dumps({"query_id": "q1", "query": "noodle", "relevant_video_ids": ["v1", "v2"]}) + "\n",
++        encoding="utf-8",
++    )
++    return corpus_dir, index_dir, queries
++
++
++def test_versioned_report_binds_correct_metrics_to_inputs(
++    benchmark_inputs: tuple[Path, Path, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
++) -> None:
++    corpus, index, queries = benchmark_inputs
++    output = tmp_path / "retrieval_v2.json"
++    monkeypatch.setattr(
++        "sys.argv",
++        [
++            "benchmark", "--corpus", str(corpus), "--index", str(index), "--queries", str(queries),
++            "--benchmark-id", "retrieval_v2", "--output", str(output),
++        ],
++    )
++    main()
++    report = json.loads(output.read_text(encoding="utf-8"))
++    assert report["benchmark_id"] == "retrieval_v2"
++    assert report["metric_schema_version"] == 2
++    assert report["evaluation"]["independent_relevance_judgments"] is False
++    assert report["evaluation"]["label_source"] == "lexical_metadata_weak_labels"
++    assert report["evaluation"]["relevant_video_counts"] == {"q1": 2}
++    metrics = report["configurations"]["bm25_viral_boost_reranked"]
++    assert metrics["recall_at_10"] == 0.5
++    assert metrics["precision_at_10"] == 0.1
++    provenance = report["provenance"]
++    assert provenance["queries_sha256"] == hashlib.sha256(queries.read_bytes()).hexdigest()
++    assert provenance["corpus_manifest_sha256"] == hashlib.sha256((corpus / "manifest.json").read_bytes()).hexdigest()
++    assert provenance["index_files_sha256"]["bm25-receipt.json"] == hashlib.sha256((index / "bm25-receipt.json").read_bytes()).hexdigest()
++    assert provenance["code_files_sha256"]["pipelines/benchmark_retrieval/__main__.py"] == hashlib.sha256(Path("pipelines/benchmark_retrieval/__main__.py").read_bytes()).hexdigest()
++    before = output.read_bytes()
++    # A repeated invocation cannot erase an existing measurement receipt.
++    with pytest.raises(FileExistsError):
++        main()
++    assert output.read_bytes() == before
++
++
++def test_report_rejects_index_receipt_for_a_different_corpus(
++    benchmark_inputs: tuple[Path, Path, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
++) -> None:
++    corpus, index, queries = benchmark_inputs
++    receipt_path = index / "bm25-receipt.json"
++    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
++    receipt["corpus_snapshot_id"] = "wrong-corpus"
++    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
++    output = tmp_path / "mismatched.json"
++    monkeypatch.setattr(
++        "sys.argv",
++        ["benchmark", "--corpus", str(corpus), "--index", str(index), "--queries", str(queries), "--output", str(output)],
++    )
++    with pytest.raises(ValueError, match="snapshot"):
++        main()
++    assert not output.exists()
+diff --git a/tests/smoke/test_api_and_demo.py b/tests/smoke/test_api_and_demo.py
+index 7ed36fa..698a504 100644
+--- a/tests/smoke/test_api_and_demo.py
++++ b/tests/smoke/test_api_and_demo.py
+@@ -35,7 +35,7 @@ def test_api_endpoints_and_gradio_demo_mount_end_to_end() -> None:
+ 
+             r_eval = await client.get("/api/v1/evaluation/summary")
+             assert r_eval.status_code == 200
+-            assert r_eval.json()["benchmark_id"] == "retrieval_v1"
++            assert r_eval.json()["benchmark_id"] == "retrieval_v2"
+ 
+             # 3. Niche micro-benchmark
+             r_bench = await client.post(
+diff --git a/tests/unit/test_analytics_and_retrieval.py b/tests/unit/test_analytics_and_retrieval.py
+index 7332088..3892bad 100644
+--- a/tests/unit/test_analytics_and_retrieval.py
++++ b/tests/unit/test_analytics_and_retrieval.py
+@@ -5,6 +5,8 @@ from pathlib import Path
+ 
+ import pytest
+ 
++from packages.common.settings import AppSettings
++
+ from packages.analytics import NicheAnalyticsEngine
+ from packages.common.exceptions import CorpusNotReadyError, IndexNotReadyError
+ from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest
+@@ -24,8 +26,8 @@ def test_fail_closed_corpus_loader_rejects_missing_manifest(tmp_path: Path) -> N
+ 
+ 
+ def test_niche_analytics_and_hybrid_retrieval_end_to_end() -> None:
+-    corpus_dir = Path("data/corpus/20261116_v1")
+-    bm25_dir = Path("artifacts/indexes/bm25-v1")
++    corpus_dir = AppSettings().corpus_dir
++    bm25_dir = AppSettings().bm25_index_dir
+ 
+     engine = NicheAnalyticsEngine.from_corpus_dir(corpus_dir)
+     bench = engine.compute_benchmark(
+diff --git a/tests/unit/test_incremental_absa_seeding.py b/tests/unit/test_incremental_absa_seeding.py
+index cb7e3e9..ffa8f55 100644
+--- a/tests/unit/test_incremental_absa_seeding.py
++++ b/tests/unit/test_incremental_absa_seeding.py
+@@ -97,7 +97,7 @@ def test_dual_sink_incremental_ingestion_and_trust_api(tmp_path: Path) -> None:
+             }
+         ]
+     )
+-    df_v = pd.read_parquet("data/corpus/20261116_v1/fact_videos.parquet").head(3).copy()
++    df_v = pd.read_parquet(AppSettings().corpus_dir / "fact_videos.parquet").head(3).copy()
+     p_c = base_dir / "dim_creators.parquet"
+     p_v = base_dir / "fact_videos.parquet"
+     df_c.to_parquet(p_c, index=False)
+diff --git a/tests/unit/test_script_guardrails.py b/tests/unit/test_script_guardrails.py
+index 5f3beec..9d7853f 100644
+--- a/tests/unit/test_script_guardrails.py
++++ b/tests/unit/test_script_guardrails.py
+@@ -71,3 +71,49 @@ def test_timeline_recalculator_and_anti_cliche_citation_guardrail() -> None:
+     assert report.valid_citations_ratio < 1.0
+     assert "ngon gì đâu luôn á" in report.cliche_phrases_detected
+     assert report.passed is False
++
++
++def test_guardrail_does_not_assign_retrieved_ids_to_uncited_text() -> None:
++    beats, report = recalculate_timeline_and_verify(
++        [{"dialogue": "Một bản nháp chưa có nguồn hỗ trợ."}], [], 10, 3.0, {"available_but_unrelated"},
++    )
++    assert beats[0].cited_video_ids == []
++    assert report.valid_citations_ratio == 0.0
++    assert report.passed is False
++
++
++def test_empty_script_cannot_pass_even_when_sources_exist() -> None:
++    _, report = recalculate_timeline_and_verify([], [], 45, 3.0, {"v1"})
++    assert report.passed is False
++    assert report.total_words == 0
++
++
++def test_duration_mismatch_prevents_structural_pass() -> None:
++    _, report = recalculate_timeline_and_verify(
++        [{"dialogue": "Một lời thoại ngắn.", "cited_video_ids": ["v1"]}], [], 300, 3.0, {"v1"},
++    )
++    assert report.passed is False
++
++
++def test_each_beat_requires_nonempty_dialogue_and_citation() -> None:
++    _, report = recalculate_timeline_and_verify(
++        [{"dialogue": "", "cited_video_ids": ["v1"]}], [], 10, 3.0, {"v1"},
++    )
++    assert report.passed is False
++
++
++def test_valid_structural_pass_does_not_claim_factual_grounding() -> None:
++    beats, report = recalculate_timeline_and_verify(
++        [{"dialogue": "Một hai ba bốn năm sáu bảy tám chín mười", "cited_video_ids": ["v1"]}], [], 5, 2.0, {"v1"},
++    )
++    assert beats[0].time_range == "00:00-00:05"
++    assert report.passed is True
++    assert report.model_dump()["grounding_verified"] is False
++
++
++def test_one_uncited_beat_cannot_hide_behind_other_valid_beats() -> None:
++    _, report = recalculate_timeline_and_verify(
++        [{"dialogue": "Một hai ba bốn năm sáu", "cited_video_ids": ["v1"]},
++         {"dialogue": "Bảy tám chín mười mười một"}], [], 10, 2.0, {"v1"},
++    )
++    assert report.passed is False
+diff --git a/tests/unit/test_taxonomy_and_corpus.py b/tests/unit/test_taxonomy_and_corpus.py
+index 401b7e6..4042785 100644
+--- a/tests/unit/test_taxonomy_and_corpus.py
++++ b/tests/unit/test_taxonomy_and_corpus.py
+@@ -4,6 +4,8 @@ from pathlib import Path
+ 
+ import pandas as pd
+ 
++from packages.common.settings import AppSettings
++
+ from packages.data_contracts.corpus import CorpusManifest
+ from packages.taxonomy import (
+     classify_duration_bucket,
+@@ -77,7 +79,7 @@ def test_taxonomy_extractors_and_zero_division_guards() -> None:
+ 
+ 
+ def test_built_gold_corpus_snapshot_integrity() -> None:
+-    corpus_dir = Path("data/corpus/20261116_v1")
++    corpus_dir = AppSettings().corpus_dir
+     manifest_path = corpus_dir / "manifest.json"
+     assert manifest_path.is_file(), "Gold corpus manifest.json must exist"
+ 

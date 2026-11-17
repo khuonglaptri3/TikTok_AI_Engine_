@@ -1,0 +1,30 @@
+{
+  "preserved_on": "2026-11-17",
+  "meaning": "Exact pre-rewrite source copies; source text and historical assertions are not newly verified results.",
+  "files": [
+    {
+      "source": "docs/planning/TikTok_AI_Engine_Milestone.md",
+      "archive": "prior-milestone-plan.md",
+      "bytes": 20176,
+      "sha256": "631cbe196da9673b3e78749d3661914b065a79c60099221c8fc0f987269ef9e6"
+    },
+    {
+      "source": "docs/planning/TikTok_AI_Engine_Resources_and_Deployment.md",
+      "archive": "prior-resources-and-deployment.md",
+      "bytes": 3883,
+      "sha256": "642ffba9b408c42c68162c3248a4b65eb8be870c5587169334fede3f0cb0d873"
+    },
+    {
+      "source": "ReFactor_structure/04_IMPLEMENTATION_PLAN.md",
+      "archive": "prior-refactor-implementation-plan.md",
+      "bytes": 10093,
+      "sha256": "a18f0259decade226c93264910a1492f011486d21cb81d5c6a39dd101bc3c150"
+    },
+    {
+      "source": "AGENTS.md",
+      "archive": "prior-project-agents.md",
+      "bytes": 13303,
+      "sha256": "e0ea00261a850511b30f0dab958b894b36bd569eaab4508fab800e50a8540e05"
+    }
+  ]
+}

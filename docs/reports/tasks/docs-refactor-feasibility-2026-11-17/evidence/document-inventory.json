@@ -1,0 +1,82 @@
+{
+  "created_at": "2026-11-17T02:41:57.734480+00:00",
+  "repository_commit": "cdbc6ed9ccad11db437aa66c68638cf018701fe5",
+  "scope": "Original requested documents, excluding this audit and navigation under docs/reports/tasks",
+  "files": [
+    {
+      "path": "docs/data-cards/tiktok_fnb_corpus_v1.md",
+      "bytes": 2559,
+      "sha256": "0d346a6a624bdaf4336fc7793768bcda955de294b4acc3ead49c68bfb27c1677"
+    },
+    {
+      "path": "docs/planning/TikTok_AI_Engine_Milestone.md",
+      "bytes": 20176,
+      "sha256": "631cbe196da9673b3e78749d3661914b065a79c60099221c8fc0f987269ef9e6"
+    },
+    {
+      "path": "docs/planning/TikTok_AI_Engine_Resources_and_Deployment.md",
+      "bytes": 3883,
+      "sha256": "642ffba9b408c42c68162c3248a4b65eb8be870c5587169334fede3f0cb0d873"
+    },
+    {
+      "path": "docs/reports/Case_Study/README.md",
+      "bytes": 361,
+      "sha256": "ea11f18a2046dc8f7a40d2c340683439fdbc5f4c843efcd9e289c8523cee2870"
+    },
+    {
+      "path": "docs/reports/milestones/M0.1/evidence/workflow.md",
+      "bytes": 958,
+      "sha256": "652aaf4a984b79e182082ca896a836df44d7a94eaf2110002a351be5c5f3c894"
+    },
+    {
+      "path": "docs/reports/milestones/M0.1/README.md",
+      "bytes": 4715,
+      "sha256": "f7e57a0dd979f97cf02a58f99e0dc0e8ee657e8d820465e015d79f35393d6ff8"
+    },
+    {
+      "path": "docs/reports/milestones/M0.1/superpowers/plan.md",
+      "bytes": 1159,
+      "sha256": "669f730a8b5b3f323ff6cc477ffe6083c8ea1aadb58cba2f05137b1c9e3ee7f3"
+    },
+    {
+      "path": "docs/reports/milestones/M0.1/superpowers/spec.md",
+      "bytes": 1352,
+      "sha256": "a7f8ed72a770430d10b28692c8c28239b86fabdd99cd010b74e1378dca3e485f"
+    },
+    {
+      "path": "docs/reports/milestones/README.md",
+      "bytes": 1279,
+      "sha256": "48224ae1282108d466d6e92ef28c223a4defdfdba97400adb3ef9fc080731639"
+    },
+    {
+      "path": "ReFactor_structure/00_OVERVIEW_AND_CURRENT_STATE.md",
+      "bytes": 9308,
+      "sha256": "5d79cf4865dcaa2b6947211d37c4b4cb0f32f288a351cf1b8275bd342b6c47fe"
+    },
+    {
+      "path": "ReFactor_structure/01_LIMITATIONS_AND_BUGS_AUDIT.md",
+      "bytes": 10614,
+      "sha256": "379e939a62997bb41d51ba23cc71405897827b9aca6036e23b16f3e87adc481f"
+    },
+    {
+      "path": "ReFactor_structure/02_DATA_AND_RAG_REFACTOR_PROPOSAL.md",
+      "bytes": 8156,
+      "sha256": "3df089dcfa304becebfcc1b2e470305bf820269580bed0d80f6b40ffe7db8b20"
+    },
+    {
+      "path": "ReFactor_structure/03_AI_ENGINEER_ARCHITECTURE_SPEC.md",
+      "bytes": 21261,
+      "sha256": "1777f6b0b7625c2459c739e4fff4c2e8dd643abbbed55d7b4ed1d2e9199b204e"
+    },
+    {
+      "path": "ReFactor_structure/04_IMPLEMENTATION_PLAN.md",
+      "bytes": 10093,
+      "sha256": "a18f0259decade226c93264910a1492f011486d21cb81d5c6a39dd101bc3c150"
+    },
+    {
+      "path": "ReFactor_structure/README.md",
+      "bytes": 1275,
+      "sha256": "00999c5d077c62f871bbb3f0f06e004f04d71928385831672bb3222bf4f3879f"
+    }
+  ]
+}

@@ -1,235 +1,138 @@
-# TikTok_AI_Engine_ — AI engineering milestone plan
+# TikTok_AI_Engine_ — balanced two-person AI delivery plan
 
-- Revision: DUAL_STREAM_FNB_INTELLIGENCE_2026_11_16; M0–M2 historical Gold corpus, Niche Micro-Benchmarks, Vietnamese BM25/RRF retrieval, and Grounded Script Engine baseline verified; M3–M6 4-month multimodal incremental stream scaffolded.
-- Delivery: Typed AI domain packages, reproducible offline CLI pipelines, FastAPI endpoints, and one lightweight ASGI-mounted Gradio demonstration UI (`/demo/`).
-- Owner: Trần Đình Khương; one AI Engineer; no additional contributor is assumed.
-- Reference window: 16 November 2026 to 08 January 2027, 8 working weeks.
+- Revision: RECOVERY_FIRST_EQUAL_TEAM_2026_11_17, authored on 2026-11-17 (Asia/Saigon).
+- Contributors: **Trần Đình Khương (K)** and **Nguyễn Việt Nguyên (N)** ([public profile](https://github.com/NguyenVietNguyen2612)). The owner explicitly requested equal work. Names/profile identity establish no skill ranking, specialization, availability, or commitment from the other person.
+- Delivery: a reproducible local CPU historical analytics, lexical retrieval, qualified script-drafting API, and one ASGI-mounted Gradio demonstration (`/demo/`); later multimodal experiments are conditional.
+- Estimated allocation: **188 effort points = 94 person-days total; K = 94 points / 47 days, N = 94 points / 47 days (50% each)**. One point is an estimated half person-day. Delivery, documentation, peer review, integration, annotation and gates are included. These are planning estimates, not equal measured hours or a calendar promise.
+- Current acceptance: **IN_PROGRESS for recovery/core revalidation; G0–G6 NOT_RUN**. Existing source and historical completion assertions are distinguished below from newly accepted tasks.
 
-[Resources & Deployment](TikTok_AI_Engine_Resources_and_Deployment.md) · [Milestone Reports](../reports/milestones/README.md) · [Case Studies](../reports/Case_Study/README.md) · [Data Card](../data-cards/tiktok_fnb_corpus_v1.md)
+[Resources](TikTok_AI_Engine_Resources_and_Deployment.md) · [Milestone reports](../reports/milestones/README.md) · [Audit](../reports/tasks/docs-refactor-feasibility-2026-11-17/README.md) · [Current recovery task](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/README.md) · [Machine-checkable allocation](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/two-person-allocation.json)
 
-## 1. Active scope
+## 1. Scope and evidence baseline
 
-Implement and evaluate an end-to-end Vietnamese TikTok Food & Beverage (F&B) AI Engine unifying **Creator-Side Viral Content Intelligence** and **Consumer-Side Review Trust & Multimodal ABSA**:
+The two contributors share AI logic, data preparation, evaluation, typed APIs and demonstration integration. Ownership below assigns a bounded deliverable and the other person as peer reviewer; it does not divide the team into inferred AI/backend skill tiers. Product CRUD, login/accounts, billing portals, ad-buying operations, enterprise administration and business-pilot KPI studies remain excluded.
 
-1. **Historical Macro Intelligence (`1.50 GB`, `70,996` videos, `2023-11` to `2025-03`):** Immutable Gold Parquet corpus (`dim_creators` + `fact_videos` with `23,448` recovered official TikTok GPS POIs and `21,748` clean Vietnamese transcripts), Columnar Niche Micro-Benchmarking, Vietnamese NFC Hybrid Retrieval (`BM25 CSR + Qdrant Dense + RRF + Phrase/Aspect Reranking`), and Citation-Grounded Script Synthesis with deterministic `mm:ss` pacing guardrails.
-2. **Rolling 4-Month Incremental Multimodal Stream (`data/raw_incremental/`):** Never re-crawl historical videos. Collect only the latest 4-month window (`Metadata + 64kbps .mp3 Audio + Top Viewer Comments`) and process through a **Dual-Sink Normalization Pipeline** that:
-   - **Sink A (Corpus Continuity):** Converts fresh 4-month videos into the canonical 49-column `fact_videos` schema to keep RAG and Niche Benchmarks current.
-   - **Sink B (Multimodal Trust Modules):** Populates `fact_voice_segments` (`Whisper` word/segment timestamps + `Librosa` prosody), `fact_comments` (`Seeding & Spam Clustering`), and `fact_absa_reviews` (`4-Aspect KOC Voice vs. Clean Viewer Comment Sentiment` + `PR Hype Gap` + `Undisclosed Sponsorship Risk`).
+The [2026-11-17 audit](../reports/tasks/docs-refactor-feasibility-2026-11-17/README.md) is the baseline for this revision. It found a substantial implemented historical core and reproduced snapshot/ingestion/script-validation defects. Its existing suite result was 15 passed / 5 failed because required heavy data were absent; mypy passed for 74 source files. Those are dated audit results, not this plan's new verification. Recovery/fixes are authorized and underway in the linked recovery task; integrate its actual final evidence before changing any gate.
 
-User authentication, role workspaces, merchant billing CRUD, automated ad-buying actions, and paid GPU/API plans are excluded. Online LLM orchestration is capped at `USD 0` using only the owner's Gemini Free-Tier API (`<= 2` calls per turn, sliding-window RPM limiter, explicit `offline_grounded` `$0` fallback).
+Historical metadata inspection at pinned source revision `f142e5656a220f94f8024de168b0832754b3bd9e` found 70,996 unique video IDs, 264 authors and dates from 2023-11-25 to 2025-03-19. Engagement comes from one March 2025 capture. The upstream tree had 37,837 data files / 1,475,677,482 logical bytes; the prior owner-copy claim was 37,840 files / approximately 1.50 GB. These inventory scopes differ. Recover and hash accessible files without asserting that the unavailable original owner inventory was freshly verified. Preserve every existing original byte, never re-crawl historical videos, and record source reuse/redistribution terms as unresolved until established.
 
-## 2. Current status and stage windows
+Historical reports/manifests claim 21,748 accepted transcripts and 23,448 POI-bearing records. Parsing/refusal filtering is not speech accuracy; restored platform POI metadata is not proof of venue presence. Rebuild counts from available inputs and publish field lineage, coverage, unknowns and sampled error. SHA256 verifies bytes, not semantic labels or corpus representativeness. No complete aligned historical audio/comment corpus or verified sponsorship/seeding labels is assumed.
 
-M0.1–M0.3: COMPLETE; M1.1–M1.2: COMPLETE (`70,996` clean videos, `264` creators, `23,448` GPS POIs, `21,748` speech transcripts verified by SHA256 `manifest.json`). M2.1–M2.3: COMPLETE (`391,042`-term NFC BM25 CSR index, frozen `retrieval_v1.json` benchmark at `Recall@10 = 0.7094`, `MRR@10 = 0.8127`, `nDCG@10 = 0.7083`, `p95 = 21.0 ms`, and Grounded Script Engine + Gradio `/demo/`). M3.1–M3.2 contracts, seeding cleanser, 4-aspect ABSA baseline, and Dual-Sink 4-month incremental pipelines are implemented and unit-tested; live 4-month crawl execution (`M3.3`) and Qdrant dense/Whisper batch runs (`M4`–`M6`) remain `NOT_STARTED` for upcoming milestones. Gates `G0`–`G6` remain explicit review checkpoints.
+All production analytics/RAG consume immutable, verified Gold snapshots in `data/corpus/<snapshot-id>/`. Fresh capture is a separate, bounded rolling **120-day operational window**, with its as-of time recorded; 120 days is the implementation rule for the project's approximate four-month stream. Preserve metadata, audio and comments under `data/raw_incremental/`, then publish canonical 49-column video rows and available voice/comment/ABSA tables with lineage. Missing modalities remain missing.
 
-| Stage | AI result | Start window | End window |
+## 2. Status model, workload and sequence
+
+`IN_PROGRESS` means implementation or acceptance repair has begun. `NOT_STARTED` means the revised deliverable has not begun. Gates use `NOT_RUN`, `PASS` or `BLOCKED` according to actual review evidence. A historical implementation assertion is retained in the archived prior plan; it is not a substitute for current acceptance. No new milestone is marked COMPLETE in this rewrite.
+
+| Stage | Evidence at revision time | Revised acceptance status | Indicative window |
 | --- | --- | --- | --- |
-| M0 | Legacy audit, secret hygiene, canonical contracts and API/demo foundation | 16/11/2026 | 18/11/2026 |
-| M1 | Unified Historical Gold Corpus (`71K` videos, `23.4K` GPS POIs) & F&B Taxonomy | 19/11/2026 | 23/11/2026 |
-| M2 | Columnar Niche Micro-Benchmarks, Vietnamese Hybrid RAG & Grounded Script Engine | 24/11/2026 | 30/11/2026 |
-| M3 | Rolling 4-Month Incremental Crawler (`Audio + Comments`) & Dual-Sink Lakehouse | 01/12/2026 | 08/12/2026 |
-| M4 | Whisper Segment Timestamps, Librosa Voice Prosody & Undisclosed PR Detector | 09/12/2026 | 16/12/2026 |
-| M5 | Comment Seeding Cleanser & 4-Aspect KOC-vs-Viewer ABSA Intelligence | 17/12/2026 | 24/12/2026 |
-| M6 | Timestamped Multimodal Voice RAG on Qdrant & End-to-End Verification Release | 28/12/2026 | 08/01/2027 |
+| M0 | Contracts, API/Gradio and scanner exist; packaging/import defects were audited. | IN_PROGRESS; revalidate foundation and recovery. | W1–W2 |
+| M1 | Taxonomy and Gold builder exist; manifests were available, heavy inputs required recovery. | IN_PROGRESS; verify preserved inputs and a new immutable build. | W1–W2 |
+| M2 | Analytics, BM25 and offline drafting exist; metric/guardrail defects and weak qrels were audited. | IN_PROGRESS; correct, reproduce and independently evaluate. | W2–W4 |
+| M3 | Cutoff/audio helpers, authored fixtures and converter exist; live worker is incomplete. | IN_PROGRESS for ingestion repair; acquisition pilot NOT_STARTED. | W5–W6, after G2 |
+| M4 | Proposed audio/prosody and sponsorship-intent research lack required evidence. | NOT_STARTED; hidden-intent target deferred. | W6–W8, after pilot |
+| M5 | Heuristic duplication/spam and lexicon ABSA exist; real-data accuracy/spans are unverified. | IN_PROGRESS for baseline repair; independent evaluation NOT_STARTED. | W6–W9, after pilot |
+| M6 | Qdrant adapter exists; populated dense index, validated timestamped Q&A and hosting are unaccepted. | NOT_STARTED. | W9–W12+, conditional |
 
-## 3. Task definitions
+W1 starts when both contributors have a verified checkout and agree their actual capacity. Windows show sequencing, not committed dates. The historical core through G2 budgets 40 points / 20 days per person. Conditional M3–M6 budget 54 points / 27 days per person. Combined work is roughly ten full working weeks per person before availability, access, retry or research uncertainty; the W1–W12+ horizon permits overlap but does not guarantee the complete research scope in eight weeks. Re-estimate after each pilot/gate; reduce scope or extend time openly rather than silently dropping evaluation.
 
-### M0 — Legacy audit, secret hygiene, canonical contracts and API/demo foundation
+Each task's K/N points include its primary delivery work and the other person's independent checks/integration work. Gate points include evidence assembly, independent review, failure triage and a decision. Task rows are the canonical numerical allocation; [allocation JSON](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/two-person-allocation.json) records the same figures. Both contributors own substantial implementation and evaluation in multiple stages.
 
-#### M0.1 — Audit legacy repository, sanitize secrets and preserve 1.50 GB dataset
-- Window: 16/11/2026; allocation 0.5 day(s).
-- Dependency: START. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE. See [M0.1 report](../reports/milestones/M0.1/README.md).
-- Work: Audit legacy coursework limitations, purge all hardcoded API keys, archive legacy code non-destructively, and verify 100% preservation of all `37,840` data files (`1.50 GB`).
-- Output: Architecture audit (`ReFactor_structure/`), `scripts/check_secrets.py`, preserved `data/` & `archive/legacy_coursework/`.
-- Acceptance: Zero hardcoded keys across workspace; zero original data files deleted or mutated.
+| Task | Primary owner | Peer reviewer | K points | N points | Dependencies / parallel boundary |
+| --- | --- | --- | ---: | ---: | --- |
+| M0.1 | K | N | 6 | 2 | START; input recovery/inventory; parallel M0.2 |
+| M0.2 | N | K | 2 | 4 | START; contracts; parallel M0.1 |
+| M0.3 | K | N | 3 | 3 | M0.2; API packaging and independent demo integration |
+| M0.G | N | K | 2 | 2 | M0.1–M0.3 |
+| M1.1 | N | K | 2 | 4 | M0.2; taxonomy audit parallel M1.2 input recovery |
+| M1.2 | K | N | 7 | 3 | M0.1, M1.1; snapshot publication |
+| M1.G | K | N | 2 | 2 | M0.G, M1.1–M1.2 |
+| M2.1 | N | K | 2 | 6 | M1.2; parallel M2.2 |
+| M2.2 | K | N | 9 | 3 | M1.2; retrieval metrics/judgments |
+| M2.3 | N | K | 3 | 9 | M0.3, M2.1–M2.2; guardrail work may start on fixed fixtures |
+| M2.G | N | K | 2 | 2 | M1.G, M2.1–M2.3 |
+| M3.1 | N | K | 3 | 7 | M1.2; repair may proceed before G2; required before real ingest |
+| M3.2 | K | N | 7 | 3 | M0.G, M3.1; worker can develop on fixtures in parallel |
+| M3.3 | N | K | 4 | 4 | M2.G, M3.1–M3.2; capped shared pilot/integration |
+| M3.G | K | N | 2 | 2 | M3.3; decides additional collection budget |
+| M4.1 | K | N | 9 | 3 | M3.G; CPU/audio evaluation; parallel M5.1–M5.2 |
+| M4.2 | N | K | 1 | 7 | M1.G; observable flags/lexical study; audio only after M4.1 |
+| M4.G | N | K | 2 | 2 | M4.1–M4.2 |
+| M5.1 | N | K | 3 | 9 | M3.G; independent comment annotation |
+| M5.2 | K | N | 9 | 3 | M3.G; aspect annotation can parallel M5.1; filtered gap waits for its labels |
+| M5.G | K | N | 2 | 2 | M5.1–M5.2 |
+| M6.1 | N | K | 3 | 7 | M2.G; optional text-only spike; multimodal acceptance waits for M4.G/M5.G |
+| M6.2 | K | N | 7 | 3 | M4.G, M5.G; M6.1 accepted backend or documented BM25 retention |
+| M6.G | N | K | 2 | 2 | M6.1–M6.2 and all release prerequisites |
+| **Total** | **Shared delivery** | **Reciprocal review** | **94** | **94** | **188 points / 94 person-days; 50% each** |
 
-#### M0.2 — Lock canonical Pydantic v2 contracts and bounded settings
-- Window: 16/11/2026; allocation 0.5 day(s).
-- Dependency: M0.1. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE.
-- Work: Define strict Pydantic v2 schemas (`corpus`, `query`, `analytics`, `retrieval`, `script`, `multimodal`, `errors`), `.env` loader (`AppSettings`), `StageTimer`, and domain exceptions.
-- Output: `packages/common/` and `packages/data_contracts/`.
-- Acceptance: Contract tests validate schema invariants, bounds, and fail-closed error payloads.
+Parallel work uses separate branches and immutable fixture/input versions. Shared contracts, snapshot IDs, query judgments and API fields are agreed before dependent integration. An owner publishes a reviewable change and evidence; the other person reviews it, reproduces its key check and records open findings. Neither person can approve their own task alone. Integrate only accepted changes; unresolved findings block the relevant gate. If actual effort diverges, rebalance remaining delivery and review work jointly and update the arithmetic; no reassignment is based on profile assumptions.
 
-#### M0.3 — Set up FastAPI boundary and ASGI-mounted Gradio `/demo/` workspace
-- Window: 16/11/2026; allocation 0.5 day(s).
-- Dependency: M0.2. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE.
-- Work: Build single-port FastAPI service (`/health/live`, `/health/ready`, `/api/v1/*`) and mount thin Gradio 6 UI at `/demo/` calling FastAPI via in-process ASGI transport.
-- Output: `apps/api/`, `apps/demo/`, `tests/smoke/test_api_and_demo.py`.
-- Acceptance: Smoke suite exercises health, readiness, valid/invalid requests, and `/demo/` HTTP 200 without external network dependency.
+## 3. Task deliverables and measurable acceptance
 
-#### M0.G — G0: foundation, secret hygiene and contract gate review
-- Window: 18/11/2026; allocation 0.5 day(s).
-- Dependency: M0.3. Owner: Trần Đình Khương, AI Engineer.
-- Status: NOT_RUN.
-- Work: Formal gate audit of M0.1–M0.3 deliverables and remaining effort re-estimation.
-- Output: `docs/reports/milestones/M0.G/README.md`.
-- Acceptance: `check_secrets.py`, `mypy`, and contract/smoke suites pass cleanly.
+Every ID below maps to the future or existing canonical report `docs/reports/milestones/<ID>/README.md`. The relative report path is shown as code until its bundle actually begins; do not create empty future bundles. At task start create its `superpowers/spec.md`, `superpowers/plan.md` and `evidence/workflow.md`; record actual skills, authorization, commands, environment, input/code hashes, independent review and outcomes. Task reports/index must agree. The current cross-task recovery bundle may supply linked evidence, but cannot silently close these individual acceptance criteria.
 
-### M1 — Unified Historical Gold Corpus & Vietnamese F&B Taxonomy
+### M0 — recovered foundation
 
-#### M1.1 — Implement 6-axis Vietnamese F&B Taxonomy and GPS POI location resolver
-- Window: 19/11/2026; allocation 1.0 day(s).
-- Dependency: M0.2. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE.
-- Work: Implement GPS POI priority resolver (fixing dish-name vs. district collisions such as *"Bún đậu Hà Nội ở Quận 7"* -> `hồ chí minh`), 5 video formats, 8 food categories, 6 price tiers, 8 occasions, and script anatomy extractor (`hook_text`, `body_beats`, `cta_text`).
-- Output: `packages/taxonomy/`.
-- Acceptance: Unit tests verify location disambiguation, zero-division guards, and script anatomy extraction.
+- **M0.1 — preservation and recovery (IN_PROGRESS).** Report: `../reports/milestones/M0.1/README.md` (existing historical report). Recover permitted historical assets from the pinned source/owner copy; inventory exact path/bytes/SHA256 and compare all pre-existing originals before/after. Keep the 37,837 upstream and 37,840 owner-copy scopes separate. Acceptance: no differing existing original overwritten, provenance/failed/missing assets enumerated, source terms recorded, scanner exits 0; inability to prove an old inventory remains an evidence gap rather than a new preservation claim. N independently checks recovery receipts.
+- **M0.2 — contracts and bounded settings (IN_PROGRESS).** Report: `../reports/milestones/M0.2/README.md`. Revalidate `packages/common/` and `packages/data_contracts/`, explicit missing-key/quota/error payloads, durations and missing/unknown fields. Acceptance: executable contract tests reject malformed/boundary inputs, timings use `ms`, no NaN/Inf escapes, and no credentials enter logs. K reviews API compatibility.
+- **M0.3 — installable API/demo foundation (IN_PROGRESS).** Report: `../reports/milestones/M0.3/README.md`. Align base/demo dependency profiles and Docker source packaging; keep one FastAPI process with ASGI Gradio `/demo/`. Acceptance: clean declared-profile install/import, package/source build, `/health/live`, readiness, valid/invalid API and `/demo/` smoke checks pass without provider calls. Distinguish source-package check from an actual Docker engine/image run if unavailable. N reproduces integration independently.
+- **M0.G — G0 foundation decision (NOT_RUN).** Report: `../reports/milestones/M0.G/README.md`. Acceptance: M0.1–M0.3 evidence reviewed; scanner, project mypy and contract/smoke checks pass on a recorded revision/environment; package limitations explicitly recorded. No live provider or hosting eligibility is inferred.
 
-#### M1.2 — Build immutable Historical Gold Parquet snapshot (`20261116_v1`)
-- Window: 20/11/2026; allocation 1.0 day(s).
-- Dependency: M1.1. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE.
-- Work: Non-destructively join `cleaned_video_info.parquet` (`70,996` rows), `cleaned_user_info.parquet` (`264` creators), `final_raw_videos.csv` (`23,448` GPS POIs, `5,798` `is_ec_video`), `23,122` transcript JSONs (`strict=False` + LLM-refusal filtering -> `21,748` valid speech transcripts), and legacy food/content tables.
-- Output: `pipelines/build_gold_corpus/`, `data/corpus/20261116_v1/{dim_creators.parquet, fact_videos.parquet, manifest.json}`.
-- Acceptance: Startup loader verifies SHA256 checksums fail-closed; exact row/column counts match `manifest.json`.
+### M1 — historical Gold and qualified metadata
 
-#### M1.G — G1: historical Gold corpus and taxonomy provenance gate
-- Window: 23/11/2026; allocation 0.5 day(s).
-- Dependency: M1.2. Owner: Trần Đình Khương, AI Engineer.
-- Status: NOT_RUN.
-- Work: Audit Gold corpus distributions, location coverage, and caveats documentation.
-- Output: `docs/reports/milestones/M1.G/README.md`.
-- Acceptance: Reproducible Gold snapshot build and verified data card.
+- **M1.1 — taxonomy/lineage audit (IN_PROGRESS).** Report: `../reports/milestones/M1.1/README.md`. Verify city/dish disambiguation, safe ratios, anatomy and unknowns; sample 120 stratified records across city/category/transcript availability. Both annotate 30 overlapping records and report agreement/errors; N covers the remaining sample with K's review. Acceptance: per-field source and coverage, sampled error counts/denominators, unknown handling and corrected documentation; no claim that machine labels are ground truth or POIs prove attendance.
+- **M1.2 — immutable historical snapshot (IN_PROGRESS).** Report: `../reports/milestones/M1.2/README.md`. Build a new snapshot ID using `pipelines/build_gold_corpus/`; never overwrite an existing output/base. Acceptance: reject collisions, stage and verify all tables before publication, retain source/parent/code provenance, enforce schema/key counts and SHA256, fail closed on corruption, compare all original bytes. Publish actual metadata/transcript/POI counts with discrepancies; no requirement to reproduce an unverified historical count by force. N verifies a reproducible build/receipt.
+- **M1.G — G1 corpus decision (NOT_RUN).** Report: `../reports/milestones/M1.G/README.md`. Acceptance: G0 passes; M1.1–M1.2 lineage, build, integrity, coverage and qualified data card pass review. Missing source rights blocks public corpus redistribution; a documented local-only demonstration can remain in scope.
 
-### M2 — Columnar Niche Micro-Benchmarks, Hybrid RAG & Grounded Script Engine
+### M2 — accepted historical core
 
-#### M2.1 — Build Columnar Niche Micro-Benchmark Engine
-- Window: 24/11/2026; allocation 1.0 day(s).
-- Dependency: M1.2. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE.
-- Work: Compute empirical niche medians & IQRs (`median_plays`, `duration_q25..q75`, `median_word_per_second`, hashtag IQR, top posting hours, top GPS POI venues) with transparent filter relaxation.
-- Output: `packages/analytics/engine.py`, `POST /api/v1/analytics/niche-benchmark`.
-- Acceptance: Sub-50ms columnar slice aggregation with valid IQR ordering and per-stage `timings_ms`.
+- **M2.1 — descriptive niche benchmarks (IN_PROGRESS).** Report: `../reports/milestones/M2.1/README.md`. Validate quantiles, filter relaxation and sparse-slice abstention in `packages/analytics/`; expose cohort date, observation/capture date where available, support `n` and missingness. Acceptance: hand-checkable aggregates/IQR ordering, zero-division tests, and no optimum/causal/current-trend wording. Record warm/cold p50/p95 over at least 100 fixed requests, hardware and concurrency 1; provisional local p95 budget 250 ms excluding load, with failures reported rather than rewritten as successes. K reviews evidence and wording.
+- **M2.2 — corrected BM25 evaluation and relevance pilot (IN_PROGRESS).** Report: `../reports/milestones/M2.2/README.md`. Preserve old `retrieval_v1.json` as historical; version standard Recall@10 = hits / all relevant documents, Precision@10, MRR@10 and nDCG@10, rankings/qrels/queries, corpus/index/code receipts. Existing 16 keyword-derived queries remain weak-label regression only. Independently author 40 new queries (20 development / 20 locked test) covering synonyms, Vietnamese Unicode, negation, filters and no-answer. Each person authors half; both judge a blinded top-10 pool from BM25 and the phrase-reranked variant, adjudicate disagreements and publish judgment completeness/uncertainty. Recall over that judged pool is qualified as pooled recall, not exhaustive corpus recall; unjudged documents are not verified negatives. Acceptance: hand-calculated metric tests pass, disjoint frozen dev/test and per-query results exist; a provisional test MRR@10 >= 0.60 and nDCG@10 >= 0.50 on answerable queries, no fabricated support for no-answer queries, and CPU p95 <= 500 ms on 100 warm requests. Report failure honestly; never tune on the locked test or force a reranking win. These pilot thresholds qualify this cohort, not population accuracy.
+- **M2.3 — qualified scripts and structural guardrails (IN_PROGRESS).** Report: `../reports/milestones/M2.3/README.md`. Reject empty, uncited required factual content and wrong-duration scripts; never attach arbitrary source IDs. Creative staging is labeled as a draft; remove unsupported firsthand freshness/taste/quality assertions. Acceptance: regressions cover empty/foreign-ID/no-evidence/timing cases; total timeline within max(2 seconds, 5% of requested duration), valid source membership and required-content coverage reported separately. Both review 30 held-out drafts (15 authored queries each), annotate factual claims/source excerpts and creative directions; require zero fabricated IDs, >= 90% supported factual claims and >= 90% factual citation coverage on that sample. Structural tests alone do not establish entailment. Offline works with zero calls; provider-path missing-key/quota/timeout are bounded and <= 2 calls/turn with no paid fallback. K independently reviews guardrail and claim-audit results.
+- **M2.G — G2 historical demonstration decision (NOT_RUN).** Report: `../reports/milestones/M2.G/README.md`. Acceptance: G1 passes; M2.1–M2.3 independently reviewed; full pytest, configured mypy, scanner, clean package/source build and actual recovered-corpus ASGI demo pass at a pinned revision. Include timings, weak-label versus human-judged results and remaining limitations. Passing G2 accepts the narrow historical local core, not multimodal trust, current trends, live collection or public hosting.
 
-#### M2.2 — Build Vietnamese NFC BM25 CSR Index, Qdrant Adapter, RRF & Reranker
-- Window: 25/11/2026 to 26/11/2026; allocation 1.5 day(s).
-- Dependency: M1.2. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE (BM25 + Viral Boost + Phrase/Aspect Reranker verified; live Docker Qdrant dense indexing deferred to M6.1).
-- Work: Build pickle-free CSR Okapi BM25 over `391,042` NFC Vietnamese unigrams/bigrams (`21,748` videos), creator-normalized `viral_multiplier` log-boost, field-aware phrase/aspect reranker, and frozen retrieval evaluation harness.
-- Output: `packages/retrieval/`, `pipelines/build_dense_sparse_index/`, `pipelines/benchmark_retrieval/`, `artifacts/benchmarks/retrieval_v1.json`.
-- Acceptance: `Recall@10 = 0.7094`, `MRR@10 = 0.8127`, `nDCG@10 = 0.7083`, `p95 = 21.0 ms` verified by `tests/eval/test_retrieval_benchmark.py`.
+### M3 — safe ingestion and bounded fresh-data feasibility
 
-#### M2.3 — Build Bounded Grounded Script Engine & Timeline/Cliché Guardrails
-- Window: 27/11/2026 to 30/11/2026; allocation 1.5 day(s).
-- Dependency: M2.1, M2.2. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE.
-- Work: Implement sliding-window RPM `BoundedGeminiClient` (`gemini_free`) + `$0` deterministic `offline_grounded` blueprint synthesizer, exact `mm:ss` beat timeline recalculator from niche `word_per_second`, citation validator, and anti-cliché filter.
-- Output: `packages/llm/`, `packages/script_engine/`, `POST /api/v1/script/generate`.
-- Acceptance: Hallucinated `video_id` citations are stripped, cliché filler phrases are flagged, and missing `GEMINI_API_KEY` returns typed `503 PROVIDER_KEY_MISSING`.
+- **M3.1 — repeated dual-sink ingestion (IN_PROGRESS).** Report: `../reports/milestones/M3.1/README.md`. Repair `pipelines/ingest_incremental_to_gold/` before real capture. Acceptance: A, B, replay, empty batch and explicit same-video transcript/comment enrichment retain/deduplicate keyed video, voice, comment and ABSA rows; base bytes stay identical; collisions fail; only complete verified new snapshots publish. Test missing modalities and interrupted publication. K independently checks base preservation and replay receipts.
+- **M3.2 — actual bounded collector worker (NOT_STARTED; helpers/fixtures exist).** Report: `../reports/milestones/M3.2/README.md`. Implement an invoked discovery/metadata/audio/comment worker with resume, capped retries, per-item failures and idempotent manifests; authored fixture mode stays visibly separate. Acceptance: as-of/cutoff tests enforce the 120-day window and skip every historical ID, manifests distinguish requested/succeeded/failed/skipped, 64 kbps audio conversion is recorded where available, and no historical TikTok recrawl or unlimited discovery occurs. N reviews cutoff, failure and resume behavior before network pilot.
+- **M3.3 — capped capture-to-transcript-to-search pilot (NOT_STARTED).** Report: `../reports/milestones/M3.3/README.md`. Maximum 5 creators, 50 candidate fresh videos, 30 successful videos, 60 audio minutes, 1,000 comments and one bounded two-hour capture session. Limits are ceilings, not guaranteed yield. Both contribute integration and inspect half the successful sample. Produce transcripts for at most 10 videos / 20 audio minutes before searchability acceptance using a measured CPU ASR pilot; full M4 processing follows later. Acceptance: real non-synthetic receipts, coverage/failure rates, actual disk/RAM/time, repeatable ingest and at least 5 real fresh transcribed videos searchable with correct source IDs. Less yield or inaccessible acquisition records BLOCKED with narrower/offline scope; no fake replacement data. No further collection until G3.
+- **M3.G — G3 acquisition/resource decision (NOT_RUN).** Report: `../reports/milestones/M3.G/README.md`. Acceptance: repeated ingest passes and M3.3 meets its minimum vertical slice; measure audio real-time factor (wall seconds / audio seconds), capture yield, comment coverage and annotation time. Estimate further batches from observed throughput plus retry/review cost. Do not expand beyond this pilot without an explicit new bounded budget; if access fails, retain the accepted historical core and defer fresh modules.
 
-### M3 — Rolling 4-Month Incremental Crawler & Dual-Sink Lakehouse
+### M4 — audio-derived evidence and observable promotion indicators
 
-#### M3.1 — Define multimodal Star Schema contracts & Dual-Sink converter
-- Window: 01/12/2026 to 02/12/2026; allocation 1.5 day(s).
-- Dependency: M1.2. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE (scaffold & unit tests verified).
-- Work: Define `RawIncrementalVideoRecord`, `VoiceSegmentRecord` (`fact_voice_segments`), `CommentRecord` (`fact_comments`), and `AbsaComparisonRecord` (`fact_absa_reviews`); implement `pipelines/ingest_incremental_to_gold/` converting fresh 4-month crawls simultaneously into canonical 49-column `fact_videos` AND multimodal trust tables.
-- Output: `packages/data_contracts/multimodal.py`, `pipelines/ingest_incremental_to_gold/`.
-- Acceptance: Fresh incremental batch appends cleanly to `fact_videos.parquet` without mutating historical `data/` files and emits SHA256-verified multimodal tables.
+- **M4.1 — timestamp/prosody CPU evaluation (NOT_STARTED).** Report: `../reports/milestones/M4.1/README.md`. Process only the successful pilot audio (<= 60 minutes); select <= 20 minutes and at least 50 utterances for two-person reference review. Measure ASR CER/WER with stated tokenization, boundary absolute error, real-time factor and peak RAM/disk. Enforce `0 <= start < end <= media_duration`; label ASR boundaries `audio_derived` estimates and historical interpolation `wps_estimated`, never exact speech timing. Acceptance: 100% temporal invariants/source resolvability, median manually checked boundary error <= 1 second and p95 <= 3 seconds; if unmet, abstain from precise playback claims. Pilot processing budget <= 4 CPU hours and <= 8 GiB peak RAM; exceeding it triggers model/sample reduction. Prosody is descriptive; it is not intent evidence. N reviews references/errors.
+- **M4.2 — observed disclosure/commerce and promotional language (NOT_STARTED; undisclosed sponsorship deferred).** Report: `../reports/milestones/M4.2/README.md`. Separate observed `is_ad`/commerce flags from lexical promotional indicators; retain unknowns. Review 100 historical texts (50 per person; 30 double-reviewed) for explicitly observable wording/flags, errors and domain differences. Acceptance: no output calls flag prediction a probability of undisclosed sponsorship; no unlabeled item is treated as a verified negative, no flag-derived feature leakage and no historical-prosody join without audio. A classifier is optional only after a target/data decision and grouped held-out evaluation; report PR-AUC/Brier only for genuinely labeled targets. Hidden-intent training stays deferred without independently verified sponsorship ground truth. K checks target validity and report claims.
+- **M4.G — G4 audio/target decision (NOT_RUN).** Report: `../reports/milestones/M4.G/README.md`. Acceptance: timestamp quality/resource limits and observed-target wording meet M4.1–M4.2 criteria, or specific features abstain and remain unaccepted. A gate cannot convert disclosed-ad flags into undisclosed-sponsorship labels.
 
-#### M3.2 — Implement Rolling 4-Month Incremental Crawler (`Metadata + 64kbps Audio + Comments`)
-- Window: 03/12/2026 to 04/12/2026; allocation 1.5 day(s).
-- Dependency: M3.1. Owner: Trần Đình Khương, AI Engineer.
-- Status: COMPLETE (CLI & cutoff filter implemented; live network crawl scheduled in M3.3).
-- Work: Build `pipelines/crawl_incremental/` enforcing a strict `120-day` rolling cutoff (`create_time >= now - 120d`) and skipping any `video_id` already present in the historical `70,996` corpus; extract `yt-dlp` audio-only `.mp3` (`~500 KB`) and top viewer comments into `data/raw_incremental/`.
-- Output: `pipelines/crawl_incremental/`.
-- Acceptance: Historical videos older than 4 months are strictly skipped; incremental batches persist resumable JSONL manifests.
+### M5 — independently evaluated comment/aspect diagnostics
 
-#### M3.3 — Execute 4-month fresh F&B cohort capture & build Gold Corpus `v2`
-- Window: 07/12/2026 to 08/12/2026; allocation 1.5 day(s).
-- Dependency: M3.2. Owner: Trần Đình Khương, AI Engineer.
-- Status: NOT_STARTED.
-- Work: Run `pipelines.crawl_incremental` across active Vietnamese F&B creators for the past 4 months, execute `pipelines.ingest_incremental_to_gold`, and rebuild BM25/Qdrant indexes over combined historical + fresh corpus.
-- Output: `data/corpus/<v2-snapshot>/` and M3.3 ingestion report.
-- Acceptance: Zero historical re-crawling; fresh 4-month videos searchable in RAG Script Engine and populated in `fact_comments`.
+- **M5.1 — duplicate/contact/noise indicators (IN_PROGRESS; existing heuristic baseline).** Report: `../reports/milestones/M5.1/README.md`. Preserve originals and reasons; use observable duplicate, contact/link and noise labels. Do not assert bots, payment, coordinated seeding or verified diner identity. Independently sample up to 300 real pilot comments (minimum 150 for a quality gate), double-annotate them with written guidelines, keep ambiguous/unknown intent and adjudicate disagreements. Split by video/thread before tuning. Acceptance: report class counts, agreement, per-class precision/recall/F1 and bootstrap uncertainty on a frozen held-out third; automated filtering requires macro precision >= 0.85 and recall >= 0.60 for these observable classes, otherwise show diagnostic flags without filtering. K reviews label leakage, organic-duplicate false positives and filter sensitivity.
+- **M5.2 — four-aspect sentiment with source spans (IN_PROGRESS; existing lexicon baseline).** Report: `../reports/milestones/M5.2/README.md`. Preserve aspect presence/unknown separately from observed neutral, comment/utterance IDs, offsets and support counts for Taste, Price, Hygiene and Service. Compare creator speech and comments only on supported overlapping aspects; call the result a sentiment discrepancy, not deception, hygiene truth or diner consensus. Double-annotate <= 200 text units across >= 10 videos from the pilot (minimum 120 units); freeze video-disjoint development/held-out partitions before tuning. Acceptance: aspect detection macro-F1 >= 0.65, sentiment macro-F1 >= 0.60 on observed aspects, per-aspect coverage/class counts, >= 95% audited source-span validity; unsupported/low-support comparisons abstain (minimum 3 comments for an aspect summary). Publish before/after-filter gaps and threshold sensitivity. N reviews missing-aspect behavior, annotations and exact source resolution; model/Gemini agreement alone is not gold truth.
+- **M5.G — G5 trust-diagnostic decision (NOT_RUN).** Report: `../reports/milestones/M5.G/README.md`. Acceptance: independently annotated data, real sample provenance, uncertainty, spans, abstention and filter sensitivity meet M5.1–M5.2 criteria. Insufficient real data or quality keeps automatic trust claims/filtering unaccepted; baseline demonstrations must display those limits.
 
-### M4 — Whisper Segment Timestamps, Librosa Voice Prosody & Undisclosed PR Detector
+### M6 — optional neural retrieval and final local release
 
-#### M4.1 — CPU Whisper segment timestamping & Librosa voice prosody extraction
-- Window: 09/12/2026 to 11/12/2026; allocation 2.0 day(s).
-- Dependency: M3.3. Owner: Trần Đình Khương, AI Engineer.
-- Status: NOT_STARTED.
-- Work: Run `faster-whisper` (`int8` CPU) on 4-month `.mp3` audio for exact `start_sec..end_sec` utterance segments alongside `Librosa` (`pitch_std`, `energy_cv`, `pause_ratio`); backfill sentence-level `wps_estimated` segments for the `21,748` historical transcripts.
-- Output: Populated `fact_voice_segments.parquet` (`whisper_exact` + `wps_estimated`).
-- Acceptance: Every indexed utterance resolves to `[video_id, start_sec, end_sec, timestamp_source]`.
+- **M6.1 — measured dense/hybrid comparison (NOT_STARTED).** Report: `../reports/milestones/M6.1/README.md`. Select one CPU-feasible embedding model and at most 5,000 eligible text/segment records for a measured pilot, with a populated versioned index and identical corpus/filter/query parity across BM25, dense and RRF. Reuse the frozen human-judged M2 test without tuning; add fresh timestamped questions only with independently judged evidence. Acceptance: report paired nDCG/MRR differences and uncertainty, index bytes/build time, RAM and p50/p95; provisional warm retrieval p95 <= 1,000 ms / peak RAM <= 8 GiB. Keep the simplest backend if dense/hybrid has no justified quality/resource gain. Hybrid superiority is an empirical question, not a required positive result. K reviews parity and cost evidence; unpopulated adapters are not completed hybrid retrieval.
+- **M6.2 — source-resolving Q&A/demo integration (NOT_STARTED).** Report: `../reports/milestones/M6.2/README.md`. Integrate only accepted capabilities into typed APIs and the one Gradio UI, using accepted BM25 if neural gain is absent. Evaluate 30 held-out questions including >= 10 no-answer/insufficient-evidence cases; both inspect every answer's IDs/spans and temporal provenance. Acceptance: 100% source identity/resolution and no fabricated timestamps; >= 95% factual citation coverage, >= 90% supported factual claims, 100% bounded insufficient-evidence behavior on the 10 no-answer cases; no interpolated offset presented as audio-exact. Record total/stage latency, offline request p95 <= 5 seconds excluding artifact startup on 30 repetitions, hardware and concurrency 1; generation/provider timing is separate. N reviews integration and error states.
+- **M6.G — G6 release and hosting decision (NOT_RUN).** Report: `../reports/milestones/M6.G/README.md`. Acceptance: all released features have passing prior gates, current full tests/mypy/scanner/package checks, reproducible CPU setup, valid reports/links/hashes and unresolved issues listed. Local demonstration is the baseline. Public hosting is a separate conditional decision requiring current documented eligibility for a genuinely free tier with no paid-plan prerequisite/add-on/overage/automatic upgrade, resolved source redistribution/privacy, measured artifact/RAM/storage/cold-start fit and honest sleep/quota limits. No accepted candidate means public hosting BLOCKED, not a failed historical core or an assumed deployment. Provider model/project eligibility and actual quota are checked immediately before optional free live use; offline remains sufficient for release.
 
-#### M4.2 — Supervised Undisclosed Sponsorship / PR Detector (`4,779` `is_ad` labels)
-- Window: 14/12/2026 to 16/12/2026; allocation 2.0 day(s).
-- Dependency: M4.1. Owner: Trần Đình Khương, AI Engineer.
-- Status: NOT_STARTED.
-- Work: Train and calibrate a lightweight CPU classifier using the `4,779` `is_ad=True` and `5,798` `is_ec_video=True` historical disclosures plus prosody/lexical features to score `undisclosed_pr_risk` on unlabelled restaurant reviews.
-- Output: Model card, evaluation metrics (`ROC-AUC`, `PR-AUC`, `Brier`), and `packages/absa/` integration.
-- Acceptance: Held-out creator-split evaluation reported honestly without data leakage.
+## 4. Gate decisions and interpretation
 
-### M5 — Comment Seeding Cleanser & 4-Aspect KOC-vs-Viewer ABSA Intelligence
+| Gate | Own report ID | Required decision | Current result |
+| --- | --- | --- | --- |
+| G0 | M0.G | Foundation, secret hygiene, contracts, packaging, API/demo | NOT_RUN |
+| G1 | M1.G | Preserved accessible sources, immutable Gold, qualified lineage | NOT_RUN |
+| G2 | M2.G | Correct metrics, independent pilot judgments, structural/claim audit, real-data historical demo | NOT_RUN |
+| G3 | M3.G | Bounded real capture-to-transcript-to-search and measured capacity | NOT_RUN |
+| G4 | M4.G | Audio timing/provenance and observable promotion target | NOT_RUN |
+| G5 | M5.G | Qualified comment/aspect diagnostics on independent real labels | NOT_RUN |
+| G6 | M6.G | Accepted feature set, reproducible local release; separate hosting eligibility | NOT_RUN |
 
-#### M5.1 — Comment Seeding & Bot Clustering Cleanser
-- Window: 17/12/2026 to 18/12/2026; allocation 1.5 day(s).
-- Dependency: M3.1. Owner: Trần Đình Khương, AI Engineer.
-- Status: IN_PROGRESS (lexical/shingle baseline + API live in `packages/seeding/`; ONNX `BGE-M3` dense clustering upgrade in M5.1b).
-- Work: Detect template seeding bursts, phone/link spam, and semantic near-duplicate comments (`is_seeding`, `seeding_reason`, `cluster_id`).
-- Output: `packages/seeding/`, `fact_comments.parquet` cleansing metrics.
-- Acceptance: Precision/Recall evaluated on manually audited Vietnamese TikTok comment slice.
+Every threshold is a prospective pilot acceptance rule, not a measured result or universal scientific claim. Small samples produce broad uncertainty; publish denominators, exclusions and disagreements. Gate failure is a result to preserve. A complete research evaluation, causal viral uplift, real-time trend forecasting, actual diner consensus, hidden sponsorship detection and bot coordination are not promised by this demonstration.
 
-#### M5.2 — 4-Aspect F&B ABSA (`Taste`, `Price`, `Hygiene`, `Service`) & `PR Hype Gap`
-- Window: 21/12/2026 to 24/12/2026; allocation 2.5 day(s).
-- Dependency: M5.1. Owner: Trần Đình Khương, AI Engineer.
-- Status: IN_PROGRESS (lexicon baseline + `/api/v1/trust/audit-video` + Gradio Tab 4 live; batched Gemini Flash structured calibration in M5.2b).
-- Work: Score KOC spoken transcript vs. non-seeding viewer comments across 4 F&B aspects, compute `pr_hype_gap`, and feed negative viewer pain-points back into `GroundedScriptEngine`.
-- Output: `packages/absa/`, `fact_absa_reviews.parquet`, frozen ABSA Macro-F1 evaluation.
-- Acceptance: `PR Hype Gap` highlights KOC-vs-viewer discrepancies with exact comment/utterance citations.
+## 5. Cost, handoff and provenance
 
-### M6 — Timestamped Multimodal Voice RAG on Qdrant & End-to-End Release
+Authorized provider/GPU/hosting spend is **USD 0**. The default workflow is CPU/offline; online synthesis, if separately run within scope, uses only an eligible owner Gemini free-tier project, at most two calls per turn with a conservative sliding-window limiter and explicit missing-key/quota/provider errors. Never treat a hardcoded model or RPM value as a guaranteed current entitlement; fail closed and keep credentials solely in gitignored `.env`. No automatic paid fallback, upgrade or paid inference.
 
-#### M6.1 — Populate Docker Qdrant Hybrid Collections (`utterance_segments` + `clean_reviews`)
-- Window: 28/12/2026 to 31/12/2026; allocation 2.5 day(s).
-- Dependency: M4.1, M5.2. Owner: Trần Đình Khương, AI Engineer.
-- Status: NOT_STARTED.
-- Work: Index dense (`multilingual-e5-base` / `BGE-M3`) + sparse vectors into Qdrant with payload filters (`city_norm`, `food_category`, `price_tier`, `is_seeding=False`) and benchmark `BM25` vs `Dense` vs `Hybrid RRF`.
-- Output: Qdrant indexing pipeline and `retrieval_v2.json` benchmark report.
-- Acceptance: Hybrid retrieval outperforms standalone BM25 on semantic/synonym Vietnamese F&B queries.
-
-#### M6.2 — Timestamped Voice & Review Q&A Assistant + Final Gate `G6`
-- Window: 04/01/2027 to 08/01/2027; allocation 3.0 day(s).
-- Dependency: M6.1. Owner: Trần Đình Khương, AI Engineer.
-- Status: NOT_STARTED.
-- Work: Serve grounded diner/creator Q&A returning `[🎬 @handle | mm:ss-mm:ss]` citations alongside clean viewer consensus; complete reproducible release bundle and `M6.G` gate review.
-- Output: `/api/v1/chat/timestamped-rag`, updated Gradio `/demo/`, and `M6.G` report.
-- Acceptance: Citation completeness `>= 95%`, zero fabricated timestamps, `$0` Free-Tier compliance verified.
-
-## 4. AI acceptance gates
-
-| Gate | Acceptance | Task |
-| --- | --- | --- |
-| G0 | Secret hygiene (`0` leaks), strict Pydantic contracts, single-port FastAPI + Gradio `/demo/` smoke verified. | M0.G |
-| G1 | `1.50 GB` upstream preservation, `70,996`-row SHA256 Gold corpus, and GPS POI disambiguation verified. | M1.G |
-| G2 | Niche Micro-Benchmarks, Vietnamese BM25/RRF retrieval (`MRR@10 >= 0.75`), and Grounded Script Guardrails verified. | M2.G |
-| G3 | Rolling 4-month incremental capture appends cleanly to Gold corpus without re-crawling historical videos. | M3.G |
-| G4 | Utterance timestamps (`whisper_exact` + `wps_estimated`) and Undisclosed PR Detector calibrated on held-out creators. | M4.G |
-| G5 | Comment Seeding Cleanser and 4-aspect KOC-vs-Viewer ABSA (`PR Hype Gap`) verified on audited F&B benchmarks. | M5.G |
-| G6 | Qdrant Hybrid Timestamped Voice RAG, full test pyramid, and `$0` Free-Tier demonstration bundle verified. | M6.G |
-
-## 5. AI capability traceability
-
-| Capability | Active tasks | Expected evidence |
-| --- | --- | --- |
-| Foundation & Secret Hygiene | M0.1, M0.2, M0.3 | `check_secrets.py`, Pydantic v2 contracts, ASGI smoke tests |
-| Historical Gold Lakehouse | M1.1, M1.2 | `20261116_v1/manifest.json`, `23,448` GPS POIs, `21,748` transcripts |
-| Niche Analytics & Script RAG | M2.1, M2.2, M2.3 | `retrieval_v1.json`, `mm:ss` pacing guardrails, cited scripts |
-| 4-Month Dual-Sink Ingestion | M3.1, M3.2, M3.3 | `pipelines/crawl_incremental/`, `pipelines/ingest_incremental_to_gold/` |
-| Voice Prosody & PR Detection | M4.1, M4.2 | `fact_voice_segments.parquet`, `is_ad` calibrated classifier |
-| Seeding & KOC-vs-Viewer ABSA | M5.1, M5.2 | `packages/seeding/`, `packages/absa/`, `POST /api/v1/trust/audit-video` |
-| Timestamped Multimodal RAG | M6.1, M6.2 | Qdrant hybrid collections, `[mm:ss]` grounded citations |
-
-## 6. Planning decisions
-
-| Decision | Current rule |
-| --- | --- |
-| Scope | One AI Engineer implements and demonstrates AI modules; no CRUD accounts, login, or backend handoff docs. |
-| Historical Data (`1.50 GB`) | Strictly read-only, never re-crawled, gitignored from remote, served via SHA256-verified Gold Parquet snapshots. |
-| Fresh Data (`4-Month Window`) | Crawl only `create_time >= now - 120 days`; normalize into both `fact_videos` (for RAG) and multimodal trust tables. |
-| Cost & Secrets | `USD 0` spend cap; `GEMINI_API_KEY` in `.env` only; `<= 2` LLM calls/turn; deterministic `$0` offline modes always available. |
-| Reporting | Every started milestone task follows `AGENTS.md` (`docs/reports/milestones/<TASK-ID>/{README.md, evidence/, superpowers/}`) in English. |
+Historical plan/resource/refactor text was copied byte-for-byte before this revision to the recovery task's [evidence archive](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/prior-plan-preservation.json). [Rewrite notes](../reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/plan-rewrite-notes.md) explain scope choices, actual workflow and validation. Earlier audit/report assertions are not backdated or silently overwritten. The [execution companion](../../ReFactor_structure/04_IMPLEMENTATION_PLAN.md) points to this plan; this file is authoritative if legacy refactor documents disagree.
