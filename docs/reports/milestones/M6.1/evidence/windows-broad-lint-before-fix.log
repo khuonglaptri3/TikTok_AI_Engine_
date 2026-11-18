@@ -1,0 +1,115 @@
+UP017 [*] Use `datetime.UTC` alias
+   --> pipelines\crawl_incremental\__main__.py:117:62
+    |
+115 |     if args.seed_demo_batch:
+116 |         records = [
+117 |             r for r in _build_seed_demo_records(datetime.now(timezone.utc)) if r.video_id not in existing_ids
+    |                                                              ^^^^^^^^^^^^
+118 |         ]
+119 |         out_file = write_incremental_batch(records, args.output_dir)
+    |
+help: Convert to `datetime.UTC` alias
+    |
+4   | import json
+    - from datetime import datetime, timedelta, timezone
+5   + from datetime import datetime, timedelta, timezone, UTC
+6   | from pathlib import Path
+--------------------------------------------------------------------------------
+116 |         records = [
+    -             r for r in _build_seed_demo_records(datetime.now(timezone.utc)) if r.video_id not in existing_ids
+117 +             r for r in _build_seed_demo_records(datetime.now(UTC)) if r.video_id not in existing_ids
+118 |         ]
+    |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> pipelines\crawl_incremental\crawler_service.py:13:41
+   |
+12 | def compute_cutoff_utc(reference_now: datetime | None = None, window_days: int = 120) -> datetime:
+13 |     now = reference_now or datetime.now(timezone.utc)
+   |                                         ^^^^^^^^^^^^
+14 |     if now.tzinfo is None:
+15 |         now = now.replace(tzinfo=timezone.utc)
+   |
+help: Convert to `datetime.UTC` alias
+   |
+4  | import subprocess
+   - from datetime import datetime, timedelta, timezone
+5  + from datetime import datetime, timedelta, timezone, UTC
+6  | from pathlib import Path
+--------------------------------------------------------------------------------
+12 | def compute_cutoff_utc(reference_now: datetime | None = None, window_days: int = 120) -> datetime:
+   -     now = reference_now or datetime.now(timezone.utc)
+13 +     now = reference_now or datetime.now(UTC)
+14 |     if now.tzinfo is None:
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> pipelines\crawl_incremental\crawler_service.py:15:34
+   |
+13 |     now = reference_now or datetime.now(timezone.utc)
+14 |     if now.tzinfo is None:
+15 |         now = now.replace(tzinfo=timezone.utc)
+   |                                  ^^^^^^^^^^^^
+16 |     return now - timedelta(days=max(1, window_days))
+   |
+help: Convert to `datetime.UTC` alias
+   |
+4  | import subprocess
+   - from datetime import datetime, timedelta, timezone
+5  + from datetime import datetime, timedelta, timezone, UTC
+6  | from pathlib import Path
+--------------------------------------------------------------------------------
+14 |     if now.tzinfo is None:
+   -         now = now.replace(tzinfo=timezone.utc)
+15 +         now = now.replace(tzinfo=UTC)
+16 |     return now - timedelta(days=max(1, window_days))
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> pipelines\crawl_incremental\crawler_service.py:26:68
+   |
+24 |     try:
+25 |         if isinstance(create_time_iso, (int, float)) or str(create_time_iso).isdigit():
+26 |             dt = datetime.fromtimestamp(float(create_time_iso), tz=timezone.utc)
+   |                                                                    ^^^^^^^^^^^^
+27 |         else:
+28 |             dt = datetime.fromisoformat(str(create_time_iso).replace("Z", "+00:00"))
+   |
+help: Convert to `datetime.UTC` alias
+   |
+4  | import subprocess
+   - from datetime import datetime, timedelta, timezone
+5  + from datetime import datetime, timedelta, timezone, UTC
+6  | from pathlib import Path
+--------------------------------------------------------------------------------
+25 |         if isinstance(create_time_iso, (int, float)) or str(create_time_iso).isdigit():
+   -             dt = datetime.fromtimestamp(float(create_time_iso), tz=timezone.utc)
+26 +             dt = datetime.fromtimestamp(float(create_time_iso), tz=UTC)
+27 |         else:
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> pipelines\crawl_incremental\crawler_service.py:30:40
+   |
+28 |             dt = datetime.fromisoformat(str(create_time_iso).replace("Z", "+00:00"))
+29 |             if dt.tzinfo is None:
+30 |                 dt = dt.replace(tzinfo=timezone.utc)
+   |                                        ^^^^^^^^^^^^
+31 |         return dt >= cutoff_utc
+32 |     except Exception:
+   |
+help: Convert to `datetime.UTC` alias
+   |
+4  | import subprocess
+   - from datetime import datetime, timedelta, timezone
+5  + from datetime import datetime, timedelta, timezone, UTC
+6  | from pathlib import Path
+--------------------------------------------------------------------------------
+29 |             if dt.tzinfo is None:
+   -                 dt = dt.replace(tzinfo=timezone.utc)
+30 +                 dt = dt.replace(tzinfo=UTC)
+31 |         return dt >= cutoff_utc
+   |
+
+Found 5 errors.
+[*] 5 fixable with `--fix`.

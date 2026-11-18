@@ -54,3 +54,8 @@ tests/unit/test_taxonomy_and_corpus.py -text
 apps/api/app/routers/health.py -text
 packages/llm/clients/gemini.py -text
 tests/unit/test_llm_call_budget.py -text
+packages/common/resources.py -text
+pipelines/build_dense_sparse_index/dense.py -text
+pipelines/benchmark_retrieval/dense_hybrid_pilot.py -text
+tests/unit/test_resource_measurements.py -text
+pipelines/crawl_incremental/crawler_service.py -text

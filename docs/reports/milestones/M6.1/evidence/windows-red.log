@@ -1,0 +1,131 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0
+rootdir: C:\Users\lanph\OneDrive\Desktop\TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 8 items
+
+tests\unit\test_resource_measurements.py FFFFFFFF                        [100%]
+
+================================== FAILURES ===================================
+________ test_dense_pipelines_import_when_unix_resource_is_unavailable ________
+tests\unit\test_resource_measurements.py:25: in test_dense_pipelines_import_when_unix_resource_is_unavailable
+    assert result.returncode == 0, result.stderr
+E   AssertionError: Traceback (most recent call last):
+E       File "<string>", line 9, in <module>
+E       File "<string>", line 7, in no_resource
+E       File "C:\Users\lanph\OneDrive\Desktop\TikTok_AI_Engine_\pipelines\build_dense_sparse_index\dense.py", line 7, in <module>
+E         import resource
+E       File "<string>", line 6, in no_resource
+E     ModuleNotFoundError: resource intentionally unavailable
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpN5KzYQ\\Scripts\\python.exe', '-c'...import resource\n  File "<string>", line 6, in no_resource\nModuleNotFoundError: resource intentionally unavailable\n').returncode
+_________________ test_windows_peak_bytes_are_reported_in_mib _________________
+tests\unit\test_resource_measurements.py:29: in test_windows_peak_bytes_are_reported_in_mib
+    module = importlib.import_module("packages.common.resources")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'packages.common.resources'
+___________________ test_linux_peak_kib_are_reported_in_mib ___________________
+tests\unit\test_resource_measurements.py:36: in test_linux_peak_kib_are_reported_in_mib
+    module = importlib.import_module("packages.common.resources")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'packages.common.resources'
+______ test_invalid_native_measurements_raise_instead_of_faking_zero[-1] ______
+tests\unit\test_resource_measurements.py:49: in test_invalid_native_measurements_raise_instead_of_faking_zero
+    module = importlib.import_module("packages.common.resources")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'packages.common.resources'
+_____ test_invalid_native_measurements_raise_instead_of_faking_zero[nan] ______
+tests\unit\test_resource_measurements.py:49: in test_invalid_native_measurements_raise_instead_of_faking_zero
+    module = importlib.import_module("packages.common.resources")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'packages.common.resources'
+_____ test_invalid_native_measurements_raise_instead_of_faking_zero[inf] ______
+tests\unit\test_resource_measurements.py:49: in test_invalid_native_measurements_raise_instead_of_faking_zero
+    module = importlib.import_module("packages.common.resources")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'packages.common.resources'
+__________________ test_native_measurement_error_propagates ___________________
+tests\unit\test_resource_measurements.py:57: in test_native_measurement_error_propagates
+    module = importlib.import_module("packages.common.resources")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'packages.common.resources'
+___________ test_current_process_has_a_real_finite_peak_measurement ___________
+tests\unit\test_resource_measurements.py:69: in test_current_process_has_a_real_finite_peak_measurement
+    module = importlib.import_module("packages.common.resources")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'packages.common.resources'
+=========================== short test summary info ===========================
+FAILED tests/unit/test_resource_measurements.py::test_dense_pipelines_import_when_unix_resource_is_unavailable
+FAILED tests/unit/test_resource_measurements.py::test_windows_peak_bytes_are_reported_in_mib
+FAILED tests/unit/test_resource_measurements.py::test_linux_peak_kib_are_reported_in_mib
+FAILED tests/unit/test_resource_measurements.py::test_invalid_native_measurements_raise_instead_of_faking_zero[-1]
+FAILED tests/unit/test_resource_measurements.py::test_invalid_native_measurements_raise_instead_of_faking_zero[nan]
+FAILED tests/unit/test_resource_measurements.py::test_invalid_native_measurements_raise_instead_of_faking_zero[inf]
+FAILED tests/unit/test_resource_measurements.py::test_native_measurement_error_propagates
+FAILED tests/unit/test_resource_measurements.py::test_current_process_has_a_real_finite_peak_measurement
+============================== 8 failed in 0.32s ==============================

@@ -1,5 +1,9 @@
 # M0.G (G0) — Execution Plan
 
+## Owner-selected integration repair and merge — 2026-11-18
+
+Follow [M6.1's repair plan](../../M6.1/superpowers/plan.md), revalidate G0 on the final integrated source, update the report/index and PR3 to reflect current passing results, and merge through the PR after checks and review. Record actual GitHub merge/main verification separately from formal G0 acceptance. The user's latest instruction explicitly supersedes the earlier draft-only publication boundary; no additional merge permission is required.
+
 ## GitHub publication plan — 2026-11-18
 
 **Goal:** Publish the reviewed G0 repair on a distinct branch and PR after checking the repository's actual branch workflow.

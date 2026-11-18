@@ -2,6 +2,10 @@
 
 - **Task ID:** `M0.G` (Gate `G0`)
 
+## Authorized integration repair and PR merge — 2026-11-18
+
+The owner now explicitly authorizes fixing the M6.1 Windows blocker, updating/readying PR3 and merging the completed work into main after verification. The implementation plan and resource-measurement criteria are owned by [M6.1's spec](../../M6.1/superpowers/spec.md) and [plan](../../M6.1/superpowers/plan.md). G0 reports must reflect fresh integrated results without rewriting previous failed evidence or automatically setting formal G0 PASS.
+
 ## Owner-authorized GitHub publication — 2026-11-18
 
 The owner requested pushing the verified G0 repairs and checking Gitflow compliance. Publish the existing authorized source/tests/report evidence on a new bounded fix branch, with a reviewable pull request; preserve the owner's pending G0 decision.

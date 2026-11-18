@@ -1,0 +1,223 @@
+{
+  "checked_at": "2026-11-18T10:45:03.948096+00:00",
+  "status": "PASS",
+  "formal_gate": "NOT_RUN",
+  "scientific_m6_1": "IN_PROGRESS",
+  "source_sha256": {
+    "packages/common/resources.py": "13fcf66e3128dc37c1df8ed74bac2113667b3f211cbfccb6cfc6e6e8d7052cbe",
+    "pipelines/build_dense_sparse_index/dense.py": "3c4abf35526533f812e8b9f4c5dae4df3283034e53de52a918485988d7d22319",
+    "pipelines/benchmark_retrieval/dense_hybrid_pilot.py": "ead11bbb23750b6ec3a60bbb72431c7baa7bdb0415a493e45b974469789d99ed",
+    "tests/unit/test_resource_measurements.py": "644e73406cab472b948910e2bcf87fbaafedc93bdee848cd8c5220e766bffa86",
+    "packages/common/settings/__init__.py": "2ef8a4a25eac3733f2481bf29dac6d842a3cb565997bb1972f9397f9477791cc",
+    "packages/llm/clients/gemini.py": "22c76f0af290de43708c8a614e8d8594613b0d7eb66bcfe5c654d68ec26d5daa",
+    "apps/api/app/routers/health.py": "784e13ed2570efeba8affb4d8e498bb8a82c1e4a675e5840b166abad8c599b02",
+    "packages/retrieval/sparse/bm25.py": "d1dbf705c1490de50e38df5f57f0fbd7fccabf349e1db1e72f544979ef04b1f0",
+    "tests/unit/test_llm_call_budget.py": "c339e527e48dcc16792c0eced584af7aae5d5fc5eb298000f204516a70d2d5c3",
+    "pipelines/crawl_incremental/__main__.py": "088e4ec4f8eb432b385627d02e06cb58ff3fa78f7b5d24d33c7c2d2feb7ef673",
+    "pipelines/crawl_incremental/crawler_service.py": "4c352a8c2ca5a4571b97ff87be82b5d279f9b8ef10b8b798e2da13ff1f5c5664"
+  },
+  "checks": [
+    {
+      "name": "all_required_checks_green",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "check_log_hashes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "exact_tested_source",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "runtime_source_parity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "package_source_parity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "runtime_green",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "clean_package_install",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "zero_live_provider_spend",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "runtime_gold_index_bytes_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unrelated_original_logs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "M0.G_bundle_layout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "M0.G_planning_layout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "M0.G_index_status",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "M0.G_planning_links",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "M6.1_bundle_layout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "M6.1_planning_layout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "M6.1_index_status",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "M6.1_planning_links",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "formal_g0_pending",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "current_document_links",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "regression_red_green",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "reviewed_source_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "protected_paths_unchanged",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "authorized_change_scope",
+      "passed": true,
+      "detail": [
+        ".gitattributes",
+        "docs/reports/milestones/M0.G/README.md",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-clean-venv.log",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-docker-info.log",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-docker-version.log",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-installed-asgi.log",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-installed-pip-check.log",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-package-results.json",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-runtime-receipt.json",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-runtime.log",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-wheel-build.log",
+        "docs/reports/milestones/M0.G/evidence/merge-before-final-source/merge-wheel-install.log",
+        "docs/reports/milestones/M0.G/evidence/merge-clean-venv.log",
+        "docs/reports/milestones/M0.G/evidence/merge-docker-info.log",
+        "docs/reports/milestones/M0.G/evidence/merge-docker-version.log",
+        "docs/reports/milestones/M0.G/evidence/merge-installed-asgi.log",
+        "docs/reports/milestones/M0.G/evidence/merge-installed-pip-check.log",
+        "docs/reports/milestones/M0.G/evidence/merge-package-results.json",
+        "docs/reports/milestones/M0.G/evidence/merge-package.py",
+        "docs/reports/milestones/M0.G/evidence/merge-pr-body.md",
+        "docs/reports/milestones/M0.G/evidence/merge-probe.py",
+        "docs/reports/milestones/M0.G/evidence/merge-runtime-receipt.json",
+        "docs/reports/milestones/M0.G/evidence/merge-runtime.log",
+        "docs/reports/milestones/M0.G/evidence/merge-wheel-build.log",
+        "docs/reports/milestones/M0.G/evidence/merge-wheel-install.log",
+        "docs/reports/milestones/M0.G/evidence/report-before-authorized-merge.md",
+        "docs/reports/milestones/M0.G/superpowers/plan.md",
+        "docs/reports/milestones/M0.G/superpowers/spec.md",
+        "docs/reports/milestones/M6.1/README.md",
+        "docs/reports/milestones/M6.1/evidence/report-before-windows-fix.md",
+        "docs/reports/milestones/M6.1/evidence/windows-artifact-hashes.json",
+        "docs/reports/milestones/M6.1/evidence/windows-baseline.json",
+        "docs/reports/milestones/M6.1/evidence/windows-broad-lint-before-fix.log",
+        "docs/reports/milestones/M6.1/evidence/windows-check-results.json",
+        "docs/reports/milestones/M6.1/evidence/windows-code-review.md",
+        "docs/reports/milestones/M6.1/evidence/windows-contract-smoke.log",
+        "docs/reports/milestones/M6.1/evidence/windows-green.log",
+        "docs/reports/milestones/M6.1/evidence/windows-handoff.json",
+        "docs/reports/milestones/M6.1/evidence/windows-handoff.py",
+        "docs/reports/milestones/M6.1/evidence/windows-initial-verification/windows-check-results.json",
+        "docs/reports/milestones/M6.1/evidence/windows-initial-verification/windows-contract-smoke.log",
+        "docs/reports/milestones/M6.1/evidence/windows-initial-verification/windows-mypy-linux-target.log",
+        "docs/reports/milestones/M6.1/evidence/windows-initial-verification/windows-mypy.log",
+        "docs/reports/milestones/M6.1/evidence/windows-initial-verification/windows-pip-check.log",
+        "docs/reports/milestones/M6.1/evidence/windows-initial-verification/windows-pytest-full.log",
+        "docs/reports/milestones/M6.1/evidence/windows-initial-verification/windows-ruff.log",
+        "docs/reports/milestones/M6.1/evidence/windows-initial-verification/windows-secrets.log",
+        "docs/reports/milestones/M6.1/evidence/windows-mypy-linux-target.log",
+        "docs/reports/milestones/M6.1/evidence/windows-mypy.log",
+        "docs/reports/milestones/M6.1/evidence/windows-pip-check.log",
+        "docs/reports/milestones/M6.1/evidence/windows-pytest-full.log",
+        "docs/reports/milestones/M6.1/evidence/windows-red.log",
+        "docs/reports/milestones/M6.1/evidence/windows-ruff.log",
+        "docs/reports/milestones/M6.1/evidence/windows-run-checks.py",
+        "docs/reports/milestones/M6.1/evidence/windows-secrets-final.log",
+        "docs/reports/milestones/M6.1/evidence/windows-secrets.log",
+        "docs/reports/milestones/M6.1/evidence/workflow.md",
+        "docs/reports/milestones/M6.1/superpowers/plan.md",
+        "docs/reports/milestones/M6.1/superpowers/spec.md",
+        "docs/reports/milestones/README.md",
+        "packages/common/resources.py",
+        "pipelines/benchmark_retrieval/dense_hybrid_pilot.py",
+        "pipelines/build_dense_sparse_index/dense.py",
+        "pipelines/crawl_incremental/__main__.py",
+        "pipelines/crawl_incremental/crawler_service.py",
+        "tests/unit/test_resource_measurements.py"
+      ]
+    },
+    {
+      "name": "current_runner_syntax",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final_secret_scan",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "english_authored_prose",
+      "passed": true,
+      "detail": null
+    }
+  ]
+}
