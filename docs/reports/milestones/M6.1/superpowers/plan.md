@@ -24,8 +24,8 @@ Files: M6.1/G0 current reports, existing canonical spec/plan/workflow evidence, 
 - [x] Run complete pytest, contract/smoke, configured mypy, required Ruff including changed code/tests, source secret scan and pip check. Run asserting G0 probe and clean wheel/installed-ASGI verification. Expected: all required checks exit0 on the same source hashes.
 - [x] Request one fresh-context read-only review; resolve material findings through one RED/GREEN fix pass and revalidate affected source. Do not fabricate human K/N sign-off.
 - [x] Update both canonical reports/index and PR title/body to the final implementation, preserving dated failed receipts and scientific limitations. Validate report layout/links, source scope, hashes and protected originals.
-- [ ] Run the required secret scanner before every commit; stage only authorized source/test/report/attribute paths, commit conventionally and push normally. Reconfirm main has not advanced incompatibly.
-- [ ] Mark PR3 ready and merge with a merge commit after required verification. Fetch remote main, verify the merged tree/source hashes and full tests on main, then record actual merge/remote state and synchronize local main without force/reset or unrelated file loss.
+- [x] Run the required secret scanner before every commit; stage only authorized source/test/report/attribute paths, commit conventionally and push normally. Reconfirm main has not advanced incompatibly.
+- [x] Mark PR3 ready and merge with a merge commit after required verification. Fetch remote main, verify the merged tree/source hashes and full tests on main, then record actual merge/remote state and synchronize local main without force/reset or unrelated file loss.
 
 The user explicitly authorized the final PR merge. A successful merge does not by itself set G0 PASS or complete M6.1's human relevance/scientific gates.
 
@@ -44,3 +44,5 @@ The user explicitly authorized the final PR merge. A successful merge does not b
    - Run targeted unit tests -> `ruff` -> `mypy packages apps pipelines` -> full `pytest -v`.
    - Build `artifacts/indexes/dense-svd-v1` (`<= 5,000` records from `20261117_recovered_v1`) and run `dense_hybrid_pilot` (`artifacts/benchmarks/m6_1_dense_hybrid_spike.json`), recording build time, bytes, peak RAM, 100-req warm p50/p95, and paired bootstrap deltas.
 4. **Documentation & Cleanliness:** Author `M6.1/evidence/workflow.md`, `M6.1/README.md`, update `docs/reports/milestones/README.md`, and run `scripts/check_secrets.py`.
+
+Verified integration outcome (2026-11-18): PR3 merged at eb43b0df3d46007b7550de8f4314dc2dbca9c51f; post-merge full main verification 120 passed in 58.09s. A documentation-only follow-up persists those actual receipts; final branch/main identities are checked externally after its merge. Formal G0 and scientific task decisions stay unchanged.

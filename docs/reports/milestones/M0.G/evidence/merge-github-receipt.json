@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-11-18T10:45:57.844723+00:00",
+  "source_commit": "af5be92bf48433688c47c97b03ecaccc5d8fcb5b",
+  "base_before_merge": "ad7eb92f76cddbfa8526bb16d53f8d7f8db30810",
+  "pr_url": "https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3",
+  "state": "closed",
+  "draft": false,
+  "merged": true,
+  "merged_at": "2026-11-18T10:45:57Z",
+  "merge_commit_sha": "eb43b0df3d46007b7550de8f4314dc2dbca9c51f",
+  "formal_g0": "NOT_RUN",
+  "scientific_m6_1": "IN_PROGRESS",
+  "source_sha256": {
+    "packages/common/resources.py": "13fcf66e3128dc37c1df8ed74bac2113667b3f211cbfccb6cfc6e6e8d7052cbe",
+    "pipelines/build_dense_sparse_index/dense.py": "3c4abf35526533f812e8b9f4c5dae4df3283034e53de52a918485988d7d22319",
+    "pipelines/benchmark_retrieval/dense_hybrid_pilot.py": "ead11bbb23750b6ec3a60bbb72431c7baa7bdb0415a493e45b974469789d99ed",
+    "tests/unit/test_resource_measurements.py": "644e73406cab472b948910e2bcf87fbaafedc93bdee848cd8c5220e766bffa86",
+    "packages/common/settings/__init__.py": "2ef8a4a25eac3733f2481bf29dac6d842a3cb565997bb1972f9397f9477791cc",
+    "packages/llm/clients/gemini.py": "22c76f0af290de43708c8a614e8d8594613b0d7eb66bcfe5c654d68ec26d5daa",
+    "apps/api/app/routers/health.py": "784e13ed2570efeba8affb4d8e498bb8a82c1e4a675e5840b166abad8c599b02",
+    "packages/retrieval/sparse/bm25.py": "d1dbf705c1490de50e38df5f57f0fbd7fccabf349e1db1e72f544979ef04b1f0",
+    "tests/unit/test_llm_call_budget.py": "c339e527e48dcc16792c0eced584af7aae5d5fc5eb298000f204516a70d2d5c3",
+    "pipelines/crawl_incremental/__main__.py": "088e4ec4f8eb432b385627d02e06cb58ff3fa78f7b5d24d33c7c2d2feb7ef673",
+    "pipelines/crawl_incremental/crawler_service.py": "4c352a8c2ca5a4571b97ff87be82b5d279f9b8ef10b8b798e2da13ff1f5c5664"
+  }
+}

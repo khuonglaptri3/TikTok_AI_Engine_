@@ -1,0 +1,81 @@
+[
+  {
+    "command": [
+      "git",
+      "push",
+      "origin",
+      "fix/g0-call-budget-and-lint"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "To https://github.com/khuonglaptri3/TikTok_AI_Engine_\n   40c457e2..af5be92b  fix/g0-call-budget-and-lint -> fix/g0-call-budget-and-lint\n"
+  },
+  {
+    "command": [
+      "gh",
+      "pr",
+      "edit",
+      "3",
+      "--repo",
+      "khuonglaptri3/TikTok_AI_Engine_",
+      "--title",
+      "fix: enforce G0 limits and restore Windows CPU integration",
+      "--body-file",
+      "docs\\reports\\milestones\\M0.G\\evidence\\merge-pr-body.md"
+    ],
+    "exit_code": 0,
+    "stdout": "https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "gh",
+      "pr",
+      "ready",
+      "3",
+      "--repo",
+      "khuonglaptri3/TikTok_AI_Engine_"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "\u2713 Pull request khuonglaptri3/TikTok_AI_Engine_#3 is marked as \"ready for review\"\n"
+  },
+  {
+    "command": [
+      "gh",
+      "api",
+      "repos/khuonglaptri3/TikTok_AI_Engine_/pulls/3"
+    ],
+    "exit_code": 0,
+    "stdout": "Structured PR metadata summarized in merge-github-receipt.json.",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "gh",
+      "pr",
+      "merge",
+      "3",
+      "--repo",
+      "khuonglaptri3/TikTok_AI_Engine_",
+      "--merge",
+      "--match-head-commit",
+      "af5be92bf48433688c47c97b03ecaccc5d8fcb5b",
+      "--subject",
+      "Merge pull request #3: verified CPU integration and Windows compatibility"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "gh",
+      "api",
+      "repos/khuonglaptri3/TikTok_AI_Engine_/pulls/3"
+    ],
+    "exit_code": 0,
+    "stdout": "Structured PR metadata summarized in merge-github-receipt.json.",
+    "stderr": ""
+  }
+]

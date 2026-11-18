@@ -94,3 +94,5 @@ Review tasks describe completed investigation, not passing product acceptance: G
 Remediation outcome (2026-11-18): both G0-REV-1 and G0-REV-2 are resolved in the source-hash-pinned local tree; all required checks are green. The earlier unresolved/HOLD wording is retained as dated review history. Current formal gate status remains NOT_RUN for owner decision.
 
 Publication outcome: source/evidence commit 7abcd6e5635134395eedbcb8c8055957b351ca55 was pushed and draft PR #3 opened against main. A documentation-only receipt follow-up is included in the publication handoff; final remote identity is checked after its push outside that self-referential commit. Current full-suite/mypy failures remain explicitly reported and G0 remains NOT_RUN.
+
+Verified integration outcome (2026-11-18): PR3 merged at eb43b0df3d46007b7550de8f4314dc2dbca9c51f; post-merge full main verification 120 passed in 58.09s. A documentation-only follow-up persists those actual receipts; final branch/main identities are checked externally after its merge. Formal G0 and scientific task decisions stay unchanged.

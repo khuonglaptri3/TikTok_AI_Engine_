@@ -57,6 +57,16 @@ def main() -> int:
         check(name + "_planning_links", all(t in report for t in ("superpowers/spec.md", "superpowers/plan.md", "evidence/workflow.md")))
         docs += [bundle / "README.md", bundle / "superpowers/spec.md", bundle / "superpowers/plan.md", bundle / "evidence/workflow.md"]
     check("formal_g0_pending", "- Gate result: NOT_RUN" in (G0 / "README.md").read_text(encoding="utf-8"))
+    main_receipt = OUT / "main-verification.json"
+    merge_receipt = G0 / "evidence/merge-github-receipt.json"
+    if main_receipt.exists() and merge_receipt.exists():
+        post = read(main_receipt)
+        merged = read(merge_receipt)
+        check("actual_pr3_merge_confirmed", merged["merged"] and not merged["draft"] and merged["state"] == "closed")
+        check("postmerge_full_suite_passed", post["pytest_exit"] == 0 and post["source_matches_premerge_verification"])
+        check("postmerge_source_parity", post["source_sha256"] == source and merged["source_sha256"] == source)
+        check("postmerge_log_hash", sha(OUT / post["log"]) == post["log_sha256"])
+        check("verified_main_ancestry", subprocess.run(["git", "merge-base", "--is-ancestor", post["head"], "HEAD"], cwd=ROOT).returncode == 0)
     broken = []
     generated = {OUT / "windows-handoff.json", OUT / "windows-artifact-hashes.json"}
     for document in docs + [OUT / "windows-code-review.md"]:
