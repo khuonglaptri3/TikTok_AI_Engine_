@@ -1,0 +1,1068 @@
+{
+  "started_at": "2026-11-18T09:11:34.742999+00:00",
+  "checks": [
+    {
+      "name": "git_blob_identity:data/corpus/20261117_recovered_v1/dim_creators.parquet",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "git_blob_identity:data/corpus/20261117_recovered_v1/fact_videos.parquet",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "git_blob_identity:data/corpus/20261117_recovered_v1/manifest.json",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "git_blob_identity:data/corpus/20261118_taxonomy_fix_v1/dim_creators.parquet",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "git_blob_identity:data/corpus/20261118_taxonomy_fix_v1/fact_videos.parquet",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "git_blob_identity:data/corpus/20261118_taxonomy_fix_v1/manifest.json",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "git_blob_identity:artifacts/indexes/bm25-v2/bm25-receipt.json",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "git_blob_identity:artifacts/indexes/bm25-v2/bm25_csr.npz",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "git_blob_identity:artifacts/indexes/bm25-v2/video_ids.json",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "git_blob_identity:artifacts/indexes/bm25-v2/vocab.json",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "snapshot:20261117_recovered_v1",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "videos": 70996,
+        "creators": 264,
+        "columns": 49,
+        "snapshot_id": "20261117_recovered_v1"
+      }
+    },
+    {
+      "name": "snapshot:20261118_taxonomy_fix_v1",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "videos": 70996,
+        "creators": 264,
+        "columns": 49,
+        "snapshot_id": "20261118_taxonomy_fix_v1"
+      }
+    },
+    {
+      "name": "live",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "readiness",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": "ready",
+        "corpus_snapshot_id": "20261117_recovered_v1",
+        "total_creators": 264,
+        "total_videos": 70996,
+        "indexed_bm25_videos": 21748,
+        "poi_tagged_videos": 23448,
+        "qdrant_dense_ready": false,
+        "qdrant_points": 0,
+        "gemini_key_configured": false
+      }
+    },
+    {
+      "name": "demo",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": 200,
+        "html_bytes": 67856
+      }
+    },
+    {
+      "name": "index_membership",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "http:benchmark",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": 200,
+        "expected_status": 200,
+        "code": null,
+        "wall_ms": 30.679
+      }
+    },
+    {
+      "name": "benchmark_finite_ms",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "filter_ms": 3.33,
+        "aggregate_ms": 10.49,
+        "total_ms": 13.89
+      }
+    },
+    {
+      "name": "http:search",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": 200,
+        "expected_status": 200,
+        "code": null,
+        "wall_ms": 23.969
+      }
+    },
+    {
+      "name": "search_finite_ms",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "filter_ms": 0.01,
+        "bm25_ms": 3.48,
+        "fusion_ms": 0.13,
+        "rerank_ms": 12.05,
+        "total_ms": 16.01
+      }
+    },
+    {
+      "name": "search_source_membership",
+      "passed": true,
+      "blocking": true,
+      "detail": [
+        "7392429774674693384",
+        "7403713555456920833",
+        "7369941510579588359",
+        "7434508279344139528",
+        "7475992859783482642"
+      ]
+    },
+    {
+      "name": "http:draft",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": 200,
+        "expected_status": 200,
+        "code": null,
+        "wall_ms": 808.258
+      }
+    },
+    {
+      "name": "draft_finite_ms",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "domain_gate_ms": 0.83,
+        "benchmark_ms": 14.69,
+        "retrieval_ms": 784.45,
+        "blueprint_synthesis_ms": 0.33,
+        "guardrail_ms": 0.17,
+        "total_ms": 800.56
+      }
+    },
+    {
+      "name": "draft_source_membership",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "draft_qualification",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "draft_guardrail",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "passed": true,
+        "estimated_duration_sec": 45.1,
+        "target_duration_sec": 45.0,
+        "duration_delta_sec": 0.1,
+        "total_words": 176,
+        "valid_citations_ratio": 1.0,
+        "cliche_phrases_detected": [],
+        "warnings": [
+          "Kiểm tra cấu trúc, mã nguồn và thời lượng; chưa xác minh nội dung từng nhận định với nguồn."
+        ],
+        "citation_coverage_ratio": 1.0,
+        "timing_valid": true,
+        "grounding_verified": false,
+        "validation_scope": "structure_citations_timing"
+      }
+    },
+    {
+      "name": "http:missing_key",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": 503,
+        "expected_status": 503,
+        "code": "PROVIDER_KEY_MISSING",
+        "wall_ms": 682.851
+      }
+    },
+    {
+      "name": "http:out_of_domain",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": 422,
+        "expected_status": 422,
+        "code": "UNSUPPORTED_DOMAIN",
+        "wall_ms": 5.614
+      }
+    },
+    {
+      "name": "http:blank_query",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": 422,
+        "expected_status": 422,
+        "code": null,
+        "wall_ms": 6.341
+      }
+    },
+    {
+      "name": "http:short_duration",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": 422,
+        "expected_status": 422,
+        "code": null,
+        "wall_ms": 12.805
+      }
+    },
+    {
+      "name": "http:dense_unavailable",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "status": 503,
+        "expected_status": 503,
+        "code": "INDEX_NOT_READY",
+        "wall_ms": 632.762
+      }
+    },
+    {
+      "name": "zero_provider_calls",
+      "passed": true,
+      "blocking": true,
+      "detail": 0
+    },
+    {
+      "name": "quoted_secret_redaction",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "traceback_stack_redaction",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    },
+    {
+      "name": "default_two_call_budget_control",
+      "passed": true,
+      "blocking": true,
+      "detail": {
+        "configured_budget": 2,
+        "turn_calls_used": 2,
+        "mock_sdk_calls": 0
+      }
+    },
+    {
+      "name": "policy_configuration_rejects_above_two",
+      "passed": false,
+      "blocking": true,
+      "detail": "AppSettings(max_llm_calls_per_turn=3) must be rejected under the project-wide <=2 rule."
+    },
+    {
+      "name": "policy_third_call_blocked",
+      "passed": false,
+      "blocking": true,
+      "detail": {
+        "configured_budget": 3,
+        "turn_calls_used": 2,
+        "mock_sdk_calls": 1,
+        "actual_network_calls": 0
+      }
+    },
+    {
+      "name": "runtime_bytes_preserved",
+      "passed": true,
+      "blocking": true,
+      "detail": null
+    }
+  ],
+  "head": "c6c36131d2750b33fcede38871656e7c0ae703fc",
+  "live_provider_calls": 0,
+  "fake_provider_calls": 1,
+  "provider_spend_usd": 0,
+  "scope": "Independent local CPU/offline G0 review",
+  "runtime_sha256_before": {
+    "data/corpus/20261117_recovered_v1/dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+    "data/corpus/20261117_recovered_v1/fact_videos.parquet": "1bfc6c6f819b4c0176345029e5ae4e630a4e9c0438c89548aab893e1d30c1ecd",
+    "data/corpus/20261117_recovered_v1/manifest.json": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+    "data/corpus/20261118_taxonomy_fix_v1/dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+    "data/corpus/20261118_taxonomy_fix_v1/fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3",
+    "data/corpus/20261118_taxonomy_fix_v1/manifest.json": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
+    "artifacts/indexes/bm25-v2/bm25-receipt.json": "97fdeb649d267e31114fb6d7eccea927c713fac34e8d2ca1178f363e8f825ccb",
+    "artifacts/indexes/bm25-v2/bm25_csr.npz": "184728bd872aa25d1512d149bedcf4421cae91b0faa856fb04fa11f1a63cb205",
+    "artifacts/indexes/bm25-v2/video_ids.json": "0af8ecbc4527086616359495b39a9d81a2334cbeb15dbbdb6b6fa69660a71cee",
+    "artifacts/indexes/bm25-v2/vocab.json": "ab18f0979b5624186b10f04470d03b0bbfc6d6345f1ea3bd6e08cd3a95934ffc"
+  },
+  "endpoint_responses": {
+    "benchmark": {
+      "matched_videos": 9631,
+      "transcribed_videos": 3187,
+      "poi_tagged_videos": 9323,
+      "median_plays": 77600.0,
+      "p75_plays": 210300.0,
+      "median_engagement_rate": 0.03909,
+      "duration_q25_sec": 37.0,
+      "duration_median_sec": 63.0,
+      "duration_q75_sec": 80.0,
+      "median_word_per_second": 5.06,
+      "hashtag_q25": 5,
+      "hashtag_q75": 9,
+      "top_hashtags": [
+        "ancungtiktok",
+        "learnontiktok",
+        "reviewanngon",
+        "vtmgr",
+        "food",
+        "foodreview",
+        "longervideos",
+        "foodtiktok"
+      ],
+      "top_posting_hours": [
+        {
+          "hour": 14,
+          "video_count": 580,
+          "median_plays": 97150.0,
+          "median_engagement_rate": 0.03262
+        },
+        {
+          "hour": 17,
+          "video_count": 925,
+          "median_plays": 96500.0,
+          "median_engagement_rate": 0.04209
+        },
+        {
+          "hour": 15,
+          "video_count": 537,
+          "median_plays": 88800.0,
+          "median_engagement_rate": 0.04663
+        },
+        {
+          "hour": 16,
+          "video_count": 525,
+          "median_plays": 85500.0,
+          "median_engagement_rate": 0.04047
+        }
+      ],
+      "top_poi_venues": [
+        "Gò Vấp",
+        "District 1",
+        "Bình Thạnh",
+        "District 10",
+        "District 3",
+        "District 5"
+      ],
+      "applied_filters": {
+        "video_format": "Review quán ăn",
+        "city_norm": "hồ chí minh"
+      },
+      "timings_ms": {
+        "filter_ms": 3.33,
+        "aggregate_ms": 10.49,
+        "total_ms": 13.89
+      },
+      "cohort_window_start": "2023-11-25",
+      "cohort_window_end": "2025-03-19",
+      "observation_snapshot": "2025-03/04 single-snapshot capture (manifest 2026-11-17)",
+      "sparse_slice_abstained": false,
+      "missingness": {
+        "transcript_missing_pct": 66.91,
+        "poi_missing_pct": 3.2,
+        "city_missing_pct": 0.0,
+        "price_unspecified_pct": 69.18
+      }
+    },
+    "search": {
+      "query": "bánh mì thịt nướng Sài Gòn",
+      "mode": "bm25",
+      "reranked": true,
+      "total_candidates": 40,
+      "relaxed_filters": [],
+      "items": [
+        {
+          "rank": 1,
+          "score": 1.3352,
+          "lexical_score": 47.2258,
+          "rerank_score": 1.3352,
+          "citation": {
+            "video_id": "7392429774674693384",
+            "author_handle": "mioanh91",
+            "tiktok_url": "https://www.tiktok.com/@mioanh91/video/7392429774674693384",
+            "play_count": 5100000,
+            "viral_multiplier": 9.3321,
+            "engagement_rate": 0.0403
+          },
+          "video_format": "Mukbang",
+          "food_category": "Lẩu & Nướng",
+          "dishes": [
+            "bánh mì thịt nướng",
+            "bò nướng",
+            "thịt heo nướng",
+            "pate",
+            "bơ",
+            "bánh mì",
+            "thịt nướng"
+          ],
+          "city_norm": null,
+          "district_norm": null,
+          "poi_name": null,
+          "price_tier": "unspecified",
+          "occasions": [
+            "an_vat_xe_chieu"
+          ],
+          "duration_sec": 176,
+          "duration_bucket": "long_gt90s",
+          "hook_text": "Ăn bánh mì thịt nướng, Samchi với anh nha mọi người.",
+          "body_beats": [
+            "Giới thiệu bánh mì thịt nướng Samchi có bò và heo.",
+            "Liệt kê thành phần bánh mì: pate, bơ, thịt heo, bò.",
+            "Nhấn mạnh độ thơm ngon, béo ngậy của bánh mì.",
+            "Thực hiện ăn thử và bày tỏ cảm xúc thích thú."
+          ],
+          "cta_text": "Wow!",
+          "transcript_excerpt": "Ăn bánh mì thịt nướng, Samchi với anh nha mọi người. Bò nướng. Đây thịt bò và thịt heo luôn. Trong đây là pate và bơ nha mọi người. Đây là thịt heo nè. Thơm lắm mọi người ơi. Huyển ăn món này á. Huyển chưa ăn bao giờ. Bơ và bơ tơ rất là béo luôn. Ngon lắm mọi người. Thịt nó thơm gì đâu luôn á. Bò nướng. Thơm lắm. Rồi, ..."
+        },
+        {
+          "rank": 2,
+          "score": 1.282,
+          "lexical_score": 43.3854,
+          "rerank_score": 1.282,
+          "citation": {
+            "video_id": "7403713555456920833",
+            "author_handle": "gauvlogs1997",
+            "tiktok_url": "https://www.tiktok.com/@gauvlogs1997/video/7403713555456920833",
+            "play_count": 4200000,
+            "viral_multiplier": 7.7448,
+            "engagement_rate": 0.046603
+          },
+          "video_format": "Review quán ăn",
+          "food_category": "Lẩu & Nướng",
+          "dishes": [
+            "bánh mì thịt nướng",
+            "bánh mì",
+            "thịt nướng",
+            "cà phê"
+          ],
+          "city_norm": "đà lạt",
+          "district_norm": "đức trọng",
+          "poi_name": null,
+          "price_tier": "unspecified",
+          "occasions": [
+            "an_vat_xe_chieu"
+          ],
+          "duration_sec": 216,
+          "duration_bucket": "long_gt90s",
+          "hook_text": "Trời, anh em biết đây là cái món gì không? Bánh mì thịt nướng Thảo Huyền ở Đức Trọng nha anh em.",
+          "body_beats": [
+            "Giới thiệu bánh mì thịt nướng Thảo Huyền ở Đức Trọng.",
+            "Di chuyển xa để mua bánh mì, nhấn mạnh độ ngon.",
+            "Nhấn mạnh vị ngon của bánh mì và ớt sim.",
+            "Quảng cáo cà phê sức khỏe Laura Coffee của Nhật Kim Anh.",
+            "Nhấn mạnh công dụng giúp tỉnh táo, thoải mái đầu óc.",
+            "Đề cập đến nấm linh chi và đông trùng hạ thảo."
+          ],
+          "cta_text": "mà anh em, còn được kết hợp với lại nấm linh chi và đông trùng hạ thảo nó bảo sao không tốt cho sức khỏe.",
+          "transcript_excerpt": "Trời, anh em biết đây là cái món gì không? Bánh mì thịt nướng Thảo Huyền ở Đức Trọng nha anh em. Trời ơi, mình phải chạy xuống Đức Trọng 30 cây số mới mua được ổ bánh mì này anh em ơi. Ổ bánh mì này số một Lâm Đồng luôn. Ăn bánh mì là phải có ớt sim. Mời anh em. Ưm. Wow. Ưm. Ngon quá. Ưm. Tuyệt vời. Khuy này lại có một..."
+        },
+        {
+          "rank": 3,
+          "score": 1.2541,
+          "lexical_score": 40.3641,
+          "rerank_score": 1.2541,
+          "citation": {
+            "video_id": "7369941510579588359",
+            "author_handle": "cohenvoithanhxuan",
+            "tiktok_url": "https://www.tiktok.com/@cohenvoithanhxuan/video/7369941510579588359",
+            "play_count": 2100000,
+            "viral_multiplier": 39.2891,
+            "engagement_rate": 0.002489
+          },
+          "video_format": "Review quán ăn",
+          "food_category": "Món nước & Sợi",
+          "dishes": [
+            "bánh mì",
+            "bánh mì thịt chả",
+            "bánh mì xíu mại",
+            "bánh mì que",
+            "bánh mì bò lá lốt",
+            "bánh mì kem",
+            "ốc"
+          ],
+          "city_norm": "hồ chí minh",
+          "district_norm": null,
+          "poi_name": "Le Van Tam Park",
+          "price_tier": "unspecified",
+          "occasions": [
+            "tu_tap_ban_be"
+          ],
+          "duration_sec": 105,
+          "duration_bucket": "long_gt90s",
+          "hook_text": "dành cho những ai chưa biết thì lễ hội bánh mì Việt Nam lần thứ ba đang diễn ra sôi động ngay tại công viên Lê Văn Tám Sài Gòn nè mọi...",
+          "body_beats": [
+            "Lễ hội bánh mì Việt Nam lần thứ ba diễn ra tại công viên Lê Văn Tám Sài Gòn, giới thiệu nhiều loại bánh mì và thương hiệu lâu đời.",
+            "Giá cả tại lễ hội được công khai, tạo điều kiện cho khách tham quan thoải mái lựa chọn.",
+            "Ngoài bánh mì, lễ hội còn có các gian hàng bánh quê và ăn vặt khác, mang đến sự đa dạng cho người tham dự."
+          ],
+          "cta_text": "Cuối tuần này mọi người tranh thủ ghé ha.",
+          "transcript_excerpt": "dành cho những ai chưa biết thì lễ hội bánh mì Việt Nam lần thứ ba đang diễn ra sôi động ngay tại công viên Lê Văn Tám Sài Gòn nè mọi người ơi. Tôi may mắn được nhận lời mời của Vitamin Network nên là hôm nay cũng đã có mặt tại đây luôn. Mà mọi người có công nhận với tôi, bánh mì Việt Nam là một trong số những món ăn r..."
+        },
+        {
+          "rank": 4,
+          "score": 1.2334,
+          "lexical_score": 45.6106,
+          "rerank_score": 1.2334,
+          "citation": {
+            "video_id": "7434508279344139528",
+            "author_handle": "dung.thch.n",
+            "tiktok_url": "https://www.tiktok.com/@dung.thch.n/video/7434508279344139528",
+            "play_count": 614200,
+            "viral_multiplier": 2.2449,
+            "engagement_rate": 0.033553
+          },
+          "video_format": "Mukbang",
+          "food_category": "Lẩu & Nướng",
+          "dishes": [
+            "bánh mì thịt nướng",
+            "bánh mì",
+            "thịt nướng",
+            "cà phê"
+          ],
+          "city_norm": null,
+          "district_norm": null,
+          "poi_name": null,
+          "price_tier": "unspecified",
+          "occasions": [
+            "an_vat_xe_chieu"
+          ],
+          "duration_sec": 138,
+          "duration_bucket": "long_gt90s",
+          "hook_text": "Mời mọi người ăn bánh mì thịt nướng cùng với nha.",
+          "body_beats": [
+            "Bánh mì thịt nướng là món ăn yêu thích và được ăn thường xuyên.",
+            "Cà phê Laura được yêu thích vì hương vị thơm ngon, đậm đà và không gây say.",
+            "Sản phẩm cà phê có chứa đông trùng hạ thảo và nấm linh chi, được đánh giá cao về hương vị."
+          ],
+          "cta_text": "Quá ngon mọi người ơi.",
+          "transcript_excerpt": "Mời mọi người ăn bánh mì thịt nướng cùng với nha. Bữa giờ mọi người tự nhiên thèm bánh mì ăn bánh mì suốt luôn. Siêu nhiều thịt luôn đó mọi người.\n\nTrời ơi, đã.\n\nÀ, thiếu thiếu cái gì đó. Laura cà phê của ca sĩ Nhạc Kim Anh. ng lại mới mua thêm hai hộp nữa nè mọi người. Không biết là hộp thứ bao nhiêu luôn rồi á. Vẫn l..."
+        },
+        {
+          "rank": 5,
+          "score": 1.223,
+          "lexical_score": 51.5545,
+          "rerank_score": 1.223,
+          "citation": {
+            "video_id": "7475992859783482642",
+            "author_handle": "didausaigon",
+            "tiktok_url": "https://www.tiktok.com/@didausaigon/video/7475992859783482642",
+            "play_count": 16600,
+            "viral_multiplier": 0.1509,
+            "engagement_rate": 0.04006
+          },
+          "video_format": "Review quán ăn",
+          "food_category": "Lẩu & Nướng",
+          "dishes": [
+            "bánh mì",
+            "ốc",
+            "thịt nướng"
+          ],
+          "city_norm": "hồ chí minh",
+          "district_norm": null,
+          "poi_name": "District 1",
+          "price_tier": "unspecified",
+          "occasions": [
+            "an_vat_xe_chieu"
+          ],
+          "duration_sec": 59,
+          "duration_bucket": "medium_45_90s",
+          "hook_text": "Bánh mì là món ăn quốc dân từ Bắc vào Nam mà ai cũng mê.",
+          "body_beats": [
+            "Tiệm bánh mì ngon và chất lượng tại Quận 1, có nhiều loại bánh mì đặc biệt.",
+            "Nguyên liệu tươi ngon, thịt nướng làm tại chỗ, đảm bảo vệ sinh và hương vị tự nhiên.",
+            "Nhân viên nhiệt tình, không gian quán thoải mái, có bàn ghế cho khách ngồi lại."
+          ],
+          "cta_text": "Thời gian và địa điểm tôi để đây cho mấy bà dễ tham khảo nè.",
+          "transcript_excerpt": "Bánh mì là món ăn quốc dân từ Bắc vào Nam mà ai cũng mê. Nay tôi vừa kiếm được một tiệm bánh mì vừa ngon vừa chất lượng tại Quận 1 đây. Cực thích bánh mì theo kiểu miền Trung có chan thêm nước mắm ngọt vậy nè. Quầy bếp sạch sẽ, thịt nướng tới đâu, bán tới đó và hoàn toàn là đồ nhà làm. Tôi gọi ba ổ, một là bánh mì Hội ..."
+        }
+      ],
+      "timings_ms": {
+        "filter_ms": 0.01,
+        "bm25_ms": 3.48,
+        "fusion_ms": 0.13,
+        "rerank_ms": 12.05,
+        "total_ms": 16.01
+      }
+    },
+    "draft": {
+      "generation_mode": "offline_grounded",
+      "model_used": "offline_evidence_blueprint_v1",
+      "hook_options": [
+        "Nếu quay về ốc tại Hồ Chí Minh, bạn muốn kiểm tra hương vị hay mức giá trước?",
+        "Cùng lên ý tưởng tìm hiểu ốc: cần ghi lại điều gì để người xem tự đánh giá?",
+        "Mở đầu tham khảo từ kho @anngongovap: 'Về đây với, cùng tình yêu khát khao'"
+      ],
+      "caption_draft": "Bản nháp về ốc tại Hồ Chí Minh, lấy ý tưởng từ nguồn tham khảo lịch sử; cần kiểm chứng trước khi quay.",
+      "recommended_hashtags": [
+        "ancungtiktok",
+        "foodreview",
+        "bachtuotsotthai",
+        "learnontiktok",
+        "foodfestontiktok",
+        "goitaiheo"
+      ],
+      "setting": "Không gian trải nghiệm thực tế tại Hồ Chí Minh, ưu tiên bàn gần nguồn sáng tự nhiên.",
+      "persona_tone": "Bản nháp sáng tạo; tách nguồn tham khảo và nhận xét cần trải nghiệm thực tế",
+      "beats": [
+        {
+          "section_title": "1. Hook mở đầu (0-5s giữ chân)",
+          "time_range": "00:00-00:11",
+          "visual_angle": "3 giây đầu: cận cảnh 45 độ món chính vừa bốc khói đặt xuống bàn trước khi quay mặt người",
+          "dialogue": "Nguồn cũ: \"Về đây với, cùng tình yêu khát khao\" Hôm nay mình lên ý tưởng tìm hiểu ốc tại Hồ Chí Minh. Khi quay thực tế, mình sẽ ghi lại món ăn và bảng giá trước khi đưa ra nhận xét. Bạn muốn",
+          "word_count": 44,
+          "cited_video_ids": [
+            "7357939713132580103"
+          ]
+        },
+        {
+          "section_title": "2. Bối cảnh & Cận cảnh chế biến",
+          "time_range": "00:11-00:23",
+          "visual_angle": "Góc POV gắp/cắt đôi món ăn để lộ nhân hoặc kết cấu bên trong và chấm ngập nước sốt",
+          "dialogue": "Nguồn cũ: \"Bài hát thể hiện niềm khát khao yêu đương và mong muốn\" Đây là thông tin trong nguồn cũ, cần kiểm tra lại khi đến quay. Mình sẽ ghi hình phần chế biến nếu được phép và mô tả đúng những gì",
+          "word_count": 44,
+          "cited_video_ids": [
+            "7357939713132580103"
+          ]
+        },
+        {
+          "section_title": "3. Trải nghiệm hương vị & Giá trị thực",
+          "time_range": "00:23-00:34",
+          "visual_angle": "Cảnh trung (medium shot) toàn bàn ăn kèm bảng giá hoặc không gian quán làm bằng chứng thực tế",
+          "dialogue": "Nguồn cũ: \"Ốc tươi ngon, đa dạng sốt, đặc biệt là sốt trứng muối.\" Khi thử món, mình sẽ tách nhận xét về hương vị, khẩu phần và mức giá đang niêm yết. Những nhận định này cần trải nghiệm thực tế trước khi",
+          "word_count": 44,
+          "cited_video_ids": [
+            "7313084913899654401"
+          ]
+        },
+        {
+          "section_title": "4. Tổng kết & Kêu gọi tương tác (CTA)",
+          "time_range": "00:34-00:45",
+          "visual_angle": "Góc cận biểu cảm gật đầu xác nhận kèm text tóm tắt điểm cộng trên màn hình",
+          "dialogue": "Nguồn cũ: \"tập bạn bè thì ốc tự nhiên nằm ở số 2 Trần\" Sau khi quay và kiểm tra thông tin, mình sẽ tổng kết điểm phù hợp của ốc với nhu cầu người xem. Phần kết sẽ nêu rõ thời điểm trải",
+          "word_count": 44,
+          "cited_video_ids": [
+            "7416326498296057106"
+          ]
+        }
+      ],
+      "shooting_advice": {
+        "camera_angles": [
+          "3 giây đầu: cận cảnh 45 độ món chính vừa bốc khói đặt xuống bàn trước khi quay mặt người",
+          "Góc POV gắp/cắt đôi món ăn để lộ nhân hoặc kết cấu bên trong và chấm ngập nước sốt",
+          "Cảnh trung (medium shot) toàn bàn ăn kèm bảng giá hoặc không gian quán làm bằng chứng thực tế"
+        ],
+        "lighting_and_audio": [
+          "Dùng micro cài áo thu rõ giọng nói, giữ lại 15-20% âm thanh ASMR tự nhiên khi cắt/nhai giòn hoặc xèo xèo",
+          "Tránh đèn vàng gắt chiếu thẳng từ đỉnh đầu làm xỉn màu nước dùng và rau sống"
+        ],
+        "pacing_and_editing": [
+          "Tốc độ thoại mục tiêu của ngách: ~3.9 từ/giây; cắt bỏ toàn bộ khoảng nghỉ thở thừa >0.3s",
+          "Phân bố thời lượng lịch sử của lát cắt: 29s - 29s (trung vị 29s); không chứng minh thời lượng tối ưu"
+        ]
+      },
+      "niche_benchmark": {
+        "matched_videos": 2,
+        "transcribed_videos": 1,
+        "poi_tagged_videos": 2,
+        "median_plays": 598550.0,
+        "p75_plays": 799275.0,
+        "median_engagement_rate": 0.0244,
+        "duration_q25_sec": 29.0,
+        "duration_median_sec": 29.0,
+        "duration_q75_sec": 29.0,
+        "median_word_per_second": 3.9,
+        "hashtag_q25": 9,
+        "hashtag_q75": 10,
+        "top_hashtags": [
+          "ancungtiktok",
+          "foodreview",
+          "bachtuotsotthai",
+          "learnontiktok",
+          "foodfestontiktok",
+          "goitaiheo",
+          "anngongovap",
+          "monngongovap"
+        ],
+        "top_posting_hours": [],
+        "top_poi_venues": [],
+        "applied_filters": {
+          "video_format": "Review quán ăn",
+          "food_category": "Ăn vặt & Đường phố",
+          "city_norm": "hồ chí minh",
+          "region": "south",
+          "price_tier": "budget_lt50k",
+          "occasion": "an_dem",
+          "duration_bucket": "short_20_45s"
+        },
+        "timings_ms": {
+          "filter_ms": 11.51,
+          "aggregate_ms": 1.94,
+          "total_ms": 13.51
+        },
+        "cohort_window_start": "2023-11-25",
+        "cohort_window_end": "2025-03-19",
+        "observation_snapshot": "2025-03/04 single-snapshot capture (manifest 2026-11-17)",
+        "sparse_slice_abstained": true,
+        "missingness": {
+          "transcript_missing_pct": 50.0,
+          "poi_missing_pct": 0.0,
+          "city_missing_pct": 0.0,
+          "price_unspecified_pct": 0.0
+        }
+      },
+      "evidence_cards": [
+        {
+          "rank": 1,
+          "score": 1.2002,
+          "lexical_score": 62.1044,
+          "rerank_score": 1.2002,
+          "citation": {
+            "video_id": "7357939713132580103",
+            "author_handle": "anngongovap",
+            "tiktok_url": "https://www.tiktok.com/@anngongovap/video/7357939713132580103",
+            "play_count": 18200,
+            "viral_multiplier": 0.1677,
+            "engagement_rate": 0.011429
+          },
+          "video_format": "Review quán ăn",
+          "food_category": "Ăn vặt & Đường phố",
+          "dishes": [
+            "ốc"
+          ],
+          "city_norm": "hồ chí minh",
+          "district_norm": "quận 4",
+          "poi_name": "TP. Hồ Chí Minh",
+          "price_tier": "budget_lt50k",
+          "occasions": [
+            "an_vat_xe_chieu"
+          ],
+          "duration_sec": 26,
+          "duration_bucket": "short_20_45s",
+          "hook_text": "Về đây với, cùng tình yêu khát khao",
+          "body_beats": [
+            "Bài hát thể hiện niềm khát khao yêu đương và mong muốn hòa mình vào hạnh phúc.",
+            "Lời bài hát khuyến khích mọi người đừng từ bỏ giấc mơ và luôn tin vào tình yêu.",
+            "Bài hát mang đến thông điệp về sự lạc quan và hy vọng, rằng mọi khó khăn sẽ qua và tình yêu sẽ chiến thắng."
+          ],
+          "cta_text": "Dòng đời dẫu dĩ vãng vẫn trôi theo làn mây nào",
+          "transcript_excerpt": "Về đây với, cùng tình yêu khát khao\nHoà mình vào ánh nắng cao như đàn chim về\nTrả lời người nhé, đừng rời xa giấc mơ\nNghe lời sao lấp lánh dẫn lối đôi tình nhân\nMọi giông bão sẽ qua, còn lại hai chúng ta\nDòng đời dẫu dĩ vãng vẫn trôi theo làn mây nào"
+        },
+        {
+          "rank": 2,
+          "score": 1.0491,
+          "lexical_score": 48.0113,
+          "rerank_score": 1.0491,
+          "citation": {
+            "video_id": "7313084913899654401",
+            "author_handle": "didausaigon",
+            "tiktok_url": "https://www.tiktok.com/@didausaigon/video/7313084913899654401",
+            "play_count": 59700,
+            "viral_multiplier": 0.5427,
+            "engagement_rate": 0.045092
+          },
+          "video_format": "Review quán ăn",
+          "food_category": "Ăn vặt & Đường phố",
+          "dishes": [
+            "ốc"
+          ],
+          "city_norm": "hồ chí minh",
+          "district_norm": null,
+          "poi_name": "District 10",
+          "price_tier": "budget_lt50k",
+          "occasions": [
+            "an_vat_xe_chieu"
+          ],
+          "duration_sec": 60,
+          "duration_bucket": "medium_45_90s",
+          "hook_text": "Chấn động chấn động, quán ốc đồng giá 15 cành ngay tại trung tâm Sài Gòn đã ai biết chưa?",
+          "body_beats": [
+            "Quán ốc tại trung tâm Sài Gòn với giá cả phải chăng, chỉ 15k/món.",
+            "Ốc tươi ngon, đa dạng sốt, đặc biệt là sốt trứng muối.",
+            "Địa điểm lý tưởng cho người lao động và sinh viên yêu thích món ốc."
+          ],
+          "cta_text": "Hẹn gặp lại mọi người ở các clip sau.",
+          "transcript_excerpt": "Chấn động chấn động, quán ốc đồng giá 15 cành ngay tại trung tâm Sài Gòn đã ai biết chưa? Mình không tin nổi là ngay tại quận 10 mà lại có quán ốc rẻ vậy luôn đó. Quán ở đây cam kết bán đồ tươi nên mọi người yên tâm đến trải nghiệm nha. Anh chủ nói là rẻ vậy để cho người lao động hay sinh viên họ thích ăn ốc có thể ghé..."
+        },
+        {
+          "rank": 3,
+          "score": 1.0425,
+          "lexical_score": 41.6618,
+          "rerank_score": 1.0425,
+          "citation": {
+            "video_id": "7416326498296057106",
+            "author_handle": "minn.cookie",
+            "tiktok_url": "https://www.tiktok.com/@minn.cookie/video/7416326498296057106",
+            "play_count": 467500,
+            "viral_multiplier": 2.0442,
+            "engagement_rate": 0.037837
+          },
+          "video_format": "Review quán ăn",
+          "food_category": "Ăn vặt & Đường phố",
+          "dishes": [
+            "ốc",
+            "hải sản",
+            "sò huyết",
+            "ốc mỡ",
+            "ốc giác",
+            "ốc tỏi",
+            "ốc bươu",
+            "ốc sốt me cay",
+            "ốc sốt trứng muối",
+            "ốc sốt phô mai"
+          ],
+          "city_norm": "hồ chí minh",
+          "district_norm": "quận 7",
+          "poi_name": "Ốc Tự Nhiên 2 - Trần Trọng Cung",
+          "price_tier": "budget_lt50k",
+          "occasions": [
+            "an_vat_xe_chieu"
+          ],
+          "duration_sec": 131,
+          "duration_bucket": "long_gt90s",
+          "hook_text": "Chị khẳng định, chị cam kết với tất cả khách hàng, nếu như có một cái loại ốc nào đấy mà khách hàng cảm thấy nó không tươi ngon hoặc là không...",
+          "body_beats": [
+            "Quán Ốc Tự Nhiên có đa dạng các loại ốc và hải sản tươi ngon, được nhập mới mỗi ngày.",
+            "Giá cả ở quán rất phù hợp với học sinh, sinh viên và nhân viên văn phòng.",
+            "Quán cam kết hoàn tiền hoặc đổi trả nếu khách hàng không hài lòng về chất lượng ốc."
+          ],
+          "cta_text": "tập bạn bè thì ốc tự nhiên nằm ở số 2 Trần Trọng Cung, quận 7 là một lựa chọn đáng để lưu lại á.",
+          "transcript_excerpt": "Chị khẳng định, chị cam kết với tất cả khách hàng, nếu như có một cái loại ốc nào đấy mà khách hàng cảm thấy nó không tươi ngon hoặc là không đúng với ý của khách hàng, thì chị sẽ tặng lại cho khách cái phần đấy và chị sẽ không tính tiền cái phần đấy cho khách hàng. Thiệt sự ai mà đang tìm một quán ốc vừa phải rẻ mà vừ..."
+        },
+        {
+          "rank": 4,
+          "score": 1.0161,
+          "lexical_score": 36.327,
+          "rerank_score": 1.0161,
+          "citation": {
+            "video_id": "7376222810332581138",
+            "author_handle": "theotheoriviu",
+            "tiktok_url": "https://www.tiktok.com/@theotheoriviu/video/7376222810332581138",
+            "play_count": 194300,
+            "viral_multiplier": 6.4551,
+            "engagement_rate": 0.040124
+          },
+          "video_format": "Review quán ăn",
+          "food_category": "Ăn vặt & Đường phố",
+          "dishes": [
+            "ốc",
+            "hải sản"
+          ],
+          "city_norm": "hồ chí minh",
+          "district_norm": null,
+          "poi_name": "Thủ Đức",
+          "price_tier": "budget_lt50k",
+          "occasions": [
+            "an_vat_xe_chieu"
+          ],
+          "duration_sec": 78,
+          "duration_bucket": "medium_45_90s",
+          "hook_text": "Ê mấy má ơi, tiệm ốc này ở Thủ Đức định dưỡng lắm, bởi vì anh chủ ở đây cân một ngày cũng cả trăm món mà giá cực kỳ sinh viên...",
+          "body_beats": [
+            "Tiệm ốc có nhiều món đa dạng, giá cả phải chăng, phù hợp với sinh viên.",
+            "Hải sản tươi ngon được lấy từ Phan Thiết, đảm bảo chất lượng và độ uy tín.",
+            "Nhiều món ngon đặc trưng như ốc sốt phô mai, ghẹ rang muối siêu cay tê lưỡi."
+          ],
+          "cta_text": "Còn bây giờ thì, bye bye.",
+          "transcript_excerpt": "Ê mấy má ơi, tiệm ốc này ở Thủ Đức định dưỡng lắm, bởi vì anh chủ ở đây cân một ngày cũng cả trăm món mà giá cực kỳ sinh viên luôn nha. Chỉ từ có 40k thôi là ăn ốc thả ga hổng lo về giá luôn á. Và hello mọi người, tui Thẹo Thẹo nè. Ở đây á có nguyên một cái line ốc dài ngoằng vậy nè nè. Làm hết tận 100 món luôn lận á n..."
+        },
+        {
+          "rank": 5,
+          "score": 0.9129,
+          "lexical_score": 38.9809,
+          "rerank_score": 0.9129,
+          "citation": {
+            "video_id": "7482756230310677776",
+            "author_handle": "anngongovap",
+            "tiktok_url": "https://www.tiktok.com/@anngongovap/video/7482756230310677776",
+            "play_count": 13900,
+            "viral_multiplier": 0.1281,
+            "engagement_rate": 0.045324
+          },
+          "video_format": "Review quán ăn",
+          "food_category": "Ăn vặt & Đường phố",
+          "dishes": [
+            "ốc"
+          ],
+          "city_norm": "hồ chí minh",
+          "district_norm": null,
+          "poi_name": "Gò Vấp",
+          "price_tier": "budget_lt50k",
+          "occasions": [
+            "an_vat_xe_chieu"
+          ],
+          "duration_sec": 31,
+          "duration_bucket": "short_20_45s",
+          "hook_text": "Chỉ là người xưa, quan tâm nhau làm gì nữa.",
+          "body_beats": [
+            "Bài hát nói về sự đau khổ và thất vọng trong tình yêu.",
+            "Nhân vật chính dường như đã trải qua một mối quan hệ tan vỡ.",
+            "Lời bài hát thể hiện sự quyết tâm phải từ bỏ và không mong đợi điều gì nữa."
+          ],
+          "cta_text": "Phải cự tuyệt, đôi lúc, đau thương, nào ai.",
+          "transcript_excerpt": "Chỉ là người xưa, quan tâm nhau làm gì nữa. Em cũng đâu hi vọng, trời thương thấu nỗi lòng đau. Phải cự tuyệt, đôi lúc, đau thương, nào ai."
+        }
+      ],
+      "guardrail": {
+        "passed": true,
+        "estimated_duration_sec": 45.1,
+        "target_duration_sec": 45.0,
+        "duration_delta_sec": 0.1,
+        "total_words": 176,
+        "valid_citations_ratio": 1.0,
+        "cliche_phrases_detected": [],
+        "warnings": [
+          "Kiểm tra cấu trúc, mã nguồn và thời lượng; chưa xác minh nội dung từng nhận định với nguồn."
+        ],
+        "citation_coverage_ratio": 1.0,
+        "timing_valid": true,
+        "grounding_verified": false,
+        "validation_scope": "structure_citations_timing"
+      },
+      "timings_ms": {
+        "domain_gate_ms": 0.83,
+        "benchmark_ms": 14.69,
+        "retrieval_ms": 784.45,
+        "blueprint_synthesis_ms": 0.33,
+        "guardrail_ms": 0.17,
+        "total_ms": 800.56
+      },
+      "draft_status": "creative_draft",
+      "grounding_verified": false
+    },
+    "missing_key": {
+      "code": "PROVIDER_KEY_MISSING",
+      "message": "GEMINI_API_KEY is not set in .env. Configure a Free-Tier Gemini key or switch generation_mode to 'offline_grounded'.",
+      "request_id": "543b6bffbf3e"
+    },
+    "out_of_domain": {
+      "code": "UNSUPPORTED_DOMAIN",
+      "message": "Yêu cầu nằm ngoài lĩnh vực Ẩm thực & F&B TikTok Việt Nam. Vui lòng nhập chủ đề món ăn, quán ăn, đồ uống hoặc nấu ăn.",
+      "request_id": "ed3b573ab1f2"
+    },
+    "blank_query": {
+      "detail": [
+        {
+          "type": "value_error",
+          "loc": [
+            "body",
+            "query"
+          ],
+          "msg": "Value error, Value must be non-blank",
+          "input": "  ",
+          "ctx": {
+            "error": {}
+          }
+        }
+      ]
+    },
+    "short_duration": {
+      "detail": [
+        {
+          "type": "greater_than_equal",
+          "loc": [
+            "body",
+            "target_duration_sec"
+          ],
+          "msg": "Input should be greater than or equal to 10",
+          "input": 5,
+          "ctx": {
+            "ge": 10
+          }
+        }
+      ]
+    },
+    "dense_unavailable": {
+      "code": "INDEX_NOT_READY",
+      "message": "Dense Qdrant collection is offline or empty. Start docker-compose Qdrant or use mode='bm25' / 'hybrid_rrf'.",
+      "request_id": "e269126d75fd"
+    }
+  },
+  "runtime_sha256_after": {
+    "data/corpus/20261117_recovered_v1/dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+    "data/corpus/20261117_recovered_v1/fact_videos.parquet": "1bfc6c6f819b4c0176345029e5ae4e630a4e9c0438c89548aab893e1d30c1ecd",
+    "data/corpus/20261117_recovered_v1/manifest.json": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+    "data/corpus/20261118_taxonomy_fix_v1/dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+    "data/corpus/20261118_taxonomy_fix_v1/fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3",
+    "data/corpus/20261118_taxonomy_fix_v1/manifest.json": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
+    "artifacts/indexes/bm25-v2/bm25-receipt.json": "97fdeb649d267e31114fb6d7eccea927c713fac34e8d2ca1178f363e8f825ccb",
+    "artifacts/indexes/bm25-v2/bm25_csr.npz": "184728bd872aa25d1512d149bedcf4421cae91b0faa856fb04fa11f1a63cb205",
+    "artifacts/indexes/bm25-v2/video_ids.json": "0af8ecbc4527086616359495b39a9d81a2334cbeb15dbbdb6b6fa69660a71cee",
+    "artifacts/indexes/bm25-v2/vocab.json": "ab18f0979b5624186b10f04470d03b0bbfc6d6345f1ea3bd6e08cd3a95934ffc"
+  },
+  "completed_at": "2026-11-18T09:11:48.563563+00:00",
+  "failed_checks": [
+    "policy_configuration_rejects_above_two",
+    "policy_third_call_blocked"
+  ]
+}

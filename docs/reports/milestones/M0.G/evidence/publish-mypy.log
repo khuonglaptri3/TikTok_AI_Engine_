@@ -1,0 +1,5 @@
+pipelines\build_dense_sparse_index\dense.py:60: error: Module has no attribute "getrusage"  [attr-defined]
+pipelines\build_dense_sparse_index\dense.py:60: error: Module has no attribute "RUSAGE_SELF"  [attr-defined]
+pipelines\benchmark_retrieval\dense_hybrid_pilot.py:234: error: Module has no attribute "getrusage"  [attr-defined]
+pipelines\benchmark_retrieval\dense_hybrid_pilot.py:234: error: Module has no attribute "RUSAGE_SELF"  [attr-defined]
+Found 4 errors in 2 files (checked 80 source files)

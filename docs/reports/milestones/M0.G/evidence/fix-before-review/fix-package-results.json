@@ -1,0 +1,110 @@
+{
+  "started_at": "2026-11-18T09:27:24.804222+00:00",
+  "steps": [
+    {
+      "name": "wheel-build",
+      "command": [
+        "C:\\Users\\lanph\\.local\\bin\\uv.EXE",
+        "build",
+        "--offline",
+        "--wheel",
+        "--out-dir",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-fix-package-ukt19n77\\wheels",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-fix-package-ukt19n77\\source"
+      ],
+      "exit_code": 0,
+      "seconds": 3.759,
+      "log": "fix-wheel-build.log"
+    },
+    {
+      "name": "clean-venv",
+      "command": [
+        "C:\\Users\\lanph\\.local\\bin\\uv.EXE",
+        "venv",
+        "--python",
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpP1ibJN\\Scripts\\python.exe",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-fix-package-ukt19n77\\installed"
+      ],
+      "exit_code": 0,
+      "seconds": 0.299,
+      "log": "fix-clean-venv.log"
+    },
+    {
+      "name": "wheel-install",
+      "command": [
+        "C:\\Users\\lanph\\.local\\bin\\uv.EXE",
+        "pip",
+        "install",
+        "--offline",
+        "--python",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-fix-package-ukt19n77\\installed\\Scripts\\python.exe",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-fix-package-ukt19n77\\wheels\\tiktok_viral_rag-0.2.0-py3-none-any.whl"
+      ],
+      "exit_code": 0,
+      "seconds": 10.106,
+      "log": "fix-wheel-install.log"
+    },
+    {
+      "name": "installed-pip-check",
+      "command": [
+        "C:\\Users\\lanph\\.local\\bin\\uv.EXE",
+        "pip",
+        "check",
+        "--python",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-fix-package-ukt19n77\\installed\\Scripts\\python.exe"
+      ],
+      "exit_code": 0,
+      "seconds": 0.086,
+      "log": "fix-installed-pip-check.log"
+    },
+    {
+      "name": "installed-asgi",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-fix-package-ukt19n77\\installed\\Scripts\\python.exe",
+        "-c",
+        "import json, pathlib, sys; from fastapi.testclient import TestClient; import apps.api.app.main as api; import packages.common.settings as settings; import pipelines; root=pathlib.Path(sys.argv[1]); prefix=pathlib.Path(sys.prefix); locations=[api.__file__,settings.__file__,pipelines.__file__]; assert all(pathlib.Path(p).is_relative_to(prefix) for p in locations), locations; app=api.create_app(settings=settings.AppSettings(gemini_api_key='', corpus_dir=root/'data/corpus/20261117_recovered_v1',bm25_index_dir=root/'artifacts/indexes/bm25-v2')); client=TestClient(app); live=client.get('/health/live'); demo=client.get('/demo/'); assert live.status_code==200 and demo.status_code==200; print(json.dumps({'installed_modules':locations,'health_live':live.status_code,'demo':demo.status_code}))",
+        "C:\\Users\\lanph\\OneDrive\\Desktop\\TikTok_AI_Engine_"
+      ],
+      "exit_code": 0,
+      "seconds": 37.065,
+      "log": "fix-installed-asgi.log"
+    },
+    {
+      "name": "docker-version",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.EXE",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.093,
+      "log": "fix-docker-version.log"
+    },
+    {
+      "name": "docker-info",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.EXE",
+        "info",
+        "--format",
+        "{{.ServerVersion}}"
+      ],
+      "exit_code": 0,
+      "seconds": 0.802,
+      "log": "fix-docker-info.log"
+    }
+  ],
+  "clean_install": true,
+  "actual_docker_container_run": false,
+  "provider_calls": 0,
+  "wheel": {
+    "name": "tiktok_viral_rag-0.2.0-py3-none-any.whl",
+    "bytes": 105397,
+    "sha256": "4af68e2b60445b49a294933098b8178637db683369570f373434fee8d4f1058f",
+    "modules_present": {
+      "apps": true,
+      "packages": true,
+      "pipelines": true
+    }
+  },
+  "package_exit_code": 0,
+  "completed_at": "2026-11-18T09:28:32.454465+00:00"
+}

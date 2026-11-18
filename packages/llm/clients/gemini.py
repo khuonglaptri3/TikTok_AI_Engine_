@@ -9,7 +9,7 @@ from typing import Any
 
 from packages.common.exceptions import ProviderKeyMissingError, QuotaBlockedError
 from packages.common.logging import redact_secrets
-from packages.common.settings import AppSettings
+from packages.common.settings import MAX_LLM_CALLS_PER_TURN, AppSettings
 
 
 class SlidingWindowRateLimiter:
@@ -109,9 +109,15 @@ class BoundedGeminiClient:
             raise ProviderKeyMissingError(
                 "GEMINI_API_KEY is not set in .env. Configure a Free-Tier Gemini key or switch generation_mode to 'offline_grounded'."
             )
-        if turn_calls_used >= self.settings.max_llm_calls_per_turn:
+        if type(turn_calls_used) is not int or turn_calls_used < 0:
+            raise QuotaBlockedError("Consumed LLM call count must be a non-negative integer.")
+        configured_budget = self.settings.max_llm_calls_per_turn
+        if type(configured_budget) is not int or configured_budget < 1:
+            raise QuotaBlockedError("Configured LLM call budget must be a positive integer.")
+        turn_call_budget = min(configured_budget, MAX_LLM_CALLS_PER_TURN)
+        if turn_calls_used >= turn_call_budget:
             raise QuotaBlockedError(
-                f"Per-turn LLM call budget ({self.settings.max_llm_calls_per_turn} calls/turn) reached. Switch to 'offline_grounded'."
+                f"Per-turn LLM call budget ({turn_call_budget} calls/turn) reached. Switch to 'offline_grounded'."
             )
 
         self.rate_limiter.acquire()

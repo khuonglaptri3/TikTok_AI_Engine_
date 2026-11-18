@@ -1,0 +1,20 @@
+{
+  "checked_at_local": "2026-11-18T15:57:08.4715078+07:00",
+  "branch": "feat/m0-m1-m2.1-complete-and-gold-v2",
+  "before_head": "6cf1a6ecc0abb063c06114085a60a58c89dc0f01",
+  "fetched_origin_main": "c6c36131d2750b33fcede38871656e7c0ae703fc",
+  "after_head": "c6c36131d2750b33fcede38871656e7c0ae703fc",
+  "fetch_command": "git -c gc.auto=0 -c maintenance.auto=false fetch --no-tags origin",
+  "fetch_exit": 0,
+  "merge_command": "git -c gc.auto=0 -c maintenance.auto=false merge --ff-only origin/main",
+  "merge_exit": 0,
+  "merge_result": "Fast-forward; 24 files changed, 571 insertions, 20 deletions; no merge commit",
+  "preexisting_tracked_changes": [],
+  "preexisting_untracked": [
+    {"path": "docs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-data-first-http408.log", "sha256": "3cbbe66bd84e54e14c0c05bbd02cfe7840761343e400ab816417f05dd33e7e52"},
+    {"path": "docs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-data.log", "sha256": "ecd19170b602c85e76522a06e65ad2d1b073853bbeba5112af9af594514a3394"},
+    {"path": "docs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-retry.log", "sha256": "fbb181f5e431649646f7197936db4d30a9c99a9576b05a00c6bf776719eeedbb"}
+  ],
+  "planning_provenance": "Original canonical M0.G spec and plan read from origin/main before synchronization; local independent-review addenda written before evaluation commands. No backdating.",
+  "scope": "Synchronize origin/main only; M3.1 remains outside G0 evaluation. No push."
+}

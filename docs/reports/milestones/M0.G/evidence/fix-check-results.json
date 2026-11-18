@@ -1,0 +1,117 @@
+{
+  "started_at": "2026-11-18T09:32:01.734355+00:00",
+  "head": "c6c36131d2750b33fcede38871656e7c0ae703fc",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpNHS2qI\\Scripts\\python.exe",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "cpu_count": 12,
+  "source_sha256": {
+    "packages/common/settings/__init__.py": "b95b3dd84dc23f7df48665b9349434aeffa7f91e8d02887a8402672efd578d0f",
+    "packages/llm/clients/gemini.py": "ae1a8e38d2c8a740772739c1d953b9ff5d8f21e9602ce70a1a31deae9af72403",
+    "apps/api/app/routers/health.py": "af9279b497c44e2fc516bffaf8daffd82eca96806ead10d7ff967be4da77ef31",
+    "packages/retrieval/sparse/bm25.py": "d1dbf705c1490de50e38df5f57f0fbd7fccabf349e1db1e72f544979ef04b1f0",
+    "tests/unit/test_llm_call_budget.py": "c339e527e48dcc16792c0eced584af7aae5d5fc5eb298000f204516a70d2d5c3"
+  },
+  "versions": {
+    "fastapi": "0.163.2",
+    "gradio": "6.32.0",
+    "pydantic": "2.14.3",
+    "numpy": "2.5.5",
+    "pandas": "3.1.1",
+    "pyarrow": "26.0.1",
+    "scipy": "1.18.1",
+    "google-genai": "3.5.0",
+    "pytest": "9.2.0",
+    "mypy": "2.4.1",
+    "ruff": "0.17.5"
+  },
+  "provider_keys_blanked": true,
+  "checks": [
+    {
+      "name": "secrets",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpNHS2qI\\Scripts\\python.exe",
+        "scripts/check_secrets.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.482,
+      "log": "fix-secrets.log",
+      "sha256": "eee978e18683c2dd6763d7cebc4d6f4706cbaf92feacd20f97c3c625259b8077"
+    },
+    {
+      "name": "pip-check",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpNHS2qI\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 1.792,
+      "log": "fix-pip-check.log",
+      "sha256": "672aec65a45bed50e70229c70934a7eebf0462595c459b83023027645d57cccf"
+    },
+    {
+      "name": "mypy",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpNHS2qI\\Scripts\\python.exe",
+        "-m",
+        "mypy",
+        "packages",
+        "apps",
+        "pipelines"
+      ],
+      "exit_code": 0,
+      "seconds": 3.077,
+      "log": "fix-mypy.log",
+      "sha256": "b53a8850538df2d0a027862ba159e61e4e1d6e1bed4c84456c9af44b405ee56d"
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpNHS2qI\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "packages",
+        "apps",
+        "tests/contract",
+        "tests/smoke",
+        "tests/unit/test_llm_call_budget.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.556,
+      "log": "fix-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "name": "contract-smoke",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpNHS2qI\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/contract",
+        "tests/smoke",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 27.883,
+      "log": "fix-contract-smoke.log",
+      "sha256": "cae916c2a64eaa014f57229fe7f0e41e289d319773e81b62d826b1cbd4ff7ce1"
+    },
+    {
+      "name": "pytest-full",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpNHS2qI\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 60.829,
+      "log": "fix-pytest-full.log",
+      "sha256": "95cb42d15dab831466a9bba5bbfebe2086a36684330ad519d4449f7dbdb3c69b"
+    }
+  ],
+  "completed_at": "2026-11-18T09:33:37.661697+00:00"
+}

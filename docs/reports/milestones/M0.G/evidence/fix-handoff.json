@@ -1,0 +1,156 @@
+{
+  "checked_at": "2026-11-18T09:35:55.343242+00:00",
+  "status": "PASS",
+  "head": "c6c36131d2750b33fcede38871656e7c0ae703fc",
+  "source_sha256": {
+    "packages/common/settings/__init__.py": "b95b3dd84dc23f7df48665b9349434aeffa7f91e8d02887a8402672efd578d0f",
+    "packages/llm/clients/gemini.py": "ae1a8e38d2c8a740772739c1d953b9ff5d8f21e9602ce70a1a31deae9af72403",
+    "apps/api/app/routers/health.py": "af9279b497c44e2fc516bffaf8daffd82eca96806ead10d7ff967be4da77ef31",
+    "packages/retrieval/sparse/bm25.py": "d1dbf705c1490de50e38df5f57f0fbd7fccabf349e1db1e72f544979ef04b1f0",
+    "tests/unit/test_llm_call_budget.py": "c339e527e48dcc16792c0eced584af7aae5d5fc5eb298000f204516a70d2d5c3"
+  },
+  "checks": [
+    {
+      "name": "exact_bundle_layout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "exact_planning_layout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "index_status_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "owner_decision_pending",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "technical_recommendation_only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "planning_workflow_linked",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "live_document_links",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "verification_script_syntax",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "all_required_commands_pass",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fresh_command_log_hashes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "tested_source_hashes_match",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "red_green_recorded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "review_fix_red_green_recorded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "runtime_assertions_all_pass",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "runtime_source_matches_suite",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_live_provider_calls",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "runtime_original_bytes_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "earlier_evidence_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "previous_review_archived",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unrelated_logs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "tracked_source_scope",
+      "passed": true,
+      "detail": [
+        "apps/api/app/routers/health.py",
+        "docs/reports/milestones/M0.G/README.md",
+        "docs/reports/milestones/M0.G/evidence/workflow.md",
+        "docs/reports/milestones/M0.G/superpowers/plan.md",
+        "docs/reports/milestones/M0.G/superpowers/spec.md",
+        "docs/reports/milestones/README.md",
+        "packages/common/settings/__init__.py",
+        "packages/llm/clients/gemini.py",
+        "packages/retrieval/sparse/bm25.py"
+      ]
+    },
+    {
+      "name": "protected_paths_unchanged",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "clean_package_install",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "package_source_matches_suite",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final_secret_scan",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "english_authored_prose",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "formal_gate": "NOT_RUN",
+  "technical_recommendation": "PASS; owner decision pending"
+}

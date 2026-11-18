@@ -1,0 +1,109 @@
+{
+  "started_at": "2026-11-18T09:06:18.934494+00:00",
+  "head": "c6c36131d2750b33fcede38871656e7c0ae703fc",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpxQQdZc\\Scripts\\python.exe",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "cpu_count": 12,
+  "versions": {
+    "fastapi": "0.163.2",
+    "gradio": "6.32.0",
+    "pydantic": "2.14.3",
+    "numpy": "2.5.5",
+    "pandas": "3.1.1",
+    "pyarrow": "26.0.1",
+    "scipy": "1.18.1",
+    "google-genai": "3.5.0",
+    "pytest": "9.2.0",
+    "mypy": "2.4.1",
+    "ruff": "0.17.5"
+  },
+  "provider_keys_blanked": true,
+  "checks": [
+    {
+      "name": "secrets",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpxQQdZc\\Scripts\\python.exe",
+        "scripts/check_secrets.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.75,
+      "log": "peer-secrets.log",
+      "sha256": "eee978e18683c2dd6763d7cebc4d6f4706cbaf92feacd20f97c3c625259b8077"
+    },
+    {
+      "name": "pip-check",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpxQQdZc\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 7.358,
+      "log": "peer-pip-check.log",
+      "sha256": "672aec65a45bed50e70229c70934a7eebf0462595c459b83023027645d57cccf"
+    },
+    {
+      "name": "mypy",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpxQQdZc\\Scripts\\python.exe",
+        "-m",
+        "mypy",
+        "packages",
+        "apps",
+        "pipelines"
+      ],
+      "exit_code": 0,
+      "seconds": 3.411,
+      "log": "peer-mypy.log",
+      "sha256": "b53a8850538df2d0a027862ba159e61e4e1d6e1bed4c84456c9af44b405ee56d"
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpxQQdZc\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "packages",
+        "apps",
+        "tests/contract",
+        "tests/smoke"
+      ],
+      "exit_code": 1,
+      "seconds": 1.929,
+      "log": "peer-ruff.log",
+      "sha256": "c2f4f04366165e72ead2561db80734cd725942d5eabde2ca0a292fba876fa5ca"
+    },
+    {
+      "name": "contract-smoke",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpxQQdZc\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/contract",
+        "tests/smoke",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 14.331,
+      "log": "peer-contract-smoke.log",
+      "sha256": "27c9bbeb5e7549a1c265f7c2b5afdfbda28001b0af1ddbaf79a3c235a5d855d5"
+    },
+    {
+      "name": "pytest-full",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpxQQdZc\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 32.491,
+      "log": "peer-pytest-full.log",
+      "sha256": "3058ca8d08f00e82c2c9b8389b244d39dd28f3a9e1ee48f3acddbb6b90a9e702"
+    }
+  ],
+  "completed_at": "2026-11-18T09:07:20.558458+00:00"
+}

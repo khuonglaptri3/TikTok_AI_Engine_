@@ -11,6 +11,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from packages.common.logging import redact_secrets
 
+MAX_LLM_CALLS_PER_TURN = 2
+
 
 def _parse_dotenv(dotenv_path: Path) -> dict[str, str]:
     values: dict[str, str] = {}
@@ -32,7 +34,9 @@ class AppSettings(BaseModel):
     env: str = Field(default="local")
     gemini_api_key: str = Field(default="", repr=False)
     gemini_fast_model: str = Field(default="gemini-2.5-flash")
-    max_llm_calls_per_turn: int = Field(default=2, ge=1, le=5)
+    max_llm_calls_per_turn: int = Field(
+        default=MAX_LLM_CALLS_PER_TURN, ge=1, le=MAX_LLM_CALLS_PER_TURN
+    )
     llm_deadline_seconds: float = Field(default=30.0, gt=0.0, le=120.0)
     rate_limit_rpm: int = Field(default=15, ge=1, le=300)
 

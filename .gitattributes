@@ -51,3 +51,6 @@ tests/unit/test_retrieval_metrics.py -text
 tests/unit/test_script_guardrails.py -text
 tests/unit/test_snapshot_continuity.py -text
 tests/unit/test_taxonomy_and_corpus.py -text
+apps/api/app/routers/health.py -text
+packages/llm/clients/gemini.py -text
+tests/unit/test_llm_call_budget.py -text
