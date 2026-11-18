@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import re
 
 PRICE_K_REGEX = re.compile(r"\b(\d{1,4})\s*(?:k|cành|ngàn|nghìn)\b", re.IGNORECASE)
@@ -13,6 +14,17 @@ LEGACY_FORMAT_MAP: dict[str, str] = {
     "Review sản phẩm ăn uống": "Review sản phẩm ăn uống",
     "Mukbang": "Mukbang",
 }
+
+_NULL_STRINGS = frozenset({"none", "null", "nan", "[]"})
+
+
+def _clean_optional_text(val: object) -> str:
+    if val is None or (isinstance(val, float) and math.isnan(val)):
+        return ""
+    s = str(val).strip()
+    if s.lower() in _NULL_STRINGS:
+        return ""
+    return s
 
 
 def infer_video_format(
@@ -37,7 +49,7 @@ def infer_video_format(
 
 
 def extract_price_tier(text: str, video_format: str) -> str:
-    lower = text.lower()
+    lower = (text or "").lower()
     if video_format == "Hướng dẫn nấu ăn" and not PRICE_K_REGEX.search(lower):
         return "home_cooking"
     if any(kw in lower for kw in ("fine dining", "sang chảnh", "5 sao", "khách sạn 5", "tiền triệu")):
@@ -61,7 +73,7 @@ def extract_price_tier(text: str, video_format: str) -> str:
 
 
 def extract_occasions(text: str, video_format: str) -> list[str]:
-    lower = text.lower()
+    lower = (text or "").lower()
     occ: list[str] = []
     if any(kw in lower for kw in ("ăn sáng", "bữa sáng", "cơm trưa", "ăn trưa", "dân văn phòng")):
         occ.append("an_sang_trua_nhanh")
@@ -77,7 +89,7 @@ def extract_occasions(text: str, video_format: str) -> list[str]:
         occ.append("du_lich_kham_pha")
     if video_format == "Hướng dẫn nấu ăn" or any(kw in lower for kw in ("cơm nhà", "ở trọ", "tự nấu")):
         occ.append("nau_an_tai_nha")
-    if not occ or any(kw in lower for kw in ("ăn vặt", "xế chiều", "cổng trường")):
+    if any(kw in lower for kw in ("ăn vặt", "xế chiều", "cổng trường")):
         occ.append("an_vat_xe_chieu")
     return occ[:4]
 
@@ -99,8 +111,8 @@ def extract_script_anatomy(
         cta_fallback = " ".join(words[-20:]) if len(words) > 25 else ""
         return hook_fallback, takeaways or [], cta_fallback
 
-    hook_str = str(llm_hook).strip() if isinstance(llm_hook, str) and llm_hook.strip() else ""
-    if not hook_str or hook_str in {"None", "nan", "[]"}:
+    hook_str = _clean_optional_text(llm_hook)
+    if not hook_str:
         hook_str = sentences[0]
         if len(hook_str.split()) < 8 and len(sentences) > 1:
             hook_str = f"{sentences[0]} {sentences[1]}"
@@ -108,13 +120,13 @@ def extract_script_anatomy(
         if len(hook_words) > 32:
             hook_str = " ".join(hook_words[:32]) + "..."
 
-    cta_str = str(llm_cta).strip() if isinstance(llm_cta, str) and llm_cta.strip() else ""
-    if not cta_str or cta_str in {"None", "nan", "[]"}:
+    cta_str = _clean_optional_text(llm_cta)
+    if not cta_str:
         last_sent = sentences[-1] if len(sentences) > 1 else ""
         words = clean_tr.split()
         cta_str = last_sent if len(last_sent.split()) <= 35 else " ".join(words[-25:])
 
-    beats = [t.strip() for t in (takeaways or []) if isinstance(t, str) and t.strip() and t.strip() != "None"]
+    beats = [clean for item in (takeaways or []) if (clean := _clean_optional_text(item))]
     if not beats and len(sentences) >= 3:
         mid = sentences[1:-1]
         step = max(1, len(mid) // 3)

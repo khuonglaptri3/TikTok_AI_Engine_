@@ -99,3 +99,59 @@ def test_built_gold_corpus_snapshot_integrity() -> None:
     assert df_videos["video_id"].nunique() == 70996
     assert (df_videos["engagement_rate"] >= 0.0).all()
     assert (df_videos["viral_multiplier"] >= 0.0).all()
+
+
+def test_district_substring_does_not_collide_quan_1_with_quan_10_to_12() -> None:
+    for d_num in ("10", "11", "12"):
+        city, dist, region, source = resolve_location(
+            poi_address=f"123 Đường số 1, Quận {d_num}, TP.HCM",
+        )
+        assert city == "hồ chí minh"
+        assert dist == f"quận {d_num}"
+        assert region == "south"
+        assert source == "poi_gps"
+
+
+def test_poi_name_and_english_city_district_aliases_resolve_cleanly() -> None:
+    assert resolve_location(poi_name="Ho Chi Minh City", poi_address="Vietnam") == (
+        "hồ chí minh",
+        None,
+        "south",
+        "poi_gps",
+    )
+    assert resolve_location(poi_name="Hanoi", poi_address="Vietnam") == (
+        "hà nội",
+        None,
+        "north",
+        "poi_gps",
+    )
+    assert resolve_location(poi_city="District 5") == (
+        "hồ chí minh",
+        "quận 5",
+        "south",
+        "poi_gps",
+    )
+    assert resolve_location(poi_city="Hue") == ("huế", None, "central", "poi_gps")
+    assert resolve_location(llm_city="Nhà Bè") == ("hồ chí minh", "nhà bè", "south", "district_resolved")
+    assert resolve_location(llm_city="Long Biên") == ("hà nội", "long biên", "north", "district_resolved")
+
+
+def test_dish_and_category_word_boundary_prevents_false_oc_matches() -> None:
+    from packages.taxonomy import extract_dishes_from_text
+
+    false_hits = extract_dishes_from_text("Đồ ăn Trung Quốc tốc độ cao gốc Hoa rất sốc")
+    assert "ốc" not in false_hits
+    assert "ốc" in extract_dishes_from_text("Tối nay đi ăn ốc hương xào bơ tỏi")
+    assert map_food_category([], "Tối nay đi ăn mì", None) == "Món nước & Sợi"
+
+
+def test_occasions_unknown_returns_empty_and_anatomy_ignores_null_strings() -> None:
+    assert extract_occasions("Review phở bò tái nạm nước dùng đậm đà", "Review món ăn") == []
+    hook, beats, cta = extract_script_anatomy(
+        "Quán phở này nước dùng rất trong. Thịt bò mềm thơm. Mọi người ghé thử ngay nhé!",
+        llm_hook="null",
+        llm_cta="NONE",
+    )
+    assert "nước dùng" in hook
+    assert "ghé thử" in cta
+    assert len(beats) >= 1

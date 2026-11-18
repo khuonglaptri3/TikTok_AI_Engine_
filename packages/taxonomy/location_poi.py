@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import math
+import re
+
 HCM_DISTRICTS: set[str] = {
     "quận 1",
     "quận 2",
@@ -46,33 +49,107 @@ HANOI_DISTRICTS: set[str] = {
     "thanh trì",
 }
 
+DISTRICT_ALIASES: dict[str, str] = {
+    **{f"district {i}": f"quận {i}" for i in range(1, 13)},
+    "binh thanh": "bình thạnh",
+    "phu nhuan": "phú nhuận",
+    "go vap": "gò vấp",
+    "tan binh": "tân bình",
+    "tan phu": "tân phú",
+    "binh tan": "bình tân",
+    "binh chanh": "bình chánh",
+    "nha be": "nhà bè",
+    "hoc mon": "hóc môn",
+    "cu chi": "củ chi",
+    "can gio": "cần giờ",
+    "thu duc": "thủ đức",
+    "ba dinh": "ba đình",
+    "hoan kiem": "hoàn kiếm",
+    "hai ba trung": "hai bà trưng",
+    "dong da": "đống đa",
+    "cau giay": "cầu giấy",
+    "thanh xuan": "thanh xuân",
+    "tay ho": "tây hồ",
+    "ha dong": "hà đông",
+    "long bien": "long biên",
+    "hoang mai": "hoàng mai",
+    "gia lam": "gia lâm",
+    "dong anh": "đông anh",
+    "thanh tri": "thanh trì",
+}
+
+_ALL_DISTRICT_KEYS = sorted(
+    [*HCM_DISTRICTS, *HANOI_DISTRICTS, *DISTRICT_ALIASES.keys()],
+    key=len,
+    reverse=True,
+)
+_DISTRICT_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    (DISTRICT_ALIASES.get(key, key), re.compile(rf"(?<!\w){re.escape(key)}(?!\w)"))
+    for key in _ALL_DISTRICT_KEYS
+]
+
 CITY_ALIASES: dict[str, str] = {
+    "hồ chí minh": "hồ chí minh",
     "sài gòn": "hồ chí minh",
     "saigon": "hồ chí minh",
     "tp hcm": "hồ chí minh",
     "tphcm": "hồ chí minh",
+    "tp.hcm": "hồ chí minh",
     "tp. hồ chí minh": "hồ chí minh",
     "tp hồ chí minh": "hồ chí minh",
     "thành phố hồ chí minh": "hồ chí minh",
     "ho chi minh": "hồ chí minh",
     "ho chi minh city": "hồ chí minh",
     "hcmc": "hồ chí minh",
+    "hà nội": "hà nội",
     "ha noi": "hà nội",
     "hanoi": "hà nội",
     "thủ đô hà nội": "hà nội",
     "thành phố hà nội": "hà nội",
+    "đà nẵng": "đà nẵng",
     "da nang": "đà nẵng",
+    "đà lạt": "đà lạt",
     "da lat": "đà lạt",
+    "thành phố đà lạt": "đà lạt",
+    "huế": "huế",
+    "hue": "huế",
+    "thành phố huế": "huế",
+    "thừa thiên huế": "huế",
+    "thừa thiên - huế": "huế",
+    "cần thơ": "cần thơ",
     "can tho": "cần thơ",
+    "hải phòng": "hải phòng",
     "hai phong": "hải phòng",
+    "vũng tàu": "vũng tàu",
     "vung tau": "vũng tàu",
     "nha trang": "nha trang",
+    "hạ long": "hạ long",
+    "ha long": "hạ long",
+    "phú quốc": "phú quốc",
+    "phu quoc": "phú quốc",
+    "quy nhơn": "quy nhơn",
+    "quy nhon": "quy nhơn",
+    "bình dương": "bình dương",
+    "binh duong": "bình dương",
+    "biên hòa": "biên hòa",
+    "bien hoa": "biên hòa",
+    "phan thiết": "phan thiết",
+    "phan thiet": "phan thiết",
+    "thành phố phan thiết": "phan thiết",
+    "ninh bình": "ninh bình",
+    "ninh binh": "ninh bình",
 }
+
+_CITY_ALIAS_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    (norm_c, re.compile(rf"(?<!\w){re.escape(alias)}(?!\w)"))
+    for alias, norm_c in sorted(CITY_ALIASES.items(), key=lambda kv: len(kv[0]), reverse=True)
+]
 
 CITY_TO_REGION: dict[str, str] = {
     "hà nội": "north",
     "hải phòng": "north",
     "quảng ninh": "north",
+    "quảng yên": "north",
     "hạ long": "north",
     "bắc ninh": "north",
     "hải dương": "north",
@@ -106,6 +183,7 @@ CITY_TO_REGION: dict[str, str] = {
     "bình định": "central",
     "phan thiết": "central",
     "bình thuận": "central",
+    "phan rang": "central",
     "vinh": "central",
     "nghệ an": "central",
     "thanh hóa": "central",
@@ -144,6 +222,7 @@ CITY_TO_REGION: dict[str, str] = {
     "kiên giang": "south",
     "rạch giá": "south",
     "phú quốc": "south",
+    "hà tiên": "south",
     "sóc trăng": "south",
     "bạc liêu": "south",
     "cà mau": "south",
@@ -151,12 +230,36 @@ CITY_TO_REGION: dict[str, str] = {
 
 
 def _clean_str(val: object) -> str | None:
-    if val is None:
+    if val is None or (isinstance(val, float) and math.isnan(val)):
         return None
     s = str(val).strip().lower()
-    if not s or s in {"none", "null", "nan", "không có thông tin", "others", "việt nam"}:
+    if not s or s in {"none", "null", "nan", "không có thông tin", "others", "việt nam", "vietnam"}:
         return None
+    if s in DISTRICT_ALIASES:
+        return DISTRICT_ALIASES[s]
     return CITY_ALIASES.get(s, s)
+
+
+def _extract_district(text: str) -> str | None:
+    for norm_dist, pattern in _DISTRICT_PATTERNS:
+        if pattern.search(text):
+            return norm_dist
+    return None
+
+
+def _extract_city(text: str) -> str | None:
+    for norm_city, pattern in _CITY_ALIAS_PATTERNS:
+        if pattern.search(text):
+            return norm_city
+    return None
+
+
+def _district_parent(dist: str | None) -> tuple[str | None, str | None]:
+    if dist in HCM_DISTRICTS:
+        return "hồ chí minh", "south"
+    if dist in HANOI_DISTRICTS:
+        return "hà nội", "north"
+    return None, None
 
 
 def resolve_location(
@@ -164,44 +267,60 @@ def resolve_location(
     poi_address: object = None,
     llm_city: object = None,
     llm_district: object = None,
+    poi_name: object = None,
 ) -> tuple[str | None, str | None, str, str]:
     """Resolve (city_norm, district_norm, region, location_source) with GPS POI priority."""
     p_city = _clean_str(poi_city)
-    p_addr = str(poi_address).strip().lower() if poi_address is not None and str(poi_address) != "nan" else ""
+    p_name = _clean_str(poi_name)
+    p_addr_clean = _clean_str(poi_address) or ""
     l_city = _clean_str(llm_city)
     l_dist = _clean_str(llm_district)
 
-    # Extract district from POI address if district missing
+    # Extract district from POI address or POI name when district is missing
     resolved_dist = l_dist
-    if not resolved_dist and p_addr:
-        for d in HCM_DISTRICTS | HANOI_DISTRICTS:
-            if d in p_addr:
-                resolved_dist = d
-                break
+    if not resolved_dist and p_addr_clean:
+        resolved_dist = _extract_district(p_addr_clean)
+    if not resolved_dist and p_name:
+        resolved_dist = _extract_district(p_name)
 
-    # 1. Official GPS POI city wins
+    # 1. Official GPS POI city wins (also handles district names in poi.city)
     if p_city:
+        p_parent_city, p_parent_reg = _district_parent(p_city)
+        if p_parent_city and p_parent_reg:
+            return p_parent_city, resolved_dist or p_city, p_parent_reg, "poi_gps"
         region = CITY_TO_REGION.get(p_city, "unknown")
         return p_city, resolved_dist, region, "poi_gps"
 
     # 2. If POI address contains unambiguous city or district
-    if p_addr:
-        for alias, norm_c in CITY_ALIASES.items():
-            if alias in p_addr:
-                return norm_c, resolved_dist, CITY_TO_REGION.get(norm_c, "unknown"), "poi_gps"
-        if resolved_dist in HCM_DISTRICTS:
-            return "hồ chí minh", resolved_dist, "south", "poi_gps"
-        if resolved_dist in HANOI_DISTRICTS:
-            return "hà nội", resolved_dist, "north", "poi_gps"
+    if p_addr_clean:
+        addr_city = _extract_city(p_addr_clean)
+        if addr_city:
+            return addr_city, resolved_dist, CITY_TO_REGION.get(addr_city, "unknown"), "poi_gps"
+        parent_city, parent_reg = _district_parent(resolved_dist)
+        if parent_city and parent_reg:
+            return parent_city, resolved_dist, parent_reg, "poi_gps"
 
-    # 3. Unambiguous district overrides conflicting dish-name LLM city (e.g. "Bún đậu Hà Nội ở Quận 7")
-    if resolved_dist in HCM_DISTRICTS:
-        return "hồ chí minh", resolved_dist, "south", "district_resolved"
-    if resolved_dist in HANOI_DISTRICTS:
-        return "hà nội", resolved_dist, "north", "district_resolved"
+    # 3. If POI name itself states a city or district (e.g., "Ho Chi Minh City", "Hanoi", "Gò Vấp")
+    if p_name:
+        name_city = _extract_city(p_name)
+        if name_city:
+            return name_city, resolved_dist, CITY_TO_REGION.get(name_city, "unknown"), "poi_gps"
+        name_dist = _extract_district(p_name)
+        if name_dist:
+            parent_city, parent_reg = _district_parent(name_dist)
+            if parent_city and parent_reg:
+                return parent_city, resolved_dist or name_dist, parent_reg, "poi_gps"
 
-    # 4. Fallback to LLM inferred city
+    # 4. Unambiguous district overrides conflicting dish-name LLM city (e.g. "Bún đậu Hà Nội ở Quận 7")
+    parent_city, parent_reg = _district_parent(resolved_dist)
+    if parent_city and parent_reg:
+        return parent_city, resolved_dist, parent_reg, "district_resolved"
+
+    # 5. Handle district mistakenly stored inside llm_city (e.g., "nhà bè", "long biên")
     if l_city:
+        l_parent_city, l_parent_reg = _district_parent(l_city)
+        if l_parent_city and l_parent_reg:
+            return l_parent_city, resolved_dist or l_city, l_parent_reg, "district_resolved"
         region = CITY_TO_REGION.get(l_city, "unknown")
         return l_city, resolved_dist, region, "llm_inferred"
 

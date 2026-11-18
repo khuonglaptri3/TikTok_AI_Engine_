@@ -1,0 +1,65 @@
+table,column,dtype,source_lineage,non_null_count,non_null_pct,non_empty_count,non_empty_pct,unknown_or_empty_count,unknown_or_empty_pct
+fact_videos,video_id,str,cleaned_video_info.parquet (video.id),70996,100.0,70996,100.0,0,0.0
+fact_videos,author_id,str,cleaned_video_info.parquet (author.id),70996,100.0,70996,100.0,0,0.0
+fact_videos,author_handle,str,cleaned_video_info.parquet (author.uniqueId),70996,100.0,70996,100.0,0,0.0
+fact_videos,author_nickname,str,cleaned_video_info.parquet (author.nickname),70996,100.0,70996,100.0,0,0.0
+fact_videos,tiktok_url,str,derived from author_handle + video_id,70996,100.0,70996,100.0,0,0.0
+fact_videos,follower_count,int64,cleaned_video_info.parquet (authorStats.followerCount),70996,100.0,70996,100.0,0,0.0
+fact_videos,follower_tier,str,derived via classify_follower_tier(follower_count) / dim_creators,70996,100.0,70996,100.0,0,0.0
+fact_videos,create_time,str,cleaned_video_info.parquet (createTime),70996,100.0,70996,100.0,0,0.0
+fact_videos,create_hour,int64,derived from create_time.hour,70996,100.0,70996,100.0,0,0.0
+fact_videos,year_week,str,cleaned_video_info.parquet (year_week),70996,100.0,70996,100.0,0,0.0
+fact_videos,play_count,int64,cleaned_video_info.parquet (statsV2.playCount),70996,100.0,70996,100.0,0,0.0
+fact_videos,digg_count,int64,cleaned_video_info.parquet (statsV2.diggCount),70996,100.0,70996,100.0,0,0.0
+fact_videos,comment_count,int64,cleaned_video_info.parquet (statsV2.commentCount),70996,100.0,70996,100.0,0,0.0
+fact_videos,share_count,int64,cleaned_video_info.parquet (statsV2.shareCount),70996,100.0,70996,100.0,0,0.0
+fact_videos,collect_count,int64,cleaned_video_info.parquet (statsV2.collectCount),70996,100.0,70996,100.0,0,0.0
+fact_videos,engagement_rate,float64,derived via compute_engagement_rate (0.0 when play_count==0),70996,100.0,70996,100.0,0,0.0
+fact_videos,viral_multiplier,float64,derived via compute_viral_multiplier (floor baseline 1000.0),70996,100.0,70996,100.0,0,0.0
+fact_videos,is_ad,bool,cleaned_video_info.parquet (isAd; platform disclosure flag),70996,100.0,70996,100.0,0,0.0
+fact_videos,is_ec_video,bool,final_raw_videos.csv (isECVideo; platform TikTok Shop flag),70996,100.0,70996,100.0,0,0.0
+fact_videos,playlist_id,str,final_raw_videos.csv (playlistId; '0' normalized to None),13227,18.63,13227,18.63,57769,81.37
+fact_videos,duration_sec,int64,cleaned_video_info.parquet (video.duration),70996,100.0,70996,100.0,0,0.0
+fact_videos,duration_bucket,str,derived via classify_duration_bucket(duration_sec),70996,100.0,70996,100.0,0,0.0
+fact_videos,caption,str,cleaned_video_info.parquet (desc),70996,100.0,70996,100.0,0,0.0
+fact_videos,hashtags,object,cleaned_video_info.parquet (hashtags),70996,100.0,70650,99.51,346,0.49
+fact_videos,hashtag_count,int64,derived len(hashtags),70996,100.0,70996,100.0,0,0.0
+fact_videos,has_transcript,bool,derived bool(transcript) after refusal/length filter,70996,100.0,70996,100.0,0,0.0
+fact_videos,transcript,str,data/transcripts/*.json -> fallback content_analysis/final_location_food_data,70996,100.0,21748,30.63,49248,69.37
+fact_videos,word_count,int64,derived len(transcript.split()) when has_transcript,70996,100.0,70996,100.0,0,0.0
+fact_videos,word_per_second,float64,derived word_count / duration_sec (0.0 when duration_sec==0),70996,100.0,70996,100.0,0,0.0
+fact_videos,has_cta,bool,transcript JSON / content_analysis / final_location_food_data,70996,100.0,70996,100.0,0,0.0
+fact_videos,has_curiosity_gap,bool,transcript JSON / final_location_food_data,70996,100.0,70996,100.0,0,0.0
+fact_videos,poi_id,str,final_raw_videos.csv (poi.id),23448,33.03,23448,33.03,47548,66.97
+fact_videos,poi_name,str,final_raw_videos.csv (poi.name),23448,33.03,23448,33.03,47548,66.97
+fact_videos,poi_address,str,final_raw_videos.csv (poi.address),23448,33.03,23448,33.03,47548,66.97
+fact_videos,poi_city,str,final_raw_videos.csv (poi.city),12137,17.1,12137,17.1,58859,82.9
+fact_videos,poi_category_tiny,str,final_raw_videos.csv (poi.ttTypeNameTiny),22330,31.45,22330,31.45,48666,68.55
+fact_videos,city_norm,str,"derived via resolve_location(poi_city, poi_address, llm_city, llm_district)",17014,23.96,17014,23.96,53982,76.04
+fact_videos,district_norm,str,"derived via resolve_location(poi_city, poi_address, llm_city, llm_district)",4670,6.58,4670,6.58,66326,93.42
+fact_videos,region,str,derived via CITY_TO_REGION[city_norm] or district fallback,70996,100.0,70996,100.0,55065,77.56
+fact_videos,location_source,str,derived provenance tag (poi_gps | district_resolved | llm_inferred | unknown),70996,100.0,70996,100.0,53982,76.04
+fact_videos,video_format,str,content_analysis.categories -> fallback infer_video_format,70996,100.0,70996,100.0,0,0.0
+fact_videos,food_category,str,"derived via map_food_category(dishes, combined_text, poi_category_tiny)",70996,100.0,70996,100.0,0,0.0
+fact_videos,dishes,object,final_location_food_data.foods + extract_dishes_from_text(combined_text),70996,100.0,29248,41.2,41748,58.8
+fact_videos,price_tier,str,"derived via extract_price_tier(combined_text, video_format)",70996,100.0,70996,100.0,59068,83.2
+fact_videos,occasions,object,"derived via extract_occasions(combined_text, video_format)",70996,100.0,70996,100.0,0,0.0
+fact_videos,hook_text,str,content_analysis.hook_content -> fallback extract_script_anatomy,70996,100.0,21748,30.63,49248,69.37
+fact_videos,body_beats,object,content_analysis.body_analysis / takeaways -> fallback extract_script_anatomy,70996,100.0,21461,30.23,49535,69.77
+fact_videos,cta_text,str,content_analysis.cta_content -> fallback extract_script_anatomy,70996,100.0,21099,29.72,49897,70.28
+fact_videos,rag_document,str,derived formatted string when has_transcript else '',70996,100.0,21748,30.63,49248,69.37
+dim_creators,author_id,str,cleaned_user_info.parquet (user.id),264,100.0,264,100.0,0,0.0
+dim_creators,unique_id,str,cleaned_user_info.parquet (user.uniqueId),264,100.0,264,100.0,0,0.0
+dim_creators,nickname,str,cleaned_user_info.parquet (user.nickname),264,100.0,264,100.0,0,0.0
+dim_creators,verified,bool,cleaned_user_info.parquet (user.verified),264,100.0,264,100.0,0,0.0
+dim_creators,commerce_user,bool,cleaned_user_info.parquet (user.commerceUserInfo.commerceUser),264,100.0,264,100.0,0,0.0
+dim_creators,tt_seller,bool,cleaned_user_info.parquet (user.ttSeller),264,100.0,264,100.0,0,0.0
+dim_creators,follower_count,int64,cleaned_user_info.parquet (stats.followerCount),264,100.0,264,100.0,0,0.0
+dim_creators,follower_tier,str,derived via classify_follower_tier(follower_count),264,100.0,264,100.0,0,0.0
+dim_creators,heart_count,int64,cleaned_user_info.parquet (stats.heartCount),264,100.0,264,100.0,0,0.0
+dim_creators,lifetime_video_count,int64,cleaned_user_info.parquet (stats.videoCount),264,100.0,264,100.0,0,0.0
+dim_creators,sample_video_count,int64,aggregated count from cleaned_video_info.parquet,264,100.0,264,100.0,0,0.0
+dim_creators,median_play_count,float64,aggregated median playCount from cleaned_video_info.parquet,264,100.0,264,100.0,0,0.0
+dim_creators,median_engagement_rate,float64,aggregated median engagement_rate from cleaned_video_info.parquet,264,100.0,264,100.0,0,0.0
+dim_creators,median_duration_sec,float64,aggregated median duration_sec from cleaned_video_info.parquet,264,100.0,264,100.0,0,0.0
+dim_creators,avg_videos_per_week,float64,cleaned_user_info.parquet (avg_videos_per_week),264,100.0,264,100.0,0,0.0

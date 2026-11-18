@@ -1,0 +1,65 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/intern-nvnguyen1/Project/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 7 items
+
+tests/unit/test_taxonomy_and_corpus.py ...FFFF                           [100%]
+
+=================================== FAILURES ===================================
+______ test_district_substring_does_not_collide_quan_1_with_quan_10_to_12 ______
+
+    def test_district_substring_does_not_collide_quan_1_with_quan_10_to_12() -> None:
+        for d_num in ("10", "11", "12"):
+            city, dist, region, source = resolve_location(
+                poi_address=f"123 Đường số 1, Quận {d_num}, TP.HCM",
+            )
+            assert city == "hồ chí minh"
+>           assert dist == f"quận {d_num}"
+E           AssertionError: assert 'quận 1' == 'quận 10'
+E             
+E             - quận 10
+E             ?       -
+E             + quận 1
+
+tests/unit/test_taxonomy_and_corpus.py:110: AssertionError
+_______ test_poi_name_and_english_city_district_aliases_resolve_cleanly ________
+
+    def test_poi_name_and_english_city_district_aliases_resolve_cleanly() -> None:
+>       assert resolve_location(poi_name="Ho Chi Minh City", poi_address="Vietnam") == (
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "hồ chí minh",
+            None,
+            "south",
+            "poi_gps",
+        )
+E       TypeError: resolve_location() got an unexpected keyword argument 'poi_name'
+
+tests/unit/test_taxonomy_and_corpus.py:116: TypeError
+________ test_dish_and_category_word_boundary_prevents_false_oc_matches ________
+
+    def test_dish_and_category_word_boundary_prevents_false_oc_matches() -> None:
+        from packages.taxonomy import extract_dishes_from_text
+    
+        false_hits = extract_dishes_from_text("Đồ ăn Trung Quốc tốc độ cao gốc Hoa rất sốc")
+>       assert "ốc" not in false_hits
+E       AssertionError: assert 'ốc' not in ['ốc']
+
+tests/unit/test_taxonomy_and_corpus.py:143: AssertionError
+____ test_occasions_unknown_returns_empty_and_anatomy_ignores_null_strings _____
+
+    def test_occasions_unknown_returns_empty_and_anatomy_ignores_null_strings() -> None:
+>       assert extract_occasions("Review phở bò tái nạm nước dùng đậm đà", "Review món ăn") == []
+E       AssertionError: assert ['an_vat_xe_chieu'] == []
+E         
+E         Left contains one more item: 'an_vat_xe_chieu'
+E         Use -v to get more diff
+
+tests/unit/test_taxonomy_and_corpus.py:149: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_taxonomy_and_corpus.py::test_district_substring_does_not_collide_quan_1_with_quan_10_to_12
+FAILED tests/unit/test_taxonomy_and_corpus.py::test_poi_name_and_english_city_district_aliases_resolve_cleanly
+FAILED tests/unit/test_taxonomy_and_corpus.py::test_dish_and_category_word_boundary_prevents_false_oc_matches
+FAILED tests/unit/test_taxonomy_and_corpus.py::test_occasions_unknown_returns_empty_and_anatomy_ignores_null_strings
+========================= 4 failed, 3 passed in 0.91s ==========================

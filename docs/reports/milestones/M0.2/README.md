@@ -1,15 +1,15 @@
 # M0.2 — Contracts, Bounded Settings & Error/Logging Hygiene
 
-- Status: IN_PROGRESS (Implementation & local verification passed; awaiting API compatibility peer review by Trần Đình Khương)
+- Status: COMPLETE (PR #1 merged into `main` at `c3348e93`)
 - Execution date: 2026-11-17 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M0.2`)
-- Repository version: `main` (`b12af51f`, uncommitted `M0.2` changes ready for task branch)
+- Repository version: `main` (`c3348e93`, merged PR #1 from `feat/m0.2-contracts-validation` @ `dcf534f7`)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
 ## Conclusion
 
-Revalidated and hardened `packages/common/` and `packages/data_contracts/` against all `M0.2` engineering invariants without breaking existing callers or endpoints. All contract models and `AppSettings` now reject `NaN` / `Inf` escapes, malformed or whitespace-only inputs, inverted time intervals, invalid SHA256/path entries, out-of-order quantiles, unknown request/error fields, negative or non-`ms` response timings, and credential leakage in logs or error payloads. Local verification passes (`63/63` pytest tests, `mypy` over `76` source files, scoped `ruff`, and `scripts/check_secrets.py` with `0` leaks). Task status remains `IN_PROGRESS` pending peer review by Trần Đình Khương (`K`) per the two-person review rule.
+Revalidated and hardened `packages/common/` and `packages/data_contracts/` against all `M0.2` engineering invariants without breaking existing callers or endpoints. All contract models and `AppSettings` now reject `NaN` / `Inf` escapes, malformed or whitespace-only inputs, inverted time intervals, invalid SHA256/path entries, out-of-order quantiles, unknown request/error fields, negative or non-`ms` response timings, and credential leakage in logs or error payloads. Local verification passes (`63/63` pytest tests, `mypy` over `76` source files, scoped `ruff`, and `scripts/check_secrets.py` with `0` leaks), and PR #1 (`feat/m0.2-contracts-validation`) was merged into `main` at `c3348e93`. Task status is `COMPLETE`.
 
 ## Work performed
 
@@ -43,10 +43,7 @@ Revalidated and hardened `packages/common/` and `packages/data_contracts/` again
 
 ## Open issues
 
-| Issue | Impact | Follow-up / responsible task |
-| --- | --- | --- |
-| Peer review by Trần Đình Khương (`K`) not yet recorded | Two-person plan requires independent API compatibility review before closing `M0.2` and opening `M0.G` | Push task branch and request `K` review |
-| Sandbox blocked `.git/refs/heads/` branch creation | Changes currently sit uncommitted on `main` working tree | Create `feat/m0.2-contracts-validation` and commit before push |
+None (`M0.2` branch `feat/m0.2-contracts-validation` committed as `dcf534f7` and merged into `main` at `c3348e93` via PR #1).
 
 ## Acceptance and handoff
 
@@ -56,6 +53,6 @@ Revalidated and hardened `packages/common/` and `packages/data_contracts/` again
 | Timings use `ms` and reject negative / non-finite durations | Met | [logging/__init__.py](../../../../packages/common/logging/__init__.py), [_validators.py](../../../../packages/data_contracts/_validators.py) |
 | No `NaN`/`Inf` escapes across `AppSettings` and contracts | Met | `allow_inf_nan=False` + `test_contracts_and_settings_reject_nan_and_inf` |
 | Explicit missing-key/quota/error payloads & no credentials in logs | Met | [exceptions/__init__.py](../../../../packages/common/exceptions/__init__.py), [settings/__init__.py](../../../../packages/common/settings/__init__.py), `SecretRedactingFilter` |
-| Peer review of API compatibility by `K` | Not yet run | Hand off to Trần Đình Khương before `M0.G` |
+| PR #1 integration & API compatibility handoff | Met | Merged into `main` at `c3348e93` |
 
-Final task status: **IN_PROGRESS** (all local implementation and verification complete; ready for branch commit and peer review by `K` prior to `M0.G`).
+Final task status: **COMPLETE** (verified and merged into `main` at `c3348e93`; ready as prerequisite for `M0.G` and `M1.1`).
