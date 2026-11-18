@@ -12,10 +12,15 @@ from typing import Any
 
 _GOOGLE_KEY_RE = re.compile(r"AIza[0-9A-Za-z_-]{12,}")
 _BEARER_RE = re.compile(r"(Bearer\s+)[A-Za-z0-9._-]+", flags=re.IGNORECASE)
+_SECRET_KEY_NAMES = r"GEMINI_API_KEY|api[_-]?key|apikey|access_token|token|secret|password|key"
+_QUOTED_KV_SECRET_RE = re.compile(
+    rf"(?i)(['\"]?)\b({_SECRET_KEY_NAMES})\b\1(\s*[=:]\s*)(['\"]).*?\4"
+)
 _KV_SECRET_RE = re.compile(
-    r"(?i)\b(GEMINI_API_KEY|api_key|apikey|access_token|token|secret|password|key)\s*([=:])\s*([^\s&\"'`,;]+)"
+    rf"(?i)(['\"]?)\b({_SECRET_KEY_NAMES})\b\1(\s*[=:]\s*)([^\s&\"'`,;\]\}}]+)"
 )
 _URL_CRED_RE = re.compile(r"([a-zA-Z][a-zA-Z0-9+.-]*://[^:/@\s]*:)([^@\s]+)(@)")
+_SAFE_EXCEPTION_FORMATTER = logging.Formatter()
 
 
 def redact_secrets(text: str) -> str:
@@ -25,7 +30,8 @@ def redact_secrets(text: str) -> str:
     out = _GOOGLE_KEY_RE.sub("[REDACTED]", text)
     out = _BEARER_RE.sub(r"\1[REDACTED]", out)
     out = _URL_CRED_RE.sub(r"\1[REDACTED]\3", out)
-    out = _KV_SECRET_RE.sub(r"\1\2[REDACTED]", out)
+    out = _QUOTED_KV_SECRET_RE.sub(r"\1\2\1\3\4[REDACTED]\4", out)
+    out = _KV_SECRET_RE.sub(r"\1\2\1\3[REDACTED]", out)
     return out
 
 
@@ -42,7 +48,7 @@ def _redact_arg(value: Any) -> Any:
 
 
 class SecretRedactingFilter(logging.Filter):
-    """Logging filter that strips credential patterns from formatted log messages."""
+    """Logging filter that strips credential patterns from log messages, tracebacks, and stacks."""
 
     def filter(self, record: logging.LogRecord) -> bool:
         try:
@@ -55,8 +61,14 @@ class SecretRedactingFilter(logging.Filter):
         else:
             record.msg = redact_secrets(formatted)
             record.args = None
+        if record.exc_info and not record.exc_text:
+            record.exc_text = _SAFE_EXCEPTION_FORMATTER.formatException(record.exc_info)
         if record.exc_text:
             record.exc_text = redact_secrets(record.exc_text)
+        # Clear raw exc_info after caching redacted exc_text so Formatters cannot re-render raw secrets.
+        record.exc_info = None
+        if record.stack_info:
+            record.stack_info = redact_secrets(record.stack_info)
         return True
 
 
