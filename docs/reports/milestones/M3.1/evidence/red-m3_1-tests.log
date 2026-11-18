@@ -1,0 +1,152 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/intern-nvnguyen1/Project/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 26 items
+
+tests/unit/test_snapshot_continuity.py ....................FF.F.F        [100%]
+
+=================================== FAILURES ===================================
+____________________ test_invalid_create_time_fails_closed _____________________
+
+base_snapshot = PosixPath('/tmp/pytest-of-intern-nvnguyen1/pytest-18/test_invalid_create_time_fails0/base')
+tmp_path = PosixPath('/tmp/pytest-of-intern-nvnguyen1/pytest-18/test_invalid_create_time_fails0')
+
+    def test_invalid_create_time_fails_closed(base_snapshot: Path, tmp_path: Path) -> None:
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/test_snapshot_continuity.py:362: Failed
+_______________ test_empty_batch_preserves_base_date_window_end ________________
+
+base_snapshot = PosixPath('/tmp/pytest-of-intern-nvnguyen1/pytest-18/test_empty_batch_preserves_bas0/base')
+tmp_path = PosixPath('/tmp/pytest-of-intern-nvnguyen1/pytest-18/test_empty_batch_preserves_bas0')
+
+    def test_empty_batch_preserves_base_date_window_end(base_snapshot: Path, tmp_path: Path) -> None:
+        empty_jsonl = tmp_path / "empty.jsonl"
+        empty_jsonl.write_text("", encoding="utf-8")
+        out_empty = tmp_path / "out_empty"
+        manifest_empty = ingest_incremental_batch_to_gold(base_snapshot, empty_jsonl, out_empty)
+>       assert manifest_empty.date_window_end == "2026-11-01"
+E       AssertionError: assert '2026-11-18' == '2026-11-01'
+E         
+E         - 2026-11-01
+E         ?         -
+E         + 2026-11-18
+E         ?          +
+
+tests/unit/test_snapshot_continuity.py:395: AssertionError
+____ test_missing_modalities_maintain_typed_parquet_schemas_across_batches _____
+
+base_snapshot = PosixPath('/tmp/pytest-of-intern-nvnguyen1/pytest-18/test_missing_modalities_mainta0/base')
+tmp_path = PosixPath('/tmp/pytest-of-intern-nvnguyen1/pytest-18/test_missing_modalities_mainta0')
+
+    def test_missing_modalities_maintain_typed_parquet_schemas_across_batches(
+        base_snapshot: Path, tmp_path: Path
+    ) -> None:
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+    
+        missing_mod_jsonl = tmp_path / "missing_mod.jsonl"
+        missing_mod_jsonl.write_text(
+            RawIncrementalVideoRecord(
+                video_id="M_ONLY",
+                author_id="a1",
+                author_handle="fixture_creator",
+                create_time="2026-11-05T00:00:00+00:00",
+                caption="Video quay cảnh quán không lời thoại",
+                duration_sec=20,
+                play_count=500,
+            ).model_dump_json(exclude_unset=True)
+            + "\n",
+            encoding="utf-8",
+        )
+        v2 = tmp_path / "v2_missing_mod"
+        ingest_incremental_batch_to_gold(base_snapshot, missing_mod_jsonl, v2)
+    
+        voice_schema = pq.read_schema(v2 / "fact_voice_segments.parquet")
+        comment_schema = pq.read_schema(v2 / "fact_comments.parquet")
+>       assert pa.types.is_integer(voice_schema.field("seq_no").type)
+E       assert False
+E        +  where False = <function is_integer at 0x7c88ba412f20>(DataType(null))
+E        +    where <function is_integer at 0x7c88ba412f20> = <module 'pyarrow.types' from '/home/intern-nvnguyen1/Project/TikTok_AI_Engine_/.venv/lib/python3.12/site-packages/pyarrow/types.py'>.is_integer
+E        +      where <module 'pyarrow.types' from '/home/intern-nvnguyen1/Project/TikTok_AI_Engine_/.venv/lib/python3.12/site-packages/pyarrow/types.py'> = <module 'pyarrow' from '/home/intern-nvnguyen1/Project/TikTok_AI_Engine_/.venv/lib/python3.12/site-packages/pyarrow/__init__.py'>.types
+E        +    and   DataType(null) = pyarrow.Field<seq_no: null>.type
+E        +      where pyarrow.Field<seq_no: null> = field('seq_no')
+E        +        where field = segment_id: null\nvideo_id: null\nseq_no: null\nstart_sec: null\nend_sec: null\ntimestamp_source: null\ntext: null\nwords_per...energy_cv: null\n-- schema metadata --\npandas: '{"index_columns": [], "column_indexes": [], "columns": [{"name":' + 1255.field
+
+tests/unit/test_snapshot_continuity.py:466: AssertionError
+______ test_cli_update_existing_and_corrupt_multimodal_base_fails_closed _______
+
+base_snapshot = PosixPath('/tmp/pytest-of-intern-nvnguyen1/pytest-18/test_cli_update_existing_and_c0/base')
+tmp_path = PosixPath('/tmp/pytest-of-intern-nvnguyen1/pytest-18/test_cli_update_existing_and_c0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c88ad71b200>
+
+    def test_cli_update_existing_and_corrupt_multimodal_base_fails_closed(
+        base_snapshot: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import sys
+    
+        from pipelines.ingest_incremental_to_gold.__main__ import main as cli_main
+    
+        v2 = tmp_path / "v2"
+        ingest_incremental_batch_to_gold(base_snapshot, _batch(tmp_path, "A"), v2)
+    
+        update_jsonl = tmp_path / "cli_update.jsonl"
+        update_jsonl.write_text(
+            _batch(tmp_path, "A", text="Phở bò CLI enrichment mới.", comment_id="A_cli").read_text(
+                encoding="utf-8"
+            ),
+            encoding="utf-8",
+        )
+        v3 = tmp_path / "v3_cli"
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "ingest_incremental_to_gold",
+                "--base-corpus",
+                str(v2),
+                "--incremental-jsonl",
+                str(update_jsonl),
+                "--output-corpus",
+                str(v3),
+                "--update-existing",
+            ],
+        )
+>       cli_main()
+
+tests/unit/test_snapshot_continuity.py:532: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+pipelines/ingest_incremental_to_gold/__main__.py:21: in main
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/argparse.py:1911: in parse_args
+    self.error(msg % ' '.join(argv))
+/usr/lib/python3.12/argparse.py:2677: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = ArgumentParser(prog='ingest_incremental_to_gold', usage=None, description='Convert 4-month incremental JSONL batch int...nded Gold Corpus snapshot.', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+status = 2
+message = 'ingest_incremental_to_gold: error: unrecognized arguments: --update-existing\n'
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, _sys.stderr)
+>       _sys.exit(status)
+E       SystemExit: 2
+
+/usr/lib/python3.12/argparse.py:2664: SystemExit
+----------------------------- Captured stderr call -----------------------------
+usage: ingest_incremental_to_gold [-h] [--base-corpus BASE_CORPUS]
+                                  [--incremental-jsonl INCREMENTAL_JSONL]
+                                  [--output-corpus OUTPUT_CORPUS]
+ingest_incremental_to_gold: error: unrecognized arguments: --update-existing
+=========================== short test summary info ============================
+FAILED tests/unit/test_snapshot_continuity.py::test_invalid_create_time_fails_closed
+FAILED tests/unit/test_snapshot_continuity.py::test_empty_batch_preserves_base_date_window_end
+FAILED tests/unit/test_snapshot_continuity.py::test_missing_modalities_maintain_typed_parquet_schemas_across_batches
+FAILED tests/unit/test_snapshot_continuity.py::test_cli_update_existing_and_corrupt_multimodal_base_fails_closed
+========================= 4 failed, 22 passed in 3.07s =========================

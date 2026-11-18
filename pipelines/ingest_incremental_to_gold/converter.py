@@ -3,10 +3,11 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -15,7 +16,11 @@ from packages.absa import analyze_koc_vs_viewer_absa
 from packages.analytics import load_verified_corpus
 from packages.common.snapshots import snapshot_workspace
 from packages.data_contracts.corpus import CorpusFileChecksum, CorpusManifest
-from packages.data_contracts.multimodal import RawCommentInput, RawIncrementalVideoRecord, VoiceSegmentRecord
+from packages.data_contracts.multimodal import (
+    RawCommentInput,
+    RawIncrementalVideoRecord,
+    VoiceSegmentRecord,
+)
 from packages.seeding import detect_seeding_comments
 from packages.taxonomy import (
     classify_duration_bucket,
@@ -34,6 +39,109 @@ from pipelines.build_gold_corpus.builder import (
 )
 
 SENTENCE_RE = re.compile(r"(?<=[.!?…])\s+|\n+")
+
+_VOICE_SEGMENTS_SCHEMA = pa.schema(
+    [
+        ("segment_id", pa.string()),
+        ("video_id", pa.string()),
+        ("seq_no", pa.int64()),
+        ("start_sec", pa.float64()),
+        ("end_sec", pa.float64()),
+        ("timestamp_source", pa.string()),
+        ("text", pa.string()),
+        ("words_per_sec", pa.float64()),
+        ("pitch_std", pa.float64()),
+        ("energy_cv", pa.float64()),
+    ]
+)
+
+_COMMENTS_SCHEMA = pa.schema(
+    [
+        ("comment_id", pa.string()),
+        ("video_id", pa.string()),
+        ("author_handle", pa.string()),
+        ("text", pa.string()),
+        ("like_count", pa.int64()),
+        ("reply_count", pa.int64()),
+        ("is_seeding", pa.bool_()),
+        ("seeding_reason", pa.string()),
+        ("similarity_score", pa.float64()),
+        ("cluster_id", pa.int64()),
+    ]
+)
+
+_ABSA_REVIEWS_SCHEMA = pa.schema(
+    [
+        ("video_id", pa.string()),
+        ("koc_taste", pa.float64()),
+        ("koc_price", pa.float64()),
+        ("koc_hygiene", pa.float64()),
+        ("koc_service", pa.float64()),
+        ("viewer_taste", pa.float64()),
+        ("viewer_price", pa.float64()),
+        ("viewer_hygiene", pa.float64()),
+        ("viewer_service", pa.float64()),
+        ("pr_hype_gap", pa.float64()),
+        ("undisclosed_pr_risk", pa.float64()),
+        ("viewer_pain_points", pa.list_(pa.string())),
+        ("clean_comment_count", pa.int64()),
+        ("seeding_comment_count", pa.int64()),
+    ]
+)
+
+_NON_OPTIONAL_STRING_DEFAULTS: dict[str, str] = {
+    "author_nickname": "",
+    "caption": "",
+}
+_NON_OPTIONAL_INT_DEFAULTS: dict[str, int] = {
+    "follower_count": 0,
+    "duration_sec": 0,
+    "play_count": 0,
+    "digg_count": 0,
+    "comment_count": 0,
+    "share_count": 0,
+    "collect_count": 0,
+}
+_NON_OPTIONAL_BOOL_DEFAULTS: dict[str, bool] = {
+    "is_ad": False,
+    "is_ec_video": False,
+}
+
+
+def _normalize_scalar(value: Any) -> Any:
+    if value is None or value is pd.NA:
+        return None
+    if isinstance(value, (float, np.floating)) and np.isnan(value):
+        return None
+    if isinstance(value, np.generic):
+        return value.item()
+    return value
+
+
+def _normalize_preserved_row(old_row: dict[str, Any], excluded: set[str]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for key in RawIncrementalVideoRecord.model_fields:
+        if key in excluded or key not in old_row:
+            continue
+        raw_val = old_row[key]
+        if key == "hashtags":
+            if isinstance(raw_val, np.ndarray):
+                out[key] = [str(x) for x in raw_val.tolist()]
+            elif isinstance(raw_val, (list, tuple)):
+                out[key] = [str(x) for x in raw_val]
+            else:
+                out[key] = []
+            continue
+        val = _normalize_scalar(raw_val)
+        if val is None:
+            if key in _NON_OPTIONAL_STRING_DEFAULTS:
+                val = _NON_OPTIONAL_STRING_DEFAULTS[key]
+            elif key in _NON_OPTIONAL_INT_DEFAULTS:
+                val = _NON_OPTIONAL_INT_DEFAULTS[key]
+            elif key in _NON_OPTIONAL_BOOL_DEFAULTS:
+                val = _NON_OPTIONAL_BOOL_DEFAULTS[key]
+        out[key] = val
+    return out
 
 
 def _sha256_file(path: Path) -> str:
@@ -116,6 +224,8 @@ def ingest_incremental_batch_to_gold(
             snapshot_id=output_corpus_dir.name, update_existing=update_existing,
         )
         load_verified_corpus(staging_dir)
+        for fname in ("fact_voice_segments.parquet", "fact_comments.parquet", "fact_absa_reviews.parquet"):
+            pq.read_table(staging_dir / fname)
     return manifest
 
 
@@ -168,6 +278,7 @@ def _ingest_incremental_batch_to_gold(
     comment_rows: list[dict[str, Any]] = []
     absa_rows: list[dict[str, Any]] = []
     replaced_voice_ids: set[str] = set()
+    observed_dates: list[str] = []
 
     for rec in raw_records.values():
         is_existing = rec.video_id in existing_vids
@@ -183,18 +294,19 @@ def _ingest_incremental_batch_to_gold(
         if old_row is not None:
             # Enrichment preserves the observed metadata/counters; it cannot replace
             # historical observations with the defaults of a sparse ASR/comment record.
-            fields = RawIncrementalVideoRecord.model_fields
-            preserved = {key: old_row[key] for key in fields if key in old_row and key not in {
+            excluded_fields = {
                 "transcript", "pitch_std", "energy_cv", "comments", "whisper_segments", "audio_path",
-            }}
+            }
+            preserved = _normalize_preserved_row(old_row, excluded_fields)
             rec = rec.model_copy(update=preserved)
             if not rec.transcript.strip():
-                rec = rec.model_copy(update={"transcript": str(old_row.get("transcript") or "")})
+                rec = rec.model_copy(update={"transcript": str(_normalize_scalar(old_row.get("transcript")) or "")})
             old_comments = base_multimodal.get("fact_comments.parquet")
             prior_comments: list[RawCommentInput] = []
             if old_comments is not None:
                 for item in old_comments[old_comments["video_id"] == rec.video_id].to_dict(orient="records"):
-                    prior_comments.append(RawCommentInput.model_validate(item))
+                    cleaned_item = {k: _normalize_scalar(v) for k, v in item.items()}
+                    prior_comments.append(RawCommentInput.model_validate(cleaned_item))
             rec = rec.model_copy(update={"comments": _merge_comments(prior_comments, rec.comments)})
         existing_vids.add(rec.video_id)
 
@@ -205,10 +317,8 @@ def _ingest_incremental_batch_to_gold(
         )
         v_mult = compute_viral_multiplier(rec.play_count, c_median)
 
-        try:
-            dt = datetime.fromisoformat(rec.create_time.replace("Z", "+00:00"))
-        except Exception:
-            dt = datetime.now(timezone.utc)
+        dt = datetime.fromisoformat(rec.create_time.replace("Z", "+00:00"))
+        observed_dates.append(dt.strftime("%Y-%m-%d"))
         iso_year, iso_week, _ = dt.isocalendar()
         year_week = f"Y{iso_year}_W{iso_week:02d}"
 
@@ -381,15 +491,9 @@ def _ingest_incremental_batch_to_gold(
         pd.DataFrame(new_video_rows).reindex(columns=df_videos.columns),
     ], ignore_index=True) if new_video_rows else df_videos
 
-    df_voice = pd.DataFrame(voice_rows) if voice_rows else pd.DataFrame(
-        columns=["segment_id", "video_id", "seq_no", "start_sec", "end_sec", "timestamp_source", "text", "words_per_sec", "pitch_std", "energy_cv"]
-    )
-    df_comments = pd.DataFrame(comment_rows) if comment_rows else pd.DataFrame(
-        columns=["comment_id", "video_id", "author_handle", "text", "like_count", "reply_count", "is_seeding", "seeding_reason", "similarity_score", "cluster_id"]
-    )
-    df_absa = pd.DataFrame(absa_rows) if absa_rows else pd.DataFrame(
-        columns=["video_id", "koc_taste", "koc_price", "koc_hygiene", "koc_service", "viewer_taste", "viewer_price", "viewer_hygiene", "viewer_service", "pr_hype_gap", "undisclosed_pr_risk", "viewer_pain_points", "clean_comment_count", "seeding_comment_count"]
-    )
+    df_voice = pd.DataFrame(voice_rows) if voice_rows else pd.DataFrame(columns=_VOICE_SEGMENTS_SCHEMA.names)
+    df_comments = pd.DataFrame(comment_rows) if comment_rows else pd.DataFrame(columns=_COMMENTS_SCHEMA.names)
+    df_absa = pd.DataFrame(absa_rows) if absa_rows else pd.DataFrame(columns=_ABSA_REVIEWS_SCHEMA.names)
 
     def _carry_forward(name: str, fresh: pd.DataFrame, replace_ids: set[str]) -> pd.DataFrame:
         old = base_multimodal.get(name)
@@ -402,18 +506,19 @@ def _ingest_incremental_batch_to_gold(
     df_comments = _carry_forward("fact_comments.parquet", df_comments, updated_video_ids)
     df_absa = _carry_forward("fact_absa_reviews.parquet", df_absa, updated_video_ids)
 
-    tables = [
-        ("dim_creators.parquet", df_out_creators),
-        ("fact_videos.parquet", df_out_videos),
-        ("fact_voice_segments.parquet", df_voice),
-        ("fact_comments.parquet", df_comments),
-        ("fact_absa_reviews.parquet", df_absa),
+    tables: list[tuple[str, pd.DataFrame, pa.Schema | None]] = [
+        ("dim_creators.parquet", df_out_creators, None),
+        ("fact_videos.parquet", df_out_videos, None),
+        ("fact_voice_segments.parquet", df_voice, _VOICE_SEGMENTS_SCHEMA),
+        ("fact_comments.parquet", df_comments, _COMMENTS_SCHEMA),
+        ("fact_absa_reviews.parquet", df_absa, _ABSA_REVIEWS_SCHEMA),
     ]
 
     checksums: list[CorpusFileChecksum] = []
-    for fname, df_tbl in tables:
+    for fname, df_tbl, arrow_schema in tables:
         out_p = output_corpus_dir / fname
-        pq.write_table(pa.Table.from_pandas(df_tbl, preserve_index=False), out_p, compression="snappy")
+        pa_table = pa.Table.from_pandas(df_tbl, schema=arrow_schema, preserve_index=False)
+        pq.write_table(pa_table, out_p, compression="snappy")
         checksums.append(
             CorpusFileChecksum(
                 filename=fname,
@@ -424,13 +529,18 @@ def _ingest_incremental_batch_to_gold(
             )
         )
 
+    effective_window_end = (
+        max([base_manifest.date_window_end, *observed_dates])
+        if observed_dates
+        else base_manifest.date_window_end
+    )
     manifest = CorpusManifest(
         snapshot_id=snapshot_id,
         parent_snapshot_id=base_manifest.snapshot_id,
         parent_manifest_sha256=parent_manifest_sha256,
-        created_at=datetime.now(timezone.utc).isoformat(),
+        created_at=datetime.now(UTC).isoformat(),
         date_window_start=base_manifest.date_window_start,
-        date_window_end=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        date_window_end=effective_window_end,
         total_creators=len(df_out_creators),
         total_videos=len(df_out_videos),
         transcribed_videos=int(df_out_videos["has_transcript"].sum()),

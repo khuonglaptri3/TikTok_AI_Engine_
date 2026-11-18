@@ -356,3 +356,188 @@ def test_historical_builder_fails_closed_on_corrupted_parent_snapshot(
             parent_corpus_dir=base_snapshot,
         )
     assert not out.exists()
+
+
+def test_invalid_create_time_fails_closed(base_snapshot: Path, tmp_path: Path) -> None:
+    with pytest.raises(ValueError):
+        RawIncrementalVideoRecord(
+            video_id="bad_ts",
+            author_id="a1",
+            author_handle="fixture_creator",
+            create_time="not-an-iso-timestamp",
+        )
+
+    bad_jsonl = tmp_path / "bad_time.jsonl"
+    bad_jsonl.write_text(
+        json.dumps(
+            {
+                "video_id": "bad_ts",
+                "author_id": "a1",
+                "author_handle": "fixture_creator",
+                "create_time": "invalid-date",
+                "caption": "Phở bò",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "rejected_bad_time"
+    with pytest.raises(ValueError):
+        ingest_incremental_batch_to_gold(base_snapshot, bad_jsonl, out)
+    assert not out.exists()
+
+
+def test_empty_batch_preserves_base_date_window_end(base_snapshot: Path, tmp_path: Path) -> None:
+    empty_jsonl = tmp_path / "empty.jsonl"
+    empty_jsonl.write_text("", encoding="utf-8")
+    out_empty = tmp_path / "out_empty"
+    manifest_empty = ingest_incremental_batch_to_gold(base_snapshot, empty_jsonl, out_empty)
+    assert manifest_empty.date_window_end == "2026-11-01"
+
+    out_new = tmp_path / "out_new"
+    manifest_new = ingest_incremental_batch_to_gold(base_snapshot, _batch(tmp_path, "A"), out_new)
+    assert manifest_new.date_window_end == "2026-11-10"
+
+
+def test_enrichment_handles_parquet_nan_and_ndarray_base_rows(
+    base_snapshot: Path, tmp_path: Path
+) -> None:
+    # Real Parquet snapshots store empty strings as None/NaN (including float64 NaN) and lists as numpy.ndarray.
+    import numpy as np
+
+    df_v = pd.read_parquet(base_snapshot / "fact_videos.parquet")
+    df_v["hashtags"] = [np.array(["bunbo", "saigon"])]
+    df_v["poi_name"] = np.nan
+    df_v["playlist_id"] = np.nan
+    video_path = base_snapshot / "fact_videos.parquet"
+    df_v.to_parquet(video_path, index=False)
+    manifest_path = base_snapshot / "manifest.json"
+    manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    for entry in manifest_data["files"]:
+        if entry["filename"] == "fact_videos.parquet":
+            entry["sha256"] = hashlib.sha256(video_path.read_bytes()).hexdigest()
+            entry["size_bytes"] = video_path.stat().st_size
+    manifest_path.write_text(json.dumps(manifest_data), encoding="utf-8")
+
+    enrich_jsonl = tmp_path / "enrich_base.jsonl"
+    enrich_jsonl.write_text(
+        RawIncrementalVideoRecord(
+            video_id="base_video",
+            author_id="a1",
+            author_handle="fixture_creator",
+            create_time="2026-11-01T00:00:00+00:00",
+            transcript="Bún bò Sài Gòn nước dùng rất thơm ngon.",
+            comments=[RawCommentInput(comment_id="base_c1", text="Quán sạch sẽ phục vụ nhanh")],
+        ).model_dump_json(exclude_unset=True)
+        + "\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "enriched_real_parquet"
+    ingest_incremental_batch_to_gold(base_snapshot, enrich_jsonl, out, update_existing=True)
+    df_out = pd.read_parquet(out / "fact_videos.parquet")
+    row = df_out[df_out["video_id"] == "base_video"].iloc[0]
+    assert row["transcript"] == "Bún bò Sài Gòn nước dùng rất thơm ngon."
+    assert list(row["hashtags"]) == ["bunbo", "saigon"]
+
+
+def test_missing_modalities_maintain_typed_parquet_schemas_across_batches(
+    base_snapshot: Path, tmp_path: Path
+) -> None:
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    missing_mod_jsonl = tmp_path / "missing_mod.jsonl"
+    missing_mod_jsonl.write_text(
+        RawIncrementalVideoRecord(
+            video_id="M_ONLY",
+            author_id="a1",
+            author_handle="fixture_creator",
+            create_time="2026-11-05T00:00:00+00:00",
+            caption="Video quay cảnh quán không lời thoại",
+            duration_sec=20,
+            play_count=500,
+        ).model_dump_json(exclude_unset=True)
+        + "\n",
+        encoding="utf-8",
+    )
+    v2 = tmp_path / "v2_missing_mod"
+    ingest_incremental_batch_to_gold(base_snapshot, missing_mod_jsonl, v2)
+
+    voice_schema = pq.read_schema(v2 / "fact_voice_segments.parquet")
+    comment_schema = pq.read_schema(v2 / "fact_comments.parquet")
+    assert pa.types.is_integer(voice_schema.field("seq_no").type)
+    assert pa.types.is_floating(voice_schema.field("start_sec").type)
+    assert pa.types.is_boolean(comment_schema.field("is_seeding").type)
+    assert pa.types.is_integer(comment_schema.field("like_count").type)
+
+    v3 = tmp_path / "v3_populated"
+    ingest_incremental_batch_to_gold(v2, _batch(tmp_path, "B"), v3)
+    assert set(pd.read_parquet(v3 / "fact_voice_segments.parquet")["video_id"]) == {"B"}
+    assert set(pd.read_parquet(v3 / "fact_comments.parquet")["video_id"]) == {"B"}
+
+
+def test_interrupted_incremental_ingestion_leaves_no_partial_snapshot_and_allows_retry(
+    base_snapshot: Path, tmp_path: Path
+) -> None:
+    before = _hashes(base_snapshot)
+    valid_line = _batch(tmp_path, "A").read_text(encoding="utf-8").strip()
+    broken_jsonl = tmp_path / "broken.jsonl"
+    broken_jsonl.write_text(valid_line + "\n{corrupt_json_line\n", encoding="utf-8")
+
+    out = tmp_path / "interrupted_out"
+    with pytest.raises(ValueError):
+        ingest_incremental_batch_to_gold(base_snapshot, broken_jsonl, out)
+
+    assert not out.exists()
+    leftovers = [p.name for p in tmp_path.iterdir() if p.name.startswith(".interrupted_out")]
+    assert leftovers == []
+    assert _hashes(base_snapshot) == before
+
+    # Retry onto the exact same output path must succeed cleanly.
+    manifest = ingest_incremental_batch_to_gold(base_snapshot, _batch(tmp_path, "A"), out)
+    assert manifest.total_videos == 2
+    assert (out / "manifest.json").is_file()
+
+
+def test_cli_update_existing_and_corrupt_multimodal_base_fails_closed(
+    base_snapshot: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import sys
+
+    from pipelines.ingest_incremental_to_gold.__main__ import main as cli_main
+
+    v2 = tmp_path / "v2"
+    ingest_incremental_batch_to_gold(base_snapshot, _batch(tmp_path, "A"), v2)
+
+    update_jsonl = tmp_path / "cli_update.jsonl"
+    update_jsonl.write_text(
+        _batch(tmp_path, "A", text="Phở bò CLI enrichment mới.", comment_id="A_cli").read_text(
+            encoding="utf-8"
+        ),
+        encoding="utf-8",
+    )
+    v3 = tmp_path / "v3_cli"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "ingest_incremental_to_gold",
+            "--base-corpus",
+            str(v2),
+            "--incremental-jsonl",
+            str(update_jsonl),
+            "--output-corpus",
+            str(v3),
+            "--update-existing",
+        ],
+    )
+    cli_main()
+    videos = pd.read_parquet(v3 / "fact_videos.parquet")
+    assert videos.loc[videos["video_id"] == "A", "transcript"].iloc[0] == "Phở bò CLI enrichment mới."
+
+    # Corrupt declared multimodal table in v2 must fail closed without publishing v4.
+    (v2 / "fact_comments.parquet").write_bytes(b"corrupted_multimodal_bytes")
+    v4 = tmp_path / "v4_fail"
+    with pytest.raises(CorpusNotReadyError):
+        ingest_incremental_batch_to_gold(v2, _batch(tmp_path, "C"), v4)
+    assert not v4.exists()

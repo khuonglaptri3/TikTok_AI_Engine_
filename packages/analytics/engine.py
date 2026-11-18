@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pyarrow.parquet as pq
 
 from packages.common.exceptions import CorpusNotReadyError
 from packages.common.logging import StageTimer
@@ -65,6 +66,16 @@ def load_verified_corpus(corpus_dir: Path) -> tuple[CorpusManifest, pd.DataFrame
             raise CorpusNotReadyError(
                 f"Checksum mismatch for {f_entry.filename}: expected {f_entry.sha256[:12]}, got {actual_sha[:12]}"
             )
+        if f_entry.filename.endswith(".parquet"):
+            try:
+                meta = pq.read_metadata(file_path)
+            except Exception as exc:
+                raise CorpusNotReadyError(f"Unreadable Parquet file {f_entry.filename}: {exc}") from exc
+            if meta.num_rows != f_entry.rows or meta.num_columns != f_entry.columns:
+                raise CorpusNotReadyError(
+                    f"Parquet shape mismatch for {f_entry.filename}: manifest=({f_entry.rows}, {f_entry.columns}), "
+                    f"actual=({meta.num_rows}, {meta.num_columns})"
+                )
 
     df_creators = pd.read_parquet(corpus_dir / "dim_creators.parquet")
     df_videos = pd.read_parquet(corpus_dir / "fact_videos.parquet")
