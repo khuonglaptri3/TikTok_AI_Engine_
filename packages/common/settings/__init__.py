@@ -38,6 +38,7 @@ class AppSettings(BaseModel):
 
     corpus_dir: Path = Field(default=Path("data/corpus/20261117_recovered_v1"))
     bm25_index_dir: Path = Field(default=Path("artifacts/indexes/bm25-v2"))
+    dense_index_dir: Path | None = Field(default=None)
     benchmark_report_path: Path = Field(default=Path("artifacts/benchmarks/retrieval_v2.json"))
 
     qdrant_url: str = Field(default="http://127.0.0.1:6333")
@@ -77,6 +78,7 @@ class AppSettings(BaseModel):
             "rate_limit_rpm": self.rate_limit_rpm,
             "corpus_dir": str(self.corpus_dir),
             "bm25_index_dir": str(self.bm25_index_dir),
+            "dense_index_dir": str(self.dense_index_dir) if self.dense_index_dir else None,
             "benchmark_report_path": str(self.benchmark_report_path),
             "qdrant_url": redact_secrets(self.qdrant_url),
             "qdrant_collection": self.qdrant_collection,
@@ -104,6 +106,7 @@ class AppSettings(BaseModel):
                 return os.environ[name]
             return file_vals.get(name, default)
 
+        raw_dense = _get("TIKTOK_RAG_DENSE_INDEX_DIR", "").strip()
         return cls(
             env=_get("TIKTOK_RAG_ENV", "local"),
             gemini_api_key=_get("GEMINI_API_KEY", ""),
@@ -113,6 +116,7 @@ class AppSettings(BaseModel):
             rate_limit_rpm=int(_get("TIKTOK_RAG_RATE_LIMIT_RPM", "15")),
             corpus_dir=Path(_get("TIKTOK_RAG_CORPUS_DIR", "data/corpus/20261117_recovered_v1")),
             bm25_index_dir=Path(_get("TIKTOK_RAG_BM25_INDEX_DIR", "artifacts/indexes/bm25-v2")),
+            dense_index_dir=Path(raw_dense) if raw_dense else None,
             benchmark_report_path=Path(
                 _get("TIKTOK_RAG_BENCHMARK_REPORT_PATH", "artifacts/benchmarks/retrieval_v2.json")
             ),

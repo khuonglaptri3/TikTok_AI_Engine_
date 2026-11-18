@@ -38,6 +38,7 @@ def build_container(settings: AppSettings | None = None) -> ServiceContainer:
     cfg = settings or get_settings()
     corpus_dir = _resolve_path(cfg.corpus_dir)
     bm25_dir = _resolve_path(cfg.bm25_index_dir)
+    dense_dir = _resolve_path(cfg.dense_index_dir) if cfg.dense_index_dir is not None else None
     bench_path = _resolve_path(cfg.benchmark_report_path)
 
     analytics = NicheAnalyticsEngine.from_corpus_dir(corpus_dir)
@@ -47,6 +48,7 @@ def build_container(settings: AppSettings | None = None) -> ServiceContainer:
         qdrant_url=cfg.qdrant_url,
         qdrant_collection=cfg.qdrant_collection,
         reranker_enabled=cfg.reranker_enabled,
+        dense_dir=dense_dir,
     )
     gemini = BoundedGeminiClient(settings=cfg)
     script_engine = GroundedScriptEngine(

@@ -13,6 +13,7 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M2.1 | Descriptive niche benchmarks, cohort/missingness provenance, sparse abstention, and 100-request latency verification | COMPLETE | [Read results](M2.1/README.md) |
 | M2.3 | Qualified scripts, structural guardrails, bounded provider timeout/calls, and 15-brief offline audit | IN_PROGRESS | [Read results](M2.3/README.md) |
 | M3.1 | Repeated Dual-Sink ingestion repair, missing-modality schemas, and interrupted publication tests | IN_PROGRESS | [Read results](M3.1/README.md) |
+| M6.1 | CPU dense (`<= 5,000` docs) & RRF hybrid retrieval pilot, parity benchmark, and paired bootstrap CIs | IN_PROGRESS | [Read results](M6.1/README.md) |
 
 Independent cross-project assessments are listed in [task reports](../tasks/README.md). Their conclusions do not change milestone status or pass a gate.
 

@@ -1,0 +1,37 @@
+{
+  "index_type": "dense_cosine_f32_local",
+  "corpus_snapshot_id": "20261117_recovered_v1",
+  "model_id": "tfidf_svd_vn_128d_v1",
+  "created_at": "2026-11-18T08:58:33.971683+00:00",
+  "document_count": 5000,
+  "dimension": 128,
+  "index_bytes": 14898224,
+  "files": {
+    "embeddings.npy": {
+      "sha256": "a3bfa1ad514bb900933125bd3409a28716c8ff92c3c90ebd3735a74e1fef8fe7",
+      "size_bytes": 2560128
+    },
+    "video_ids.json": {
+      "sha256": "0378d16c131554105c719b6949ec52052a4a8ca584505b5eff4922356b0dc272",
+      "size_bytes": 115000
+    },
+    "encoder_meta.json": {
+      "sha256": "bcfd7cf012e9649dc83928726730c0308f262ca1a077ad7f9cf3f698c35eb0e1",
+      "size_bytes": 109
+    },
+    "vocab.json": {
+      "sha256": "3323bd5c200939a7e8a6c26cb0d5a88e9edcbff0b536a68be021ba5b77e9a7e8",
+      "size_bytes": 482311
+    },
+    "svd_model.npz": {
+      "sha256": "7cba913552bb35ec6f7a1956963b86d27c47e1d59be5725ead0540be1db4e786",
+      "size_bytes": 11740676
+    }
+  },
+  "encoder_backend": "tfidf_svd",
+  "max_records_cap": 5000,
+  "selection_rule": "eligible transcribed rag_document sorted by (-play_count, video_id)",
+  "build_time_sec": 19.418,
+  "peak_rss_mb": 1547.24,
+  "qdrant_populated": false
+}
