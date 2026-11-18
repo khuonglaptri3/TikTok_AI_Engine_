@@ -3,7 +3,7 @@
   "base": "ad7eb92f76cddbfa8526bb16d53f8d7f8db30810",
   "branch": "fix/g0-call-budget-and-lint",
   "stash_sha": "452e4b614cd28fc06818d43fb36df1c4f381ffc3",
-  "stash_retained_for_recovery": true,
+  "stash_retained_for_recovery": false,
   "steps": [
     {
       "command": [
@@ -59,5 +59,11 @@
     "test_original_hash_restored": true,
     "incoming_rows_retained": true,
     "dense_index_setting_retained": true
+  },
+  "stash_cleanup": {
+    "exit_code": 0,
+    "stdout": "Dropped stash@{0} (452e4b614cd28fc06818d43fb36df1c4f381ffc3)\n",
+    "stderr": "",
+    "reason": "Only this task recovery stash; source and evidence are committed/pushed."
   }
 }

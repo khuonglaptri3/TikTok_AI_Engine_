@@ -2,11 +2,12 @@
 
 - Status: IN_PROGRESS (G0 repairs verified; updated-main Windows integration blocker and owner decision remain open).
 - Gate result: NOT_RUN (no owner PASS/FAIL decision recorded).
+- GitHub publication: [Draft PR #3](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3), `fix/g0-call-budget-and-lint` into `main`; source/evidence commit `7abcd6e5635134395eedbcb8c8055957b351ca55`.
 - Current technical recommendation: HOLD acceptance of the updated branch until the M6.1 Windows integration issue is resolved.
 - Publication status: prepared for a draft PR on `fix/g0-call-budget-and-lint`; remote publication receipt will record the actual result.
 - Execution date: 2026-11-18 (Asia/Saigon).
 - Requirement source: [milestone plan](../../../planning/TikTok_AI_Engine_Milestone.md), M0.G, and the owner's requests to fix the two G0 findings and push to GitHub with a branch-workflow check.
-- Repository version: topic branch based on fetched `origin/main` at `ad7eb92f76cddbfa8526bb16d53f8d7f8db30810`; exact tested source hashes and environment are in [publication verification](evidence/publish-check-results.json).
+- Repository version: published topic branch based on fetched `origin/main` at `ad7eb92f76cddbfa8526bb16d53f8d7f8db30810`; exact tested source hashes and environment are in [publication verification](evidence/publish-check-results.json).
 - Specification: [spec.md](superpowers/spec.md).
 - Execution plan: [plan.md](superpowers/plan.md).
 
@@ -24,7 +25,7 @@ All validation uses CPU/offline execution, synthetic SDK stubs where needed,0 li
 
 The remote had `main` and a previously merged topic branch, with no `develop` and no open PR at inspection. This is a `main` plus topic-PR workflow, consistent with GitHub flow; it is **not classic Gitflow**, whose original model has both main/master and develop and routes feature work through develop. [Original Gitflow model](https://nvie.com/posts/a-successful-git-branching-model/).
 
-Publication uses the new `fix/g0-call-budget-and-lint` branch and a draft PR into `main`. The prior merged feature branch is not reused. Creating develop/release branches or changing branch protections is outside the owner's requested publication. No direct push to main, force push, PR merge, release, deployment or gate approval is performed.
+Publication is available on the new `fix/g0-call-budget-and-lint` branch as [draft PR #3](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3) into `main`. The prior merged feature branch is not reused. Creating develop/release branches or changing branch protections is outside the owner's requested publication. No direct push to main, force push, PR merge, release, deployment or gate approval is performed.
 
 The authorized G0 paths were preserved with a path-scoped stash, applied on the new base, and independently checked. Settings retained the incoming optional dense-index fields. A milestone-index conflict was resolved by retaining incoming M3.1/M6.1 rows and the G0 row. Three unrelated untracked publication logs were preserved. [Baseline](evidence/publish-baseline.json), [integration receipt](evidence/publish-git-integration.json).
 
@@ -33,7 +34,7 @@ The authorized G0 paths were preserved with a path-scoped stash, applied on the 
 - Fixed [settings](../../../../packages/common/settings/__init__.py) and [Gemini client](../../../../packages/llm/clients/gemini.py), preserving public call signatures, missing-key errors, strict budget1, timeout/RPM behavior and zero paid fallback.
 - Corrected import grouping in [health.py](../../../../apps/api/app/routers/health.py) and UTC alias usage in [bm25.py](../../../../packages/retrieval/sparse/bm25.py).
 - Added [25 regression cases](../../../../tests/unit/test_llm_call_budget.py). Initial RED:12 failures/9 controls; initial GREEN:34 focused passes. A read-only reviewer found copied NaN configuration could bypass min; review-fix RED:3 failures/1 control; final repair GREEN:38 passes. [Review and resolution](evidence/fix-code-review.md).
-- Rebased the working changes by creating a fresh topic branch on current main and applying the scoped saved patch, preserving independent upstream changes. No historical commit rewriting was used.
+- Transferred the working changes by creating a fresh topic branch on current main and applying the scoped saved patch, preserving independent upstream changes. No historical commit rewriting was used.
 - Re-ran integrated checks into distinct `publish-*` receipts and identified the unchanged M6.1 Windows resource issue. This publication task does not silently modify or accept the incoming research modules.
 
 ## Verification
@@ -69,6 +70,7 @@ The default runtime remains historical BM25; M6.1's optional dense-index fields 
 | File | Purpose |
 | --- | --- |
 | [Spec](superpowers/spec.md), [plan](superpowers/plan.md), [workflow](evidence/workflow.md) | Prospective task phases, authorization, actual skills/commands and pending gate decision. |
+| [GitHub receipt](evidence/publish-github-receipt.json), [push log](evidence/publish-push.log) | Actual first published source commit, remote-head equality and draft PR metadata; the final documentation-only follow-up is checked again at handoff. |
 | [Publication handoff](evidence/publish-handoff.json), [current hashes](evidence/publish-artifact-hashes.json) | Current report/source/link/preservation checks; integrity PASS does not imply full-suite/mypy PASS. |
 | [Publication baseline](evidence/publish-baseline.json), [Git integration](evidence/publish-git-integration.json) | Branch/base, scoped file inventory, recovery stash, conflict and preservation receipts. |
 | [Check runner](evidence/publish-run-checks.py), [current check receipt](evidence/publish-check-results.json) | Actual integrated PASS/FAIL results, environment, exit codes, source hashes and log hashes. |
@@ -82,7 +84,7 @@ The default runtime remains historical BM25; M6.1's optional dense-index fields 
 | --- | --- |
 | Two requested G0 code/lint repairs | Met; current focused/runtime/Ruff checks pass. |
 | Updated-main full suite and mypy | **Not met**; upstream M6.1 Windows blocker recorded. |
-| Honest branch workflow and reviewable publication | New topic branch/draft PR follows existing GitHub flow; not classic Gitflow. Actual push/PR outcome is recorded before final handoff. |
+| Honest branch workflow and reviewable publication | New topic branch/draft PR follows existing GitHub flow; not classic Gitflow. [Actual push/PR outcome](evidence/publish-github-receipt.json) is recorded; the PR is draft and unmerged. |
 | Preserved historical evidence, original data and unrelated files | Required checks and hashes retained; publication handoff verifies current scope. |
 | Owner gate decision | Pending; M0.G IN_PROGRESS and G0 NOT_RUN. |
 

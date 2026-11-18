@@ -10,9 +10,9 @@
 - [x] Preserve an exact authorized-path inventory and source/evidence hashes; stash only the authorized G0 paths if needed. Create `fix/g0-call-budget-and-lint` at freshly fetched `origin/main`, apply the saved changes, and preserve independent M3.1/M6.1 changes and index rows.
 - [x] Run full pytest, contract/smoke, configured mypy, required Ruff including the new test, source secret scan, pip check and asserting G0 runtime probe. Expected: exit0 and source-hash-bound results; no paid/provider operations.
 - Integration finding: required checks were executed; updated-main full pytest exits2 during collection and mypy exits1 due to M6.1's unchanged Unix-only `resource` usage. Record FAIL rather than weakening the checks. Publication proceeds as an explicitly draft PR with the integration blocker visible; no merge or G0 acceptance is claimed.
-- [ ] Finalize the report and publication evidence for this source tree. Stage only the explicit G0 source/test/report paths, inspect staged contents and run the secret scanner before committing. Expected: conventional fix commit with no historical data changes or unrelated logs.
-- [ ] Push the new branch normally and create a reviewable PR into `main` with validation and G0 decision scope. Record actual Git/PR receipts; do not merge the PR or mark G0 PASS.
-- [ ] Persist publication receipts and refreshed artifact hashes in a documentation follow-up if needed, recheck scanner/source identity, push normally, and verify the remote head/PR base/mergeability and preserved unrelated files.
+- [x] Finalize the report and publication evidence for this source tree. Stage only the explicit G0 source/test/report paths, inspect staged contents and run the secret scanner before committing. Expected: conventional fix commit with no historical data changes or unrelated logs.
+- [x] Push the new branch normally and create a reviewable PR into `main` with validation and G0 decision scope. Record actual Git/PR receipts; do not merge the PR or mark G0 PASS.
+- [x] Persist publication receipts and refreshed artifact hashes in a documentation follow-up if needed, recheck scanner/source identity, push normally, and verify the remote head/PR base/mergeability and preserved unrelated files.
 
 Incoming remote changes require integrated verification but not acceptance or redesign of M3.1/M6.1. The final report identifies the source revision/hashes and distinguishes source validation from the owner's gate decision.
 
@@ -88,3 +88,5 @@ Preserve original data and unrelated files; no secret values in evidence; no pro
 Review tasks describe completed investigation, not passing product acceptance: G0-REV-1 and G0-REV-2 remain unresolved, and the owner decision is pending. Final artifact integrity is recorded in `../evidence/peer-handoff.json`.
 
 Remediation outcome (2026-11-18): both G0-REV-1 and G0-REV-2 are resolved in the source-hash-pinned local tree; all required checks are green. The earlier unresolved/HOLD wording is retained as dated review history. Current formal gate status remains NOT_RUN for owner decision.
+
+Publication outcome: source/evidence commit 7abcd6e5635134395eedbcb8c8055957b351ca55 was pushed and draft PR #3 opened against main. A documentation-only receipt follow-up is included in the publication handoff; final remote identity is checked after its push outside that self-referential commit. Current full-suite/mypy failures remain explicitly reported and G0 remains NOT_RUN.

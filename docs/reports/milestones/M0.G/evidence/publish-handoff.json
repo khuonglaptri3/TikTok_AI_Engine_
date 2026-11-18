@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-18T09:58:34.177843+00:00",
+  "checked_at": "2026-11-18T10:00:48.292403+00:00",
   "status": "PASS",
   "scope": "Publication/evidence integrity only; integrated full pytest and mypy FAIL remain visible; not merge approval.",
   "formal_gate": "NOT_RUN",
@@ -249,6 +249,11 @@
     },
     {
       "name": "final_secret_scan",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "published_draft_pr",
       "passed": true,
       "detail": null
     }
