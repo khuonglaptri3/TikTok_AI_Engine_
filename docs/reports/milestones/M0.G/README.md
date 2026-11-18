@@ -2,16 +2,17 @@
 
 - Status: IN_PROGRESS (implementation verified; formal gate decision remains owner-pending).
 - Gate result: NOT_RUN (no owner PASS/FAIL decision recorded).
+- Integration: [PR3 merged](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3) at `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`; post-merge main full verification: 120 passed in 58.09s.
 - Technical recommendation: PASS for the defined local CPU/offline foundation on the tested source.
 - Execution date: 2026-11-18 (Asia/Saigon).
 - Requirement source: [active milestone plan](../../../planning/TikTok_AI_Engine_Milestone.md), M0.G, and the owner's explicit instruction to fix the Windows blocker, update PR3 and merge today's work into main after checks.
-- Repository version: `fix/g0-call-budget-and-lint`, base `40c457e2`; source and test hashes are pinned in the [final integrated receipt](../M6.1/evidence/windows-check-results.json). Actual merge/remote-main state is recorded after publication.
+- Repository version: `fix/g0-call-budget-and-lint`, base `40c457e2`; source and test hashes are pinned in the [final integrated receipt](../M6.1/evidence/windows-check-results.json). The source is merged into main; [actual merge receipt](evidence/merge-github-receipt.json) and [post-merge verification](../M6.1/evidence/main-verification.json) record the result.
 - Specification: [spec.md](superpowers/spec.md).
 - Execution plan: [plan.md](superpowers/plan.md).
 
 ## Conclusion
 
-**All declared integrated checks now pass:**120 full tests,11 contract/smoke tests, configured mypy on81 files for both Windows and Linux static targets, clean Ruff including all pipelines, secret/dependency checks,38 asserting G0 runtime checks and a clean wheel installation with installed API/demo execution. No live provider/crawler calls or spend occurred.
+**All declared integrated checks now pass:**120 full tests,11 contract/smoke tests, configured mypy on 81 files for both Windows and Linux static targets, clean Ruff including all pipelines, secret/dependency checks,38 asserting G0 runtime checks and a clean wheel installation with installed API/demo execution. No live provider/crawler calls or spend occurred.
 
 The two original G0 findings remain resolved: settings/client enforce the maximum2 boundary, including invalid counters and copied NaN settings, and the Ruff import/UTC violations are fixed. The newer M6.1 Windows blocker is also resolved using real OS peak-memory measurement without a fake-zero fallback. Prior failed publication logs remain preserved as dated evidence.
 
@@ -23,7 +24,7 @@ The owner explicitly authorized the PR merge after successful verification. **Co
 - Removed unconditional resource imports from the two M6.1 pipelines. The shared helper uses Windows GetProcessMemoryInfo peak-working-set bytes or Unix process peak RSS, normalized to MiB. New receipts declare unit and process-lifetime scope; original experiment artifacts are untouched.
 - Added8 resource regressions (observed RED, then GREEN) and preserved existing6 dense tests. Fixed five equivalent UTC aliases in crawl helpers so the full pipeline Ruff scope is clean.
 - Obtained fresh-context read-only review with no Critical/Important/Minor findings. The reviewer independently ran the8 resource tests, including the native Windows API check; this is not human K/N sign-off.
-- Updated the existing PR3 scope and planned an authorized merge through the PR, followed by verification against remote main. Any post-merge receipt-only PR carries identical tested source.
+- Updated and readied PR3, merged it through GitHub with the verified head pinned, synchronized local main without checking out the old main tree, and ran all 120 tests again on the actual merged main commit. The receipt-only follow-up changes no production source.
 
 ## Current verification
 
@@ -38,7 +39,7 @@ The owner explicitly authorized the PR merge after successful verification. **Co
 | Asserting G0 runtime |PASS:38/38 | [Receipt](evidence/merge-runtime-receipt.json), [console](evidence/merge-runtime.log): source membership, draft qualification, finite ms timings, bounded errors, redaction, policy checks and unchanged runtime bytes. |
 | Clean source wheel and installed ASGI |PASS | [Receipt](evidence/merge-package-results.json), [installed routes](evidence/merge-installed-asgi.log); actual modules load from the clean installation. |
 | Corpus/index preservation |PASS for tested10 Gold/BM25 files; no data/artifact source diff | [Runtime hashes](evidence/merge-runtime-receipt.json). No new exhaustive37,840-file scan or benchmark rewrite is claimed. |
-| PR merge and main verification |Authorized; record actual result after merge | [PR3](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3). No merge success is inferred from an earlier mergeability flag. |
+| PR merge and main verification |PASS:PR3 merged; 120 passed in 58.09s on merged main | [Merge receipt](evidence/merge-github-receipt.json), [main verification](../M6.1/evidence/main-verification.json), [main test log](../M6.1/evidence/main-pytest.log). |
 
 ## Findings and remaining boundaries
 
@@ -70,7 +71,7 @@ The owner explicitly authorized the PR merge after successful verification. **Co
 | Updated-tree full suite, configured types, clean lint and resource import |Met on the source-hash-pinned final repair. |
 | CPU/offline API/demo and installation |Met within the recorded scope. |
 | Honest provenance, preserved bytes and explicit limitations |Retained; final current handoff hashes distinguish previous failed/different-source receipts. |
-| User-authorized PR integration |Proceed after final precommit identity/secret checks; confirm actual remote state and test the merged main tree. |
+| User-authorized PR integration |Met:PR3 merged and full tests passed again on main; receipt-only follow-up preserves identical production source. |
 | Formal G0 approval |Pending owner; task IN_PROGRESS and gate NOT_RUN. |
 
-Technical recommendation is PASS for the narrow local CPU/offline foundation. The owner's explicit merge authorization is recorded; scientific milestones and gate decisions remain separate.
+Technical recommendation is PASS for the narrow local CPU/offline foundation. The owner's explicit merge authorization was executed and verified; scientific milestones and gate decisions remain separate.

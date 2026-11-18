@@ -37,7 +37,7 @@
 
 - TDD RED reproduced8 failures before implementation, including both pipeline imports without resource. Implemented the shared standard-library OS-backed helper and wired both consumers. Focused GREEN:14 tests (8 new resource and6 existing dense tests) passed on Windows; the native Windows peak-reading test used the actual OS API. Prior benchmark artifacts remain unchanged. [RED](windows-red.log), [GREEN](windows-green.log).
 
-- Initial integrated verification passed120 tests and both Windows/Linux-target mypy (81 files), runtime38/38 and clean package install. Full-pipeline Ruff found five pre-existing UP017 aliases in crawl helpers. Preserve those initial receipts under windows-initial-verification/; apply only equivalent UTC aliases and rerun the complete declared scope. Normalize the two new M6.1 pipeline edits to their existing Git LF representation before final source-hash-bound checks; keep historical evidence byte-identical.
+- Initial integrated verification passed 120 tests and both Windows/Linux-target mypy (81 files), runtime38/38 and clean package install. Full-pipeline Ruff found five pre-existing UP017 aliases in crawl helpers. Preserve those initial receipts under windows-initial-verification/; apply only equivalent UTC aliases and rerun the complete declared scope. Normalize the two new M6.1 pipeline edits to their existing Git LF representation before final source-hash-bound checks; keep historical evidence byte-identical.
 
 - Byte-preservation attributes cover the new resource helper/test and the two M6.1 pipeline files. The crawl service helper also receives -text because its equivalent UTC alias fix is included in the final measured-source map; all measured source bytes must match the committed hash receipt across platforms. Its __main__ was already covered.
 
@@ -46,3 +46,9 @@
 - Final integrated source:120 full tests (31.20s),11 contract/smoke (10.48s), Windows/Linux static mypy81, full required Ruff, scanner and dependency checks all pass. Current G0 runtime38/38 and clean installed ASGI share the11-file source map. [Current results](windows-check-results.json). Review is clean; user-authorized commit/push/ready/merge and actual main verification follow. All scientific/gate decisions remain explicitly pending.
 
 - First final handoff found one inherited broken relative link in the original workflow benchmark receipt; corrected its path from the evidence directory. Source/benchmark data and test results are unchanged.
+
+- User-authorized PR3 integration completed: source commit `af5be92bf48433688c47c97b03ecaccc5d8fcb5b`, merge commit `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`, merged_at `2026-11-18T10:45:57Z`. [GitHub PR3](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3). Local main was fast-forwarded by fetch while the topic branch was checked out, then switched to the identical merged tree; no old main checkout removed preserved data. Formal G0 remains NOT_RUN and scientific M6.1 remains IN_PROGRESS.
+
+- Post-merge verification on actual main `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`: 120 passed in 58.09s, exit0; committed source hashes match the full premerge suite/runtime/package map. [Main test receipt](main-verification.json). No production source is changed by the final evidence-only PR.
+
+- Source integration and post-merge full verification are complete. The final evidence-only branch persists the actual PR3 merge receipt and main120-test log through a separate PR, with identical production source. Final remote main ancestry/PR state/source hashes are verified after that metadata merge, avoiding a circular self-commit receipt.

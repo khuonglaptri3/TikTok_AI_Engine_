@@ -12,11 +12,14 @@
 
 ## Conclusion
 
-The Windows portability blocker is **resolved** and the integrated repair passes **120/120 full tests**, **11/11 contract/smoke tests**, configured mypy for **81 files** on both Windows and Linux static targets, and clean Ruff across packages/apps/pipelines and the changed tests. The independent G0 probe passes38/38 and clean wheel/installed-ASGI validation passes. These are new Windows repair/integration results, separate from the original Linux spike below.
+**Code integration completed:** [PR3](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3) merged at `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`; a new full run on merged main records **120 passed in 58.09s**. [Main verification](evidence/main-verification.json), [full log](evidence/main-pytest.log), [GitHub merge receipt](../M0.G/evidence/merge-github-receipt.json).
+
+
+The Windows portability blocker is **resolved** and the integrated repair passes **120/120 full tests**, **11/11 contract/smoke tests**, configured mypy for **81 files** on both Windows and Linux static targets, and clean Ruff across packages/apps/pipelines and the changed tests. The independent G0 probe passes 38/38 and clean wheel/installed-ASGI validation passes. These are new Windows repair/integration results, separate from the original Linux spike below.
 
 Both M6.1 pipelines now import without Unix-only resource on Windows. A shared standard-library helper reads a real process-lifetime peak from Windows GetProcessMemoryInfo or Unix getrusage and normalizes to MiB. Existing peak_rss_mb keys remain compatible; newly written receipts declare peak_rss_unit=MiB and peak_rss_scope=process_lifetime. API failures and invalid readings propagate instead of a fabricated zero/current-RSS fallback.
 
-The owner authorized updating/readying PR3 and merging the verified work to main. That integration does not complete M6.1's frozen human-judged relevance evaluation, conditional multimodal work or human peer sign-off. **M6.1 remains IN_PROGRESS** and no original benchmark/index artifact is overwritten.
+The owner-authorized PR3 update, ready and merge completed successfully and was reverified on main. That integration does not complete M6.1's frozen human-judged relevance evaluation, conditional multimodal work or human peer sign-off. **M6.1 remains IN_PROGRESS** and no original benchmark/index artifact is overwritten.
 
 ## Windows repair verification
 
@@ -30,7 +33,7 @@ The owner authorized updating/readying PR3 and merging the verified work to main
 | Ruff, secret scanner and dependencies |PASS | [Ruff](evidence/windows-ruff.log), [secrets](evidence/windows-secrets.log), [pip](evidence/windows-pip-check.log). Five pre-existing crawl UTC-alias issues were fixed equivalently; [prior findings](evidence/windows-broad-lint-before-fix.log) remain dated evidence. |
 | Fresh-context read-only review |No Critical/Important/Minor findings | [Review](evidence/windows-code-review.md); reviewer independently ran all8 resource tests. No human K/N approval is fabricated. |
 | G0 asserting runtime and clean installed ASGI |PASS:38/38 runtime assertions; clean package install | [Runtime](../M0.G/evidence/merge-runtime-receipt.json), [package](../M0.G/evidence/merge-package-results.json). Source hashes match the full-suite receipt. |
-| Final layout/link/hash/source check |See current handoff receipt | [Workflow](evidence/workflow.md), [handoff](evidence/windows-handoff.json), [current hashes](evidence/windows-artifact-hashes.json); current integrity receipt is generated before commit and actual merge verification is recorded afterward. |
+| Final layout/link/hash/source check |See current handoff receipt | [Workflow](evidence/workflow.md), [handoff](evidence/windows-handoff.json), [current hashes](evidence/windows-artifact-hashes.json); current integrity receipt is generated before commit and actual merge verification is recorded in [main-verification.json](evidence/main-verification.json). |
 
 The native Windows test verifies the OS-backed helper on this host; deterministic unit conversion/error cases use OS-boundary doubles. It does not remeasure the dense spike, prove model quality, measure complete per-stage allocations, or establish current trends. Original Linux numbers remain original results.
 

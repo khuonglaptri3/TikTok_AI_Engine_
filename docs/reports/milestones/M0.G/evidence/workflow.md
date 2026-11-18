@@ -111,3 +111,7 @@
 
 - Published source/evidence commit `7abcd6e5635134395eedbcb8c8055957b351ca55` with a conventional fix(g0) subject; normal `git push --set-upstream origin fix/g0-call-budget-and-lint` exited0 and remote ref equaled the local commit. Created [draft PR #3](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3) into main, OPEN/draft. [GitHub receipt](publish-github-receipt.json), [push log](publish-push.log). No force push, main push, merge or G0 approval.
 - A documentation-only follow-up persists actual publication receipts and current hashes. Product source is unchanged from the publication test/runtime SHA256 map; its final remote ref is verified after push without attempting a circular self-commit receipt.
+
+- User-authorized PR3 integration completed: source commit `af5be92bf48433688c47c97b03ecaccc5d8fcb5b`, merge commit `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`, merged_at `2026-11-18T10:45:57Z`. [GitHub PR3](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3). Local main was fast-forwarded by fetch while the topic branch was checked out, then switched to the identical merged tree; no old main checkout removed preserved data. Formal G0 remains NOT_RUN and scientific M6.1 remains IN_PROGRESS.
+
+- Post-merge verification on actual main `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`: 120 passed in 58.09s, exit0; committed source hashes match the full premerge suite/runtime/package map. [Main test receipt](../../M6.1/evidence/main-verification.json). No production source is changed by the final evidence-only PR.

@@ -1,0 +1,24 @@
+{
+  "documentation_only": true,
+  "source_sha256_match": true,
+  "supported_secret_findings": [],
+  "paths": [
+    "docs/reports/milestones/M0.G/README.md",
+    "docs/reports/milestones/M0.G/evidence/merge-followup-pr-body.md",
+    "docs/reports/milestones/M0.G/evidence/merge-github-receipt.json",
+    "docs/reports/milestones/M0.G/evidence/merge-operations.json",
+    "docs/reports/milestones/M0.G/evidence/merge-source-commit.log",
+    "docs/reports/milestones/M0.G/evidence/workflow.md",
+    "docs/reports/milestones/M0.G/superpowers/plan.md",
+    "docs/reports/milestones/M6.1/README.md",
+    "docs/reports/milestones/M6.1/evidence/main-pytest.log",
+    "docs/reports/milestones/M6.1/evidence/main-verification.json",
+    "docs/reports/milestones/M6.1/evidence/main-verify.py",
+    "docs/reports/milestones/M6.1/evidence/windows-artifact-hashes.json",
+    "docs/reports/milestones/M6.1/evidence/windows-handoff.json",
+    "docs/reports/milestones/M6.1/evidence/windows-handoff.py",
+    "docs/reports/milestones/M6.1/evidence/workflow.md",
+    "docs/reports/milestones/M6.1/superpowers/plan.md",
+    "docs/reports/milestones/README.md"
+  ]
+}
