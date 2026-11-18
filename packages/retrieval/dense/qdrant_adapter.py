@@ -1,10 +1,17 @@
 from __future__ import annotations
 
+import uuid
 from typing import Any
 
 import httpx
 
 from packages.common.exceptions import IndexNotReadyError
+
+
+def _qdrant_point_id(video_id: str) -> int | str:
+    if video_id.isdigit():
+        return int(video_id)
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, video_id))
 
 
 class QdrantDenseAdapter:
@@ -27,6 +34,56 @@ class QdrantDenseAdapter:
             return pts > 0, pts
         except Exception:
             return False, 0
+
+    def ensure_collection(self, vector_size: int, distance: str = "Cosine") -> None:
+        """Create or confirm the target Qdrant vector collection over HTTP."""
+        url = f"{self.base_url}/collections/{self.collection_name}"
+        payload = {"vectors": {"size": int(vector_size), "distance": distance}}
+        try:
+            resp = httpx.put(url, json=payload, timeout=self.timeout_sec)
+        except Exception as exc:
+            raise IndexNotReadyError(
+                f"Unable to reach Qdrant at {self.base_url} while creating collection: {exc}"
+            ) from exc
+        if resp.status_code not in (200, 201):
+            raise IndexNotReadyError(
+                f"Failed to ensure Qdrant collection '{self.collection_name}' (HTTP {resp.status_code})"
+            )
+
+    def upsert_vectors(
+        self,
+        points: list[tuple[str, list[float], dict[str, Any]]],
+        batch_size: int = 256,
+    ) -> int:
+        """Upsert vector points in bounded batches into Qdrant."""
+        if not points:
+            return 0
+        url = f"{self.base_url}/collections/{self.collection_name}/points?wait=true"
+        written = 0
+        for start in range(0, len(points), max(1, batch_size)):
+            chunk = points[start : start + max(1, batch_size)]
+            body = {
+                "points": [
+                    {
+                        "id": _qdrant_point_id(vid),
+                        "vector": [float(x) for x in vec],
+                        "payload": {"video_id": vid, **payload},
+                    }
+                    for vid, vec, payload in chunk
+                ]
+            }
+            try:
+                resp = httpx.put(url, json=body, timeout=max(self.timeout_sec, 10.0))
+            except Exception as exc:
+                raise IndexNotReadyError(
+                    f"Qdrant upsert failed at {self.base_url}: {exc}"
+                ) from exc
+            if resp.status_code not in (200, 201):
+                raise IndexNotReadyError(
+                    f"Qdrant upsert rejected (HTTP {resp.status_code}) for '{self.collection_name}'"
+                )
+            written += len(chunk)
+        return written
 
     def search_vectors(
         self,

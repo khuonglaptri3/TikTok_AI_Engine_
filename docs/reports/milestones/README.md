@@ -12,6 +12,7 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M1.2 | Immutable taxonomy-corrected historical Gold snapshot (`20261118_taxonomy_fix_v1`) with verified parent lineage | COMPLETE | [Read results](M1.2/README.md) |
 | M2.1 | Descriptive niche benchmarks, cohort/missingness provenance, sparse abstention, and 100-request latency verification | COMPLETE | [Read results](M2.1/README.md) |
 | M2.3 | Qualified scripts, structural guardrails, bounded provider timeout/calls, and 15-brief offline audit | IN_PROGRESS | [Read results](M2.3/README.md) |
+| M6.1 | CPU dense (`<= 5,000` docs) & RRF hybrid retrieval pilot, parity benchmark, and paired bootstrap CIs | IN_PROGRESS | [Read results](M6.1/README.md) |
 
 Independent cross-project assessments are listed in [task reports](../tasks/README.md). Their conclusions do not change milestone status or pass a gate.
 

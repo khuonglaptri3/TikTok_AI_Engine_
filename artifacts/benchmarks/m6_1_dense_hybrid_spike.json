@@ -1,0 +1,191 @@
+{
+  "benchmark_id": "m6_1_dense_hybrid_spike",
+  "task_id": "M6.1",
+  "evaluated_at": "2026-11-18T08:58:41.505846+00:00",
+  "corpus_snapshot_id": "20261117_recovered_v1",
+  "parity_cohort": {
+    "record_count": 5000,
+    "max_records_cap": 5000,
+    "query_count_evaluated": 15,
+    "queries_file": "data/evaluation/v1/queries.jsonl",
+    "label_source": "lexical_metadata_weak_labels",
+    "independent_human_qrels_available": false
+  },
+  "hardware": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "logical_cpus": 4,
+    "total_ram_gb": 15.33,
+    "concurrency": 1
+  },
+  "resource_measurements": {
+    "dense_index_bytes": 14898224,
+    "dense_build_time_sec": 19.418,
+    "peak_rss_mb": 798.89,
+    "peak_rss_within_8gib": true,
+    "all_warm_p95_within_1000ms": true,
+    "latency_100_requests_ms": {
+      "bm25": {
+        "requests": 100,
+        "cold_ms": 3.13,
+        "warm_p50_ms": 2.58,
+        "warm_p95_ms": 2.9
+      },
+      "dense": {
+        "requests": 100,
+        "cold_ms": 5.37,
+        "warm_p50_ms": 5.97,
+        "warm_p95_ms": 6.42
+      },
+      "hybrid_rrf": {
+        "requests": 100,
+        "cold_ms": 8.0,
+        "warm_p50_ms": 7.73,
+        "warm_p95_ms": 8.41
+      },
+      "hybrid_rrf_reranked": {
+        "requests": 100,
+        "cold_ms": 29.19,
+        "warm_p50_ms": 24.27,
+        "warm_p95_ms": 28.54
+      }
+    }
+  },
+  "configurations": {
+    "bm25": {
+      "query_count": 15.0,
+      "recall_at_10": 0.347,
+      "precision_at_10": 0.5267,
+      "mrr_at_10": 0.7874,
+      "ndcg_at_10": 0.6723,
+      "p50_latency_ms": 2.56,
+      "p95_latency_ms": 6.8
+    },
+    "bm25_reranked": {
+      "query_count": 15.0,
+      "recall_at_10": 0.3803,
+      "precision_at_10": 0.5667,
+      "mrr_at_10": 0.8356,
+      "ndcg_at_10": 0.715,
+      "p50_latency_ms": 15.58,
+      "p95_latency_ms": 17.46
+    },
+    "dense": {
+      "query_count": 15.0,
+      "recall_at_10": 0.3517,
+      "precision_at_10": 0.48,
+      "mrr_at_10": 0.6541,
+      "ndcg_at_10": 0.5979,
+      "p50_latency_ms": 5.87,
+      "p95_latency_ms": 8.04
+    },
+    "hybrid_rrf": {
+      "query_count": 15.0,
+      "recall_at_10": 0.3735,
+      "precision_at_10": 0.5333,
+      "mrr_at_10": 0.75,
+      "ndcg_at_10": 0.637,
+      "p50_latency_ms": 7.73,
+      "p95_latency_ms": 8.24
+    },
+    "hybrid_rrf_reranked": {
+      "query_count": 15.0,
+      "recall_at_10": 0.3819,
+      "precision_at_10": 0.5667,
+      "mrr_at_10": 0.7911,
+      "ndcg_at_10": 0.6963,
+      "p50_latency_ms": 24.22,
+      "p95_latency_ms": 29.82
+    }
+  },
+  "paired_bootstrap_95ci": {
+    "dense_minus_bm25": {
+      "mrr_at_10": {
+        "n": 15.0,
+        "mean_diff": -0.1333,
+        "ci_low": -0.2504,
+        "ci_high": -0.0222
+      },
+      "ndcg_at_10": {
+        "n": 15.0,
+        "mean_diff": -0.0744,
+        "ci_low": -0.1729,
+        "ci_high": 0.0155
+      }
+    },
+    "hybrid_rrf_minus_bm25": {
+      "mrr_at_10": {
+        "n": 15.0,
+        "mean_diff": -0.0374,
+        "ci_low": -0.1741,
+        "ci_high": 0.0926
+      },
+      "ndcg_at_10": {
+        "n": 15.0,
+        "mean_diff": -0.0353,
+        "ci_low": -0.1124,
+        "ci_high": 0.0342
+      }
+    },
+    "hybrid_rrf_reranked_minus_bm25_reranked": {
+      "mrr_at_10": {
+        "n": 15.0,
+        "mean_diff": -0.0444,
+        "ci_low": -0.1511,
+        "ci_high": 0.0444
+      },
+      "ndcg_at_10": {
+        "n": 15.0,
+        "mean_diff": -0.0187,
+        "ci_low": -0.079,
+        "ci_high": 0.0346
+      }
+    }
+  },
+  "decision_summary": {
+    "hybrid_minus_bm25_ndcg": -0.0353,
+    "hybrid_minus_bm25_mrr": -0.0374,
+    "recommendation": "Keep simplest BM25 baseline as production default until M2.2 human-judged qrels confirm a statistically positive hybrid gain."
+  },
+  "provenance": {
+    "corpus_manifest_sha256": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+    "dense_receipt": {
+      "index_type": "dense_cosine_f32_local",
+      "corpus_snapshot_id": "20261117_recovered_v1",
+      "model_id": "tfidf_svd_vn_128d_v1",
+      "created_at": "2026-11-18T08:58:33.971683+00:00",
+      "document_count": 5000,
+      "dimension": 128,
+      "index_bytes": 14898224,
+      "files": {
+        "embeddings.npy": {
+          "sha256": "a3bfa1ad514bb900933125bd3409a28716c8ff92c3c90ebd3735a74e1fef8fe7",
+          "size_bytes": 2560128
+        },
+        "video_ids.json": {
+          "sha256": "0378d16c131554105c719b6949ec52052a4a8ca584505b5eff4922356b0dc272",
+          "size_bytes": 115000
+        },
+        "encoder_meta.json": {
+          "sha256": "bcfd7cf012e9649dc83928726730c0308f262ca1a077ad7f9cf3f698c35eb0e1",
+          "size_bytes": 109
+        },
+        "vocab.json": {
+          "sha256": "3323bd5c200939a7e8a6c26cb0d5a88e9edcbff0b536a68be021ba5b77e9a7e8",
+          "size_bytes": 482311
+        },
+        "svd_model.npz": {
+          "sha256": "7cba913552bb35ec6f7a1956963b86d27c47e1d59be5725ead0540be1db4e786",
+          "size_bytes": 11740676
+        }
+      },
+      "encoder_backend": "tfidf_svd",
+      "max_records_cap": 5000,
+      "selection_rule": "eligible transcribed rag_document sorted by (-play_count, video_id)",
+      "build_time_sec": 19.418,
+      "peak_rss_mb": 1547.24,
+      "qdrant_populated": false
+    },
+    "queries_sha256": "fffeec843da264e398f6c3f3fe8e057cac2b35d2345a9d42eb4a4de50d46ed98"
+  }
+}

@@ -1,0 +1,230 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+import httpx
+import numpy as np
+import pandas as pd
+import pytest
+
+from packages.common.exceptions import IndexNotReadyError
+from packages.data_contracts.query import RetrievalRequest
+from packages.retrieval.dense.encoder import TruncatedSvdDenseEncoder
+from packages.retrieval.dense.local_index import LocalDenseIndex
+from packages.retrieval.dense.qdrant_adapter import QdrantDenseAdapter
+from packages.retrieval.service import HybridRetrievalService
+from packages.retrieval.sparse.bm25 import BM25Index
+from pipelines.benchmark_retrieval.dense_hybrid_pilot import paired_bootstrap_ci
+from pipelines.build_dense_sparse_index.dense import select_eligible_corpus_slice
+
+
+def _sample_docs() -> tuple[list[str], list[str]]:
+    topics = [
+        "bún bò huế nước dùng đậm đà sả ớt thơm ngon",
+        "tô bún bò tái nạm chả cua huế chuẩn vị",
+        "phở bò tái chín Hà Nội nước lèo thanh ngọt",
+        "bánh mì thịt nướng chả lụa giòn rụm buổi sáng",
+        "ốc hương xào bơ tỏi ốc móng tay bình dân quận 4",
+        "trà sữa trân châu đường đen kem cheese béo ngậy",
+        "cà phê muối đà lạt view đồi thông sáng sớm",
+        "cơm tấm sườn bì chả trứng ốp la sài gòn",
+        "bún đậu mắm tôm chả cốm nem chua rán giòn",
+        "lẩu thái chua cay hải sản tôm mực ngập tràn",
+        "gà rán sốt cay hàn quốc giòn tan cùng phô mai",
+        "salad ức gà bơ healthy giảm cân giữ dáng",
+    ]
+    ids = [f"v{i:02d}" for i in range(len(topics))]
+    return ids, topics
+
+
+def test_truncated_svd_encoder_fit_normalize_and_roundtrip(tmp_path: Path) -> None:
+    _, docs = _sample_docs()
+    enc = TruncatedSvdDenseEncoder.fit(docs, dimension=8)
+    assert enc.dimension == 8
+
+    q_vec = np.asarray(enc.encode_query("bún bò huế cay"), dtype=np.float32)
+    d_vecs = np.asarray(enc.encode_documents(docs), dtype=np.float32)
+    assert q_vec.shape == (8,)
+    assert d_vecs.shape == (len(docs), 8)
+    assert float(np.linalg.norm(q_vec)) == pytest.approx(1.0, abs=1e-4)
+    assert float(np.linalg.norm(d_vecs[0])) == pytest.approx(1.0, abs=1e-4)
+
+    enc_dir = tmp_path / "svd_enc"
+    enc.save(enc_dir)
+    loaded = TruncatedSvdDenseEncoder.load(enc_dir)
+    np.testing.assert_allclose(loaded.encode_query("bún bò huế cay"), q_vec, atol=1e-5)
+
+
+def test_local_dense_index_build_filter_and_integrity(tmp_path: Path) -> None:
+    vids, docs = _sample_docs()
+    enc = TruncatedSvdDenseEncoder.fit(docs, dimension=8)
+    vecs = enc.encode_documents(docs)
+
+    idx_dir = tmp_path / "dense_idx"
+    idx = LocalDenseIndex.build(video_ids=vids, embeddings=vecs, model_id=enc.model_id)
+    receipt = idx.save(idx_dir, corpus_snapshot_id="snap_test")
+    assert receipt["document_count"] == len(vids)
+
+    # Collision fails closed
+    with pytest.raises(FileExistsError):
+        idx.save(idx_dir, corpus_snapshot_id="snap_test")
+
+    loaded = LocalDenseIndex.load(idx_dir)
+    assert loaded.check_collection_ready() == (True, len(vids))
+
+    q_vec = enc.encode_query("bún bò huế")
+    filtered = loaded.search_vectors(q_vec, top_k=5, allowed_video_ids={"v00", "v05"})
+    assert {vid for vid, _ in filtered}.issubset({"v00", "v05"})
+    assert filtered[0][0] == "v00"
+
+    # Corrupt embeddings fail closed
+    (idx_dir / "embeddings.npy").write_bytes(b"corrupted_npy")
+    with pytest.raises(IndexNotReadyError):
+        LocalDenseIndex.load(idx_dir)
+
+
+def test_qdrant_adapter_ensure_collection_and_upsert(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[tuple[str, str, dict[str, Any]]] = []
+
+    def _fake_put(url: str, json: dict[str, Any], timeout: float) -> httpx.Response:
+        calls.append(("PUT", url, json))
+        return httpx.Response(200, json={"result": True, "status": "ok"})
+
+    monkeypatch.setattr(httpx, "put", _fake_put)
+    adapter = QdrantDenseAdapter("http://127.0.0.1:6333", "tiktok_test")
+    adapter.ensure_collection(vector_size=8)
+    adapter.upsert_vectors(
+        [("7304970581181549826", [0.1] * 8, {"video_id": "7304970581181549826"})]
+    )
+    assert len(calls) == 2
+    assert calls[0][1].endswith("/collections/tiktok_test")
+    assert calls[0][2]["vectors"]["size"] == 8
+    assert calls[1][1].endswith("/collections/tiktok_test/points?wait=true")
+    assert calls[1][2]["points"][0]["payload"]["video_id"] == "7304970581181549826"
+
+
+def test_hybrid_service_parity_bm25_dense_rrf(tmp_path: Path) -> None:
+    vids, docs = _sample_docs()
+    df = pd.DataFrame(
+        [
+            {
+                "video_id": vid,
+                "author_handle": f"creator_{i}",
+                "tiktok_url": f"https://www.tiktok.com/@creator_{i}/video/{vid}",
+                "play_count": 10000 + i * 500,
+                "viral_multiplier": 2.0,
+                "engagement_rate": 0.05,
+                "video_format": "Review món ăn",
+                "food_category": "Món nước & Sợi" if i in (0, 1, 2, 8) else "Ăn vặt & Đường phố",
+                "dishes": [],
+                "city_norm": "hồ chí minh" if i % 2 == 0 else "hà nội",
+                "region": "nam" if i % 2 == 0 else "bắc",
+                "district_norm": None,
+                "poi_name": None,
+                "price_tier": "budget_lt50k",
+                "occasions": ["an_sang_trua_nhanh"],
+                "duration_sec": 35,
+                "duration_bucket": "short_20_45s",
+                "has_transcript": True,
+                "transcript": doc,
+                "hook_text": doc,
+                "body_beats": [doc],
+                "cta_text": "Lưu lại nha",
+                "rag_document": doc,
+            }
+            for i, (vid, doc) in enumerate(zip(vids, docs))
+        ]
+    )
+
+    bm25 = BM25Index.build(vids, docs, min_bigram_df=1)
+    enc = TruncatedSvdDenseEncoder.fit(docs, dimension=8)
+    dense = LocalDenseIndex.build(vids, enc.encode_documents(docs), model_id=enc.model_id)
+
+    svc = HybridRetrievalService(
+        df_videos=df,
+        bm25_index=bm25,
+        dense_index=dense,
+        dense_encoder=enc,
+    )
+    for mode in ("bm25", "dense", "hybrid_rrf"):
+        resp = svc.search(RetrievalRequest(query="bún bò huế", mode=mode, top_k=3, rerank=False))
+        assert resp.mode == mode
+        assert len(resp.items) == 3
+        assert resp.items[0].citation.video_id in {"v00", "v01"}
+    assert "dense_ms" in resp.timings_ms
+    assert "fusion_ms" in resp.timings_ms
+
+
+def test_max_records_cap_and_paired_bootstrap_ci() -> None:
+    df = pd.DataFrame(
+        {
+            "video_id": [f"id_{i:04d}" for i in range(60)],
+            "has_transcript": [True] * 60,
+            "rag_document": [f"document {i}" for i in range(60)],
+            "play_count": list(range(60)),
+        }
+    )
+    with pytest.raises(ValueError):
+        select_eligible_corpus_slice(df, max_records=5001)
+
+    sliced = select_eligible_corpus_slice(df, max_records=20)
+    assert len(sliced) == 20
+
+    summary = paired_bootstrap_ci([0.8, 0.6, 0.4, 0.9], [0.5, 0.6, 0.2, 0.7], n_resamples=200, seed=7)
+    assert summary["mean_diff"] == pytest.approx(0.175, abs=1e-4)
+    assert summary["ci_low"] <= summary["mean_diff"] <= summary["ci_high"]
+
+
+def test_from_dirs_and_settings_wire_dense_index_dir(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from packages.common.settings import AppSettings
+
+    vids, docs = _sample_docs()
+    df = pd.DataFrame(
+        [
+            {
+                "video_id": vid,
+                "author_handle": f"creator_{i}",
+                "tiktok_url": f"https://www.tiktok.com/@creator_{i}/video/{vid}",
+                "play_count": 10000,
+                "viral_multiplier": 1.0,
+                "engagement_rate": 0.05,
+                "video_format": "Review món ăn",
+                "food_category": "Món nước & Sợi",
+                "dishes": [],
+                "city_norm": "hồ chí minh",
+                "region": "nam",
+                "district_norm": None,
+                "poi_name": None,
+                "price_tier": "budget_lt50k",
+                "occasions": [],
+                "duration_sec": 30,
+                "duration_bucket": "short_20_45s",
+                "has_transcript": True,
+                "transcript": doc,
+                "hook_text": doc,
+                "body_beats": [doc],
+                "cta_text": "",
+                "rag_document": doc,
+            }
+            for i, (vid, doc) in enumerate(zip(vids, docs))
+        ]
+    )
+    bm25_dir = tmp_path / "bm25"
+    dense_dir = tmp_path / "dense"
+    BM25Index.build(vids, docs, min_bigram_df=1).save(bm25_dir, corpus_snapshot_id="s1")
+    enc = TruncatedSvdDenseEncoder.fit(docs, dimension=8)
+    LocalDenseIndex.build(vids, enc.encode_documents(docs), model_id=enc.model_id).save(
+        dense_dir, corpus_snapshot_id="s1", encoder=enc
+    )
+
+    monkeypatch.setenv("TIKTOK_RAG_DENSE_INDEX_DIR", str(dense_dir))
+    cfg = AppSettings.from_env()
+    assert cfg.dense_index_dir == dense_dir
+
+    svc = HybridRetrievalService.from_dirs(df_videos=df, bm25_dir=bm25_dir, dense_dir=dense_dir)
+    resp = svc.search(RetrievalRequest(query="bún bò huế", mode="dense", top_k=2, rerank=False))
+    assert resp.mode == "dense"
+    assert len(resp.items) == 2

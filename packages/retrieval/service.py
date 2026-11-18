@@ -10,6 +10,8 @@ from packages.common.exceptions import IndexNotReadyError
 from packages.common.logging import StageTimer
 from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest
 from packages.data_contracts.retrieval import EvidenceCard, RetrievalResponse, VideoCitation
+from packages.retrieval.dense.encoder import DenseTextEncoder, load_saved_encoder
+from packages.retrieval.dense.local_index import LocalDenseIndex
 from packages.retrieval.dense.qdrant_adapter import QdrantDenseAdapter
 from packages.retrieval.fusion.rrf import apply_viral_multiplier_boost, reciprocal_rank_fusion
 from packages.retrieval.rerank.scorer import EvidenceReranker
@@ -33,11 +35,16 @@ class HybridRetrievalService:
         bm25_index: BM25Index,
         qdrant_adapter: QdrantDenseAdapter | None = None,
         reranker: EvidenceReranker | None = None,
+        dense_index: LocalDenseIndex | None = None,
+        dense_encoder: DenseTextEncoder | None = None,
+        restrict_to_df: bool = False,
     ) -> None:
         self.df_transcribed = df_videos[df_videos["has_transcript"]].copy()
         self.bm25 = bm25_index
         self.qdrant = qdrant_adapter
+        self.dense_index = dense_index
         self.reranker = reranker or EvidenceReranker(enabled=True)
+        self._restrict_to_df = restrict_to_df
 
         self.video_lookup: dict[str, dict[str, Any]] = {}
         self.viral_multipliers: dict[str, float] = {}
@@ -46,7 +53,7 @@ class HybridRetrievalService:
             self.video_lookup[vid] = rec
             self.viral_multipliers[vid] = float(rec.get("viral_multiplier") or 0.0)
 
-        self._dense_encoder: Any = None
+        self._dense_encoder: Any = dense_encoder
 
     @classmethod
     def from_dirs(
@@ -56,14 +63,24 @@ class HybridRetrievalService:
         qdrant_url: str = "http://127.0.0.1:6333",
         qdrant_collection: str = "tiktok_fnb_videos_v1",
         reranker_enabled: bool = True,
+        dense_dir: Path | None = None,
+        restrict_to_df: bool = False,
     ) -> HybridRetrievalService:
         bm25 = BM25Index.load(bm25_dir)
         qdrant = QdrantDenseAdapter(qdrant_url=qdrant_url, collection_name=qdrant_collection)
+        dense_index: LocalDenseIndex | None = None
+        dense_encoder: DenseTextEncoder | None = None
+        if dense_dir is not None and dense_dir.exists():
+            dense_index = LocalDenseIndex.load(dense_dir)
+            dense_encoder = load_saved_encoder(dense_dir)
         return cls(
             df_videos=df_videos,
             bm25_index=bm25,
             qdrant_adapter=qdrant,
             reranker=EvidenceReranker(enabled=reranker_enabled),
+            dense_index=dense_index,
+            dense_encoder=dense_encoder,
+            restrict_to_df=restrict_to_df,
         )
 
     def _resolve_candidate_pool(
@@ -134,6 +151,8 @@ class HybridRetrievalService:
                 from sentence_transformers import SentenceTransformer  # type: ignore[import-not-found]
 
                 self._dense_encoder = SentenceTransformer("intfloat/multilingual-e5-base")
+            if isinstance(self._dense_encoder, DenseTextEncoder):
+                return self._dense_encoder.encode_query(query)
             vec = self._dense_encoder.encode(f"query: {query}", normalize_embeddings=True)
             return [float(x) for x in vec]
         except Exception:
@@ -147,6 +166,8 @@ class HybridRetrievalService:
             allowed_ids, relaxed_filters = self._resolve_candidate_pool(
                 request.filters, min_pool_size=max(3, request.top_k)
             )
+            if allowed_ids is None and self._restrict_to_df:
+                allowed_ids = set(self.video_lookup.keys())
 
         bm25_hits: list[tuple[str, float]] = []
         dense_hits: list[tuple[str, float]] = []
@@ -159,27 +180,43 @@ class HybridRetrievalService:
                     top_k=candidate_limit,
                     allowed_video_ids=allowed_ids,
                 )
-                # If metadata filter eliminated lexical hits completely, relax back to full BM25 corpus
+                # If metadata filter eliminated lexical hits completely, relax back to the parity pool
                 if not bm25_hits and allowed_ids is not None:
-                    bm25_hits = self.bm25.search(query=request.query, top_k=candidate_limit, allowed_video_ids=None)
+                    fallback_ids = set(self.video_lookup.keys()) if self._restrict_to_df else None
+                    bm25_hits = self.bm25.search(
+                        query=request.query,
+                        top_k=candidate_limit,
+                        allowed_video_ids=fallback_ids,
+                    )
                     if "lexical_fallback_unfiltered" not in relaxed_filters:
                         relaxed_filters.append("lexical_fallback_unfiltered")
 
         if request.mode in ("dense", "hybrid_rrf"):
             with timer.measure("dense_ms"):
-                qdrant_ready = self.qdrant.check_collection_ready()[0] if self.qdrant else False
-                if not qdrant_ready:
+                local_ready = self.dense_index.check_collection_ready()[0] if self.dense_index else False
+                qdrant_ready = (
+                    False
+                    if local_ready
+                    else (self.qdrant.check_collection_ready()[0] if self.qdrant else False)
+                )
+                if not local_ready and not qdrant_ready:
                     if request.mode == "dense":
                         raise IndexNotReadyError(
-                            "Dense Qdrant collection is offline or empty. Start docker-compose Qdrant or use mode='bm25' / 'hybrid_rrf'."
+                            "Dense vector index is offline or empty. Build local dense index, start Qdrant, or use mode='bm25' / 'hybrid_rrf'."
                         )
                     effective_mode = "bm25"
                 else:
                     q_vec = self._encode_dense_query(request.query)
                     if q_vec is None:
                         if request.mode == "dense":
-                            raise IndexNotReadyError("Local dense embedding model is not installed.")
+                            raise IndexNotReadyError("Dense embedding model is unavailable.")
                         effective_mode = "bm25"
+                    elif local_ready and self.dense_index is not None:
+                        dense_hits = self.dense_index.search_vectors(
+                            query_vector=q_vec,
+                            top_k=candidate_limit,
+                            allowed_video_ids=allowed_ids,
+                        )
                     elif self.qdrant is not None:
                         dense_hits = self.qdrant.search_vectors(
                             query_vector=q_vec,
