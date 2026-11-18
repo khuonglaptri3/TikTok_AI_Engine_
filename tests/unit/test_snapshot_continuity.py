@@ -256,3 +256,103 @@ def test_initial_duplicate_comment_ids_merge_before_diagnostics(base_snapshot: P
     assert comment.like_count == 0 and comment.reply_count == 4
     diagnostic = pd.read_parquet(out / "fact_absa_reviews.parquet").iloc[0]
     assert diagnostic.clean_comment_count + diagnostic.seeding_comment_count == 1
+
+
+def _minimal_raw_root(tmp_path: Path) -> Path:
+    root = tmp_path / "raw_workspace"
+    (root / "data/processed").mkdir(parents=True)
+    (root / "data/interim").mkdir(parents=True)
+    (root / "data/transcripts").mkdir(parents=True)
+
+    pd.DataFrame(
+        [
+            {
+                "user.id": "a1",
+                "user.uniqueId": "creator_1",
+                "user.nickname": "Creator One",
+                "user.verified": False,
+                "user.commerceUserInfo.commerceUser": False,
+                "user.ttSeller": False,
+                "stats.followerCount": 12000,
+                "stats.heartCount": 50000,
+                "stats.videoCount": 10,
+                "avg_videos_per_week": 2.0,
+            }
+        ]
+    ).to_parquet(root / "data/processed/cleaned_user_info.parquet", index=False)
+
+    pd.DataFrame(
+        [
+            {
+                "video.id": "v100",
+                "author.id": "a1",
+                "author.uniqueId": "creator_1",
+                "author.nickname": "Creator One",
+                "authorStats.followerCount": 12000,
+                "createTime": pd.Timestamp("2025-02-10T12:00:00Z"),
+                "year_week": "2025-W06",
+                "statsV2.playCount": 15000,
+                "statsV2.diggCount": 900,
+                "statsV2.commentCount": 25,
+                "statsV2.shareCount": 10,
+                "statsV2.collectCount": 40,
+                "video.duration": 35,
+                "desc": "Nhà hàng Hàn Quốc ngon rẻ #ancungtiktok",
+                "hashtags": ["ancungtiktok"],
+                "isAd": False,
+            }
+        ]
+    ).to_parquet(root / "data/processed/cleaned_video_info.parquet", index=False)
+
+    pd.DataFrame(
+        [
+            {
+                "video.id": "v100",
+                "poi.id": "p1",
+                "poi.name": "Ho Chi Minh City",
+                "poi.address": "Vietnam",
+                "poi.city": "",
+                "poi.ttTypeNameTiny": "Restaurant",
+                "isECVideo": "False",
+                "playlistId": "",
+            }
+        ]
+    ).to_csv(root / "data/interim/final_raw_videos.csv", index=False)
+    return root
+
+
+def test_historical_builder_records_verified_parent_provenance(
+    base_snapshot: Path, tmp_path: Path
+) -> None:
+    raw_root = _minimal_raw_root(tmp_path)
+    parent_before = _hashes(base_snapshot)
+    expected_parent_sha = hashlib.sha256((base_snapshot / "manifest.json").read_bytes()).hexdigest()
+
+    out = tmp_path / "rebuilt_v2"
+    manifest = build_gold_corpus(
+        root_dir=raw_root,
+        output_dir=out,
+        parent_corpus_dir=base_snapshot,
+    )
+    assert manifest.parent_snapshot_id == "base"
+    assert manifest.parent_manifest_sha256 == expected_parent_sha
+    assert _hashes(base_snapshot) == parent_before
+
+    df_v = pd.read_parquet(out / "fact_videos.parquet")
+    assert df_v.iloc[0]["city_norm"] == "hồ chí minh"
+    assert "ốc" not in list(df_v.iloc[0]["dishes"])
+
+
+def test_historical_builder_fails_closed_on_corrupted_parent_snapshot(
+    base_snapshot: Path, tmp_path: Path
+) -> None:
+    raw_root = _minimal_raw_root(tmp_path)
+    (base_snapshot / "fact_videos.parquet").write_bytes(b"corrupted_parquet_bytes")
+    out = tmp_path / "should_not_publish"
+    with pytest.raises(CorpusNotReadyError):
+        build_gold_corpus(
+            root_dir=raw_root,
+            output_dir=out,
+            parent_corpus_dir=base_snapshot,
+        )
+    assert not out.exists()

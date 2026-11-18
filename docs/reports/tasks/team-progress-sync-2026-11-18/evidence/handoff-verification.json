@@ -1,0 +1,35 @@
+{
+  "verified_at_utc": "2026-11-18T01:53:15.255624+00:00",
+  "revision": "c3348e93d66ad4eeba133c1d05752d26da18d774",
+  "checks": {
+    "layout": true,
+    "planning": true,
+    "current_revision": true,
+    "source_mutation_scope": true,
+    "preexisting_logs_retained": true,
+    "old_worktree_retained": true,
+    "current_status_index": true,
+    "required_evidence": true,
+    "data_record_consistency": true,
+    "current_check_exit_codes": true,
+    "pytest_count": true,
+    "local_links": true,
+    "secret_scan": true,
+    "diff_whitespace": true,
+    "artifact_hashes": true
+  },
+  "pass": true,
+  "local_links_checked": 62,
+  "link_errors": [],
+  "artifact_files": 18,
+  "hash_manifest_sha256": "6789529cab475cda203dd200a74b6ae809fc1276768b116d8b1d6fd459c7e16d",
+  "secret_scan": {
+    "exit_code": 0,
+    "output": "PASS: Zero secret leaks detected across workspace."
+  },
+  "diff_check": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "scope": "Report handoff only. Product/milestone acceptance is not granted; runtime redaction findings remain open."
+}

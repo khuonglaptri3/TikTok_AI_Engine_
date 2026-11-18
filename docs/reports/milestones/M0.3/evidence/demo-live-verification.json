@@ -1,0 +1,639 @@
+{
+  "status": "PASS",
+  "started_at_utc": "2026-11-18T03:46:50.986603+00:00",
+  "completed_at_utc": "2026-11-18T03:47:31.207770+00:00",
+  "repository_revision": "c3348e93d66ad4eeba133c1d05752d26da18d774",
+  "environment": {
+    "platform": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.14",
+    "gemini_api_key_blanked": true,
+    "provider_calls": 0,
+    "provider_spend_usd": 0.0
+  },
+  "live_http_server_verification": {
+    "command": "python scripts/dev.py run-demo",
+    "actual_port": 8000,
+    "base_url": "http://127.0.0.1:8000",
+    "startup_wait_ms": 16452.47,
+    "endpoints": {
+      "root_redirect": {
+        "status": 307,
+        "location": "/demo/"
+      },
+      "demo_html": {
+        "status": 200,
+        "contains_gradio": true,
+        "html_bytes": 67944
+      },
+      "demo_config": {
+        "status": 200,
+        "version": "6.32.0",
+        "title": "ViralFoodRAG — Evidence-Based TikTok Intelligence",
+        "component_count": 56
+      },
+      "health_live": {
+        "status": 200,
+        "has_request_id": true,
+        "body": {
+          "status": "alive",
+          "service": "tiktok-viral-rag-engine"
+        }
+      },
+      "health_ready": {
+        "status": 200,
+        "body": {
+          "status": "ready",
+          "corpus_snapshot_id": "20261117_recovered_v1",
+          "total_creators": 264,
+          "total_videos": 70996,
+          "indexed_bm25_videos": 21748,
+          "poi_tagged_videos": 23448,
+          "qdrant_dense_ready": false,
+          "qdrant_points": 0,
+          "gemini_key_configured": false
+        }
+      },
+      "demo_modules": {
+        "status": 200,
+        "taxonomy_counts": {
+          "video_formats": 5,
+          "food_categories": 8,
+          "price_tiers": 6,
+          "occasions": 8,
+          "duration_buckets": 4
+        }
+      },
+      "evaluation_summary": {
+        "status": 200,
+        "benchmark_id": "retrieval_v2",
+        "corpus_snapshot_id": "20261117_recovered_v1"
+      }
+    },
+    "check_1_search_and_citations": {
+      "status": 200,
+      "wall_ms": 57.69,
+      "query": "bánh mì thịt nướng Sài Gòn",
+      "mode": "bm25",
+      "reranked": true,
+      "total_candidates": 40,
+      "returned_count": 5,
+      "all_citations_verified_against_gold_and_bm25": true,
+      "citation_checks": [
+        {
+          "rank": 1,
+          "video_id": "7392429774674693384",
+          "author_handle": "mioanh91",
+          "tiktok_url": "https://www.tiktok.com/@mioanh91/video/7392429774674693384",
+          "play_count": 5100000,
+          "score": 1.3952,
+          "in_gold_fact_videos": true,
+          "in_bm25_v2_index": true,
+          "author_handle_matches_gold": true,
+          "tiktok_url_matches_gold": true,
+          "play_count_matches_gold": true,
+          "hook_text_matches_gold": true,
+          "transcript_excerpt_matches_gold": true
+        },
+        {
+          "rank": 2,
+          "video_id": "7403713555456920833",
+          "author_handle": "gauvlogs1997",
+          "tiktok_url": "https://www.tiktok.com/@gauvlogs1997/video/7403713555456920833",
+          "play_count": 4200000,
+          "score": 1.342,
+          "in_gold_fact_videos": true,
+          "in_bm25_v2_index": true,
+          "author_handle_matches_gold": true,
+          "tiktok_url_matches_gold": true,
+          "play_count_matches_gold": true,
+          "hook_text_matches_gold": true,
+          "transcript_excerpt_matches_gold": true
+        },
+        {
+          "rank": 3,
+          "video_id": "7434508279344139528",
+          "author_handle": "dung.thch.n",
+          "tiktok_url": "https://www.tiktok.com/@dung.thch.n/video/7434508279344139528",
+          "play_count": 614200,
+          "score": 1.2934,
+          "in_gold_fact_videos": true,
+          "in_bm25_v2_index": true,
+          "author_handle_matches_gold": true,
+          "tiktok_url_matches_gold": true,
+          "play_count_matches_gold": true,
+          "hook_text_matches_gold": true,
+          "transcript_excerpt_matches_gold": true
+        },
+        {
+          "rank": 4,
+          "video_id": "7475992859783482642",
+          "author_handle": "didausaigon",
+          "tiktok_url": "https://www.tiktok.com/@didausaigon/video/7475992859783482642",
+          "play_count": 16600,
+          "score": 1.283,
+          "in_gold_fact_videos": true,
+          "in_bm25_v2_index": true,
+          "author_handle_matches_gold": true,
+          "tiktok_url_matches_gold": true,
+          "play_count_matches_gold": true,
+          "hook_text_matches_gold": true,
+          "transcript_excerpt_matches_gold": true
+        },
+        {
+          "rank": 5,
+          "video_id": "7459739857322069255",
+          "author_handle": "dung.thch.n",
+          "tiktok_url": "https://www.tiktok.com/@dung.thch.n/video/7459739857322069255",
+          "play_count": 1000000,
+          "score": 1.2728,
+          "in_gold_fact_videos": true,
+          "in_bm25_v2_index": true,
+          "author_handle_matches_gold": true,
+          "tiktok_url_matches_gold": true,
+          "play_count_matches_gold": true,
+          "hook_text_matches_gold": true,
+          "transcript_excerpt_matches_gold": true
+        }
+      ],
+      "timings_verification": {
+        "non_empty": true,
+        "keys": [
+          "filter_ms",
+          "bm25_ms",
+          "fusion_ms",
+          "rerank_ms",
+          "total_ms"
+        ],
+        "all_keys_end_with_ms": true,
+        "all_values_finite_non_negative": true,
+        "timings_ms": {
+          "filter_ms": 0.01,
+          "bm25_ms": 3.02,
+          "fusion_ms": 0.17,
+          "rerank_ms": 16.48,
+          "total_ms": 20.37
+        }
+      }
+    },
+    "check_2_offline_script_and_excerpt_grounding": {
+      "status": 200,
+      "wall_ms": 1094.97,
+      "generation_mode": "offline_grounded",
+      "model_used": "offline_evidence_blueprint_v1",
+      "draft_status": "creative_draft",
+      "grounding_verified": false,
+      "persona_tone": "Bản nháp sáng tạo; tách nguồn tham khảo và nhận xét cần trải nghiệm thực tế",
+      "caption_draft": "Bản nháp về ốc tại Hồ Chí Minh, lấy ý tưởng từ nguồn tham khảo lịch sử; cần kiểm chứng trước khi quay.",
+      "guardrail": {
+        "passed": true,
+        "estimated_duration_sec": 44.9,
+        "target_duration_sec": 45.0,
+        "duration_delta_sec": -0.1,
+        "total_words": 175,
+        "valid_citations_ratio": 1.0,
+        "cliche_phrases_detected": [],
+        "warnings": [
+          "Kiểm tra cấu trúc, mã nguồn và thời lượng; chưa xác minh nội dung từng nhận định với nguồn."
+        ],
+        "citation_coverage_ratio": 1.0,
+        "timing_valid": true,
+        "grounding_verified": false,
+        "validation_scope": "structure_citations_timing"
+      },
+      "all_beats_cite_returned_evidence_cards": true,
+      "all_beat_excerpts_match_source_records": true,
+      "beat_grounding_checks": [
+        {
+          "section_title": "1. Hook mở đầu (0-5s giữ chân)",
+          "time_range": "00:00-00:11",
+          "word_count": 44,
+          "cited_video_ids": [
+            "7357939713132580103"
+          ],
+          "quoted_source_prefix": "Về đây với, cùng tình yêu khát khao",
+          "all_cited_in_evidence_cards": true,
+          "all_cited_in_gold": true,
+          "source_matches": [
+            {
+              "video_id": "7357939713132580103",
+              "author_handle": "anngongovap",
+              "quoted_prefix_matches_source": true,
+              "source_hook_text": "Về đây với, cùng tình yêu khát khao"
+            }
+          ]
+        },
+        {
+          "section_title": "2. Bối cảnh & Cận cảnh chế biến",
+          "time_range": "00:11-00:22",
+          "word_count": 43,
+          "cited_video_ids": [
+            "7357939713132580103"
+          ],
+          "quoted_source_prefix": "Về đây với, cùng tình yêu khát khao",
+          "all_cited_in_evidence_cards": true,
+          "all_cited_in_gold": true,
+          "source_matches": [
+            {
+              "video_id": "7357939713132580103",
+              "author_handle": "anngongovap",
+              "quoted_prefix_matches_source": true,
+              "source_hook_text": "Về đây với, cùng tình yêu khát khao"
+            }
+          ]
+        },
+        {
+          "section_title": "3. Trải nghiệm hương vị & Giá trị thực",
+          "time_range": "00:22-00:34",
+          "word_count": 44,
+          "cited_video_ids": [
+            "7416326498296057106"
+          ],
+          "quoted_source_prefix": "Chị khẳng định, chị cam kết với tất cả khách hàng, nếu",
+          "all_cited_in_evidence_cards": true,
+          "all_cited_in_gold": true,
+          "source_matches": [
+            {
+              "video_id": "7416326498296057106",
+              "author_handle": "minn.cookie",
+              "quoted_prefix_matches_source": true,
+              "source_hook_text": "Chị khẳng định, chị cam kết với tất cả khách hàng, nếu như có một cái loại ốc nào đấy mà khách hàng cảm thấy nó không tươi ngon hoặc là không..."
+            }
+          ]
+        },
+        {
+          "section_title": "4. Tổng kết & Kêu gọi tương tác (CTA)",
+          "time_range": "00:34-00:45",
+          "word_count": 44,
+          "cited_video_ids": [
+            "7313084913899654401"
+          ],
+          "quoted_source_prefix": "Chấn động chấn động, quán ốc đồng giá 15 cành ngay tại",
+          "all_cited_in_evidence_cards": true,
+          "all_cited_in_gold": true,
+          "source_matches": [
+            {
+              "video_id": "7313084913899654401",
+              "author_handle": "didausaigon",
+              "quoted_prefix_matches_source": true,
+              "source_hook_text": "Chấn động chấn động, quán ốc đồng giá 15 cành ngay tại trung tâm Sài Gòn đã ai biết chưa?"
+            }
+          ]
+        }
+      ],
+      "script_niche_benchmark": {
+        "matched_videos": 2,
+        "transcribed_videos": 1,
+        "poi_tagged_videos": 2,
+        "median_plays": 598550.0,
+        "p75_plays": 799275.0,
+        "median_engagement_rate": 0.0244,
+        "duration_q25_sec": 29.0,
+        "duration_median_sec": 29.0,
+        "duration_q75_sec": 29.0,
+        "median_word_per_second": 3.9,
+        "hashtag_q25": 9,
+        "hashtag_q75": 10,
+        "top_hashtags": [
+          "ancungtiktok",
+          "foodreview",
+          "bachtuotsotthai",
+          "thaokiuugovap",
+          "foodfestontiktok",
+          "goitaiheo",
+          "xoaicoclac",
+          "learnontiktok"
+        ],
+        "top_posting_hours": [
+          {
+            "hour": 19,
+            "video_count": 1,
+            "median_plays": 1000000.0,
+            "median_engagement_rate": 0.02425
+          },
+          {
+            "hour": 17,
+            "video_count": 1,
+            "median_plays": 197100.0,
+            "median_engagement_rate": 0.02455
+          }
+        ],
+        "top_poi_venues": [
+          "Gò Vấp",
+          "TP. Hồ Chí Minh"
+        ],
+        "applied_filters": {
+          "video_format": "Review quán ăn",
+          "food_category": "Ăn vặt & Đường phố",
+          "city_norm": "hồ chí minh",
+          "region": "south",
+          "price_tier": "budget_lt50k",
+          "occasion": "an_dem",
+          "duration_bucket": "short_20_45s"
+        },
+        "timings_ms": {
+          "filter_ms": 201.82,
+          "aggregate_ms": 49.16,
+          "total_ms": 251.06
+        }
+      },
+      "timings_verification": {
+        "non_empty": true,
+        "keys": [
+          "domain_gate_ms",
+          "benchmark_ms",
+          "retrieval_ms",
+          "blueprint_synthesis_ms",
+          "guardrail_ms",
+          "total_ms"
+        ],
+        "all_keys_end_with_ms": true,
+        "all_values_finite_non_negative": true,
+        "timings_ms": {
+          "domain_gate_ms": 0.26,
+          "benchmark_ms": 252.93,
+          "retrieval_ms": 818.68,
+          "blueprint_synthesis_ms": 0.35,
+          "guardrail_ms": 0.28,
+          "total_ms": 1072.62
+        }
+      }
+    },
+    "check_3_benchmark_and_timings": {
+      "status": 200,
+      "wall_ms": 246.63,
+      "summary": {
+        "matched_videos": 9631,
+        "transcribed_videos": 3187,
+        "poi_tagged_videos": 9323,
+        "median_plays": 77600.0,
+        "p75_plays": 210300.0,
+        "median_engagement_rate": 0.03909,
+        "duration_q25_sec": 37.0,
+        "duration_median_sec": 63.0,
+        "duration_q75_sec": 80.0,
+        "median_word_per_second": 5.06,
+        "hashtag_q25": 5,
+        "hashtag_q75": 9,
+        "top_hashtags": [
+          "ancungtiktok",
+          "learnontiktok",
+          "reviewanngon",
+          "vtmgr",
+          "food",
+          "foodreview",
+          "longervideos",
+          "foodtiktok"
+        ],
+        "top_posting_hours": [
+          {
+            "hour": 14,
+            "video_count": 580,
+            "median_plays": 97150.0,
+            "median_engagement_rate": 0.03262
+          },
+          {
+            "hour": 17,
+            "video_count": 925,
+            "median_plays": 96500.0,
+            "median_engagement_rate": 0.04209
+          },
+          {
+            "hour": 15,
+            "video_count": 537,
+            "median_plays": 88800.0,
+            "median_engagement_rate": 0.04663
+          },
+          {
+            "hour": 16,
+            "video_count": 525,
+            "median_plays": 85500.0,
+            "median_engagement_rate": 0.04047
+          }
+        ],
+        "top_poi_venues": [
+          "Gò Vấp",
+          "District 1",
+          "Bình Thạnh",
+          "District 10",
+          "District 3",
+          "District 5"
+        ],
+        "applied_filters": {
+          "video_format": "Review quán ăn",
+          "city_norm": "hồ chí minh"
+        },
+        "timings_ms": {
+          "filter_ms": 50.18,
+          "aggregate_ms": 166.81,
+          "total_ms": 217.06
+        }
+      },
+      "iqr_duration_ordered": true,
+      "iqr_hashtag_ordered": true,
+      "subset_counts_valid": true,
+      "timings_verification": {
+        "non_empty": true,
+        "keys": [
+          "filter_ms",
+          "aggregate_ms",
+          "total_ms"
+        ],
+        "all_keys_end_with_ms": true,
+        "all_values_finite_non_negative": true,
+        "timings_ms": {
+          "filter_ms": 50.18,
+          "aggregate_ms": 166.81,
+          "total_ms": 217.06
+        }
+      }
+    },
+    "check_4_invalid_inputs_api": {
+      "out_of_domain_brief": {
+        "status": 422,
+        "body": {
+          "code": "UNSUPPORTED_DOMAIN",
+          "message": "Yêu cầu nằm ngoài lĩnh vực Ẩm thực & F&B TikTok Việt Nam. Vui lòng nhập chủ đề món ăn, quán ăn, đồ uống hoặc nấu ăn.",
+          "request_id": "0c89b5bb8ad2"
+        }
+      },
+      "gemini_free_missing_key": {
+        "status": 503,
+        "body": {
+          "code": "PROVIDER_KEY_MISSING",
+          "message": "GEMINI_API_KEY is not set in .env. Configure a Free-Tier Gemini key or switch generation_mode to 'offline_grounded'.",
+          "request_id": "45ef0fabe4c8"
+        }
+      },
+      "dense_mode_unpopulated_index": {
+        "status": 503,
+        "body": {
+          "code": "INDEX_NOT_READY",
+          "message": "Dense Qdrant collection is offline or empty. Start docker-compose Qdrant or use mode='bm25' / 'hybrid_rrf'.",
+          "request_id": "b79c39225830"
+        }
+      },
+      "blank_brief_validation": {
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "string_too_short",
+              "loc": [
+                "body",
+                "brief"
+              ],
+              "msg": "String should have at least 5 characters",
+              "input": "   ",
+              "ctx": {
+                "min_length": 5
+              }
+            }
+          ]
+        }
+      },
+      "short_brief_validation": {
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "string_too_short",
+              "loc": [
+                "body",
+                "brief"
+              ],
+              "msg": "String should have at least 5 characters",
+              "input": "ngắn",
+              "ctx": {
+                "min_length": 5
+              }
+            }
+          ]
+        }
+      },
+      "blank_query_validation": {
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "value_error",
+              "loc": [
+                "body",
+                "query"
+              ],
+              "msg": "Value error, Value must be non-blank",
+              "input": "   ",
+              "ctx": {
+                "error": {}
+              }
+            }
+          ]
+        }
+      },
+      "unknown_extra_field_validation": {
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "extra_forbidden",
+              "loc": [
+                "body",
+                "unexpected_field"
+              ],
+              "msg": "Extra inputs are not permitted",
+              "input": 123
+            }
+          ]
+        }
+      },
+      "out_of_range_duration_validation": {
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "greater_than_equal",
+              "loc": [
+                "body",
+                "target_duration_sec"
+              ],
+              "msg": "Input should be greater than or equal to 10",
+              "input": 5,
+              "ctx": {
+                "ge": 10
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "gradio_ui_handler_verification": {
+    "gradio_handler_names": [
+      "handle_explore_evidence",
+      "handle_generate_script",
+      "handle_refresh_status",
+      "handle_trust_audit"
+    ],
+    "tab1_checks": {
+      "brief": "Review quán ốc sinh viên bình dân khoảng 35k ăn đêm ở Quận 4 Sài Gòn, nhấn mạnh nước chấm sả tắc",
+      "has_draft_heading": true,
+      "has_draft_disclaimer": true,
+      "has_guardrail_passed_badge": true,
+      "has_benchmark_heading": true,
+      "has_evidence_heading": true,
+      "has_stage_timings": true,
+      "ui_evidence_header_line": "### Bằng Chứng Video Viral Truy Xuất (`mode=hybrid_rrf`, `5` ứng viên)"
+    },
+    "tab4_status": {
+      "ready": {
+        "status": "ready",
+        "corpus_snapshot_id": "20261117_recovered_v1",
+        "total_creators": 264,
+        "total_videos": 70996,
+        "indexed_bm25_videos": 21748,
+        "poi_tagged_videos": 23448,
+        "qdrant_dense_ready": false,
+        "qdrant_points": 0,
+        "gemini_key_configured": false
+      },
+      "evaluation_benchmark_id": "retrieval_v2"
+    },
+    "ui_invalid_inputs": {
+      "tab1_out_of_domain": "### ⚠️ Lỗi (`UNSUPPORTED_DOMAIN`)\nYêu cầu nằm ngoài lĩnh vực Ẩm thực & F&B TikTok Việt Nam. Vui lòng nhập chủ đề món ăn, quán ăn, đồ uống hoặc nấu ăn.",
+      "tab1_gemini_free_no_key": "### ⚠️ Lỗi (`PROVIDER_KEY_MISSING`)\nGEMINI_API_KEY is not set in .env. Configure a Free-Tier Gemini key or switch generation_mode to 'offline_grounded'.",
+      "tab1_blank_brief_422": "### ⚠️ Lỗi (`422`)\n{\"detail\": [{\"type\": \"value_error\", \"loc\": [\"body\", \"brief\"], \"msg\": \"Value error, Value must be non-blank\", \"input\": \"     \", \"ctx\": {\"error\": {}}}]}",
+      "tab2_dense_index_not_ready": "### ⚠️ Lỗi truy xuất (`INDEX_NOT_READY`)\nDense Qdrant collection is offline or empty. Start docker-compose Qdrant or use mode='bm25' / 'hybrid_rrf'.",
+      "tab2_blank_query_422": "### ⚠️ Lỗi truy xuất (`422`)\n",
+      "tab3_blank_transcript_422": "### ⚠️ Lỗi (`422`)\n{\"detail\": [{\"type\": \"string_too_short\", \"loc\": [\"body\", \"transcript\"], \"msg\": \"String should have at least 5 characters\", \"input\": \"   \", \"ctx\": {\"min_length\": 5}}]}"
+    }
+  },
+  "observed_ui_issues_and_limitations": [
+    {
+      "id": "M0.3-UI-1",
+      "severity": "Low",
+      "location": "apps/demo/ui.py:117-119 (handle_explore_evidence)",
+      "description": "When /api/v1/retrieval/search returns a FastAPI/Pydantic 422 RequestValidationError (e.g., whitespace-only query '   ') rather than a domain ViralRagError, r_data contains {'detail': [...]} without a top-level 'message' key. Consequently r_data.get('message', '') evaluates to '', rendering '### ⚠️ Lỗi truy xuất (`422`)' with an empty message body in Tab 2.",
+      "observed_output": "### ⚠️ Lỗi truy xuất (`422`)\n"
+    },
+    {
+      "id": "M0.3-UI-2",
+      "severity": "Low",
+      "location": "apps/demo/ui.py:71-73 & 157-158 (handle_generate_script, handle_trust_audit)",
+      "description": "When FastAPI returns a 422 RequestValidationError (e.g., blank brief in Tab 1 or blank transcript in Tab 3), the error payload is FastAPI's raw {'detail': [...]} structure rather than CanonicalErrorResponse, so the UI prints the raw JSON validation array under '### ⚠️ Lỗi (`422`)'. Domain errors (422 UNSUPPORTED_DOMAIN, 503 PROVIDER_KEY_MISSING, 503 INDEX_NOT_READY) render clean Vietnamese messages.",
+      "observed_output_tab1": "### ⚠️ Lỗi (`422`)\n{\"detail\": [{\"type\": \"value_error\", \"loc\": [\"body\", \"brief\"], \"msg\": \"Value error, Value must be non-blank\", \"input\": \"     \", \"ctx\": {\"error\": {}}}]}",
+      "observed_output_tab3": "### ⚠️ Lỗi (`422`)\n{\"detail\": [{\"type\": \"string_too_short\", \"loc\": [\"body\", \"transcript\"], \"msg\": \"String should have at least 5 characters\", \"input\": \"   \", \"ctx\": {\"min_length\": 5}}]}"
+    },
+    {
+      "id": "M0.3-UI-3",
+      "severity": "Low",
+      "location": "apps/demo/ui.py:77-81 (handle_generate_script)",
+      "description": "Tab 1 formats script evidence cards with hardcoded mode='hybrid_rrf' and total_cands=len(evidence_cards) (e.g., 5) rather than passing the underlying retrieval candidate pool count (40).",
+      "observed_header": "### Bằng Chứng Video Viral Truy Xuất (`mode=hybrid_rrf`, `5` ứng viên)"
+    },
+    {
+      "id": "M0.3-SCOPE-1",
+      "severity": "Info",
+      "location": "infra/docker/Dockerfile.api",
+      "description": "Root wheel and replicated Dockerfile COPY-context wheel builds pass, but an actual Docker daemon image build/container run was not executed in this environment."
+    }
+  ]
+}

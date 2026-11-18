@@ -1,0 +1,99 @@
+{
+  "algorithm": "SHA256",
+  "excluded_to_avoid_cycles": [
+    "artifact-hashes.json",
+    "handoff-verification.json"
+  ],
+  "files": [
+    {
+      "path": "evidence/data-progress.md",
+      "bytes": 7133,
+      "sha256": "da1efbab10548a435240c2137391bff781d49f0247054f6cc4e4fb5ff5f8d95c"
+    },
+    {
+      "path": "evidence/data-verification.json",
+      "bytes": 20918,
+      "sha256": "816d81e48297e6a642b1bd625b011a96501835d94e361819329222f00417ebf4"
+    },
+    {
+      "path": "evidence/git-sync.json",
+      "bytes": 3424,
+      "sha256": "065e4e870333e8971e9bf9bbbd594330731371074606db32dec590bc439aa674"
+    },
+    {
+      "path": "evidence/mypy-current.log",
+      "bytes": 45,
+      "sha256": "b53a8850538df2d0a027862ba159e61e4e1d6e1bed4c84456c9af44b405ee56d"
+    },
+    {
+      "path": "evidence/mypy-interrupted.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/mypy-result.json",
+      "bytes": 420,
+      "sha256": "fa807fe26be255987d19f138ce09bf48b02cea888335cb25e0f54f2cdcbd2b6b"
+    },
+    {
+      "path": "evidence/nguyen-probes.json",
+      "bytes": 1620,
+      "sha256": "3d7c4bd91ce975531fe1a17b445f1368c1421b3f3587d807bfb323ad8fb3ee89"
+    },
+    {
+      "path": "evidence/nguyen-progress.md",
+      "bytes": 15176,
+      "sha256": "2cd70a661f7f420e871e3d5048088aaf9a4f2579d22f35118b485ce46d3c5c29"
+    },
+    {
+      "path": "evidence/pytest-current.log",
+      "bytes": 102,
+      "sha256": "dfc69e972d2137abec901d0360ba1d7954cd1eb48523d5d863400380f9fdc5cb"
+    },
+    {
+      "path": "evidence/pytest-interrupted.log",
+      "bytes": 43,
+      "sha256": "e17c1b166a8f3d29ba990ad938b25fbf4d2d2f01f2e3bcbdbff9125f39444893"
+    },
+    {
+      "path": "evidence/pytest-result.json",
+      "bytes": 395,
+      "sha256": "0a4e52ccf6ee6a903ca43f5cda048df4e0188ac956456b8e3f7031c9e8868fb6"
+    },
+    {
+      "path": "evidence/secrets-current.log",
+      "bytes": 52,
+      "sha256": "eee978e18683c2dd6763d7cebc4d6f4706cbaf92feacd20f97c3c625259b8077"
+    },
+    {
+      "path": "evidence/secrets-final.log",
+      "bytes": 52,
+      "sha256": "eee978e18683c2dd6763d7cebc4d6f4706cbaf92feacd20f97c3c625259b8077"
+    },
+    {
+      "path": "evidence/verify-progress.py",
+      "bytes": 5495,
+      "sha256": "609564d5c22372291b69a2cc1b0636f2748a9e59c0e8a12dc417472c0f860261"
+    },
+    {
+      "path": "evidence/workflow.md",
+      "bytes": 3719,
+      "sha256": "86f7e34ccb6baf742c747a9ca06087a273bf38e0430c79534e2c4fe5dd60144a"
+    },
+    {
+      "path": "README.md",
+      "bytes": 10989,
+      "sha256": "a17fbc0f75755b55e5d486acfe736601e2f6ea38f83f1e7bce47a9e7806f9895"
+    },
+    {
+      "path": "superpowers/plan.md",
+      "bytes": 1390,
+      "sha256": "502a646599af412fe1fd59a362b04945b84c4ad3783a196d2bf30532a731ab32"
+    },
+    {
+      "path": "superpowers/spec.md",
+      "bytes": 1325,
+      "sha256": "c1b8d030cdfb6a08e80fb4e8a1bf648a3f635926ae280a85fd292572073af155"
+    }
+  ]
+}

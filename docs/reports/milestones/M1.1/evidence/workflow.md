@@ -27,3 +27,7 @@
 - `.venv/bin/python scripts/check_secrets.py` -> `EXIT=0`, `PASS: Zero secret leaks detected across workspace.` ([check-secrets.log](check-secrets.log))
 - `.venv/bin/python -m mypy packages apps pipelines` -> `EXIT=0`, `Success: no issues found in 76 source files` ([mypy.log](mypy.log))
 - `.venv/bin/python -m pytest -v` -> `EXIT=0`, `67 passed in 17.12s` ([pytest-full.log](pytest-full.log))
+
+## Peer Review & Blinded 30-Row `K_*` Audit Addendum (`2026-11-18`, Trần Đình Khương)
+- Read and applied `using-superpowers`, `receiving-code-review`, `test-driven-development`, and `verification-before-completion`.
+- Extracted `sample_no = 1..30` (`shared_K_N`) with `N_*` stripped, manually coded `K_city_correct`, `K_format_correct`, `K_category_correct`, `K_dishes_false_positive`, and `K_notes` strictly from `caption` / `poi_*` / `transcript_excerpt` per [annotation_guidelines.md](annotation_guidelines.md), then computed exact raw agreement and Cohen's $\kappa$ in [khuong_m1_1_review_and_agreement.json](khuong_m1_1_review_and_agreement.json) and authored [khuong-peer-review.md](khuong-peer-review.md).

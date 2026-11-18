@@ -4,7 +4,7 @@
 - **Task ID:** `M2.3`
 - **Primary Owner:** Nguyễn Việt Nguyên (`N`)
 - **Peer Reviewer:** Trần Đình Khương (`K`)
-- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M2.3`)
+- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../../planning/TikTok_AI_Engine_Milestone.md) (`M2.3`)
 
 ## Scope & Requirements
 1. Enforce bounded provider execution in `packages/llm/clients/gemini.py` and `packages/script_engine/service.py`:

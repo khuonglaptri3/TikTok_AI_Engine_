@@ -4,7 +4,7 @@
 - **Task ID:** `M0.2`
 - **Primary Owner:** Nguyễn Việt Nguyên (`N`)
 - **Peer Reviewer:** Trần Đình Khương (`K`)
-- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M0.2`) & [team-kickoff-and-push-2026-11-17](../../tasks/team-kickoff-and-push-2026-11-17/README.md)
+- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../../planning/TikTok_AI_Engine_Milestone.md) (`M0.2`) & [team-kickoff-and-push-2026-11-17](../../../tasks/team-kickoff-and-push-2026-11-17/README.md)
 
 ## Scope & Requirements
 1. Revalidate `packages/common/` (`settings`, `logging`, `exceptions`) and `packages/data_contracts/` (`analytics`, `corpus`, `errors`, `multimodal`, `query`, `retrieval`, `script`) while preserving backward compatibility for all existing callers and endpoints.

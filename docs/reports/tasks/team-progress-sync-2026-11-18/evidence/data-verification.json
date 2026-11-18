@@ -1,0 +1,637 @@
+{
+  "status": "PASS",
+  "observed_at_utc": "2026-11-18T01:47:09.031437+00:00",
+  "completed_at_utc": "2026-11-18T01:49:50.522616+00:00",
+  "head": "c3348e93d66ad4eeba133c1d05752d26da18d774",
+  "fetched_origin_main": "c3348e93d66ad4eeba133c1d05752d26da18d774",
+  "head_at_end": "c3348e93d66ad4eeba133c1d05752d26da18d774",
+  "origin_main_at_end": "c3348e93d66ad4eeba133c1d05752d26da18d774",
+  "method": {
+    "source": "Fresh local file reads compared to archive-derived restoration and later publication manifests; fetched origin/main tree uses ordinary Git blob identity. One full content pass over upload files, eight read workers; Gold/index structural reads afterward. No recrawl, restore, rebuild, download, provider call, commit or push.",
+    "execution": "PowerShell here-string piped to uv run --no-project --python 3.12 --with .[demo,dev] python -",
+    "read_workers": 8,
+    "historical_checks": [
+      "regular file",
+      "logical bytes",
+      "archive-derived SHA256",
+      "pinned Git blob SHA1",
+      "publication SHA256/blob",
+      "fetched origin/main path/blob/size"
+    ],
+    "skills_read": [
+      {
+        "path": "$CODEX_HOME/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/using-superpowers/SKILL.md",
+        "version": "7.0.1"
+      },
+      {
+        "path": "$CODEX_HOME/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/writing-plans/SKILL.md",
+        "version": "7.0.1"
+      },
+      {
+        "path": "$CODEX_HOME/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/verification-before-completion/SKILL.md",
+        "version": "7.0.1"
+      }
+    ],
+    "delegation": "Executed the root-approved read-only data investigation subtask. No new implementation, tests, skill-approval phase or plan was authored by this subagent."
+  },
+  "input_evidence": {
+    "restoration_manifest": {
+      "path": "docs/reports/tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-input-manifest.json",
+      "sha256": "11843e609ade980f354b153f71f29bec5edd6ec349d2176b5f2588a98eb83bc1",
+      "source_revision": "f142e5656a220f94f8024de168b0832754b3bd9e"
+    },
+    "publication_hash_inventory": {
+      "path": "docs/reports/tasks/full-data-publication-2026-11-17/evidence/upload-file-hashes.json",
+      "sha256": "d57a2c7217cda4200c577012c5e7eb716995606c0bd91dc3e0c38793b67bc64f"
+    },
+    "current_gold_manifest": {
+      "path": "data/corpus/20261117_recovered_v1/manifest.json",
+      "sha256": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4"
+    },
+    "benchmark_receipt": {
+      "path": "artifacts/benchmarks/retrieval_v2.json",
+      "sha256": "03adf6eaa7e7cf006cf7f3a9be871574b6bf58edbd56a27c50b0461fa2d39c4c"
+    }
+  },
+  "historical": {
+    "expected_files": 37840,
+    "verified_files": 37840,
+    "logical_bytes": 1504284701,
+    "group_file_counts": {
+      "ScriptGen-data": 1,
+      "UserList": 7,
+      "content-features-dataset": 2,
+      "content_analysis": 1,
+      "error": 1,
+      "filters": 1,
+      "foods-and-locations": 14252,
+      "insights": 1,
+      "interim": 21,
+      "legacy_app_data": 3,
+      "processed": 10,
+      "prompts": 5,
+      "raw": 413,
+      "transcripts": 23122
+    },
+    "preexisting_preserved_files": 2,
+    "preexisting_expected_files": 2,
+    "preservation_scope": "The selected pinned inventory is verified, not an independently reconstructed unavailable original owner-copy inventory."
+  },
+  "publication": {
+    "expected_files": 37849,
+    "verified_local_files": 37849,
+    "actual_local_scope_files": 37849,
+    "fetched_remote_scope_files": 37849,
+    "logical_bytes": 1593622816,
+    "remote_logical_bytes": 1593622816,
+    "local_extra_paths": 0,
+    "local_missing_paths": 0,
+    "remote_extra_paths": 0,
+    "remote_missing_paths": 0,
+    "policy": "Owner-authorized tracked data publication supersedes the earlier gitignored-data policy; no obsolete check-ignore assertion was used.",
+    "interpretation": "Path/blob/size equality verifies the fetched remote tree; no independent network clone was made."
+  },
+  "gold": {
+    "snapshot_id": "20261117_recovered_v1",
+    "counts": {
+      "creators": 264,
+      "videos": 70996,
+      "transcribed_videos": 21748,
+      "poi_tagged_videos": 23448,
+      "ec_tagged_videos": 5798,
+      "eligible_retrieval_documents": 21748
+    },
+    "date_bounds": {
+      "start": "2023-11-25",
+      "end": "2025-03-19"
+    },
+    "tables": {
+      "dim_creators.parquet": {
+        "rows": 264,
+        "columns": 15,
+        "size_bytes": 35285,
+        "sha256": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+        "schema": [
+          {
+            "name": "author_id",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "unique_id",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "nickname",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "verified",
+            "type": "bool",
+            "nullable": true
+          },
+          {
+            "name": "commerce_user",
+            "type": "bool",
+            "nullable": true
+          },
+          {
+            "name": "tt_seller",
+            "type": "bool",
+            "nullable": true
+          },
+          {
+            "name": "follower_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "follower_tier",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "heart_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "lifetime_video_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "sample_video_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "median_play_count",
+            "type": "double",
+            "nullable": true
+          },
+          {
+            "name": "median_engagement_rate",
+            "type": "double",
+            "nullable": true
+          },
+          {
+            "name": "median_duration_sec",
+            "type": "double",
+            "nullable": true
+          },
+          {
+            "name": "avg_videos_per_week",
+            "type": "double",
+            "nullable": true
+          }
+        ],
+        "manifest_matches": true
+      },
+      "fact_videos.parquet": {
+        "rows": 70996,
+        "columns": 49,
+        "size_bytes": 58852759,
+        "sha256": "1bfc6c6f819b4c0176345029e5ae4e630a4e9c0438c89548aab893e1d30c1ecd",
+        "schema": [
+          {
+            "name": "video_id",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "author_id",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "author_handle",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "author_nickname",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "tiktok_url",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "follower_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "follower_tier",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "create_time",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "create_hour",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "year_week",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "play_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "digg_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "comment_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "share_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "collect_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "engagement_rate",
+            "type": "double",
+            "nullable": true
+          },
+          {
+            "name": "viral_multiplier",
+            "type": "double",
+            "nullable": true
+          },
+          {
+            "name": "is_ad",
+            "type": "bool",
+            "nullable": true
+          },
+          {
+            "name": "is_ec_video",
+            "type": "bool",
+            "nullable": true
+          },
+          {
+            "name": "playlist_id",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "duration_sec",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "duration_bucket",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "caption",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "hashtags",
+            "type": "list<element: string>",
+            "nullable": true
+          },
+          {
+            "name": "hashtag_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "has_transcript",
+            "type": "bool",
+            "nullable": true
+          },
+          {
+            "name": "transcript",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "word_count",
+            "type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "word_per_second",
+            "type": "double",
+            "nullable": true
+          },
+          {
+            "name": "has_cta",
+            "type": "bool",
+            "nullable": true
+          },
+          {
+            "name": "has_curiosity_gap",
+            "type": "bool",
+            "nullable": true
+          },
+          {
+            "name": "poi_id",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "poi_name",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "poi_address",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "poi_city",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "poi_category_tiny",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "city_norm",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "district_norm",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "region",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "location_source",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "video_format",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "food_category",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "dishes",
+            "type": "list<element: string>",
+            "nullable": true
+          },
+          {
+            "name": "price_tier",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "occasions",
+            "type": "list<element: string>",
+            "nullable": true
+          },
+          {
+            "name": "hook_text",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "body_beats",
+            "type": "list<element: string>",
+            "nullable": true
+          },
+          {
+            "name": "cta_text",
+            "type": "large_string",
+            "nullable": true
+          },
+          {
+            "name": "rag_document",
+            "type": "large_string",
+            "nullable": true
+          }
+        ],
+        "manifest_matches": true
+      }
+    },
+    "checks": {
+      "dim_creators.parquet_manifest": true,
+      "fact_videos.parquet_manifest": true,
+      "video_schema_49_expected_columns": true,
+      "unique_video_ids": true,
+      "unique_creator_ids": true,
+      "nonnull_video_ids": true,
+      "nonnull_creator_ids": true,
+      "all_creator_joins_resolve": true,
+      "date_parse_complete": true,
+      "date_bounds_match_manifest": true,
+      "manifest_counts_match": true,
+      "current_typed_manifest_validation": true
+    },
+    "null_counts": {
+      "city_norm": 53982,
+      "food_category": 0,
+      "video_format": 0,
+      "transcript": 0,
+      "poi_name": 47548,
+      "is_ad": 0
+    },
+    "semantic_limit": "Byte/schema/key integrity does not establish taxonomy accuracy, ASR accuracy, venue attendance, representativeness, or current trends."
+  },
+  "bm25": {
+    "receipt": {
+      "index_type": "okapi_bm25_vn_nfc_csr",
+      "corpus_snapshot_id": "20261117_recovered_v1",
+      "created_at": "2026-11-17T05:59:02.535593+00:00",
+      "document_count": 21748,
+      "vocab_size": 391043,
+      "postings_count": 9464226,
+      "avgdl": 309.4,
+      "k1": 1.5,
+      "b": 0.75
+    },
+    "checks": {
+      "snapshot_id_matches": true,
+      "document_count_matches": true,
+      "unique_documents": true,
+      "exact_eligible_video_membership": true,
+      "vocab_size_matches": true,
+      "vocab_indices_contiguous": true,
+      "postings_count_matches": true,
+      "csr_shape_consistent": true,
+      "csr_offsets_valid": true,
+      "document_indices_in_range": true,
+      "finite_positive_weights_lengths": true,
+      "parameters_match_receipt": true
+    },
+    "receipt_sha256": "97fdeb649d267e31114fb6d7eccea927c713fac34e8d2ca1178f363e8f825ccb",
+    "index_files_sha256": {
+      "bm25-receipt.json": "97fdeb649d267e31114fb6d7eccea927c713fac34e8d2ca1178f363e8f825ccb",
+      "video_ids.json": "0af8ecbc4527086616359495b39a9d81a2334cbeb15dbbdb6b6fa69660a71cee",
+      "vocab.json": "ab18f0979b5624186b10f04470d03b0bbfc6d6345f1ea3bd6e08cd3a95934ffc",
+      "bm25_csr.npz": "184728bd872aa25d1512d149bedcf4421cae91b0faa856fb04fa11f1a63cb205"
+    }
+  },
+  "benchmark": {
+    "benchmark_id": "retrieval_v2",
+    "evaluation": {
+      "label_source": "lexical_metadata_weak_labels",
+      "independent_relevance_judgments": false,
+      "limitation": "Keyword/metadata weak labels measure regression against these rules, not independently annotated relevance quality or current trends.",
+      "aggregation": "macro over queries with at least one relevant video",
+      "zero_relevant_policy": "exclude and report count; all-empty inputs yield zero metrics",
+      "metric_definitions": {
+        "recall_at_10": "relevant retrieved in top 10 / all relevant video IDs",
+        "precision_at_10": "relevant retrieved in top 10 / 10 (missing slots count as non-relevant)",
+        "recall_at_10_ceiling": "macro mean of min(10, relevant count) / relevant count"
+      },
+      "relevant_video_counts": {
+        "q01": 1011,
+        "q02": 1,
+        "q03": 179,
+        "q04": 12,
+        "q05": 62,
+        "q06": 67,
+        "q07": 138,
+        "q08": 15,
+        "q09": 112,
+        "q10": 215,
+        "q11": 272,
+        "q12": 46,
+        "q13": 33,
+        "q14": 231,
+        "q15": 4,
+        "q16": 320
+      }
+    },
+    "provenance_checks": {
+      "corpus_manifest_sha256": true,
+      "queries_sha256": true,
+      "corpus:dim_creators.parquet": true,
+      "corpus:fact_videos.parquet": true,
+      "index:bm25-receipt.json": true,
+      "index:video_ids.json": true,
+      "index:vocab.json": true,
+      "index:bm25_csr.npz": true,
+      "code:pipelines/benchmark_retrieval/__main__.py": true,
+      "code:packages/retrieval/service.py": true,
+      "code:packages/retrieval/sparse/bm25.py": true,
+      "code:packages/retrieval/fusion/rrf.py": true,
+      "code:packages/retrieval/rerank/scorer.py": true
+    },
+    "queries": {
+      "rows": 16,
+      "unique_query_ids": 16,
+      "relevant_id_count_min": 1,
+      "relevant_id_count_max": 1011,
+      "all_labeled_ids_in_gold": true,
+      "all_labeled_ids_in_index": true
+    },
+    "quality_metrics_rerun": false,
+    "limit": "The existing benchmark and its input/code hashes are verified; performance numbers remain 2026-11-17 observations. No fresh benchmark or human relevance study was run."
+  },
+  "fresh_and_multimodal": {
+    "raw_incremental_directory_exists": false,
+    "raw_incremental_files": 0,
+    "raw_incremental_audio_files": 0,
+    "audio_files_entire_data_and_runtime_scope": 4,
+    "audio_extension_counts": {
+      ".m4a": 4
+    },
+    "snapshots": [
+      {
+        "snapshot_id": "20261116_v1",
+        "actual_parquet_tables": [],
+        "manifest_declared_missing_table_count": 2,
+        "modality_tables_present": {
+          "fact_voice_segments.parquet": false,
+          "fact_comments.parquet": false,
+          "fact_absa_reviews.parquet": false
+        }
+      },
+      {
+        "snapshot_id": "20261117_recovered_v1",
+        "actual_parquet_tables": [
+          "dim_creators.parquet",
+          "fact_videos.parquet"
+        ],
+        "manifest_declared_missing_table_count": 0,
+        "modality_tables_present": {
+          "fact_voice_segments.parquet": false,
+          "fact_comments.parquet": false,
+          "fact_absa_reviews.parquet": false
+        }
+      }
+    ],
+    "evaluation_files": 1,
+    "label_named_candidate_files_in_data_and_runtime_scope": 0,
+    "independent_annotations_found": false,
+    "annotation_scope": "Actual files under data/ and runtime artifact directories were inventoried; only data/evaluation/v1/queries.jsonl was found in the evaluation tree. Test-authored fixtures are not real pilot or independent labels. No assertion is made about unpublished teammate files.",
+    "historical_audio": {
+      "files": 4,
+      "logical_bytes": 4133681,
+      "extensions": {
+        ".m4a": 4
+      },
+      "top_level_group_counts": {
+        "raw": 4
+      },
+      "all_in_verified_restoration_manifest": true,
+      "qualification": "These audio-extension files are preserved historical artifacts, not a real fresh pilot or a complete aligned/audio-derived voice dataset. Audio decoding, bitrate, duration and licensing were not evaluated."
+    }
+  },
+  "failure_counts": {},
+  "provider_calls": 0,
+  "provider_spend_usd": 0,
+  "elapsed_seconds": 161.733,
+  "task_status_limit": "This is integrity and availability verification. It does not complete milestone acceptance, change G0-G6 NOT_RUN, or authorize a fresh crawl.",
+  "recovery_receipt_checks": {
+    "restored_unique_paths": true,
+    "historical_count_matches_manifest": true,
+    "historical_bytes_match_manifest": true,
+    "restoration_manifest_matches_recovery_receipt": true,
+    "gold_manifest_matches_recovery_receipt": true,
+    "recovery_code:pipelines/build_gold_corpus/builder.py": true,
+    "recovery_code:packages/common/snapshots.py": true,
+    "recovery_code:pipelines/build_dense_sparse_index/__main__.py": true,
+    "recovery_code:packages/retrieval/sparse/bm25.py": true
+  },
+  "supplemental_checks_at_utc": "2026-11-18T01:51:45.684751+00:00",
+  "authored_report_validation": {
+    "path": "docs/reports/tasks/team-progress-sync-2026-11-18/evidence/data-progress.md",
+    "local_links_checked": 6,
+    "missing_local_links": [],
+    "sha256": "da1efbab10548a435240c2137391bff781d49f0247054f6cc4e4fb5ff5f8d95c"
+  }
+}

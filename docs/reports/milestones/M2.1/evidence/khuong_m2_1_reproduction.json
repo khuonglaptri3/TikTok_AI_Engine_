@@ -1,0 +1,58 @@
+{
+  "task_id": "M2.1",
+  "reviewer": "Trần Đình Khương (K)",
+  "reproduced_at_utc": "2026-11-18T05:43:11.538651+00:00",
+  "hardware": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.14",
+    "cpu_model": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "logical_cpus": 12,
+    "concurrency": 1
+  },
+  "baseline_snapshot_20261117_recovered_v1": {
+    "corpus_snapshot_id": "20261117_recovered_v1",
+    "total_videos": 70996,
+    "load_and_preindex_ms": 1887.17,
+    "cold_request": {
+      "wall_ms": 22.98,
+      "internal_total_ms": 18.32,
+      "matched_videos": 9631
+    },
+    "warm_100_wall_ms": {
+      "min": 7.83,
+      "p50": 12.5,
+      "mean": 15.46,
+      "p95": 38.81,
+      "max": 44.08
+    },
+    "warm_100_internal_ms": {
+      "p50": 10.86,
+      "p95": 28.07
+    },
+    "provisional_budget_250ms_met": true,
+    "descriptive_wording_violations": []
+  },
+  "new_snapshot_20261118_taxonomy_fix_v1": {
+    "corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+    "total_videos": 70996,
+    "load_and_preindex_ms": 1809.76,
+    "cold_request": {
+      "wall_ms": 22.24,
+      "internal_total_ms": 19.08,
+      "matched_videos": 13347
+    },
+    "warm_100_wall_ms": {
+      "min": 8.05,
+      "p50": 12.57,
+      "mean": 15.42,
+      "p95": 40.92,
+      "max": 44.89
+    },
+    "warm_100_internal_ms": {
+      "p50": 11.14,
+      "p95": 29.78
+    },
+    "provisional_budget_250ms_met": true,
+    "descriptive_wording_violations": []
+  }
+}

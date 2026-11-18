@@ -6,5 +6,6 @@
 | core-recovery-and-two-person-plan-2026-11-17 | Historical recovery, core correctness fixes, CPU demo verification and equal two-person delivery plan | COMPLETE | [Read results](core-recovery-and-two-person-plan-2026-11-17/README.md) |
 | team-kickoff-and-push-2026-11-17 | Authorized repository publication, checksum-preserving Git storage and first reciprocal team tasks | COMPLETE | [Read kickoff](team-kickoff-and-push-2026-11-17/README.md) |
 | full-data-publication-2026-11-17 | Explicitly authorized full historical dataset, Gold Parquet and BM25 artifact publication | IN_PROGRESS | [Read results](full-data-publication-2026-11-17/README.md) |
+| team-progress-sync-2026-11-18 | GitHub fast-forward synchronization, Nguyên's M0.2 review and current data progress verification | COMPLETE | [Read progress](team-progress-sync-2026-11-18/README.md) |
 
 These are independent tasks, not milestone completion or gate approvals. See the [milestone reports](../milestones/README.md) for milestone-owned evidence.

@@ -4,7 +4,7 @@
 - **Task ID:** `M2.1`
 - **Primary Owner:** Nguyễn Việt Nguyên (`N`)
 - **Peer Reviewer:** Trần Đình Khương (`K`)
-- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M2.1`)
+- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../../planning/TikTok_AI_Engine_Milestone.md) (`M2.1`)
 
 ## Scope & Requirements
 1. Revalidate and harden `packages/analytics/` (`NicheAnalyticsEngine`) and `packages/data_contracts/analytics.py` (`NicheBenchmarkSummary`) while preserving API compatibility with downstream consumers (`GroundedScriptEngine`, `/api/v1/analytics/niche-benchmark`, `/demo/`).

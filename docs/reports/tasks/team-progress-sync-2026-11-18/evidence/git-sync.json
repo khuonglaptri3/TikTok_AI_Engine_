@@ -1,0 +1,72 @@
+{
+  "observed_at": "2026-11-18T01:41:55.752073+00:00",
+  "before": "b12af51f82491089ddf088e2e01581586a0e0f6c",
+  "pull_command": "git -c gc.auto=0 -c maintenance.auto=false pull --ff-only --no-rebase origin main",
+  "pull_exit_code": 0,
+  "pull_result": "Fast-forward b12af51..c3348e9",
+  "checks": {
+    "head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "c3348e93d66ad4eeba133c1d05752d26da18d774",
+      "stderr": ""
+    },
+    "origin_main": {
+      "command": [
+        "git",
+        "rev-parse",
+        "origin/main"
+      ],
+      "exit_code": 0,
+      "stdout": "c3348e93d66ad4eeba133c1d05752d26da18d774",
+      "stderr": ""
+    },
+    "feature_branch": {
+      "command": [
+        "git",
+        "rev-parse",
+        "origin/feat/m0.2-contracts-validation"
+      ],
+      "exit_code": 0,
+      "stdout": "dcf534f7b7bf2ca2bbcb44b88481905ce3105b4e",
+      "stderr": ""
+    },
+    "status": {
+      "command": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "exit_code": 0,
+      "stdout": "## main...origin/main\n?? docs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-data-first-http408.log\n?? docs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-data.log\n?? docs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-retry.log\n?? docs/reports/tasks/team-progress-sync-2026-11-18/",
+      "stderr": ""
+    },
+    "incoming_commits": {
+      "command": [
+        "git",
+        "log",
+        "--format=%H | %an | %aI | %s",
+        "b12af51..HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "c3348e93d66ad4eeba133c1d05752d26da18d774 | Trần Đình Khương | 2026-11-17T22:36:20+07:00 | Merge pull request #1 from khuonglaptri3/feat/m0.2-contracts-validation\ndcf534f7b7bf2ca2bbcb44b88481905ce3105b4e | NguyenVietNguyen2612 | 2026-11-17T16:37:01+07:00 | feat(m0.2): harden contracts, finite ms timings, and secret-safe logging",
+      "stderr": ""
+    },
+    "incoming_paths": {
+      "command": [
+        "git",
+        "diff",
+        "--name-status",
+        "b12af51..HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "A\tdocs/reports/milestones/M0.2/README.md\nA\tdocs/reports/milestones/M0.2/evidence/check-secrets.log\nA\tdocs/reports/milestones/M0.2/evidence/green-contract-tests.log\nA\tdocs/reports/milestones/M0.2/evidence/mypy.log\nA\tdocs/reports/milestones/M0.2/evidence/pytest-full.log\nA\tdocs/reports/milestones/M0.2/evidence/red-contract-tests.log\nA\tdocs/reports/milestones/M0.2/evidence/ruff.log\nA\tdocs/reports/milestones/M0.2/evidence/workflow.md\nA\tdocs/reports/milestones/M0.2/superpowers/plan.md\nA\tdocs/reports/milestones/M0.2/superpowers/spec.md\nM\tdocs/reports/milestones/README.md\nM\tpackages/common/exceptions/__init__.py\nM\tpackages/common/logging/__init__.py\nM\tpackages/common/settings/__init__.py\nM\tpackages/data_contracts/__init__.py\nA\tpackages/data_contracts/_validators.py\nM\tpackages/data_contracts/analytics.py\nM\tpackages/data_contracts/corpus.py\nM\tpackages/data_contracts/errors.py\nM\tpackages/data_contracts/multimodal.py\nM\tpackages/data_contracts/query.py\nM\tpackages/data_contracts/retrieval.py\nM\tpackages/data_contracts/script.py\nM\ttests/contract/test_data_contracts.py",
+      "stderr": ""
+    }
+  }
+}

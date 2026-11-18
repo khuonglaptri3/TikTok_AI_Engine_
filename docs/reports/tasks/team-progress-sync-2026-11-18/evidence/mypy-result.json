@@ -1,0 +1,22 @@
+{
+  "check": "mypy",
+  "exit_code": 0,
+  "seconds": 12.64,
+  "completed_at": "2026-11-18T01:46:13.673981+00:00",
+  "head": "c3348e93d66ad4eeba133c1d05752d26da18d774",
+  "command": [
+    "C:/Users/lanph/.local/bin/uv.exe",
+    "run",
+    "--no-project",
+    "--python",
+    "3.12",
+    "--with",
+    ".[demo,dev]",
+    "python",
+    "-m",
+    "mypy",
+    "packages",
+    "apps",
+    "pipelines"
+  ]
+}

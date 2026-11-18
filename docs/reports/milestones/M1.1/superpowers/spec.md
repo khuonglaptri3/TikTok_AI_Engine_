@@ -4,7 +4,7 @@
 - **Task ID:** `M1.1`
 - **Primary Owner:** Nguyễn Việt Nguyên (`N`)
 - **Peer Reviewer:** Trần Đình Khương (`K`)
-- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M1.1`)
+- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../../planning/TikTok_AI_Engine_Milestone.md) (`M1.1`)
 
 ## Scope & Requirements
 1. Audit per-field source (lineage), non-null/non-empty coverage, and `unknown`/`unspecified` handling across all `49` columns of `fact_videos.parquet` (`70,996` rows) and `15` columns of `dim_creators.parquet` (`264` rows) in `data/corpus/20261117_recovered_v1/`.

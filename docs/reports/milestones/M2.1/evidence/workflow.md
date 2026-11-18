@@ -21,3 +21,8 @@
 - `.venv/bin/python -m mypy packages apps pipelines` -> `EXIT=0`, `Success: no issues found in 76 source files` ([mypy.log](mypy.log))
 - `.venv/bin/python -m pytest -v` -> `EXIT=0`, `65 passed in 17.57s` ([pytest-full.log](pytest-full.log))
 - `.venv/bin/python scripts/check_secrets.py` -> `EXIT=0`, `PASS: Zero secret leaks detected across workspace.` ([check-secrets.log](check-secrets.log))
+
+## Peer Review & Two-Snapshot Reproduction (`2026-11-18`, Trần Đình Khương)
+- Read and applied `using-superpowers`, `receiving-code-review`, and `verification-before-completion`.
+- Audited quantile math, sparse-slice abstention (`n == 0` and `n < 5`), zero-division safety, and non-causal/non-optimum wording (`0` violations).
+- Independently reproduced the 100-request `concurrency=1` CPU benchmark on Windows 11 across both `20261117_recovered_v1` (`warm p95 = 38.81 ms`) and `20261118_taxonomy_fix_v1` (`warm p95 = 40.92 ms`), recorded in [khuong_m2_1_reproduction.json](khuong_m2_1_reproduction.json) and [khuong-peer-review.md](khuong-peer-review.md). Approved `M2.1` as `COMPLETE`.
