@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import resource
 import time
 from pathlib import Path
 from typing import Any
@@ -12,6 +11,7 @@ from typing import Any
 import pandas as pd
 
 from packages.analytics import load_verified_corpus
+from packages.common.resources import get_peak_rss_mib
 from packages.retrieval.dense import LocalDenseIndex, QdrantDenseAdapter, build_dense_encoder
 
 MAX_M6_1_RECORDS = 5000
@@ -57,7 +57,7 @@ def build_dense_index(
     )
     embeddings = encoder.encode_documents(documents)
     build_time_sec = round(time.perf_counter() - t0, 3)
-    peak_rss_mb = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0, 2)
+    peak_rss_mb = round(get_peak_rss_mib(), 2)
 
     index = LocalDenseIndex.build(
         video_ids=video_ids,
@@ -74,6 +74,8 @@ def build_dense_index(
             "selection_rule": "eligible transcribed rag_document sorted by (-play_count, video_id)",
             "build_time_sec": build_time_sec,
             "peak_rss_mb": peak_rss_mb,
+            "peak_rss_unit": "MiB",
+            "peak_rss_scope": "process_lifetime",
             "qdrant_populated": False,
         },
     )

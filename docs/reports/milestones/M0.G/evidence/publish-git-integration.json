@@ -1,0 +1,69 @@
+{
+  "created_at": "2026-11-18T09:44:57.490318+00:00",
+  "base": "ad7eb92f76cddbfa8526bb16d53f8d7f8db30810",
+  "branch": "fix/g0-call-budget-and-lint",
+  "stash_sha": "452e4b614cd28fc06818d43fb36df1c4f381ffc3",
+  "stash_retained_for_recovery": false,
+  "steps": [
+    {
+      "command": [
+        "git",
+        "stash",
+        "push",
+        "--include-untracked",
+        "-m",
+        "codex: preserve G0 repair for topic-branch publication",
+        "--",
+        "apps/api/app/routers/health.py",
+        "packages/common/settings/__init__.py",
+        "packages/llm/clients/gemini.py",
+        "packages/retrieval/sparse/bm25.py",
+        "tests/unit/test_llm_call_budget.py",
+        "docs/reports/milestones/M0.G",
+        "docs/reports/milestones/README.md"
+      ],
+      "exit_code": 0,
+      "stdout": "Saved working directory and index state On feat/m0-m1-m2.1-complete-and-gold-v2: codex: preserve G0 repair for topic-branch publication\n",
+      "stderr": "warning: in the working copy of 'tests/unit/test_llm_call_budget.py', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tests/unit/test_llm_call_budget.py', LF will be replaced by CRLF the next time Git touches it\n"
+    },
+    {
+      "command": [
+        "git",
+        "switch",
+        "-c",
+        "fix/g0-call-budget-and-lint",
+        "origin/main"
+      ],
+      "exit_code": 0,
+      "stdout": "branch 'fix/g0-call-budget-and-lint' set up to track 'origin/main'.\n",
+      "stderr": "Switched to a new branch 'fix/g0-call-budget-and-lint'\n"
+    },
+    {
+      "command": [
+        "git",
+        "stash",
+        "apply",
+        "452e4b614cd28fc06818d43fb36df1c4f381ffc3"
+      ],
+      "exit_code": 1,
+      "stdout": "Auto-merging docs/reports/milestones/README.md\nCONFLICT (content): Merge conflict in docs/reports/milestones/README.md\nAuto-merging packages/common/settings/__init__.py\nOn branch fix/g0-call-budget-and-lint\nYour branch is up to date with 'origin/main'.\n\nChanges to be committed:\n  (use \"git restore --staged <file>...\" to unstage)\n\tmodified:   apps/api/app/routers/health.py\n\tmodified:   docs/reports/milestones/M0.G/README.md\n\tmodified:   docs/reports/milestones/M0.G/evidence/workflow.md\n\tmodified:   docs/reports/milestones/M0.G/superpowers/plan.md\n\tmodified:   docs/reports/milestones/M0.G/superpowers/spec.md\n\tmodified:   packages/common/settings/__init__.py\n\tmodified:   packages/llm/clients/gemini.py\n\tmodified:   packages/retrieval/sparse/bm25.py\n\nUnmerged paths:\n  (use \"git restore --staged <file>...\" to unstage)\n  (use \"git add <file>...\" to mark resolution)\n\tboth modified:   docs/reports/milestones/README.md\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tdocs/reports/milestones/M0.G/evidence/contributor-report-c6c36131.md\n\tdocs/reports/milestones/M0.G/evidence/fix-artifact-hashes.json\n\tdocs/reports/milestones/M0.G/evidence/fix-baseline.json\n\tdocs/reports/milestones/M0.G/evidence/fix-before-review/\n\tdocs/reports/milestones/M0.G/evidence/fix-check-results.json\n\tdocs/reports/milestones/M0.G/evidence/fix-clean-venv.log\n\tdocs/reports/milestones/M0.G/evidence/fix-code-review.md\n\tdocs/reports/milestones/M0.G/evidence/fix-contract-smoke.log\n\tdocs/reports/milestones/M0.G/evidence/fix-docker-info.log\n\tdocs/reports/milestones/M0.G/evidence/fix-docker-version.log\n\tdocs/reports/milestones/M0.G/evidence/fix-green-budget.log\n\tdocs/reports/milestones/M0.G/evidence/fix-green-reviewed-budget.log\n\tdocs/reports/milestones/M0.G/evidence/fix-handoff.json\n\tdocs/reports/milestones/M0.G/evidence/fix-handoff.py\n\tdocs/reports/milestones/M0.G/evidence/fix-installed-asgi.log\n\tdocs/reports/milestones/M0.G/evidence/fix-installed-pip-check.log\n\tdocs/reports/milestones/M0.G/evidence/fix-mypy.log\n\tdocs/reports/milestones/M0.G/evidence/fix-package-results.json\n\tdocs/reports/milestones/M0.G/evidence/fix-package.py\n\tdocs/reports/milestones/M0.G/evidence/fix-pip-check.log\n\tdocs/reports/milestones/M0.G/evidence/fix-probe.py\n\tdocs/reports/milestones/M0.G/evidence/fix-pytest-full.log\n\tdocs/reports/milestones/M0.G/evidence/fix-red-budget.log\n\tdocs/reports/milestones/M0.G/evidence/fix-red-review-budget.log\n\tdocs/reports/milestones/M0.G/evidence/fix-ruff.log\n\tdocs/reports/milestones/M0.G/evidence/fix-run-checks.py\n\tdocs/reports/milestones/M0.G/evidence/fix-runtime-receipt.json\n\tdocs/reports/milestones/M0.G/evidence/fix-runtime.log\n\tdocs/reports/milestones/M0.G/evidence/fix-secrets-final.log\n\tdocs/reports/milestones/M0.G/evidence/fix-secrets.log\n\tdocs/reports/milestones/M0.G/evidence/fix-wheel-build.log\n\tdocs/reports/milestones/M0.G/evidence/fix-wheel-install.log\n\tdocs/reports/milestones/M0.G/evidence/fix-write-report.py\n\tdocs/reports/milestones/M0.G/evidence/peer-artifact-hashes.json\n\tdocs/reports/milestones/M0.G/evidence/peer-check-results.json\n\tdocs/reports/milestones/M0.G/evidence/peer-clean-venv.log\n\tdocs/reports/milestones/M0.G/evidence/peer-contract-smoke.log\n\tdocs/reports/milestones/M0.G/evidence/peer-docker-info.log\n\tdocs/reports/milestones/M0.G/evidence/peer-docker-version.log\n\tdocs/reports/milestones/M0.G/evidence/peer-git-sync.json\n\tdocs/reports/milestones/M0.G/evidence/peer-handoff.json\n\tdocs/reports/milestones/M0.G/evidence/peer-handoff.py\n\tdocs/reports/milestones/M0.G/evidence/peer-installed-asgi.log\n\tdocs/reports/milestones/M0.G/evidence/peer-installed-pip-check.log\n\tdocs/reports/milestones/M0.G/evidence/peer-mypy.log\n\tdocs/reports/milestones/M0.G/evidence/peer-package-results.json\n\tdocs/reports/milestones/M0.G/evidence/peer-package.py\n\tdocs/reports/milestones/M0.G/evidence/peer-pip-check.log\n\tdocs/reports/milestones/M0.G/evidence/peer-probe.py\n\tdocs/reports/milestones/M0.G/evidence/peer-pytest-full.log\n\tdocs/reports/milestones/M0.G/evidence/peer-review-report-before-fixes.md\n\tdocs/reports/milestones/M0.G/evidence/peer-review.md\n\tdocs/reports/milestones/M0.G/evidence/peer-ruff.log\n\tdocs/reports/milestones/M0.G/evidence/peer-run-checks.py\n\tdocs/reports/milestones/M0.G/evidence/peer-runtime-harness-error.log\n\tdocs/reports/milestones/M0.G/evidence/peer-runtime-receipt.json\n\tdocs/reports/milestones/M0.G/evidence/peer-runtime.log\n\tdocs/reports/milestones/M0.G/evidence/peer-secrets-final.log\n\tdocs/reports/milestones/M0.G/evidence/peer-secrets.log\n\tdocs/reports/milestones/M0.G/evidence/peer-wheel-build.log\n\tdocs/reports/milestones/M0.G/evidence/peer-wheel-install.log\n\tdocs/reports/milestones/M0.G/evidence/publish-baseline.json\n\tdocs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-data-first-http408.log\n\tdocs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-data.log\n\tdocs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-retry.log\n\ttests/unit/test_llm_call_budget.py\n\n",
+      "stderr": ""
+    }
+  ],
+  "head": "ad7eb92f76cddbfa8526bb16d53f8d7f8db30810",
+  "unexpected_carried_file_changes": [
+    "tests/unit/test_llm_call_budget.py"
+  ],
+  "resolution": {
+    "index_conflict_resolved": true,
+    "test_original_hash_restored": true,
+    "incoming_rows_retained": true,
+    "dense_index_setting_retained": true
+  },
+  "stash_cleanup": {
+    "exit_code": 0,
+    "stdout": "Dropped stash@{0} (452e4b614cd28fc06818d43fb36df1c4f381ffc3)\n",
+    "stderr": "",
+    "reason": "Only this task recovery stash; source and evidence are committed/pushed."
+  }
+}

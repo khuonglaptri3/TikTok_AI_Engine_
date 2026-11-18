@@ -5,7 +5,7 @@ import math
 import re
 import unicodedata
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -185,7 +185,7 @@ class BM25Index:
         receipt: dict[str, object] = {
             "index_type": "okapi_bm25_vn_nfc_csr",
             "corpus_snapshot_id": corpus_snapshot_id,
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
             "document_count": len(self.video_ids),
             "vocab_size": len(self.vocab),
             "postings_count": int(len(self.indices)),

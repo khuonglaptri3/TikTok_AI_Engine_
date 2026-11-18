@@ -1,0 +1,90 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0
+rootdir: C:\Users\lanph\OneDrive\Desktop\TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 21 items
+
+tests\unit\test_llm_call_budget.py FF..FFFFFFFF.FF......                 [100%]
+
+================================== FAILURES ===================================
+_____________ test_settings_reject_out_of_policy_call_budgets[3] ______________
+tests\unit\test_llm_call_budget.py:15: in test_settings_reject_out_of_policy_call_budgets
+    with pytest.raises(ValidationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValidationError
+_____________ test_settings_reject_out_of_policy_call_budgets[5] ______________
+tests\unit\test_llm_call_budget.py:15: in test_settings_reject_out_of_policy_call_budgets
+    with pytest.raises(ValidationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValidationError
+____________ test_environment_cannot_raise_the_two_call_ceiling[3] ____________
+tests\unit\test_llm_call_budget.py:25: in test_environment_cannot_raise_the_two_call_ceiling
+    with pytest.raises(ValidationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValidationError
+____________ test_environment_cannot_raise_the_two_call_ceiling[5] ____________
+tests\unit\test_llm_call_budget.py:25: in test_environment_cannot_raise_the_two_call_ceiling
+    with pytest.raises(ValidationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValidationError
+____ test_client_blocks_exhausted_budget_even_with_unvalidated_settings[2] ____
+tests\unit\test_llm_call_budget.py:46: in test_client_blocks_exhausted_budget_even_with_unvalidated_settings
+    with pytest.raises(QuotaBlockedError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE QuotaBlockedError
+____ test_client_blocks_exhausted_budget_even_with_unvalidated_settings[3] ____
+tests\unit\test_llm_call_budget.py:46: in test_client_blocks_exhausted_budget_even_with_unvalidated_settings
+    with pytest.raises(QuotaBlockedError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE QuotaBlockedError
+______________ test_invalid_consumed_call_counts_fail_closed[-1] ______________
+tests\unit\test_llm_call_budget.py:66: in test_invalid_consumed_call_counts_fail_closed
+    with pytest.raises(QuotaBlockedError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE QuotaBlockedError
+_____________ test_invalid_consumed_call_counts_fail_closed[True] _____________
+tests\unit\test_llm_call_budget.py:66: in test_invalid_consumed_call_counts_fail_closed
+    with pytest.raises(QuotaBlockedError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE QuotaBlockedError
+_____________ test_invalid_consumed_call_counts_fail_closed[0.5] ______________
+tests\unit\test_llm_call_budget.py:66: in test_invalid_consumed_call_counts_fail_closed
+    with pytest.raises(QuotaBlockedError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE QuotaBlockedError
+_____________ test_invalid_consumed_call_counts_fail_closed[nan] ______________
+tests\unit\test_llm_call_budget.py:66: in test_invalid_consumed_call_counts_fail_closed
+    with pytest.raises(QuotaBlockedError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE QuotaBlockedError
+______________ test_invalid_consumed_call_counts_fail_closed[0] _______________
+tests\unit\test_llm_call_budget.py:67: in test_invalid_consumed_call_counts_fail_closed
+    client.generate_structured_json("invalid counter", turn_calls_used=used)  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+packages\llm\clients\gemini.py:112: in generate_structured_json
+    if turn_calls_used >= self.settings.max_llm_calls_per_turn:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: '>=' not supported between instances of 'str' and 'int'
+_____________ test_invalid_consumed_call_counts_fail_closed[None] _____________
+tests\unit\test_llm_call_budget.py:67: in test_invalid_consumed_call_counts_fail_closed
+    client.generate_structured_json("invalid counter", turn_calls_used=used)  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+packages\llm\clients\gemini.py:112: in generate_structured_json
+    if turn_calls_used >= self.settings.max_llm_calls_per_turn:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: '>=' not supported between instances of 'NoneType' and 'int'
+=========================== short test summary info ===========================
+FAILED tests/unit/test_llm_call_budget.py::test_settings_reject_out_of_policy_call_budgets[3]
+FAILED tests/unit/test_llm_call_budget.py::test_settings_reject_out_of_policy_call_budgets[5]
+FAILED tests/unit/test_llm_call_budget.py::test_environment_cannot_raise_the_two_call_ceiling[3]
+FAILED tests/unit/test_llm_call_budget.py::test_environment_cannot_raise_the_two_call_ceiling[5]
+FAILED tests/unit/test_llm_call_budget.py::test_client_blocks_exhausted_budget_even_with_unvalidated_settings[2]
+FAILED tests/unit/test_llm_call_budget.py::test_client_blocks_exhausted_budget_even_with_unvalidated_settings[3]
+FAILED tests/unit/test_llm_call_budget.py::test_invalid_consumed_call_counts_fail_closed[-1]
+FAILED tests/unit/test_llm_call_budget.py::test_invalid_consumed_call_counts_fail_closed[True]
+FAILED tests/unit/test_llm_call_budget.py::test_invalid_consumed_call_counts_fail_closed[0.5]
+FAILED tests/unit/test_llm_call_budget.py::test_invalid_consumed_call_counts_fail_closed[nan]
+FAILED tests/unit/test_llm_call_budget.py::test_invalid_consumed_call_counts_fail_closed[0]
+FAILED tests/unit/test_llm_call_budget.py::test_invalid_consumed_call_counts_fail_closed[None]
+======================== 12 failed, 9 passed in 0.63s =========================

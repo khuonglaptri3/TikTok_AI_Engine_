@@ -1,0 +1,30 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0
+rootdir: C:\Users\lanph\OneDrive\Desktop\TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 25 items / 21 deselected / 4 selected
+
+tests\unit\test_llm_call_budget.py FFF.                                  [100%]
+
+================================== FAILURES ===================================
+______________ test_nonfinite_copied_budgets_fail_closed[0-nan] _______________
+tests\unit\test_llm_call_budget.py:89: in test_nonfinite_copied_budgets_fail_closed
+    with pytest.raises(QuotaBlockedError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE QuotaBlockedError
+______________ test_nonfinite_copied_budgets_fail_closed[0-inf] _______________
+tests\unit\test_llm_call_budget.py:89: in test_nonfinite_copied_budgets_fail_closed
+    with pytest.raises(QuotaBlockedError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE QuotaBlockedError
+______________ test_nonfinite_copied_budgets_fail_closed[2-nan] _______________
+tests\unit\test_llm_call_budget.py:89: in test_nonfinite_copied_budgets_fail_closed
+    with pytest.raises(QuotaBlockedError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE QuotaBlockedError
+=========================== short test summary info ===========================
+FAILED tests/unit/test_llm_call_budget.py::test_nonfinite_copied_budgets_fail_closed[0-nan]
+FAILED tests/unit/test_llm_call_budget.py::test_nonfinite_copied_budgets_fail_closed[0-inf]
+FAILED tests/unit/test_llm_call_budget.py::test_nonfinite_copied_budgets_fail_closed[2-nan]
+================= 3 failed, 1 passed, 21 deselected in 0.46s ==================

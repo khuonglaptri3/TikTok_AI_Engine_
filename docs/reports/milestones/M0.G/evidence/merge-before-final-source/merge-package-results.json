@@ -1,0 +1,121 @@
+{
+  "started_at": "2026-11-18T10:30:55.094287+00:00",
+  "steps": [
+    {
+      "name": "wheel-build",
+      "command": [
+        "C:\\Users\\lanph\\.local\\bin\\uv.EXE",
+        "build",
+        "--offline",
+        "--wheel",
+        "--out-dir",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-merge-package-nzgv3p1d\\wheels",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-merge-package-nzgv3p1d\\source"
+      ],
+      "exit_code": 0,
+      "seconds": 2.917,
+      "log": "merge-wheel-build.log"
+    },
+    {
+      "name": "clean-venv",
+      "command": [
+        "C:\\Users\\lanph\\.local\\bin\\uv.EXE",
+        "venv",
+        "--python",
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpyHp3Q8\\Scripts\\python.exe",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-merge-package-nzgv3p1d\\installed"
+      ],
+      "exit_code": 0,
+      "seconds": 0.241,
+      "log": "merge-clean-venv.log"
+    },
+    {
+      "name": "wheel-install",
+      "command": [
+        "C:\\Users\\lanph\\.local\\bin\\uv.EXE",
+        "pip",
+        "install",
+        "--offline",
+        "--python",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-merge-package-nzgv3p1d\\installed\\Scripts\\python.exe",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-merge-package-nzgv3p1d\\wheels\\tiktok_viral_rag-0.2.0-py3-none-any.whl"
+      ],
+      "exit_code": 0,
+      "seconds": 4.022,
+      "log": "merge-wheel-install.log"
+    },
+    {
+      "name": "installed-pip-check",
+      "command": [
+        "C:\\Users\\lanph\\.local\\bin\\uv.EXE",
+        "pip",
+        "check",
+        "--python",
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-merge-package-nzgv3p1d\\installed\\Scripts\\python.exe"
+      ],
+      "exit_code": 0,
+      "seconds": 0.071,
+      "log": "merge-installed-pip-check.log"
+    },
+    {
+      "name": "installed-asgi",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\Temp\\g0-merge-package-nzgv3p1d\\installed\\Scripts\\python.exe",
+        "-c",
+        "import json, pathlib, sys; from fastapi.testclient import TestClient; import apps.api.app.main as api; import packages.common.settings as settings; import pipelines; root=pathlib.Path(sys.argv[1]); prefix=pathlib.Path(sys.prefix); locations=[api.__file__,settings.__file__,pipelines.__file__]; assert all(pathlib.Path(p).is_relative_to(prefix) for p in locations), locations; app=api.create_app(settings=settings.AppSettings(gemini_api_key='', corpus_dir=root/'data/corpus/20261117_recovered_v1',bm25_index_dir=root/'artifacts/indexes/bm25-v2')); client=TestClient(app); live=client.get('/health/live'); demo=client.get('/demo/'); assert live.status_code==200 and demo.status_code==200; print(json.dumps({'installed_modules':locations,'health_live':live.status_code,'demo':demo.status_code}))",
+        "C:\\Users\\lanph\\OneDrive\\Desktop\\TikTok_AI_Engine_"
+      ],
+      "exit_code": 0,
+      "seconds": 13.336,
+      "log": "merge-installed-asgi.log"
+    },
+    {
+      "name": "docker-version",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.EXE",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.058,
+      "log": "merge-docker-version.log"
+    },
+    {
+      "name": "docker-info",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.EXE",
+        "info",
+        "--format",
+        "{{.ServerVersion}}"
+      ],
+      "exit_code": 0,
+      "seconds": 0.813,
+      "log": "merge-docker-info.log"
+    }
+  ],
+  "clean_install": true,
+  "actual_docker_container_run": false,
+  "provider_calls": 0,
+  "source_sha256": {
+    "packages/common/resources.py": "13fcf66e3128dc37c1df8ed74bac2113667b3f211cbfccb6cfc6e6e8d7052cbe",
+    "pipelines/build_dense_sparse_index/dense.py": "30f858be0c8ff7cb4eca7eaa4d895e30bfc6062d2f47ffa20e588f5563ca4cc2",
+    "pipelines/benchmark_retrieval/dense_hybrid_pilot.py": "387436120e802dc82ac61bd8f9016b9d774cbc3c5cad037e0a9ea71981f0ec29",
+    "tests/unit/test_resource_measurements.py": "644e73406cab472b948910e2bcf87fbaafedc93bdee848cd8c5220e766bffa86",
+    "packages/common/settings/__init__.py": "2ef8a4a25eac3733f2481bf29dac6d842a3cb565997bb1972f9397f9477791cc",
+    "packages/llm/clients/gemini.py": "22c76f0af290de43708c8a614e8d8594613b0d7eb66bcfe5c654d68ec26d5daa",
+    "apps/api/app/routers/health.py": "784e13ed2570efeba8affb4d8e498bb8a82c1e4a675e5840b166abad8c599b02",
+    "packages/retrieval/sparse/bm25.py": "d1dbf705c1490de50e38df5f57f0fbd7fccabf349e1db1e72f544979ef04b1f0",
+    "tests/unit/test_llm_call_budget.py": "c339e527e48dcc16792c0eced584af7aae5d5fc5eb298000f204516a70d2d5c3"
+  },
+  "wheel": {
+    "name": "tiktok_viral_rag-0.2.0-py3-none-any.whl",
+    "bytes": 120693,
+    "sha256": "3cfabafdfe90fd288916cba1feadd188f3a5a353d2a20a694b727798d21ee5d6",
+    "modules_present": {
+      "apps": true,
+      "packages": true,
+      "pipelines": true
+    }
+  },
+  "package_exit_code": 0,
+  "completed_at": "2026-11-18T10:31:20.322713+00:00"
+}

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -114,7 +114,7 @@ def main() -> None:
 
     if args.seed_demo_batch:
         records = [
-            r for r in _build_seed_demo_records(datetime.now(timezone.utc)) if r.video_id not in existing_ids
+            r for r in _build_seed_demo_records(datetime.now(UTC)) if r.video_id not in existing_ids
         ]
         out_file = write_incremental_batch(records, args.output_dir)
         print(

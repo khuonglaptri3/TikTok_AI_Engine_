@@ -1,6 +1,20 @@
 # M6.1 — CPU Dense & Hybrid Retrieval Pilot Specification
 
 - **Task ID:** `M6.1` (Text-Only Spike on CPU)
+
+## Owner-authorized Windows repair and integration — 2026-11-18
+
+The owner explicitly requested resolving the Windows integration blocker, updating PR #3, and merging today's completed implementation work into `main` after checks pass. This repair does not complete the scientific M6.1 acceptance or approve G0.
+
+- Remove unconditional Unix-only `resource` imports from the dense builder and parity benchmark. Both modules must import and their existing tests must collect on Windows without a `resource` module.
+- Add a standard-library shared process-peak resident-memory helper: Windows reads `GetProcessMemoryInfo` / `PeakWorkingSetSize` in bytes; Linux reads `resource.getrusage(RUSAGE_SELF).ru_maxrss` in KiB. Normalize to MiB and keep the existing `peak_rss_mb` receipt field for compatibility, with explicit MiB/process-lifetime metadata on newly generated receipts.
+- Never substitute current RSS or fabricated zero for an unavailable peak measurement. Propagate OS errors or invalid/nonfinite/negative readings; no new paid dependency, model download, crawl, provider call or historical artifact rewrite.
+- Preserve all original benchmark artifacts and dated Linux measurements. Tests use OS-boundary doubles for deterministic unit conversion/error behavior plus a real native-process measurement on the current machine.
+- Use RED/GREEN regressions, full pytest, configured mypy, required Ruff, secret/dependency checks, G0 runtime assertions and a clean installed-package smoke check before publication. Record actual source hashes and results.
+- The full pipeline Ruff check also exposed five existing UTC-alias violations in the two crawl helper modules. Apply the equivalent Python3.11+ `datetime.UTC` alias there so the full requested lint scope is clean; preserve behavior, original artifacts and existing cutoff tests. These are low-impact style fixes and need no redundant tests.
+- Update the canonical M6.1 and G0 reports/index with the repair and current validation while preserving their IN_PROGRESS / owner-pending statuses and unmet scientific criteria.
+- User authorization includes normal commits/pushes, readying PR #3 and merging it to `main` once required checks/review pass. Preserve unrelated logs, original raw/Gold/index bytes and existing branch history. Confirm final remote main ancestry and PR state rather than inferring merge success.
+- Post-merge verification/receipts may be persisted through a documentation-only follow-up PR into main so actual merge evidence is included without a direct main push. Its source hashes must match the already tested merge; no scientific/gate status is inferred from the evidence commit.
 - **Primary Owner:** Nguyễn Việt Nguyên (`N`)
 - **Peer Reviewer:** Trần Đình Khương (`K`)
 - **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../../planning/TikTok_AI_Engine_Milestone.md) (`M6.1`)

@@ -1,0 +1,130 @@
+{
+  "checked_at": "2026-11-18T09:19:42.110964+00:00",
+  "head": "c6c36131d2750b33fcede38871656e7c0ae703fc",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "exact_bundle_layout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "exact_planning_layout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "single_consistent_index_row",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "owner_decision_still_pending",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "mandatory_report_links",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "live_report_local_links",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "audit_script_syntax",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "pinned_synchronized_revision",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "preexisting_untracked_logs_preserved",
+      "passed": true,
+      "detail": [
+        "docs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-data-first-http408.log",
+        "docs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-data.log",
+        "docs/reports/tasks/full-data-publication-2026-11-17/evidence/git-push-retry.log"
+      ]
+    },
+    {
+      "name": "tracked_changes_limited_to_review_bundle_and_index",
+      "passed": true,
+      "detail": [
+        "docs/reports/milestones/M0.G/README.md",
+        "docs/reports/milestones/M0.G/evidence/workflow.md",
+        "docs/reports/milestones/M0.G/superpowers/plan.md",
+        "docs/reports/milestones/M0.G/superpowers/spec.md",
+        "docs/reports/milestones/README.md"
+      ]
+    },
+    {
+      "name": "production_and_data_paths_unchanged",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "tracked_mutation_scope",
+      "passed": true,
+      "detail": [
+        "docs/reports/milestones/M0.G/README.md",
+        "docs/reports/milestones/M0.G/evidence/workflow.md",
+        "docs/reports/milestones/M0.G/superpowers/plan.md",
+        "docs/reports/milestones/M0.G/superpowers/spec.md",
+        "docs/reports/milestones/README.md"
+      ]
+    },
+    {
+      "name": "original_contributor_report_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "original_untracked_logs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "check_log_hashes_match",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "runtime_bytes_still_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "two_policy_failures_reported_honestly",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lint_failure_reported_honestly",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "clean_install_receipt",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "english_authored_documentation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final_secret_scan_recorded",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "scope": "Handoff integrity only; product policy and clean-lint acceptance gaps remain unresolved.",
+  "excluded_archived_links": "contributor-report-c6c36131.md is a byte-exact historical archive retaining original link context."
+}

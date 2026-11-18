@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-11-18T09:59:21.317637+00:00",
+  "checkpoint": "First source/evidence publication; a documentation-only follow-up may advance the branch head.",
+  "source_commit": "7abcd6e5635134395eedbcb8c8055957b351ca55",
+  "published_head": "7abcd6e5635134395eedbcb8c8055957b351ca55",
+  "push_exit": 0,
+  "pr_create_exit": 0,
+  "pr": {
+    "baseRefName": "main",
+    "headRefName": "fix/g0-call-budget-and-lint",
+    "isDraft": true,
+    "mergeStateStatus": "UNKNOWN",
+    "mergeable": "UNKNOWN",
+    "number": 3,
+    "state": "OPEN",
+    "url": "https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3"
+  },
+  "workflow": "GitHub flow; develop absent; main unchanged by this push",
+  "formal_gate": "NOT_RUN",
+  "draft_reason": "Updated-main Windows M6.1 resource import/type errors block full integration checks."
+}

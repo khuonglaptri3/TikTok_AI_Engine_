@@ -1,76 +1,76 @@
-# M0.G — G0 Foundation Gate Decision
+# M0.G ? Verified CPU Foundation Integration
 
-- Status: IN_PROGRESS (`N`'s G0 evidence assembly and fresh verification suite PASSED on `main` @ `1ff574fe`; Gate `G0` recommended **PASS**, awaiting peer review by Trần Đình Khương)
-- Gate result: `NOT_RUN` (awaiting `K` sign-off; all technical G0 criteria met)
-- Execution date: 2026-11-18 (Asia/Ho_Chi_Minh)
-- Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M0.G`)
-- Repository version: `main` (`1ff574fefa87b0453116f99e9b802221222593f4`)
-- Primary owner: Nguyễn Việt Nguyên (`N`) · Peer reviewer: Trần Đình Khương (`K`)
-- Specification: [spec.md](superpowers/spec.md)
-- Execution plan: [plan.md](superpowers/plan.md)
+- Status: IN_PROGRESS (implementation verified; formal gate decision remains owner-pending).
+- Gate result: NOT_RUN (no owner PASS/FAIL decision recorded).
+- Technical recommendation: PASS for the defined local CPU/offline foundation on the tested source.
+- Execution date: 2026-11-18 (Asia/Saigon).
+- Requirement source: [active milestone plan](../../../planning/TikTok_AI_Engine_Milestone.md), M0.G, and the owner's explicit instruction to fix the Windows blocker, update PR3 and merge today's work into main after checks.
+- Repository version: `fix/g0-call-budget-and-lint`, base `40c457e2`; source and test hashes are pinned in the [final integrated receipt](../M6.1/evidence/windows-check-results.json). Actual merge/remote-main state is recorded after publication.
+- Specification: [spec.md](superpowers/spec.md).
+- Execution plan: [plan.md](superpowers/plan.md).
 
 ## Conclusion
 
-Assembled and re-verified the **G0 foundation baseline** on synchronized `main` (`1ff574fe`) across completed upstream tasks [M0.1](../M0.1/README.md), [M0.2](../M0.2/README.md), and [M0.3](../M0.3/README.md). Fresh verification on Python `3.12.3` (`Linux`, `4` CPUs) confirms:
-- `scripts/check_secrets.py` exits `0` (`Zero secret leaks detected`).
-- `mypy packages apps pipelines` passes with `0` issues across all `76` source files.
-- `pip check` reports `No broken requirements found.`
-- `pytest tests/contract tests/smoke -v` passes (`11/11` in `6.51s`) and the full repository suite passes (`75/75` in `17.03s`) with `USD 0` provider spend.
-- In-process FastAPI + ASGI Gradio (`/demo/`) checks pass against `data/corpus/20261117_recovered_v1` (`264` creators, `70,996` videos) and `artifacts/indexes/bm25-v2` (`21,748` indexed videos), and `data/corpus/20261118_taxonomy_fix_v1` passes SHA256 verification.
+**All declared integrated checks now pass:**120 full tests,11 contract/smoke tests, configured mypy on81 files for both Windows and Linux static targets, clean Ruff including all pipelines, secret/dependency checks,38 asserting G0 runtime checks and a clean wheel installation with installed API/demo execution. No live provider/crawler calls or spend occurred.
 
-Package, licensing, UI, and Docker boundaries are recorded explicitly below without inferring live provider quota or public hosting eligibility. Technically recommended **`G0 = PASS`** (scope limited to the local CPU/offline foundation); formal gate status awaits peer review by Trần Đình Khương (`K`).
+The two original G0 findings remain resolved: settings/client enforce the maximum2 boundary, including invalid counters and copied NaN settings, and the Ruff import/UTC violations are fixed. The newer M6.1 Windows blocker is also resolved using real OS peak-memory measurement without a fake-zero fallback. Prior failed publication logs remain preserved as dated evidence.
+
+The owner explicitly authorized the PR merge after successful verification. **Code integration does not automatically approve G0:** M0.G remains IN_PROGRESS and G0 remains NOT_RUN until the owner records the formal decision. M6.1 scientific acceptance also remains IN_PROGRESS.
 
 ## Work performed
 
-- **Upstream evidence audit (`M0.1`–`M0.3`):** Confirmed [M0.1](../M0.1/README.md), [M0.2](../M0.2/README.md), and [M0.3](../M0.3/README.md) are `COMPLETE` on `main` and synchronized in [milestones/README.md](../README.md) and [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md).
-- **Fresh G0 baseline suite on `1ff574fe`:** Executed secret scan, project-wide strict `mypy`, `ruff`, dependency check (`pip check`), contract + smoke suites, full `75`-test `pytest` run, and [run_g0_checks.py](evidence/run_g0_checks.py) over the FastAPI + ASGI `/demo/` application.
-- **Boundary & limitation consolidation:** Distinguished verified source-package / ASGI execution from the unavailable Docker daemon (`unix:///var/run/docker.sock` missing) and captured `M0.1`/`M0.3` non-blocking limitations.
+- Preserved and verified the G0 settings/client guards,25 budget regression cases, original source/corpus/index provenance and all prior peer/fix/publication receipts.
+- Removed unconditional resource imports from the two M6.1 pipelines. The shared helper uses Windows GetProcessMemoryInfo peak-working-set bytes or Unix process peak RSS, normalized to MiB. New receipts declare unit and process-lifetime scope; original experiment artifacts are untouched.
+- Added8 resource regressions (observed RED, then GREEN) and preserved existing6 dense tests. Fixed five equivalent UTC aliases in crawl helpers so the full pipeline Ruff scope is clean.
+- Obtained fresh-context read-only review with no Critical/Important/Minor findings. The reviewer independently ran the8 resource tests, including the native Windows API check; this is not human K/N sign-off.
+- Updated the existing PR3 scope and planned an authorized merge through the PR, followed by verification against remote main. Any post-merge receipt-only PR carries identical tested source.
 
-## Outputs
+## Current verification
+
+| Check | Result | Evidence / limits |
+| --- | --- | --- |
+| Full pytest |PASS:120 passed in31.20s | [Integrated log](../M6.1/evidence/windows-pytest-full.log), [command/environment/hash receipt](../M6.1/evidence/windows-check-results.json). |
+| Contract/smoke |PASS:11 passed in10.48s | [Integrated log](../M6.1/evidence/windows-contract-smoke.log). |
+| Configured mypy |PASS:81 files, Windows and Linux static targets | [Windows](../M6.1/evidence/windows-mypy.log), [Linux static](../M6.1/evidence/windows-mypy-linux-target.log). This is not a native Linux execution claim. |
+| Ruff |PASS across packages/apps/pipelines, contract/smoke and both changed tests | [Integrated log](../M6.1/evidence/windows-ruff.log). |
+| Secret scanner and dependencies |PASS | [Secrets](../M6.1/evidence/windows-secrets.log), [pip check](../M6.1/evidence/windows-pip-check.log). Scanner coverage is its supported patterns. |
+| Resource regressions / dense tests |PASS:14 focused tests | [RED](../M6.1/evidence/windows-red.log), [GREEN](../M6.1/evidence/windows-green.log), [review](../M6.1/evidence/windows-code-review.md). Real Windows measurement; deterministic OS-boundary doubles for conversions/failures. |
+| Asserting G0 runtime |PASS:38/38 | [Receipt](evidence/merge-runtime-receipt.json), [console](evidence/merge-runtime.log): source membership, draft qualification, finite ms timings, bounded errors, redaction, policy checks and unchanged runtime bytes. |
+| Clean source wheel and installed ASGI |PASS | [Receipt](evidence/merge-package-results.json), [installed routes](evidence/merge-installed-asgi.log); actual modules load from the clean installation. |
+| Corpus/index preservation |PASS for tested10 Gold/BM25 files; no data/artifact source diff | [Runtime hashes](evidence/merge-runtime-receipt.json). No new exhaustive37,840-file scan or benchmark rewrite is claimed. |
+| PR merge and main verification |Authorized; record actual result after merge | [PR3](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3). No merge success is inferred from an earlier mergeability flag. |
+
+## Findings and remaining boundaries
+
+| Item | Current assessment | Follow-up |
+| --- | --- | --- |
+| G0-REV-1: maximum LLM call ceiling |Resolved and regression-covered | Keep the existing stateless consumed-count interface and tests; no new session system is claimed. |
+| G0-REV-2: clean Ruff |Resolved; full declared lint target passes | Keep required checks. |
+| G0-INTEGRATION-1: M6.1 Windows resource import/type failures |Resolved; full collection, both type targets, native measurement and tests pass | [M6.1 report](../M6.1/README.md). |
+| Formal G0 decision |Pending owner, independent of the code merge | Do not infer G0 PASS from publication/merge. |
+| Scientific relevance, fresh multimodal data and trust quality |Unaccepted by these integration tests | Existing M2?M6 tasks/gates retain their requirements; M6.1 stays IN_PROGRESS. |
+| Rights, old inventory, UI/draft semantics, hosting and container/browser execution |Existing explicit limits remain | [M0.1](../M0.1/README.md), [M0.3](../M0.3/README.md) and later gates. No live provider entitlement, public hosting or actual container execution is inferred. |
+
+## Outputs and planning provenance
 
 | File | Purpose |
 | --- | --- |
-| [workflow.md](evidence/workflow.md) | Skill/process provenance and command ledger |
-| [run_g0_checks.py](evidence/run_g0_checks.py) | Reproducible Gold snapshot, Docker availability, and ASGI smoke script |
-| [g0_verification_receipt.json](evidence/g0_verification_receipt.json) | Machine-readable receipt (`1ff574fe`, Python `3.12.3`, snapshots, ASGI probes, Docker check) |
-| [check-secrets.log](evidence/check-secrets.log) | Secret scanner output (`0` leaks) |
-| [mypy.log](evidence/mypy.log) | Strict project-wide mypy check (`76` source files) |
-| [contract-smoke.log](evidence/contract-smoke.log) | Contract and ASGI smoke test output (`11 passed in 6.51s`) |
-| [pytest-full.log](evidence/pytest-full.log) | Full pytest suite output (`75 passed in 17.03s`) |
-| [pip-check.log](evidence/pip-check.log) | Dependency consistency output (`No broken requirements found.`) |
-| [ruff.log](evidence/ruff.log) | Scoped Ruff output showing `2` pre-existing non-blocking style notices |
-| [docker-check.log](evidence/docker-check.log) | Docker CLI version check (`Docker version 29.1.3`) |
-
-## Verification
-
-| Check | Result | Scope / evidence |
-| --- | --- | --- |
-| `.venv/bin/python scripts/check_secrets.py` | PASS (`0` leaks) | Full workspace secret scan; [check-secrets.log](evidence/check-secrets.log) |
-| `.venv/bin/python -m mypy packages apps pipelines` | PASS (`76 source files`) | Strict static type checking; [mypy.log](evidence/mypy.log) |
-| `.venv/bin/python -m pytest tests/contract tests/smoke -v` | PASS (`11 passed`) | Contract invariants & ASGI `/demo/` + API smoke checks; [contract-smoke.log](evidence/contract-smoke.log) |
-| `.venv/bin/python -m pytest -v` | PASS (`75 passed in 17.03s`) | Full contract, unit, eval, and smoke suites; [pytest-full.log](evidence/pytest-full.log) |
-| `.venv/bin/python -m pip check` | PASS | Environment dependency consistency; [pip-check.log](evidence/pip-check.log) |
-| `.venv/bin/python docs/reports/milestones/M0.G/evidence/run_g0_checks.py` | PASS (`0` provider calls) | Verified `20261117_recovered_v1` & `20261118_taxonomy_fix_v1` + ASGI routes (`/health/live`, `/health/ready`, `/demo/`, benchmark, retrieval, offline draft, `422 UNSUPPORTED_DOMAIN`); [g0_verification_receipt.json](evidence/g0_verification_receipt.json) |
-| `.venv/bin/python -m ruff check packages apps tests/contract tests/smoke` | `2` pre-existing style notices | `apps/api/app/routers/health.py:1` (`I001`) and `packages/retrieval/sparse/bm25.py:188` (`UP017`); [ruff.log](evidence/ruff.log) |
-| Docker daemon availability (`docker info`) | NOT_RUN (daemon absent) | CLI `29.1.3` installed; `/var/run/docker.sock` missing; wheel/COPY-context verified in `M0.3`; [g0_verification_receipt.json](evidence/g0_verification_receipt.json) |
-
-## Open issues and recorded limitations
-
-| Issue / limitation | Impact | Follow-up / responsible task |
-| --- | --- | --- |
-| **Peer review of `M0.G` by `K` pending** | Two-person plan requires Trần Đình Khương (`K`) to review `M0.G` before marking `G0 = PASS` | Hand off `M0.G` to `K` alongside `M1.G` |
-| **Docker container runtime unexecuted (`M0.3-SCOPE-1`)** | Package installation and ASGI serving are verified; actual Linux Docker daemon execution is not verified here (`unix:///var/run/docker.sock` unavailable) | Retained explicitly as `G0` packaging boundary; full container run deferred to `M6.G` |
-| **Upstream dataset redistribution & unavailable pre-recovery copy (`M0.1`)** | No open redistribution license in `TrggTin/21KHDL-TikTok-Analytics`; blocks public data/hosting distribution (local private demo allowed) | Governed by `M1.G` & `M6.G`; no public hosting inferred at `G0` |
-| **No live LLM or public hosting inference** | Tests run with `gemini_key_configured=false` and `qdrant_dense_ready=false` (`USD 0`) | Live Gemini limits and optional hosting stay explicitly out of `G0` scope |
-| **Minor `M0.3` UI/draft notes & 2 Ruff style notices** | `M0.3-UI-1..3`, `M0.3-DRAFT-1`, plus `health.py` `I001` and `bm25.py` `UP017` | Polish during `M2.3` / `M6.2` |
+| [Final handoff](../M6.1/evidence/windows-handoff.json), [current hashes](../M6.1/evidence/windows-artifact-hashes.json) | Layout/link/source/preservation verification across both task bundles. |
+| [Spec](superpowers/spec.md), [plan](superpowers/plan.md), [workflow](evidence/workflow.md) | Dated scope, actual skill usage, explicit merge authorization and verification lineage. |
+| [M6.1 repair receipt](../M6.1/evidence/windows-check-results.json), [review](../M6.1/evidence/windows-code-review.md) | Final integrated source hashes, results and independent code assessment. |
+| [Current runtime](evidence/merge-runtime-receipt.json), [current package](evidence/merge-package-results.json) | Required runtime/install checks on exactly the same source map. |
+| [Earlier publication failure report](evidence/report-before-authorized-merge.md), [publication receipt](evidence/publish-check-results.json) | Dated failed Windows integration before this authorized repair. |
+| [Original verified G0 repair report](evidence/fix-report-before-publication.md), [original contributor report](evidence/contributor-report-c6c36131.md) | Historical results and narratives retained with their original relative-link context. |
 
 ## Acceptance and handoff
 
-| Gate criterion | Result | Evidence |
-| --- | --- | --- |
-| `M0.1`–`M0.3` evidence reviewed and tasks `COMPLETE` | Met | [M0.1](../M0.1/README.md), [M0.2](../M0.2/README.md), [M0.3](../M0.3/README.md) |
-| Scanner, project `mypy`, contract & smoke checks pass on recorded revision | Met (`main @ 1ff574fe`) | [check-secrets.log](evidence/check-secrets.log), [mypy.log](evidence/mypy.log), [contract-smoke.log](evidence/contract-smoke.log), [pytest-full.log](evidence/pytest-full.log) |
-| Packaging, Docker, live provider & hosting limitations explicitly recorded | Met | [g0_verification_receipt.json](evidence/g0_verification_receipt.json) + limitations table above |
-| Independent gate sign-off by `K` (`G0 = PASS`) | Pending `K` review | Ready for Trần Đình Khương review to ratify `G0 = PASS` and proceed to `M1.G` (`K`) / `M2.G` (`N`) |
+| Criterion | Current result |
+| --- | --- |
+| Original G0 source/lint repairs |Met. |
+| Updated-tree full suite, configured types, clean lint and resource import |Met on the source-hash-pinned final repair. |
+| CPU/offline API/demo and installation |Met within the recorded scope. |
+| Honest provenance, preserved bytes and explicit limitations |Retained; final current handoff hashes distinguish previous failed/different-source receipts. |
+| User-authorized PR integration |Proceed after final precommit identity/secret checks; confirm actual remote state and test the merged main tree. |
+| Formal G0 approval |Pending owner; task IN_PROGRESS and gate NOT_RUN. |
 
-Final task status: **IN_PROGRESS** (all technical G0 checks **PASSED** on `main @ 1ff574fe`; recommended **`G0 = PASS`**, awaiting peer sign-off by `K`).
+Technical recommendation is PASS for the narrow local CPU/offline foundation. The owner's explicit merge authorization is recorded; scientific milestones and gate decisions remain separate.

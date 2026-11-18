@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-11-18T10:27:05.657087+00:00",
+  "head": "40c457e24c40cead6355c551042ceac92a9726be",
+  "source_sha256": {
+    "pipelines/build_dense_sparse_index/dense.py": "b8ffa53e59979e9841f80aadbba8d3a62d653eb7f3ec4d1d9813e6468b27f6a4",
+    "pipelines/benchmark_retrieval/dense_hybrid_pilot.py": "e7569097532a86cd31f8af016051b66e09495baeebe7da28a4b965b1f69a5632"
+  },
+  "authorization": "Fix Windows blocker, update PR3 and merge into main after passing verification; formal gates remain separate."
+}

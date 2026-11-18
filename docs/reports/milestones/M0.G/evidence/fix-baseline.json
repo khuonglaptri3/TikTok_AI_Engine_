@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-11-18T09:24:53.950549+00:00",
+  "head": "c6c36131d2750b33fcede38871656e7c0ae703fc",
+  "source_sha256": {
+    "packages/common/settings/__init__.py": "1912183a27b69f8f631740d55e8115a30321aef31155afa9187771a567b812f4",
+    "packages/llm/clients/gemini.py": "d55fa5849b7376f63916394a400e996d3dfc6c3e89a1124c95cecb19f7514249",
+    "apps/api/app/routers/health.py": "8f0f528df3a6c90adb0f6ae3d90d300da59ac56fccde64fd6d41aa5ca328b6cf",
+    "packages/retrieval/sparse/bm25.py": "69b04addbba91b8a222d24e61224fc827a8e8fc04ee45948b654741bf35f3834"
+  },
+  "scope": "G0-REV-1 and G0-REV-2; existing checkout; owner gate decision pending"
+}

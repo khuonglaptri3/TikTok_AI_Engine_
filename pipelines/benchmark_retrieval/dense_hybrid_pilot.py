@@ -9,13 +9,13 @@ import math
 import os
 import platform
 import random
-import resource
 import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
 from packages.analytics import load_verified_corpus
+from packages.common.resources import get_peak_rss_mib
 from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest
 from packages.retrieval import HybridRetrievalService
 from packages.retrieval.dense import LocalDenseIndex, load_saved_encoder
@@ -231,7 +231,7 @@ def run_dense_hybrid_pilot(
         "hybrid_rrf": _measure_warm_latency(service, queries, "hybrid_rrf", rerank=False, repetitions=repetitions),
         "hybrid_rrf_reranked": _measure_warm_latency(service, queries, "hybrid_rrf", rerank=True, repetitions=repetitions),
     }
-    peak_rss_mb = round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0, 2)
+    peak_rss_mb = round(get_peak_rss_mib(), 2)
 
     paired_deltas = {
         "dense_minus_bm25": {
@@ -277,6 +277,8 @@ def run_dense_hybrid_pilot(
             "dense_index_bytes": dense_receipt.get("index_bytes"),
             "dense_build_time_sec": dense_receipt.get("build_time_sec"),
             "peak_rss_mb": peak_rss_mb,
+            "peak_rss_unit": "MiB",
+            "peak_rss_scope": "process_lifetime",
             "peak_rss_within_8gib": ram_budget_ok,
             "all_warm_p95_within_1000ms": latency_budget_ok,
             "latency_100_requests_ms": latency_100,

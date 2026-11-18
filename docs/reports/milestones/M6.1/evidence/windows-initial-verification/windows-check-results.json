@@ -1,0 +1,140 @@
+{
+  "started_at": "2026-11-18T10:30:55.140042+00:00",
+  "head": "40c457e24c40cead6355c551042ceac92a9726be",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpHNffwg\\Scripts\\python.exe",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "cpu_count": 12,
+  "source_sha256": {
+    "packages/common/resources.py": "13fcf66e3128dc37c1df8ed74bac2113667b3f211cbfccb6cfc6e6e8d7052cbe",
+    "pipelines/build_dense_sparse_index/dense.py": "30f858be0c8ff7cb4eca7eaa4d895e30bfc6062d2f47ffa20e588f5563ca4cc2",
+    "pipelines/benchmark_retrieval/dense_hybrid_pilot.py": "387436120e802dc82ac61bd8f9016b9d774cbc3c5cad037e0a9ea71981f0ec29",
+    "tests/unit/test_resource_measurements.py": "644e73406cab472b948910e2bcf87fbaafedc93bdee848cd8c5220e766bffa86",
+    "packages/common/settings/__init__.py": "2ef8a4a25eac3733f2481bf29dac6d842a3cb565997bb1972f9397f9477791cc",
+    "packages/llm/clients/gemini.py": "22c76f0af290de43708c8a614e8d8594613b0d7eb66bcfe5c654d68ec26d5daa",
+    "apps/api/app/routers/health.py": "784e13ed2570efeba8affb4d8e498bb8a82c1e4a675e5840b166abad8c599b02",
+    "packages/retrieval/sparse/bm25.py": "d1dbf705c1490de50e38df5f57f0fbd7fccabf349e1db1e72f544979ef04b1f0",
+    "tests/unit/test_llm_call_budget.py": "c339e527e48dcc16792c0eced584af7aae5d5fc5eb298000f204516a70d2d5c3"
+  },
+  "versions": {
+    "fastapi": "0.163.2",
+    "gradio": "6.32.0",
+    "pydantic": "2.14.3",
+    "numpy": "2.5.5",
+    "pandas": "3.1.1",
+    "pyarrow": "26.0.1",
+    "scipy": "1.18.1",
+    "google-genai": "3.5.0",
+    "pytest": "9.2.0",
+    "mypy": "2.4.1",
+    "ruff": "0.17.5"
+  },
+  "provider_keys_blanked": true,
+  "checks": [
+    {
+      "name": "secrets",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpHNffwg\\Scripts\\python.exe",
+        "scripts/check_secrets.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.273,
+      "log": "windows-secrets.log",
+      "sha256": "eee978e18683c2dd6763d7cebc4d6f4706cbaf92feacd20f97c3c625259b8077"
+    },
+    {
+      "name": "pip-check",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpHNffwg\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 1.43,
+      "log": "windows-pip-check.log",
+      "sha256": "672aec65a45bed50e70229c70934a7eebf0462595c459b83023027645d57cccf"
+    },
+    {
+      "name": "mypy",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpHNffwg\\Scripts\\python.exe",
+        "-m",
+        "mypy",
+        "packages",
+        "apps",
+        "pipelines"
+      ],
+      "exit_code": 0,
+      "seconds": 2.733,
+      "log": "windows-mypy.log",
+      "sha256": "60c92654ddacb9d85dc1d458bf7bed88f6d0af396d0de4dd228d77c8fff3026e"
+    },
+    {
+      "name": "mypy-linux-target",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpHNffwg\\Scripts\\python.exe",
+        "-m",
+        "mypy",
+        "--platform",
+        "linux",
+        "packages",
+        "apps",
+        "pipelines"
+      ],
+      "exit_code": 0,
+      "seconds": 21.491,
+      "log": "windows-mypy-linux-target.log",
+      "sha256": "60c92654ddacb9d85dc1d458bf7bed88f6d0af396d0de4dd228d77c8fff3026e"
+    },
+    {
+      "name": "ruff",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpHNffwg\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "packages",
+        "apps",
+        "pipelines",
+        "tests/contract",
+        "tests/smoke",
+        "tests/unit/test_llm_call_budget.py",
+        "tests/unit/test_resource_measurements.py"
+      ],
+      "exit_code": 1,
+      "seconds": 0.238,
+      "log": "windows-ruff.log",
+      "sha256": "93ba1d3a3b25000ddf231ea95e3344f3d1afdd7657cb10314b4af50b1b53c388"
+    },
+    {
+      "name": "contract-smoke",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpHNffwg\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/contract",
+        "tests/smoke",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 12.902,
+      "log": "windows-contract-smoke.log",
+      "sha256": "632f1bbd2784dc6534c210c4cdeb0244a4ac7185ae6234f4b0127df997bfa8e1"
+    },
+    {
+      "name": "pytest-full",
+      "command": [
+        "C:\\Users\\lanph\\AppData\\Local\\uv\\cache\\builds-v0\\.tmpHNffwg\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 32.758,
+      "log": "windows-pytest-full.log",
+      "sha256": "27c4c2940bd644a21c56c346d0f8d4d8c7f7a66c6133ac8be824c063c5194d91"
+    }
+  ],
+  "completed_at": "2026-11-18T10:32:08.287757+00:00"
+}

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -10,9 +10,9 @@ from packages.data_contracts.multimodal import RawIncrementalVideoRecord
 
 
 def compute_cutoff_utc(reference_now: datetime | None = None, window_days: int = 120) -> datetime:
-    now = reference_now or datetime.now(timezone.utc)
+    now = reference_now or datetime.now(UTC)
     if now.tzinfo is None:
-        now = now.replace(tzinfo=timezone.utc)
+        now = now.replace(tzinfo=UTC)
     return now - timedelta(days=max(1, window_days))
 
 
@@ -23,11 +23,11 @@ def is_within_rolling_window(
     """Return True strictly when video create_time >= 4-month rolling cutoff."""
     try:
         if isinstance(create_time_iso, (int, float)) or str(create_time_iso).isdigit():
-            dt = datetime.fromtimestamp(float(create_time_iso), tz=timezone.utc)
+            dt = datetime.fromtimestamp(float(create_time_iso), tz=UTC)
         else:
             dt = datetime.fromisoformat(str(create_time_iso).replace("Z", "+00:00"))
             if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
+                dt = dt.replace(tzinfo=UTC)
         return dt >= cutoff_utc
     except Exception:
         return False

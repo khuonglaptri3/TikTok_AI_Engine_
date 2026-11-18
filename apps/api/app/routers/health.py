@@ -5,7 +5,13 @@ from typing import Any
 from fastapi import APIRouter, Request
 
 from apps.api.app.dependencies import ServiceContainer
-from packages.taxonomy import DURATION_BUCKETS, FOOD_CATEGORIES, OCCASION_LABELS, PRICE_TIERS, VIDEO_FORMATS
+from packages.taxonomy import (
+    DURATION_BUCKETS,
+    FOOD_CATEGORIES,
+    OCCASION_LABELS,
+    PRICE_TIERS,
+    VIDEO_FORMATS,
+)
 
 router = APIRouter(tags=["health & metadata"])
 
