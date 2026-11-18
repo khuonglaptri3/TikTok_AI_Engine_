@@ -1,0 +1,112 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/intern-nvnguyen1/Project/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 5 items
+
+tests/unit/test_analytics_and_retrieval.py ...FF                         [100%]
+
+=================================== FAILURES ===================================
+_____ test_hand_checkable_quantiles_provenance_missingness_and_relaxation ______
+
+    def test_hand_checkable_quantiles_provenance_missingness_and_relaxation() -> None:
+        df_v = _mini_df(5)
+        engine = NicheAnalyticsEngine(manifest=_mini_manifest(5), df_creators=pd.DataFrame([{"author_id": "a1"}]), df_videos=df_v)
+    
+        bench = engine.compute_benchmark(NicheQueryFilter())
+        assert bench.matched_videos == 5
+>       assert bench.sparse_slice_abstained is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_analytics_and_retrieval.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = NicheBenchmarkSummary(matched_videos=5, transcribed_videos=3, poi_tagged_videos=2, median_plays=300.0, p75_plays=400.0...enues=['Quán 2', 'Quán 1'], applied_filters={}, timings_ms={'filter_ms': 0.0, 'aggregate_ms': 92.8, 'total_ms': 92.83})
+item = 'sparse_slice_abstained'
+
+    def __getattr__(self, item: str) -> Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+    
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+    
+            if pydantic_extra and item in pydantic_extra:
+                return pydantic_extra[item]
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+>                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'NicheBenchmarkSummary' object has no attribute 'sparse_slice_abstained'
+
+.venv/lib/python3.12/site-packages/pydantic/main.py:1110: AttributeError
+______ test_sparse_slice_abstention_zero_division_and_descriptive_wording ______
+
+    def test_sparse_slice_abstention_zero_division_and_descriptive_wording() -> None:
+        # 1. Sparse slice (n=3 < 5): abstains from top_posting_hours and top_poi_venues
+        df_sparse = _mini_df(3)
+        eng_sparse = NicheAnalyticsEngine(
+            manifest=_mini_manifest(3), df_creators=pd.DataFrame([{"author_id": "a1"}]), df_videos=df_sparse
+        )
+        sparse_bench = eng_sparse.compute_benchmark(NicheQueryFilter())
+        assert sparse_bench.matched_videos == 3
+>       assert sparse_bench.sparse_slice_abstained is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_analytics_and_retrieval.py:170: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = NicheBenchmarkSummary(matched_videos=3, transcribed_videos=2, poi_tagged_videos=2, median_plays=200.0, p75_plays=250.0...ues=['Quán 2', 'Quán 1'], applied_filters={}, timings_ms={'filter_ms': 0.02, 'aggregate_ms': 13.63, 'total_ms': 13.67})
+item = 'sparse_slice_abstained'
+
+    def __getattr__(self, item: str) -> Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+    
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+    
+            if pydantic_extra and item in pydantic_extra:
+                return pydantic_extra[item]
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+>                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'NicheBenchmarkSummary' object has no attribute 'sparse_slice_abstained'
+
+.venv/lib/python3.12/site-packages/pydantic/main.py:1110: AttributeError
+=========================== short test summary info ============================
+FAILED tests/unit/test_analytics_and_retrieval.py::test_hand_checkable_quantiles_provenance_missingness_and_relaxation
+FAILED tests/unit/test_analytics_and_retrieval.py::test_sparse_slice_abstention_zero_division_and_descriptive_wording
+========================= 2 failed, 3 passed in 4.15s ==========================

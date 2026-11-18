@@ -1,0 +1,34 @@
+{
+  "corpus_snapshot_id": "20261117_recovered_v1",
+  "total_videos": 70996,
+  "concurrency": 1,
+  "warm_request_count": 100,
+  "provisional_p95_budget_ms": 250.0,
+  "budget_met": true,
+  "hardware": {
+    "os": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "cpu_model": "Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz",
+    "logical_cpus": 4,
+    "ram_total_gb": 15.33
+  },
+  "load_and_preindex_ms": 907.0,
+  "cold_request": {
+    "wall_ms": 10.08,
+    "internal_total_ms": 8.17,
+    "matched_videos": 9631
+  },
+  "warm_wall_ms": {
+    "min": 3.28,
+    "p50": 5.37,
+    "mean": 6.59,
+    "p95": 17.57,
+    "max": 22.07
+  },
+  "warm_internal_ms": {
+    "p50": 4.84,
+    "mean": 5.48,
+    "p95": 11.8,
+    "max": 16.33
+  }
+}
