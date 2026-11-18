@@ -8,6 +8,7 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M0.2 | Contracts, bounded settings, finite ms timings, and error/log credential redaction | COMPLETE | [Read results](M0.2/README.md) |
 | M1.1 | Taxonomy, per-field lineage/coverage audit, disambiguation fixes, and 120-record sample | IN_PROGRESS | [Read results](M1.1/README.md) |
 | M2.1 | Descriptive niche benchmarks, cohort/missingness provenance, sparse abstention, and latency benchmark | IN_PROGRESS | [Read results](M2.1/README.md) |
+| M2.3 | Qualified scripts, structural guardrails, bounded provider timeout/calls, and 15-brief offline audit | IN_PROGRESS | [Read results](M2.3/README.md) |
 
 Independent cross-project assessments are listed in [task reports](../tasks/README.md). Their conclusions do not change milestone status or pass a gate.
 

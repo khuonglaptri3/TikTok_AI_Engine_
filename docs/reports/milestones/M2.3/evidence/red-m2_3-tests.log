@@ -1,0 +1,63 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/intern-nvnguyen1/Project/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 19 items
+
+tests/unit/test_script_guardrails.py ............F                       [ 68%]
+tests/unit/test_offline_draft.py .....F                                  [100%]
+
+=================================== FAILURES ===================================
+__ test_bounded_gemini_client_enforces_turn_call_budget_and_deadline_timeout ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ba5a2827a10>
+
+    def test_bounded_gemini_client_enforces_turn_call_budget_and_deadline_timeout(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        settings = AppSettings(gemini_api_key="dummy_test_key_for_unit_test", max_llm_calls_per_turn=2, llm_deadline_seconds=12.5)
+        client = BoundedGeminiClient(settings=settings, rate_limiter=SlidingWindowRateLimiter(max_rpm=100, redis_url=None))
+    
+        # Exceeding max_llm_calls_per_turn must fail closed with QuotaBlockedError
+        with pytest.raises(QuotaBlockedError):
+>           client.generate_structured_json("prompt", turn_calls_used=2)
+E           TypeError: BoundedGeminiClient.generate_structured_json() got an unexpected keyword argument 'turn_calls_used'
+
+tests/unit/test_script_guardrails.py:154: TypeError
+______ test_offline_draft_selects_role_specific_source_excerpts_per_beat _______
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+
+    def test_offline_draft_selects_role_specific_source_excerpts_per_beat(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+    ) -> None:
+        benchmark, template = draft_inputs
+        cards = [
+            template.model_copy(
+                update={
+                    "citation": template.citation.model_copy(update={"video_id": vid}),
+                    "hook_text": f"Hook_{vid}",
+                    "body_beats": [f"Body1_{vid}", f"Body2_{vid}"],
+                    "cta_text": f"CTA_{vid}",
+                    "transcript_excerpt": f"Excerpt_{vid}",
+                }
+            )
+            for vid in ("v1", "v2", "v3")
+        ]
+        draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+            "Review phở bò Hà Nội",
+            60,
+            benchmark,
+            cards,
+            NicheQueryFilter(),
+        )
+        assert "Hook_v1" in draft["beats"][0]["dialogue"]
+>       assert "Body1_v1" in draft["beats"][1]["dialogue"]
+E       assert 'Body1_v1' in 'Nguồn cũ: "Hook_v1" Đây là thông tin trong nguồn cũ, cần kiểm tra lại khi đến quay. Mình sẽ ghi hình phần chế biến nếu được phép và mô tả đúng những gì quan sát được.'
+
+tests/unit/test_offline_draft.py:102: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_script_guardrails.py::test_bounded_gemini_client_enforces_turn_call_budget_and_deadline_timeout
+FAILED tests/unit/test_offline_draft.py::test_offline_draft_selects_role_specific_source_excerpts_per_beat
+========================= 2 failed, 17 passed in 0.93s =========================

@@ -152,7 +152,16 @@ class GroundedScriptEngine:
         budgets.append(max(1, target_words - sum(budgets)))
         citation_ids: list[list[str]] = []
         for idx, (card, budget) in enumerate(zip([c0, c0, c1, c2], budgets)):
-            candidates = [card.hook_text, *card.body_beats, card.cta_text, card.transcript_excerpt] if card else []
+            if not card:
+                candidates: list[str] = []
+            elif idx == 0:
+                candidates = [card.hook_text, *card.body_beats, card.transcript_excerpt, card.cta_text]
+            elif idx == 1:
+                candidates = [*card.body_beats, card.transcript_excerpt, card.hook_text, card.cta_text]
+            elif idx == 2:
+                candidates = [*card.body_beats[1:], *card.body_beats[:1], card.transcript_excerpt, card.hook_text, card.cta_text]
+            else:
+                candidates = [card.cta_text, *card.body_beats, card.transcript_excerpt, card.hook_text]
             excerpt = next((text for text in candidates if text.strip()), "")
             # Attribute only content actually incorporated in this beat. Bound
             # the excerpt before shortening so its attribution cannot be cut off.
@@ -267,7 +276,7 @@ class GroundedScriptEngine:
                     benchmark=benchmark,
                     evidence_cards=evidence_cards,
                 )
-                draft = self.gemini.generate_structured_json(prompt)
+                draft = self.gemini.generate_structured_json(prompt, turn_calls_used=0)
                 model_used = self.gemini.settings.gemini_fast_model
         else:
             with timer.measure("blueprint_synthesis_ms"):

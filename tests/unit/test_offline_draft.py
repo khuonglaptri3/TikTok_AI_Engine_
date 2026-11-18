@@ -73,3 +73,33 @@ def test_each_offline_citation_has_a_visible_source_excerpt(
         assert len(beat["cited_video_ids"]) == 1
         for video_id in beat["cited_video_ids"]:
             assert excerpts[video_id] in beat["dialogue"]
+
+
+def test_offline_draft_selects_role_specific_source_excerpts_per_beat(
+    draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+) -> None:
+    benchmark, template = draft_inputs
+    cards = [
+        template.model_copy(
+            update={
+                "citation": template.citation.model_copy(update={"video_id": vid}),
+                "hook_text": f"Hook_{vid}",
+                "body_beats": [f"Body1_{vid}", f"Body2_{vid}"],
+                "cta_text": f"CTA_{vid}",
+                "transcript_excerpt": f"Excerpt_{vid}",
+            }
+        )
+        for vid in ("v1", "v2", "v3")
+    ]
+    draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+        "Review phở bò Hà Nội",
+        60,
+        benchmark,
+        cards,
+        NicheQueryFilter(),
+    )
+    assert "Hook_v1" in draft["beats"][0]["dialogue"]
+    assert "Body1_v1" in draft["beats"][1]["dialogue"]
+    assert "Hook_v1" not in draft["beats"][1]["dialogue"]
+    assert "Body2_v2" in draft["beats"][2]["dialogue"] or "Body1_v2" in draft["beats"][2]["dialogue"]
+    assert "CTA_v3" in draft["beats"][3]["dialogue"]

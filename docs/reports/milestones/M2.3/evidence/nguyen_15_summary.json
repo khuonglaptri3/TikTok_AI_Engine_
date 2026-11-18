@@ -1,0 +1,13 @@
+{
+  "corpus_snapshot_id": "20261117_recovered_v1",
+  "generation_mode": "offline_grounded",
+  "provider_calls": 0,
+  "total_drafts": 15,
+  "fabricated_id_count": 0,
+  "guardrail_passed_count": 12,
+  "timing_valid_count": 12,
+  "valid_membership_100_count": 15,
+  "citation_coverage_100_count": 15,
+  "human_claim_audit_completed": false,
+  "note": "Structural/membership checks completed on N's 15 drafts; human claim entailment audit and K's 15 queries remain pending."
+}
