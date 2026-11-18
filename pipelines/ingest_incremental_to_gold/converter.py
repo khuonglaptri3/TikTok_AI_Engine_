@@ -221,6 +221,7 @@ def _ingest_incremental_batch_to_gold(
             poi_address=rec.poi_address,
             llm_city=None,
             llm_district=None,
+            poi_name=rec.poi_name,
         )
         hashtags = [h.lstrip("#").lower() for h in rec.hashtags if h.strip()]
         combined_text = f"{rec.caption} {' '.join(hashtags)} {rec.poi_name or ''} {rec.transcript[:800]}"

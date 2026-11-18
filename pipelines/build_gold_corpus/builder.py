@@ -429,6 +429,7 @@ def _build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str) -> Co
             poi_address=poi_addr,
             llm_city=llm_city,
             llm_district=llm_dist,
+            poi_name=poi_name,
         )
 
         # Resolve taxonomy & context
