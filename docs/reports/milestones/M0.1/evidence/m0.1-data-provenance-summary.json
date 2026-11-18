@@ -1,8 +1,8 @@
 {
   "task_id": "M0.1",
   "title": "Historical Asset Preservation, Pinned Recovery & Provenance Baseline",
-  "status": "IN_PROGRESS",
-  "status_detail": "Primary owner (Trần Đình Khương) data preservation, checksum, Gold, and BM25 provenance verification complete; awaiting independent peer receipt check by Nguyễn Việt Nguyên prior to M0.G (G0).",
+  "status": "COMPLETE",
+  "status_detail": "Primary owner (Trần Đình Khương) data preservation, checksum, Gold, and BM25 provenance verification complete; peer review by Nguyễn Việt Nguyên confirmed by project owner on 2026-11-18.",
   "repository_revision": "c3348e93d66ad4eeba133c1d05752d26da18d774",
   "upstream_source": {
     "repository": "TrggTin/21KHDL-TikTok-Analytics",

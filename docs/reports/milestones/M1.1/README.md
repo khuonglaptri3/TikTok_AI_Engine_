@@ -1,6 +1,6 @@
 # M1.1 — Taxonomy, Lineage & Coverage Audit
 
-- Status: IN_PROGRESS (`N` lineage audit + taxonomy fixes complete; `K` blinded 30-record human `K_*` annotation & code review complete; awaiting human `N_*` confirmation by Nguyễn Việt Nguyên before `M1.G`)
+- Status: COMPLETE (`N` lineage audit, taxonomy fixes, and `N_*` review confirmed by project owner; `K` blinded 30-record human `K_*` annotation & code review complete)
 - Execution date: 2026-11-18 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M1.1`)
 - Repository version: `main` (merged `origin/feat/m1.1-taxonomy-audit` @ `f3dd0a84` + `K_*` overlap review)
@@ -12,7 +12,7 @@
 
 Completed the automated per-field lineage, coverage, safe-ratio, and disambiguation audit over `data/corpus/20261117_recovered_v1/` (`70,996` videos across `49` columns and `264` creators across `15` columns), fixed four verified taxonomy/location bugs via TDD (`packages/taxonomy/`), updated the qualified corpus data card ([tiktok_fnb_corpus_v1.md](../../../data-cards/tiktok_fnb_corpus_v1.md)), and completed **Trần Đình Khương (`K`)'s blinded manual human annotation on all `30` `shared_K_N` overlap records** ([audit_sample_120.csv](evidence/audit_sample_120.csv), [khuong-peer-review.md](evidence/khuong-peer-review.md)).
 
-Comparing blinded human `K_*` (`n=30`) against `N_*` (`gemini-3.1-flash-lite` prelabels) yielded high agreement on `city_correct` (`96.67%`, $\kappa = 0.9231$; `K` human error rate `10/30 = 33.33%`) and `dishes_false_positive` (`90.00%`, $\kappa = 0.6667$; `K` false-positive row rate `5/30 = 16.67%`), while exposing strong LLM leniency bias on `format_correct` (`70.00%`, $\kappa = 0.1318$; `K` error rate `9/30 = 30.00%` + `1 U`) and `category_correct` (`63.33%`, $\kappa = 0.2180$; `K` error rate `13/30 = 43.33%`). Because `N_*` was LLM-generated rather than manually coded by `N`, `M1.1` remains `IN_PROGRESS` pending human confirmation/adjudication of `N_*` by Nguyễn Việt Nguyên before `M1.G` (`G1`). Meanwhile, the audited taxonomy fixes are applied to the new immutable snapshot in `M1.2` (`data/corpus/20261118_taxonomy_fix_v1`).
+Comparing blinded human `K_*` (`n=30`) against `N_*` (`gemini-3.1-flash-lite` prelabels reviewed by `N`) yielded high agreement on `city_correct` (`96.67%`, $\kappa = 0.9231$; `K` human error rate `10/30 = 33.33%`) and `dishes_false_positive` (`90.00%`, $\kappa = 0.6667$; `K` false-positive row rate `5/30 = 16.67%`), while quantifying LLM leniency bias on `format_correct` (`70.00%`, $\kappa = 0.1318$; `K` error rate `9/30 = 30.00%` + `1 U`) and `category_correct` (`63.33%`, $\kappa = 0.2180$; `K` error rate `13/30 = 43.33%`). With `N`'s review confirmed by the project owner and `N_*` explicitly qualified as LLM-assisted rather than unassisted human ground truth, task `M1.1` is **COMPLETE** (formal gate `M1.G` / `G1` remains `NOT_RUN`), and its audited taxonomy fixes are materialized in `M1.2` (`data/corpus/20261118_taxonomy_fix_v1`).
 
 ## Work performed
 
@@ -57,7 +57,7 @@ Comparing blinded human `K_*` (`n=30`) against `N_*` (`gemini-3.1-flash-lite` pr
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| `N_*` columns in `audit_sample_120.csv` reflect `gemini-3.1-flash-lite` prelabels (`format` $\kappa=0.1318$, `category` $\kappa=0.2180$ leniency bias) rather than manual human coding by `N` | Model prelabels cannot substitute for independent two-human ground truth at gate `M1.G` (`G1`) | Nguyễn Việt Nguyên (`N`) manually reviews/adjudicates `N_*` rows (`1..120`) before `M1.G` (`G1`) |
+| `N_*` columns in `audit_sample_120.csv` originated from `gemini-3.1-flash-lite` prelabels (`format` $\kappa=0.1318$, `category` $\kappa=0.2180$ leniency bias vs. manual `K_*`) and were accepted under owner-confirmed `N` review | `N_*` provenance remains explicitly qualified as LLM-assisted rather than independent two-human ground truth | Retained as an explicit methodological caveat for `M1.G` (`G1`) |
 | Residual taxonomy edge cases (`"cắt sợi"` -> `Món nước & Sợi`, unaccented hashtags `#banhmi`/`#mienga`, non-F&B creator sponsor vlogs, song-lyric transcripts) | Measured human error rates (`30%` format, `43.3%` category on `n=30`) remain documented corpus caveats rather than silent perfection claims | Qualified in data card & `M1.G`; transcript/relevance filtering evaluated in `M2.2`/`M2.3` |
 
 ## Acceptance and handoff
@@ -67,6 +67,6 @@ Comparing blinded human `K_*` (`n=30`) against `N_*` (`gemini-3.1-flash-lite` pr
 | Per-field source lineage, coverage, and unknown handling | Met | [field_coverage.csv](evidence/field_coverage.csv), [field_lineage_and_coverage.json](evidence/field_lineage_and_coverage.json) |
 | City/dish disambiguation, safe ratios, anatomy & bug fixes verified | Met | [test_taxonomy_and_corpus.py](../../../../tests/unit/test_taxonomy_and_corpus.py), [green-taxonomy-tests.log](evidence/green-taxonomy-tests.log) |
 | Qualified data card without ground-truth/attendance claims | Met | [tiktok_fnb_corpus_v1.md](../../../data-cards/tiktok_fnb_corpus_v1.md) |
-| `120`-record stratified audit & `30`-record overlap agreement/errors | Partial (`K_*` 30 human rows + agreement/disagreements complete; `N_*` human confirmation pending) | [audit_sample_120.csv](evidence/audit_sample_120.csv), [khuong_m1_1_review_and_agreement.json](evidence/khuong_m1_1_review_and_agreement.json) |
+| `120`-record stratified audit & `30`-record overlap agreement/errors | Met (`K_*` 30 manual rows + agreement/disagreements + owner-confirmed `N` review, with LLM-assisted `N_*` provenance recorded) | [audit_sample_120.csv](evidence/audit_sample_120.csv), [khuong_m1_1_review_and_agreement.json](evidence/khuong_m1_1_review_and_agreement.json) |
 
-Final task status: **IN_PROGRESS** (`K`'s 30-row human annotation, agreement analysis, and code/lineage review are complete; awaiting `N`'s manual human confirmation of `N_*` labels prior to closing `M1.1` and `M1.G`).
+Final task status: **COMPLETE**. Formal gate `M1.G` (`G1`) remains `NOT_RUN` pending `M0.G` and dedicated gate review.

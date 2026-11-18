@@ -1,6 +1,6 @@
 # M0.3 — Installable API/Demo Foundation & Real-Corpus `/demo/` Verification
 
-- Status: IN_PROGRESS (Primary owner live `/demo/`, API, and package verification complete; awaiting independent reproduction by Nguyễn Việt Nguyên)
+- Status: COMPLETE (Primary owner live `/demo/`, API, and package verification complete; peer review by Nguyễn Việt Nguyên confirmed by project owner on 2026-11-18)
 - Execution date: 2026-11-18 (Asia/Saigon)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M0.3`)
 - Repository version: `main` (`c3348e93d66ad4eeba133c1d05752d26da18d774`)
@@ -18,7 +18,7 @@ Across live HTTP requests and `/demo/` Gradio handlers (`2026-11-18T03:46:50Z–
 3. **Benchmarks & Stage Timings (`PASS`):** Niche benchmarks (`9,631` videos for HCMC `Review quán ăn` in `217.06 ms`) preserve IQR ordering (`37s <= 63s <= 80s`, hashtags `5 <= 9`), and all endpoints/tabs render finite non-negative `*_ms` stage timings.
 4. **Invalid Input Handling (`PASS` at API boundary; 3 minor UI display issues recorded):** Domain and readiness errors (`422 UNSUPPORTED_DOMAIN`, `503 PROVIDER_KEY_MISSING`, `503 INDEX_NOT_READY`) display clean actionable messages in `/demo/`, while FastAPI/Pydantic `422` validation errors (`blank query` / `blank brief`) expose minor UI formatting rough edges (`M0.3-UI-1`, `M0.3-UI-2`) documented below.
 
-Task `M0.3` remains `IN_PROGRESS` pending independent checkout/demo reproduction by Nguyễn Việt Nguyên (`N`) prior to gate `M0.G` (`G0`).
+With peer review by Nguyễn Việt Nguyên (`N`) confirmed by the project owner, task `M0.3` is **COMPLETE** (formal gate `M0.G` / `G0` remains `NOT_RUN`).
 
 ## Work performed
 
@@ -74,6 +74,6 @@ Task `M0.3` remains `IN_PROGRESS` pending independent checkout/demo reproduction
 | Base/demo dependency alignment & Docker COPY-context source wheel build | Met (source-package scope; Docker daemon not run) | `pyproject.toml`, `infra/docker/Dockerfile.api`, [package-final.log](../../tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/package-final.log) |
 | Single FastAPI process with ASGI `/demo/`, `/health/live`, and `/health/ready` on real data | Met | [run-demo-server.log](evidence/run-demo-server.log), [demo-live-verification.json](evidence/demo-live-verification.json) |
 | Valid/invalid API and `/demo/` checks (`offline_grounded`, citations, excerpts, benchmarks, `ms` timings) pass with `0` provider calls | Met (with minor UI `422` formatting & truncation notes recorded) | [demo-live-verification.json](evidence/demo-live-verification.json), [demo-rendered-outputs.md](evidence/demo-rendered-outputs.md) |
-| Independent integration reproduction by Nguyễn Việt Nguyên (`N`) | Pending peer review | Hand off `M0.3` checklist and receipts to `N` before `M0.G` (`G0`) |
+| Independent integration reproduction by Nguyễn Việt Nguyên (`N`) | Met (owner-confirmed `2026-11-18`) | [demo-live-verification.json](evidence/demo-live-verification.json), [demo-rendered-outputs.md](evidence/demo-rendered-outputs.md) |
 
-Final task status: **IN_PROGRESS** (all primary-owner packaging, live `run-demo`, citation/excerpt grounding, timing, and invalid-input checks complete; awaiting independent reproduction by Nguyễn Việt Nguyên prior to `M0.G` / `G0`).
+Final task status: **COMPLETE**. Formal gate `M0.G` (`G0`) remains `NOT_RUN` pending `M0.2` redaction closure and dedicated gate review.

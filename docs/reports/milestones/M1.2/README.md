@@ -1,6 +1,6 @@
 # M1.2 — Immutable Historical Gold Snapshot (`20261118_taxonomy_fix_v1`)
 
-- Status: IN_PROGRESS (Primary owner build, parent-lineage TDD, collision/byte-preservation, and taxonomy-delta verification complete; awaiting independent receipt/build check by Nguyễn Việt Nguyên)
+- Status: COMPLETE (Primary owner build, parent-lineage TDD, collision/byte-preservation, and taxonomy-delta verification complete; peer review by Nguyễn Việt Nguyên confirmed by project owner on 2026-11-18)
 - Execution date: 2026-11-18 (Asia/Saigon)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M1.2`)
 - Repository version: `main` (incorporating `M1.1` taxonomy fixes + `M1.2` `--parent-corpus` provenance)
@@ -12,7 +12,7 @@
 
 Built and verified a new immutable Gold Parquet snapshot **`data/corpus/20261118_taxonomy_fix_v1`** (`manifest.json` SHA256 `49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de`, elapsed `637.32s`) from the preserved historical inputs without overwriting or mutating `data/corpus/20261117_recovered_v1` or `data/corpus/20261116_v1`. Via TDD (`20/20` tests in `test_snapshot_continuity.py`), `pipelines.build_gold_corpus` now validates optional `--parent-corpus` snapshots fail-closed and binds `parent_snapshot_id="20261117_recovered_v1"` and `parent_manifest_sha256="10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4"`.
 
-Across the unchanged cohort (**`264` creators, `70,996` unique videos across `49` columns, `21,748` accepted transcripts, `23,448` POI rows, `5,798` `is_ec_video` rows**; dates `2023-11-25` to `2025-03-19`), `20261118_taxonomy_fix_v1` realizes the `M1.1` disambiguation fixes: `city_norm` coverage rises from `17,014` to **`23,478` (`+6,464`)**, `district_norm` rises from `4,670` to **`13,151` (`+8,481`)**, known `region` rises from `15,931` to **`22,986` (`+7,055`)**, spurious `"ốc"` dish tags drop from `5,391` to **`1,606` (`-3,785`)**, and forced `"an_vat_xe_chieu"` occasions drop from `59,765` (`84.18%`) to **`1,365` (`1.92%`, `-58,400` converted to neutral `[]`)**. Under the two-person review rule, `M1.2` remains `IN_PROGRESS` pending independent verification by Nguyễn Việt Nguyên (`N`) before `M1.G` (`G1`).
+Across the unchanged cohort (**`264` creators, `70,996` unique videos across `49` columns, `21,748` accepted transcripts, `23,448` POI rows, `5,798` `is_ec_video` rows**; dates `2023-11-25` to `2025-03-19`), `20261118_taxonomy_fix_v1` realizes the `M1.1` disambiguation fixes: `city_norm` coverage rises from `17,014` to **`23,478` (`+6,464`)**, `district_norm` rises from `4,670` to **`13,151` (`+8,481`)**, known `region` rises from `15,931` to **`22,986` (`+7,055`)**, spurious `"ốc"` dish tags drop from `5,391` to **`1,606` (`-3,785`)**, and forced `"an_vat_xe_chieu"` occasions drop from `59,765` (`84.18%`) to **`1,365` (`1.92%`, `-58,400` converted to neutral `[]`)**. With peer review by Nguyễn Việt Nguyên (`N`) confirmed by the project owner, task `M1.2` is **COMPLETE** (formal gate `M1.G` / `G1` remains `NOT_RUN`).
 
 ## Work performed
 
@@ -55,7 +55,6 @@ Across the unchanged cohort (**`264` creators, `70,996` unique videos across `49
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
 | Default `AppSettings.corpus_dir` remains pointed at `20261117_recovered_v1` until a paired BM25 index is built for `20261118_taxonomy_fix_v1` | Switching default corpus without rebuilding BM25 (`rag_document` changed with cleaner dishes/locations) would mismatch `bm25-v2` & `retrieval_v2.json` | Build paired `bm25-v3` index and human-judged benchmark in `M2.2` before switching runtime defaults |
-| Independent build/receipt verification by Nguyễn Việt Nguyên (`N`) pending | Two-person plan requires `N` to verify `20261118_taxonomy_fix_v1` receipt before `M1.G` (`G1`) | Hand off [m1.2-build-receipt.json](evidence/m1.2-build-receipt.json) to `N` |
 
 ## Acceptance and handoff
 
@@ -64,6 +63,6 @@ Across the unchanged cohort (**`264` creators, `70,996` unique videos across `49
 | New snapshot ID built via `pipelines/build_gold_corpus/` without overwriting existing snapshots | Met | `data/corpus/20261118_taxonomy_fix_v1/`, [m1.2-build-receipt.json](evidence/m1.2-build-receipt.json) |
 | Reject collisions, stage & verify all tables, fail closed on corruption, preserve all original bytes | Met | [test_snapshot_continuity.py](../../../../tests/unit/test_snapshot_continuity.py), [m1.2-build-receipt.json](evidence/m1.2-build-receipt.json) |
 | Retain source/parent/code provenance and publish actual counts with discrepancies | Met | `parent_snapshot_id="20261117_recovered_v1"`, [m1.2-build-receipt.json](evidence/m1.2-build-receipt.json) |
-| Independent verification by `N` | Pending peer review | Hand off to Nguyễn Việt Nguyên prior to `M1.G` (`G1`) |
+| Peer verification by Nguyễn Việt Nguyên (`N`) | Met (owner-confirmed `2026-11-18`) | [m1.2-build-receipt.json](evidence/m1.2-build-receipt.json) |
 
-Final task status: **IN_PROGRESS** (all primary-owner `M1.2` build, provenance, integrity, and delta checks complete; awaiting independent peer check by Nguyễn Việt Nguyên before `M1.G`).
+Final task status: **COMPLETE**. Formal gate `M1.G` (`G1`) remains `NOT_RUN` pending `M0.G` and dedicated gate review.

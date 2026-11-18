@@ -1,6 +1,6 @@
 # M0.1 — Historical Asset Preservation, Pinned Recovery & Provenance Baseline
 
-- Status: IN_PROGRESS (Primary owner data & provenance verification complete; awaiting independent peer check by Nguyễn Việt Nguyên)
+- Status: COMPLETE (Primary owner verification by Trần Đình Khương complete; peer review by Nguyễn Việt Nguyên confirmed by project owner on 2026-11-18)
 - Execution date: 2026-11-16 (initial audit); 2026-11-17 (pinned recovery & Gold/BM25 v2 build); 2026-11-18 (provenance consolidation at synchronized checkout, Asia/Saigon)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M0.1`)
 - Repository version: `main` (`c3348e93d66ad4eeba133c1d05752d26da18d774`)
@@ -12,7 +12,7 @@
 
 The legacy `21KHDL-TikTok-Analytics` repository was sanitized of all 149 hardcoded API keys (`scripts/check_secrets.py` exits `0`), and all **37,840 selected historical source files (`1,504,284,701` logical bytes)** were restored from pinned upstream revision `f142e5656a220f94f8024de168b0832754b3bd9e` without historical TikTok recrawling or overwriting any differing pre-existing local file. The upstream `data/` tree scope (**37,837 blobs / `1,475,677,482` bytes**) plus **3 mapped legacy app tables (`28,607,219` bytes)** is kept explicitly separate from the prior owner-copy claim (`37,840` files / `~1.50 GB`), whose unavailable pre-recovery file list is not reconstructed by assertion.
 
-Downstream runtime artifacts are verified and active at `c3348e93d66ad4eeba133c1d05752d26da18d774`: immutable Gold snapshot **`data/corpus/20261117_recovered_v1`** (`264` creators, `70,996` unique videos across `49` columns, `21,748` accepted transcripts, `23,448` POI-tagged rows, `5,798` `is_ec_video` rows; date bounds `2023-11-25` to `2025-03-19`) and Vietnamese NFC CSR lexical index **`artifacts/indexes/bm25-v2`** (`21,748` documents, `391,043` terms, `9,464,226` postings). All **37,849 published data and runtime files (`1,593,622,816` bytes)** match between local disk and `origin/main`. Source redistribution licensing, semantic/ASR/POI ground-truth accuracy, and the absent 120-day fresh stream remain explicitly bounded as open limitations. Under the two-person workflow, `M0.1` remains `IN_PROGRESS` pending independent receipt verification by Nguyễn Việt Nguyên (`N`) before gate `M0.G` (`G0`).
+Downstream runtime artifacts are verified and active at `c3348e93d66ad4eeba133c1d05752d26da18d774`: immutable Gold snapshot **`data/corpus/20261117_recovered_v1`** (`264` creators, `70,996` unique videos across `49` columns, `21,748` accepted transcripts, `23,448` POI-tagged rows, `5,798` `is_ec_video` rows; date bounds `2023-11-25` to `2025-03-19`) and Vietnamese NFC CSR lexical index **`artifacts/indexes/bm25-v2`** (`21,748` documents, `391,043` terms, `9,464,226` postings). All **37,849 published data and runtime files (`1,593,622,816` bytes)** match between local disk and `origin/main`. Source redistribution licensing, semantic/ASR/POI ground-truth accuracy, and the absent 120-day fresh stream remain explicitly bounded as open limitations. With peer review by Nguyễn Việt Nguyên (`N`) confirmed by the project owner, task `M0.1` is **COMPLETE** (formal gate `M0.G` / `G0` remains `NOT_RUN`).
 
 ## Verified data sources, checksums, and observation timeline
 
@@ -62,7 +62,6 @@ Downstream runtime artifacts are verified and active at `c3348e93d66ad4eeba133c1
 | **Unresolved upstream dataset reuse / redistribution license** | `TrggTin/21KHDL-TikTok-Analytics` states no open data license; public redistribution of raw/Gold TikTok data remains blocked while local/private evaluation is permitted | `M1.G` (`G1`) and `M6.G` (`G6`) public-hosting/redistribution gate |
 | **Byte integrity vs. semantic/ASR/POI ground truth** | Matching SHA256 hashes do not prove speech transcription accuracy (`21,748` parsed transcripts), physical venue presence (`23,448` platform POI tags), taxonomy label correctness, or human relevance quality (`retrieval_v2` uses 16 weak lexical/metadata labels) | `M1.1` (120-record stratified taxonomy audit) and `M2.2` (40-query human relevance pilot) |
 | **Historical cohort window & absent fresh/multimodal tables** | Historical videos cover `2023-11-25` to `2025-03-19` (Mar–Apr 2025 single-snapshot engagement) with `wps_estimated` timing; `data/raw_incremental/`, `fact_voice_segments.parquet`, `fact_comments.parquet`, `fact_absa_reviews.parquet`, and populated Qdrant dense vectors are absent | `M3.1`–`M3.3`, `M4.1`, `M5.1`–`M5.2`, `M6.1` |
-| **Independent peer review of `M0.1` receipts by Nguyễn Việt Nguyên (`N`)** | Required by the two-person reciprocal review policy before closing `M0.1` and evaluating `M0.G` (`G0`) | Hand off [m0.1-data-provenance-summary.json](evidence/m0.1-data-provenance-summary.json) to `N` for independent check |
 
 ## Acceptance and handoff
 
@@ -72,6 +71,6 @@ Downstream runtime artifacts are verified and active at `c3348e93d66ad4eeba133c1
 | Keep `37,837` upstream `data/` and `37,840` combined/owner-copy scopes separate; enumerate provenance and missing/unverified assets | Met | [m0.1-data-provenance-summary.json](evidence/m0.1-data-provenance-summary.json), [restore-review.md](../../tasks/core-recovery-and-two-person-plan-2026-11-17/evidence/restore-review.md) |
 | Record source terms, observation timestamps, Gold `20261117_recovered_v1` and `bm25-v2` receipts | Met | [m0.1-data-provenance-summary.json](evidence/m0.1-data-provenance-summary.json), [manifest.json](../../../../data/corpus/20261117_recovered_v1/manifest.json), [bm25-receipt.json](../../../../artifacts/indexes/bm25-v2/bm25-receipt.json) |
 | Secret scanner `python scripts/check_secrets.py` exits `0` | Met | [secrets-current.log](../../tasks/team-progress-sync-2026-11-18/evidence/secrets-current.log) |
-| Independent peer verification of recovery receipts by Nguyễn Việt Nguyên (`N`) | Pending peer review | Handed off to `N` prior to `M0.G` (`G0`) |
+| Peer review of recovery receipts by Nguyễn Việt Nguyên (`N`) | Met (owner-confirmed `2026-11-18`) | [m0.1-data-provenance-summary.json](evidence/m0.1-data-provenance-summary.json) |
 
-Final task status: **IN_PROGRESS** (all primary-owner data recovery, checksum, Gold `20261117_recovered_v1`, and `bm25-v2` provenance evidence is complete; ready for independent peer verification by Nguyễn Việt Nguyên before `M0.G` / `G0`).
+Final task status: **COMPLETE**. Formal gate `M0.G` (`G0`) remains `NOT_RUN` pending `M0.2` redaction closure and dedicated gate review.
