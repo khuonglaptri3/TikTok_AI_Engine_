@@ -1,6 +1,6 @@
 # M2.3 — Qualified Scripts, Structural Guardrails & Bounded Provider Bounds
 
-- Status: IN_PROGRESS (Guardrail/provider hardening, unit regressions, and `N`'s 15-draft structural run complete; awaiting human claim-entailment audit, `K`'s 15 queries, and peer review)
+- Status: IN_PROGRESS (`N`'s scope complete: guardrail/provider hardening, unit regressions, and 15-draft structural run passed; awaiting human claim-entailment audit, `K`'s 15 queries, and peer review)
 - Execution date: 2026-11-18 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M2.3`)
 - Repository version: `feat/m2.3-script-guardrails` (branched from `main` at `c3348e93`)
@@ -61,4 +61,4 @@ Hardened `BoundedGeminiClient`, `recalculate_timeline_and_verify`, and `Grounded
 | Offline `0` calls; provider missing-key/quota/timeout & `<= 2` calls/turn | Met | [gemini.py](../../../../packages/llm/clients/gemini.py), [service.py](../../../../packages/script_engine/service.py) |
 | `30`-draft human claim audit (`15` `N` + `15` `K`) & `K` peer review | Partial (`N` 15 drafts generated; human claim audit & `K` 15 drafts pending) | [nguyen_15_drafts_audit.csv](evidence/nguyen_15_drafts_audit.csv) |
 
-Final task status: **IN_PROGRESS** (code/guardrail hardening and `N`'s 15-brief automated run complete; awaiting `K`'s 15 briefs, human claim audit, and peer review).
+Final task status: **IN_PROGRESS** (`N`'s code/guardrail hardening and 15-brief automated audit are complete and pushed on `feat/m2.3-script-guardrails`; awaiting `K`'s 15 briefs, two-person human claim-entailment audit, and peer review before closing `M2.3`).
