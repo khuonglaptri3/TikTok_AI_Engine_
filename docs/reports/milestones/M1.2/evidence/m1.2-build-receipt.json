@@ -1,0 +1,149 @@
+{
+  "task_id": "M1.2",
+  "status": "PASS",
+  "verified_at_utc": "2026-11-18T05:43:10.618788+00:00",
+  "snapshot_id": "20261118_taxonomy_fix_v1",
+  "parent_snapshot_id": "20261117_recovered_v1",
+  "parent_manifest_sha256": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+  "manifest_sha256": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
+  "build_elapsed_seconds": 637.32,
+  "manifest": {
+    "snapshot_id": "20261118_taxonomy_fix_v1",
+    "parent_snapshot_id": "20261117_recovered_v1",
+    "parent_manifest_sha256": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+    "created_at": "2026-11-18T05:43:03.050042+00:00",
+    "date_window_start": "2023-11-25",
+    "date_window_end": "2025-03-19",
+    "total_creators": 264,
+    "total_videos": 70996,
+    "transcribed_videos": 21748,
+    "poi_tagged_videos": 23448,
+    "ec_tagged_videos": 5798,
+    "files": [
+      {
+        "filename": "dim_creators.parquet",
+        "rows": 264,
+        "columns": 15,
+        "sha256": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+        "size_bytes": 35285
+      },
+      {
+        "filename": "fact_videos.parquet",
+        "rows": 70996,
+        "columns": 49,
+        "sha256": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3",
+        "size_bytes": 58851557
+      }
+    ],
+    "caveats": [
+      "Creator-centric cohort (264 Vietnamese F&B creators, Nov 2023 - Apr 2025), not a uniform random sample of all TikTok Vietnam uploads.",
+      "Engagement metrics are single-snapshot observations captured in Mar-Apr 2025; viral_multiplier normalizes plays against each creator's own empirical median.",
+      "Spoken transcripts cover top weekly viral and enriched subsets (~22.6K videos), while metadata and POI benchmarks cover all 70,996 videos."
+    ]
+  },
+  "integrity_checks": {
+    "load_verified_corpus_passed": true,
+    "collision_rejected_nonzero_exit": true,
+    "collision_preserved_published_bytes": true,
+    "all_input_and_parent_bytes_unchanged": true,
+    "creators_row_col": [
+      264,
+      15
+    ],
+    "videos_row_col": [
+      70996,
+      49
+    ],
+    "unique_nonnull_video_ids": true,
+    "unique_nonnull_creator_ids": true,
+    "all_creator_joins_resolve": true,
+    "video_id_set_identical_to_parent": true
+  },
+  "counts_and_taxonomy_deltas_vs_parent": {
+    "total_creators": {
+      "before": 264,
+      "after": 264
+    },
+    "total_videos": {
+      "before": 70996,
+      "after": 70996
+    },
+    "transcribed_videos": {
+      "before": 21748,
+      "after": 21748
+    },
+    "poi_tagged_videos": {
+      "before": 23448,
+      "after": 23448
+    },
+    "ec_tagged_videos": {
+      "before": 5798,
+      "after": 5798
+    },
+    "city_norm_nonnull": {
+      "before": 17014,
+      "after": 23478,
+      "delta": 6464
+    },
+    "district_norm_nonnull": {
+      "before": 4670,
+      "after": 13151,
+      "delta": 8481
+    },
+    "region_known_non_unknown": {
+      "before": 15931,
+      "after": 22986,
+      "delta": 7055
+    },
+    "dishes_containing_oc": {
+      "before": 5391,
+      "after": 1606,
+      "delta": -3785
+    },
+    "occasions_an_vat_xe_chieu": {
+      "before": 59765,
+      "after": 1365,
+      "delta": -58400
+    },
+    "occasions_empty_unknown": {
+      "before": 0,
+      "after": 58400,
+      "delta": 58400
+    },
+    "location_source_distribution_after": {
+      "unknown": 47518,
+      "poi_gps": 20515,
+      "llm_inferred": 1934,
+      "district_resolved": 1029
+    },
+    "food_category_distribution_after": {
+      "Ẩm thực Tổng hợp": 32749,
+      "Món nước & Sợi": 10048,
+      "Lẩu & Nướng": 9506,
+      "Cơm & Bữa chính": 5855,
+      "Ăn vặt & Đường phố": 4900,
+      "Đồ ngọt, Trà & Cà phê": 4900,
+      "Ẩm thực Chay & Healthy": 1918,
+      "Đồ đóng gói & Tiện lợi": 1120
+    }
+  },
+  "code_sha256": {
+    "pipelines/build_gold_corpus/builder.py": "c35beeb0ba327788ca11a4d3606306931f858145b319fb604e3ae473950d626d",
+    "pipelines/build_gold_corpus/__main__.py": "8713c0cf100c22d3322b264b9da92e6ba3afa0c7dedbe57b811074a1bc2e7d1d",
+    "packages/common/snapshots.py": "8661b46983bd31ad1e479039f235ad3e2a158043ebbd40a1e5c0dfb3fa9b773d",
+    "packages/taxonomy/location_poi.py": "65488d0a7743e12b99f40c55dd67f06d1279e0354a0738f7569ac905096c31d1",
+    "packages/taxonomy/food_hierarchy.py": "a282e8aa060fd789fdd41bc4096321e2b2e8de74d0ee1727329c4424f19daaef",
+    "packages/taxonomy/rule_extractor.py": "ddbba104e63a2307e08ede8fa21182571469f6655125cac804761f0515980795"
+  },
+  "input_and_parent_sha256": {
+    "data/processed/cleaned_user_info.parquet": "003b52ef19b8e8d782663696a12a740a178a680a6f930f9f0e9ef82409dd3d9c",
+    "data/processed/cleaned_video_info.parquet": "b992d566d05d73580cddad263e730c7c5e546de93ac37639242924c8ff1f40f1",
+    "data/interim/final_raw_videos.csv": "6b6ad94344557c1a31c31382b5d58b83972d20d788cda2d2bffdbdade2f340a4",
+    "data/legacy_app_data/trend_analysis/final_location_food_data.parquet": "cf9c7891455619104ba34d7026c402f27c3e414df96cb69319aefe5ec89fb97c",
+    "data/content_analysis/content_analysis_data.parquet": "5ebfea1f26f9e78807e1d7cd3504de9c8406922e3a0fed68ed0e7607000795c7",
+    "data/corpus/20261116_v1/manifest.json": "9565c9fc7dd9ce00a638cfcb4cc35032347ddc746c686eb7ccdc91ba911278f6",
+    "data/corpus/20261117_recovered_v1/manifest.json": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+    "data/corpus/20261117_recovered_v1/dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+    "data/corpus/20261117_recovered_v1/fact_videos.parquet": "1bfc6c6f819b4c0176345029e5ae4e630a4e9c0438c89548aab893e1d30c1ecd"
+  }
+}

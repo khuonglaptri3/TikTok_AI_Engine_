@@ -1,0 +1,72 @@
+{
+  "python": "3.12.14",
+  "source_revision": "c3348e9",
+  "scope": "controlled synthetic boundary probes; no real secrets, provider or network calls",
+  "results": [
+    {
+      "probe": "redaction_kv",
+      "observed": "REDACTED"
+    },
+    {
+      "probe": "redaction_json",
+      "observed": "LEAK"
+    },
+    {
+      "probe": "logger_message",
+      "observed": "REDACTED"
+    },
+    {
+      "probe": "logger_traceback",
+      "observed": "LEAK"
+    },
+    {
+      "probe": "logger_stack_info",
+      "observed": "LEAK"
+    },
+    {
+      "probe": "settings_repr",
+      "observed": "REDACTED"
+    },
+    {
+      "probe": "settings_safe_summary",
+      "observed": "REDACTED"
+    },
+    {
+      "probe": "timer_nonfinite_clock",
+      "observed": "FINITE",
+      "timings": {
+        "step_ms": 0.0,
+        "total_ms": 0.0
+      }
+    },
+    {
+      "probe": "timer_parse_into_response",
+      "observed": "REJECTED",
+      "note": "M0.2 deliberately preserves bare internal names; current callers use suffixes"
+    },
+    {
+      "probe": "manifest_invalid_dates_and_no_files",
+      "observed": "ACCEPTED"
+    },
+    {
+      "probe": "incremental_zero_duration",
+      "observed": "ACCEPTED"
+    },
+    {
+      "probe": "incremental_outside_media",
+      "observed": "ACCEPTED"
+    },
+    {
+      "probe": "settings_llm_call_cap_5",
+      "observed": "ACCEPTED"
+    },
+    {
+      "probe": "domain_error_json_secret",
+      "observed": "LEAK"
+    },
+    {
+      "probe": "canonical_error_json_secret",
+      "observed": "LEAK"
+    }
+  ]
+}

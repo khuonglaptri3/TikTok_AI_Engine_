@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 COMMON_DISH_KEYWORDS: tuple[str, ...] = (
     "bún bò",
     "bún đậu",
@@ -41,11 +43,19 @@ COMMON_DISH_KEYWORDS: tuple[str, ...] = (
     "matcha",
     "chè",
     "bánh ngọt",
-    "tirami",
+    "tiramisu",
     "kem",
     "đồ chay",
     "salad",
 )
+
+_DISH_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    (
+        kw,
+        re.compile(r"(?<!\w)tirami\w*(?!\w)") if kw == "tiramisu" else re.compile(rf"(?<!\w){re.escape(kw)}(?!\w)"),
+    )
+    for kw in COMMON_DISH_KEYWORDS
+]
 
 CATEGORY_RULES: list[tuple[str, tuple[str, ...]]] = [
     ("Ẩm thực Chay & Healthy", ("chay", "healthy", "eat clean", "ức gà", "salad", "kiêng", "ít calo")),
@@ -55,7 +65,7 @@ CATEGORY_RULES: list[tuple[str, tuple[str, ...]]] = [
     ),
     (
         "Món nước & Sợi",
-        ("phở", "bún", "mì ", "mì cay", "mì trộn", "mì quảng", "hủ tiếu", "bánh canh", "miến", "cháo", "súp"),
+        ("phở", "bún", "mì", "mì cay", "mì trộn", "mì quảng", "hủ tiếu", "bánh canh", "miến", "cháo", "súp"),
     ),
     (
         "Đồ ngọt, Trà & Cà phê",
@@ -67,7 +77,7 @@ CATEGORY_RULES: list[tuple[str, tuple[str, ...]]] = [
     ),
     (
         "Cơm & Bữa chính",
-        ("cơm tấm", "cơm gà", "cơm ", "cá kho", "thịt kho", "canh ", "bò né", "bít tết", "gà luộc", "vịt quay"),
+        ("cơm tấm", "cơm gà", "cơm", "cá kho", "thịt kho", "canh", "bò né", "bít tết", "gà luộc", "vịt quay"),
     ),
     (
         "Đồ đóng gói & Tiện lợi",
@@ -75,16 +85,24 @@ CATEGORY_RULES: list[tuple[str, tuple[str, ...]]] = [
     ),
 ]
 
+_CATEGORY_PATTERNS: list[tuple[str, tuple[re.Pattern[str], ...]]] = [
+    (
+        category,
+        tuple(re.compile(rf"(?<!\w){re.escape(kw)}(?!\w)") for kw in keywords),
+    )
+    for category, keywords in CATEGORY_RULES
+]
+
 
 def extract_dishes_from_text(text: str) -> list[str]:
-    lower = text.lower()
-    found = [kw for kw in COMMON_DISH_KEYWORDS if kw in lower]
+    lower = (text or "").lower()
+    found = [kw for kw, pattern in _DISH_PATTERNS if pattern.search(lower)]
     return found[:8]
 
 
 def map_food_category(dishes: list[str], text: str, poi_cat: str | None = None) -> str:
     combined = " ".join(dishes).lower() + " " + (text or "").lower() + " " + (poi_cat or "").lower()
-    for category, keywords in CATEGORY_RULES:
-        if any(kw in combined for kw in keywords):
+    for category, patterns in _CATEGORY_PATTERNS:
+        if any(pattern.search(combined) for pattern in patterns):
             return category
     return "Ẩm thực Tổng hợp"

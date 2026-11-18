@@ -8,6 +8,7 @@ from collections import deque
 from typing import Any
 
 from packages.common.exceptions import ProviderKeyMissingError, QuotaBlockedError
+from packages.common.logging import redact_secrets
 from packages.common.settings import AppSettings
 
 
@@ -80,36 +81,58 @@ class BoundedGeminiClient:
     def is_configured(self) -> bool:
         return bool(self.settings.gemini_api_key.strip())
 
-    def generate_structured_json(self, prompt: str) -> dict[str, Any]:
-        api_key = self.settings.gemini_api_key.strip()
-        if not api_key:
-            raise ProviderKeyMissingError(
-                "GEMINI_API_KEY is not set in .env. Configure a Free-Tier Gemini key or switch generation_mode to 'offline_grounded'."
-            )
-
-        self.rate_limiter.acquire()
-
+    def _call_gemini_sdk(self, prompt: str, timeout_ms: int) -> str:
         try:
             from google import genai
             from google.genai import types
         except ImportError as exc:
             raise ProviderKeyMissingError(f"google-genai SDK is unavailable: {exc}") from exc
 
-        try:
-            client = genai.Client(api_key=api_key)
-            resp = client.models.generate_content(
-                model=self.settings.gemini_fast_model,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    temperature=0.35,
-                    response_mime_type="application/json",
-                ),
+        api_key = self.settings.gemini_api_key.strip()
+        client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(timeout=timeout_ms),
+        )
+        resp = client.models.generate_content(
+            model=self.settings.gemini_fast_model,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.35,
+                response_mime_type="application/json",
+            ),
+        )
+        return (resp.text or "").strip()
+
+    def generate_structured_json(self, prompt: str, turn_calls_used: int = 0) -> dict[str, Any]:
+        api_key = self.settings.gemini_api_key.strip()
+        if not api_key:
+            raise ProviderKeyMissingError(
+                "GEMINI_API_KEY is not set in .env. Configure a Free-Tier Gemini key or switch generation_mode to 'offline_grounded'."
             )
-            raw_text = (resp.text or "").strip()
+        if turn_calls_used >= self.settings.max_llm_calls_per_turn:
+            raise QuotaBlockedError(
+                f"Per-turn LLM call budget ({self.settings.max_llm_calls_per_turn} calls/turn) reached. Switch to 'offline_grounded'."
+            )
+
+        self.rate_limiter.acquire()
+        timeout_ms = max(1000, int(round(self.settings.llm_deadline_seconds * 1000.0)))
+
+        try:
+            raw_text = self._call_gemini_sdk(prompt, timeout_ms=timeout_ms)
+        except ProviderKeyMissingError:
+            raise
+        except TimeoutError as exc:
+            raise QuotaBlockedError(
+                f"Gemini request deadline exceeded ({self.settings.llm_deadline_seconds:.1f}s timeout)."
+            ) from exc
         except Exception as exc:
-            msg = str(exc)
+            msg = redact_secrets(str(exc))
             if "429" in msg or "RESOURCE_EXHAUSTED" in msg or "quota" in msg.lower():
                 raise QuotaBlockedError(f"Gemini Free-Tier quota exhausted: {msg[:180]}") from exc
+            if "timeout" in msg.lower() or "timed out" in msg.lower() or "deadline" in msg.lower():
+                raise QuotaBlockedError(
+                    f"Gemini request timeout ({self.settings.llm_deadline_seconds:.1f}s): {msg[:160]}"
+                ) from exc
             raise QuotaBlockedError(f"Gemini generation failed within Free-Tier bounds: {msg[:180]}") from exc
 
         if raw_text.startswith("```"):

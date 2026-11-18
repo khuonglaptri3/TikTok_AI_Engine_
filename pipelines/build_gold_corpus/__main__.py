@@ -21,9 +21,24 @@ def main() -> None:
         default=Path("data/corpus/20261117_recovered_v1"),
         help="Output snapshot directory.",
     )
+    parser.add_argument(
+        "--parent-corpus",
+        type=Path,
+        default=None,
+        help="Optional parent Gold snapshot directory for provenance binding.",
+    )
     args = parser.parse_args()
     out_dir = args.output if args.output.is_absolute() else (args.root / args.output)
-    manifest = build_gold_corpus(root_dir=args.root, output_dir=out_dir)
+    parent_dir = (
+        (args.parent_corpus if args.parent_corpus.is_absolute() else (args.root / args.parent_corpus))
+        if args.parent_corpus is not None
+        else None
+    )
+    manifest = build_gold_corpus(
+        root_dir=args.root,
+        output_dir=out_dir,
+        parent_corpus_dir=parent_dir,
+    )
     print(json.dumps(manifest.model_dump(), ensure_ascii=False, indent=2))
 
 

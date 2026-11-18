@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -184,18 +184,41 @@ def _sha256_file(path: Path) -> str:
     return hasher.hexdigest()
 
 
-def build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str | None = None) -> CorpusManifest:
+def build_gold_corpus(
+    root_dir: Path,
+    output_dir: Path,
+    snapshot_id: str | None = None,
+    parent_corpus_dir: Path | None = None,
+) -> CorpusManifest:
+    from packages.analytics import load_verified_corpus
     from packages.common.snapshots import snapshot_workspace
 
     with snapshot_workspace(output_dir) as staging_dir:
-        manifest = _build_gold_corpus(root_dir, staging_dir, snapshot_id or output_dir.name)
-        from packages.analytics import load_verified_corpus
+        parent_snap_id: str | None = None
+        parent_sha: str | None = None
+        if parent_corpus_dir is not None:
+            parent_manifest, _, _ = load_verified_corpus(parent_corpus_dir)
+            parent_snap_id = parent_manifest.snapshot_id
+            parent_sha = _sha256_file(parent_corpus_dir / "manifest.json")
 
+        manifest = _build_gold_corpus(
+            root_dir,
+            staging_dir,
+            snapshot_id or output_dir.name,
+            parent_snapshot_id=parent_snap_id,
+            parent_manifest_sha256=parent_sha,
+        )
         load_verified_corpus(staging_dir)
     return manifest
 
 
-def _build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str) -> CorpusManifest:
+def _build_gold_corpus(
+    root_dir: Path,
+    output_dir: Path,
+    snapshot_id: str,
+    parent_snapshot_id: str | None = None,
+    parent_manifest_sha256: str | None = None,
+) -> CorpusManifest:
     """Build immutable Gold Parquet corpus from read-only upstream datasets."""
     snap_id = snapshot_id
 
@@ -429,6 +452,7 @@ def _build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str) -> Co
             poi_address=poi_addr,
             llm_city=llm_city,
             llm_district=llm_dist,
+            poi_name=poi_name,
         )
 
         # Resolve taxonomy & context
@@ -541,7 +565,9 @@ def _build_gold_corpus(root_dir: Path, output_dir: Path, snapshot_id: str) -> Co
 
     manifest = CorpusManifest(
         snapshot_id=snap_id,
-        created_at=datetime.now(timezone.utc).isoformat(),
+        parent_snapshot_id=parent_snapshot_id,
+        parent_manifest_sha256=parent_manifest_sha256,
+        created_at=datetime.now(UTC).isoformat(),
         date_window_start=min_ts.strftime("%Y-%m-%d") if pd.notna(min_ts) else "",
         date_window_end=max_ts.strftime("%Y-%m-%d") if pd.notna(max_ts) else "",
         total_creators=len(df_dim_creators),

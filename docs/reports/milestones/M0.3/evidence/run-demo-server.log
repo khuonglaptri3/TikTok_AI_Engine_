@@ -1,0 +1,23 @@
+INFO:     Started server process [54332]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:51677 - "GET /health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "GET / HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:51677 - "GET /demo/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "GET /demo/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "GET /health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "GET /health/ready HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "GET /api/v1/demo/modules HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "GET /api/v1/evaluation/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "POST /api/v1/retrieval/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "POST /api/v1/script/generate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "POST /api/v1/analytics/niche-benchmark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51677 - "POST /api/v1/script/generate HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:51677 - "POST /api/v1/script/generate HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51677 - "POST /api/v1/retrieval/search HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51677 - "POST /api/v1/script/generate HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:51677 - "POST /api/v1/script/generate HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:51677 - "POST /api/v1/retrieval/search HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:51677 - "POST /api/v1/retrieval/search HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:51677 - "POST /api/v1/script/generate HTTP/1.1" 422 Unprocessable Entity

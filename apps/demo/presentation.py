@@ -5,19 +5,35 @@ from typing import Any
 
 def format_benchmark_markdown(bench: dict[str, Any]) -> str:
     hours = bench.get("top_posting_hours") or []
+    abstained = bool(bench.get("sparse_slice_abstained"))
     hours_str = ", ".join(
         f"**{h['hour']:02d}:00** ({int(h['median_plays']):,} views)" for h in hours[:4]
-    ) or "Chưa đủ mẫu"
+    ) or ("Tạm dừng xếp hạng do không đủ mẫu (< 5 video)" if abstained else "Chưa đủ mẫu")
     tags = ", ".join(f"`#{t}`" for t in (bench.get("top_hashtags") or [])[:6]) or "Không có"
-    pois = " • ".join((bench.get("top_poi_venues") or [])[:5]) or "Không có POI định vị trong lát cắt này"
+    pois = " • ".join((bench.get("top_poi_venues") or [])[:5]) or (
+        "Tạm dừng xếp hạng POI do không đủ mẫu (< 5 video)" if abstained else "Không có POI định vị trong lát cắt này"
+    )
     applied = bench.get("applied_filters") or {}
     filter_desc = ", ".join(f"`{k}={v}`" for k, v in applied.items()) if applied else "Toàn bộ kho dữ liệu"
+    cohort_start = bench.get("cohort_window_start") or "N/A"
+    cohort_end = bench.get("cohort_window_end") or "N/A"
+    obs_snap = bench.get("observation_snapshot") or "N/A"
+    miss = bench.get("missingness") or {}
+    miss_str = (
+        f"thiếu lời thoại `{miss.get('transcript_missing_pct', 0):.1f}%` • "
+        f"thiếu POI `{miss.get('poi_missing_pct', 0):.1f}%` • "
+        f"thiếu thành phố `{miss.get('city_missing_pct', 0):.1f}%`"
+        if miss
+        else "không có dữ liệu thiếu (lát cắt rỗng)"
+    )
 
     return (
         f"### Thống Kê Mô Tả Ngách Trong Kho Lịch Sử\n"
+        f"- **Khoảng dữ liệu cohort:** `{cohort_start}` → `{cohort_end}` • **Mốc thu thập:** `{obs_snap}`\n"
         f"- **Lát cắt dữ liệu:** {filter_desc}\n"
-        f"- **Quy mô mẫu:** `{bench.get('matched_videos', 0):,}` video "
+        f"- **Quy mô mẫu (n):** `{bench.get('matched_videos', 0):,}` video "
         f"(`{bench.get('transcribed_videos', 0):,}` có lời thoại • `{bench.get('poi_tagged_videos', 0):,}` gắn GPS POI)\n"
+        f"- **Tỷ lệ thiếu dữ liệu (Missingness):** {miss_str}\n"
         f"- **Lượt xem trung vị / P75:** `{int(bench.get('median_plays', 0)):,}` / `{int(bench.get('p75_plays', 0)):,}` views "
         f"(Tương tác trung vị: `{bench.get('median_engagement_rate', 0.0) * 100:.2f}%`)\n"
         f"- **Phân bố thời lượng (IQR Q25 – Trung vị – Q75):** `{bench.get('duration_q25_sec', 0):.0f}s` – "
