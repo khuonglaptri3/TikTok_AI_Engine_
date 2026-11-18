@@ -91,6 +91,8 @@ def recalculate_timeline_and_verify(
         )
     if cite_ratio < 1.0:
         warnings.append("Một số mã trích dẫn video không khớp kho bằng chứng đã được lọc bỏ tự động.")
+    if not valid_evidence_ids:
+        warnings.append("Kho dữ liệu không có video bằng chứng phù hợp; không tự gán nguồn tham khảo.")
     if not complete_content:
         warnings.append("Kịch bản cần có lời thoại không rỗng trong mọi phân đoạn.")
     if coverage < 1.0:
