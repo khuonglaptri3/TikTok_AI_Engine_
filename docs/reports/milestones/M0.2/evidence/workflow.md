@@ -36,3 +36,4 @@
   - `.venv/bin/python -m mypy packages apps pipelines` -> `EXIT=0`, `Success: no issues found in 76 source files` ([mypy-followup.log](mypy-followup.log))
   - `.venv/bin/python -m pytest -v` -> `EXIT=0`, `75 passed in 20.37s` ([pytest-full-followup.log](pytest-full-followup.log))
   - `.venv/bin/python scripts/check_secrets.py` -> `EXIT=0`, `PASS: Zero secret leaks detected across workspace.` ([check-secrets-followup.log](check-secrets-followup.log))
+- Merged `fix/m0.2-redaction-followups` (`03de1a65`) directly into `main` (`5d778a2b`) and marked `M0.2` as `COMPLETE` per explicit contributor instruction without a separate re-review round.

@@ -1,9 +1,9 @@
 # M0.2 — Contracts, Bounded Settings & Error/Logging Hygiene
 
-- Status: IN_PROGRESS (`M0.2-REV-1` & `M0.2-REV-2` fixed and verified by `N` on `fix/m0.2-redaction-followups`; awaiting `K` re-verification before closing `M0.2`)
-- Execution date: 2026-11-17 (initial `N` implementation); 2026-11-18 (`K` peer review & `N` follow-up fixes, Asia/Ho_Chi_Minh)
+- Status: COMPLETE (`M0.2-REV-1` & `M0.2-REV-2` fixed, verified, merged into `main`, and closed per contributor instruction)
+- Execution date: 2026-11-17 (initial `N` implementation); 2026-11-18 (`K` peer review, `N` follow-up fixes, and closure, Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M0.2`)
-- Repository version: `fix/m0.2-redaction-followups` (branched from `origin/feat/m0-m1-m2.1-complete-and-gold-v2` @ `6cf1a6ec`)
+- Repository version: `main` (merged `03de1a65` onto `5d778a2b`)
 - Primary owner: Nguyễn Việt Nguyên (`N`) · Peer reviewer: Trần Đình Khương (`K`)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
@@ -12,7 +12,7 @@
 
 Revalidated and hardened `packages/common/` and `packages/data_contracts/` against `M0.2` engineering invariants without breaking existing callers or endpoints (`63/63` pytest tests and `mypy` over `76` source files pass at merged commit `c3348e9`). All contract models and `AppSettings` reject `NaN` / `Inf` escapes, malformed or whitespace-only inputs, inverted time intervals, invalid SHA256/path entries, out-of-order quantiles, unknown request/error fields, and negative or non-`ms` response timings.
 
-Independent peer review by Trần Đình Khương (`K`, [khuong-peer-review.md](evidence/khuong-peer-review.md)) confirmed 100% API/demo backward compatibility, and identified two runtime credential-redaction gaps (`M0.2-REV-1` traceback/stack emission and `M0.2-REV-2` quoted JSON secret keys). On `fix/m0.2-redaction-followups`, Nguyễn Việt Nguyên (`N`) fixed both gaps in [packages/common/logging/__init__.py](../../../../packages/common/logging/__init__.py) and added executable regression tests in [test_data_contracts.py](../../../../tests/contract/test_data_contracts.py) (`10/10` contract tests, `75/75` full pytest suite in `20.37s`, strict `mypy` across `76` source files, scoped `ruff`, and `check_secrets.py` with `0` leaks). Task `M0.2` awaits `K`'s re-verification of the two regression fixes before closing as `COMPLETE` for `M0.G`.
+Independent peer review by Trần Đình Khương (`K`, [khuong-peer-review.md](evidence/khuong-peer-review.md)) confirmed 100% API/demo backward compatibility, and identified two runtime credential-redaction gaps (`M0.2-REV-1` traceback/stack emission and `M0.2-REV-2` quoted JSON secret keys). Both gaps were fixed in [packages/common/logging/__init__.py](../../../../packages/common/logging/__init__.py) with regression tests in [test_data_contracts.py](../../../../tests/contract/test_data_contracts.py) (`10/10` contract tests, `75/75` full pytest suite in `20.37s`, strict `mypy` across `76` source files, scoped `ruff`, and `check_secrets.py` with `0` leaks), merged directly into `main`, and marked `COMPLETE` per the contributor's explicit closure instruction without an extra re-review round.
 
 ## Work performed
 
@@ -63,9 +63,7 @@ Independent peer review by Trần Đình Khương (`K`, [khuong-peer-review.md](
 
 ## Open issues
 
-| Issue | Impact | Follow-up / responsible task |
-| --- | --- | --- |
-| **`M0.2-REV-1` & `M0.2-REV-2` fixed by `N`; pending `K` sign-off** | Both runtime redaction gaps are patched and covered by `test_redaction_covers_json_payloads_exceptions_and_stack_info`, awaiting `K`'s verification before closing `M0.2` | Trần Đình Khương (`K`) reviews `fix/m0.2-redaction-followups` and closes `M0.2` ahead of `M0.G` |
+None (`M0.2-REV-1` & `M0.2-REV-2` resolved, tested, and merged into `main`; `M0.2` closed directly per explicit contributor instruction without a separate re-review round).
 
 ## Acceptance and handoff
 
@@ -74,7 +72,7 @@ Independent peer review by Trần Đình Khương (`K`, [khuong-peer-review.md](
 | Contract tests reject malformed/boundary inputs and unknown fields | Met | [test_data_contracts.py](../../../../tests/contract/test_data_contracts.py), [green-followup-tests.log](evidence/green-followup-tests.log) |
 | Timings use `ms` and reject negative / non-finite durations | Met | [logging/__init__.py](../../../../packages/common/logging/__init__.py), [_validators.py](../../../../packages/data_contracts/_validators.py) |
 | No `NaN`/`Inf` escapes across `AppSettings` and contracts | Met | `allow_inf_nan=False` + `test_contracts_and_settings_reject_nan_and_inf` |
-| Explicit missing-key/quota/error payloads & no credentials in logs | Met (`N` fix verified; awaiting `K` check) | Covers simple `key=val`, `AIza*`, `Bearer`, URL creds, quoted JSON/dict secrets, `logger.exception`, and `stack_info`; [green-followup-tests.log](evidence/green-followup-tests.log) |
-| Peer review of API compatibility & follow-up check by `K` | Partial (`PASS` on compatibility; follow-up re-check pending) | [khuong-peer-review.md](evidence/khuong-peer-review.md) |
+| Explicit missing-key/quota/error payloads & no credentials in logs | Met | Covers simple `key=val`, `AIza*`, `Bearer`, URL creds, quoted JSON/dict secrets, `logger.exception`, and `stack_info`; [green-followup-tests.log](evidence/green-followup-tests.log) |
+| Peer review of API compatibility by `K` & follow-up closure | Met (`K` compatibility `PASS`; follow-up tests verified & closed directly) | [khuong-peer-review.md](evidence/khuong-peer-review.md), [pytest-full-followup.log](evidence/pytest-full-followup.log) |
 
-Final task status: **IN_PROGRESS** (`N` resolved and tested `M0.2-REV-1` and `M0.2-REV-2` on `fix/m0.2-redaction-followups`; awaiting `K` sign-off on the two follow-up fixes before marking `COMPLETE` and evaluating `M0.G`).
+Final task status: **COMPLETE** (initial PR #1 verified by `K` for API compatibility; `M0.2-REV-1` and `M0.2-REV-2` fixed, regression-tested, merged into `main`, and closed per contributor instruction; ready for `M0.G`).
