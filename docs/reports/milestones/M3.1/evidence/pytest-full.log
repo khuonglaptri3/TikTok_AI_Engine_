@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/intern-nvnguyen1/Project/TikTok_AI_Engine_
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.16.0
+collected 81 items
+
+tests/contract/test_data_contracts.py ..........                         [ 12%]
+tests/eval/test_retrieval_benchmark.py ...                               [ 16%]
+tests/smoke/test_api_and_demo.py .                                       [ 17%]
+tests/unit/test_analytics_and_retrieval.py .....                         [ 23%]
+tests/unit/test_incremental_absa_seeding.py ...                          [ 27%]
+tests/unit/test_offline_draft.py ......                                  [ 34%]
+tests/unit/test_retrieval_metrics.py .....                               [ 40%]
+tests/unit/test_script_guardrails.py .............                       [ 56%]
+tests/unit/test_secret_hygiene.py ..                                     [ 59%]
+tests/unit/test_snapshot_continuity.py ..........................        [ 91%]
+tests/unit/test_taxonomy_and_corpus.py .......                           [100%]
+
+============================= 81 passed in 17.81s ==============================

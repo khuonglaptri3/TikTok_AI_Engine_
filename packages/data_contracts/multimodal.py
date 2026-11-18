@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -74,6 +75,16 @@ class RawIncrementalVideoRecord(BaseModel):
     @classmethod
     def _validate_ids(cls, val: str) -> str:
         return require_non_blank(val)
+
+    @field_validator("create_time")
+    @classmethod
+    def _validate_create_time(cls, val: str) -> str:
+        clean = require_non_blank(val)
+        try:
+            datetime.fromisoformat(clean.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise ValueError(f"Invalid ISO-8601 create_time: {val!r}") from exc
+        return clean
 
 
 class VoiceSegmentRecord(BaseModel):
