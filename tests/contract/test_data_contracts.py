@@ -355,3 +355,74 @@ def test_explicit_error_payloads_and_no_credentials_in_logs() -> None:
     assert fake_google_key not in records[0]
     assert "secret_token_xyz_987" not in records[0]
     assert "supersecretpass" not in records[0]
+
+
+def test_redaction_covers_json_payloads_exceptions_and_stack_info() -> None:
+    json_secret_payload = (
+        '{"api_key": "json_secret_key_001", "password": "json_secret_pass_002", '
+        '"token": "json secret tok 003"}'
+    )
+    redacted_json = redact_secrets(json_secret_payload)
+    assert "json_secret_key_001" not in redacted_json
+    assert "json_secret_pass_002" not in redacted_json
+    assert "json secret tok 003" not in redacted_json
+    assert "[REDACTED]" in redacted_json
+
+    domain_err = QuotaBlockedError(json_secret_payload)
+    assert "json_secret_key_001" not in domain_err.message
+    assert "json_secret_pass_002" not in domain_err.message
+    assert "json secret tok 003" not in domain_err.message
+
+    canonical_err = CanonicalErrorResponse(code="ERR", message=json_secret_payload)
+    assert "json_secret_key_001" not in canonical_err.message
+    assert "json_secret_pass_002" not in canonical_err.message
+    assert "json secret tok 003" not in canonical_err.message
+
+    records: list[str] = []
+
+    class _ListHandler(logging.Handler):
+        def emit(self, record: logging.LogRecord) -> None:
+            records.append(self.format(record))
+
+    logger = logging.getLogger("tiktok_rag.test_traceback_filter")
+    logger.handlers.clear()
+    logger.propagate = False
+    logger.setLevel(logging.INFO)
+    handler = _ListHandler()
+    handler.addFilter(SecretRedactingFilter())
+    logger.addHandler(handler)
+
+    try:
+        raise RuntimeError(f"boom secret=trace_secret_004 {json_secret_payload}")
+    except RuntimeError:
+        logger.exception("Unhandled error", stack_info=True)
+
+    assert len(records) == 1
+    emitted = records[0]
+    assert "trace_secret_004" not in emitted
+    assert "json_secret_key_001" not in emitted
+    assert "json_secret_pass_002" not in emitted
+    assert "json secret tok 003" not in emitted
+    assert "[REDACTED]" in emitted
+
+    # Single-quoted dict literals also redact cleanly
+    dict_secret_payload = "{'api-key': 'single_key_006', 'password': 'single_pass_007'}"
+    redacted_dict = redact_secrets(dict_secret_payload)
+    assert "single_key_006" not in redacted_dict
+    assert "single_pass_007" not in redacted_dict
+
+    # Direct stack_info secret redaction check
+    records.clear()
+    record_with_secret_stack = logging.LogRecord(
+        name="tiktok_rag.test_traceback_filter",
+        level=logging.INFO,
+        pathname=__file__,
+        lineno=1,
+        msg="Stack payload",
+        args=(),
+        exc_info=None,
+        sinfo='Stack frame local {"password": "stack_secret_005"}',
+    )
+    handler.handle(record_with_secret_stack)
+    assert "stack_secret_005" not in records[-1]
+    assert "[REDACTED]" in records[-1]

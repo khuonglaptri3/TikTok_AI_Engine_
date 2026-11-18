@@ -26,3 +26,13 @@
 - `.venv/bin/python scripts/check_secrets.py` -> `EXIT=0`, `PASS: Zero secret leaks detected across workspace.` ([check-secrets.log](check-secrets.log))
 - `.venv/bin/python -m mypy packages apps pipelines` -> `EXIT=0`, `Success: no issues found in 76 source files` ([mypy.log](mypy.log))
 - `.venv/bin/python -m pytest -v` -> `EXIT=0`, `63 passed in 19.84s` ([pytest-full.log](pytest-full.log))
+
+## Follow-up Fix Ledger (`2026-11-18`, `fix/m0.2-redaction-followups`)
+- Addressed peer-review findings `M0.2-REV-1` (first-emission `exc_info` traceback and `stack_info` sanitization in `SecretRedactingFilter.filter`) and `M0.2-REV-2` (quoted JSON/dict keys/values in `redact_secrets`).
+- TDD RED confirmed on `tests/contract/test_data_contracts.py::test_redaction_covers_json_payloads_exceptions_and_stack_info` before patching `packages/common/logging/__init__.py`.
+- Follow-up verification commands:
+  - `.venv/bin/python -m pytest tests/contract/test_data_contracts.py -v` -> `EXIT=0`, `10 passed in 0.30s` ([green-followup-tests.log](green-followup-tests.log))
+  - `.venv/bin/python -m ruff check packages/common packages/data_contracts tests/contract` -> `EXIT=0`, `All checks passed!` ([ruff-followup.log](ruff-followup.log))
+  - `.venv/bin/python -m mypy packages apps pipelines` -> `EXIT=0`, `Success: no issues found in 76 source files` ([mypy-followup.log](mypy-followup.log))
+  - `.venv/bin/python -m pytest -v` -> `EXIT=0`, `75 passed in 20.37s` ([pytest-full-followup.log](pytest-full-followup.log))
+  - `.venv/bin/python scripts/check_secrets.py` -> `EXIT=0`, `PASS: Zero secret leaks detected across workspace.` ([check-secrets-followup.log](check-secrets-followup.log))
