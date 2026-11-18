@@ -1,0 +1,54 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> apps/api/app/routers/health.py:1:1
+   |
+ 1 | / from __future__ import annotations
+ 2 | |
+ 3 | | from typing import Any
+ 4 | |
+ 5 | | from fastapi import APIRouter, Request
+ 6 | |
+ 7 | | from apps.api.app.dependencies import ServiceContainer
+ 8 | | from packages.taxonomy import DURATION_BUCKETS, FOOD_CATEGORIES, OCCASION_LABELS, PRICE_TIERS, VIDEO_FORMATS
+   | |____________________________________________________________________________________________________________^
+ 9 |
+10 |   router = APIRouter(tags=["health & metadata"])
+   |
+help: Organize imports
+   |
+7  | from apps.api.app.dependencies import ServiceContainer
+   - from packages.taxonomy import DURATION_BUCKETS, FOOD_CATEGORIES, OCCASION_LABELS, PRICE_TIERS, VIDEO_FORMATS
+8  + from packages.taxonomy import (
+9  +     DURATION_BUCKETS,
+10 +     FOOD_CATEGORIES,
+11 +     OCCASION_LABELS,
+12 +     PRICE_TIERS,
+13 +     VIDEO_FORMATS,
+14 + )
+15 |
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+   --> packages/retrieval/sparse/bm25.py:188:40
+    |
+186 |             "index_type": "okapi_bm25_vn_nfc_csr",
+187 |             "corpus_snapshot_id": corpus_snapshot_id,
+188 |             "created_at": datetime.now(timezone.utc).isoformat(),
+    |                                        ^^^^^^^^^^^^
+189 |             "document_count": len(self.video_ids),
+190 |             "vocab_size": len(self.vocab),
+    |
+help: Convert to `datetime.UTC` alias
+    |
+7   | from collections import Counter
+    - from datetime import datetime, timezone
+8   + from datetime import datetime, timezone, UTC
+9   | from pathlib import Path
+--------------------------------------------------------------------------------
+187 |             "corpus_snapshot_id": corpus_snapshot_id,
+    -             "created_at": datetime.now(timezone.utc).isoformat(),
+188 +             "created_at": datetime.now(UTC).isoformat(),
+189 |             "document_count": len(self.video_ids),
+    |
+
+Found 2 errors.
+[*] 2 fixable with `--fix`.
