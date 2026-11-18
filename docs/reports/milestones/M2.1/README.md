@@ -1,6 +1,6 @@
 # M2.1 — Descriptive Niche Benchmarks, Abstention & Latency Verification
 
-- Status: IN_PROGRESS (Implementation, 100-request latency benchmark, and local checks complete; awaiting peer review of evidence and wording by Trần Đình Khương)
+- Status: IN_PROGRESS (`N`'s scope complete: implementation, 100-request latency benchmark, and local checks passed; awaiting peer review of evidence and wording by Trần Đình Khương)
 - Execution date: 2026-11-18 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M2.1`)
 - Repository version: `feat/m2.1-niche-benchmarks` (branched from `main` at `c3348e93`)
@@ -51,7 +51,7 @@ Hardened and benchmarked `NicheAnalyticsEngine` (`packages/analytics/`) and `Nic
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Peer review by Trần Đình Khương (`K`) pending | Two-person plan requires `K` review of evidence and descriptive wording before closing `M2.1` | Push `feat/m2.1-niche-benchmarks` and request `K` review |
+| Peer review by Trần Đình Khương (`K`) pending | Two-person plan requires `K` review of evidence and descriptive wording before closing `M2.1` | `feat/m2.1-niche-benchmarks` is pushed; request `K` review |
 | Cohort-date/missingness reflects `20261117_recovered_v1` | New taxonomy-fixed counts will reflect after `K` builds the `M1.2` snapshot | Re-run smoke/benchmark after merging `M1.2` |
 
 ## Acceptance and handoff
@@ -63,4 +63,4 @@ Hardened and benchmarked `NicheAnalyticsEngine` (`packages/analytics/`) and `Nic
 | No optimum/causal/current-trend wording | Met (awaiting `K` wording review) | [presentation.py](../../../../apps/demo/presentation.py) |
 | Cold & >=100 warm requests (`concurrency=1`, `p95 <= 250 ms`) | Met (`p95 = 17.57 ms`) | [latency_benchmark_100.json](evidence/latency_benchmark_100.json) |
 
-Final task status: **IN_PROGRESS** (ready for branch push and peer review by `K`).
+Final task status: **IN_PROGRESS** (`N`'s implementation, benchmark, and local checks are complete and pushed on `feat/m2.1-niche-benchmarks`; awaiting peer review by `K` before closing `M2.1`).
