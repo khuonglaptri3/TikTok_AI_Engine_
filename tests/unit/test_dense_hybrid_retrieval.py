@@ -228,3 +228,199 @@ def test_from_dirs_and_settings_wire_dense_index_dir(
     resp = svc.search(RetrievalRequest(query="bún bò huế", mode="dense", top_k=2, rerank=False))
     assert resp.mode == "dense"
     assert len(resp.items) == 2
+
+
+def test_v2_pilot_split_mode_and_eligible_pool_parity() -> None:
+    from pipelines.benchmark_retrieval.pilot_m2_2 import (
+        evaluate_pilot_split,
+        measure_warm_latency,
+    )
+
+    vids, docs = _sample_docs()
+    df = pd.DataFrame(
+        [
+            {
+                "video_id": vid,
+                "author_handle": f"creator_{i}",
+                "tiktok_url": f"https://www.tiktok.com/@creator_{i}/video/{vid}",
+                "play_count": 10000 + i * 500,
+                "viral_multiplier": 2.0,
+                "engagement_rate": 0.05,
+                "video_format": "Review món ăn",
+                "food_category": "Món nước & Sợi" if i in (0, 1, 2, 8) else "Ăn vặt & Đường phố",
+                "dishes": [],
+                "city_norm": "hồ chí minh" if i % 2 == 0 else "hà nội",
+                "region": "nam" if i % 2 == 0 else "bắc",
+                "district_norm": None,
+                "poi_name": None,
+                "price_tier": "budget_lt50k",
+                "occasions": [],
+                "duration_sec": 35,
+                "duration_bucket": "short_20_45s",
+                "has_transcript": True,
+                "transcript": doc,
+                "hook_text": doc,
+                "body_beats": [doc],
+                "cta_text": "",
+                "rag_document": doc,
+            }
+            for i, (vid, doc) in enumerate(zip(vids, docs))
+        ]
+    )
+    bm25 = BM25Index.build(vids, docs, min_bigram_df=1)
+    enc = TruncatedSvdDenseEncoder.fit(docs, dimension=8)
+    dense = LocalDenseIndex.build(vids, enc.encode_documents(docs), model_id=enc.model_id)
+    eligible = {"v00", "v02", "v03", "v04", "v05", "v06"}
+    svc = HybridRetrievalService(
+        df_videos=df[df["video_id"].isin(eligible)].copy(),
+        bm25_index=bm25,
+        dense_index=dense,
+        dense_encoder=enc,
+        restrict_to_df=True,
+    )
+    queries = [
+        {
+            "query_id": "q1",
+            "phenomenon": "exact_dish",
+            "expect_no_answer": False,
+            "filters": {},
+            "query": "bún bò huế sả ớt",
+        },
+        {
+            "query_id": "q2",
+            "phenomenon": "zero_in_slice",
+            "expect_no_answer": False,
+            "filters": {},
+            "query": "tái nạm chả cua huế",
+        },
+        {
+            "query_id": "q3",
+            "phenomenon": "out_of_corpus_city",
+            "expect_no_answer": True,
+            "filters": {"city_norm": "cần thơ"},
+            "query": "lẩu mắm cần thơ",
+        },
+    ]
+    qrels = {
+        "q1": {"v00": "1", "v01": "1", "v02": "0"},
+        "q2": {"v01": "1"},
+        "q3": {},
+    }
+    res = evaluate_pilot_split(
+        svc,
+        queries,
+        qrels,
+        mode="hybrid_rrf",
+        rerank=False,
+        k=5,
+        eligible_video_ids=eligible,
+    )
+    assert res["evaluated_answerable_count"] == 1
+    assert res["zero_relevant_pool_count"] == 1
+    assert res["no_answer_abstained_count"] == 1
+    assert res["fabricated_support_count"] == 0
+    assert res["per_query"][0]["relevant_pool_size"] == 1
+
+    lat = measure_warm_latency(svc, queries[:2], mode="hybrid_rrf", rerank=False, n_warm=2, k=5)
+    assert lat["n_warm_requests"] == 2
+    assert lat["peak_rss_mib"] > 0
+
+
+def test_v2_pilot_suite_benchmark_structure(tmp_path: Path) -> None:
+    from pipelines.benchmark_retrieval.dense_hybrid_v2_pilot import benchmark_dense_backend
+
+    vids, docs = _sample_docs()
+    df = pd.DataFrame(
+        [
+            {
+                "video_id": vid,
+                "author_handle": f"creator_{i}",
+                "tiktok_url": f"https://www.tiktok.com/@creator_{i}/video/{vid}",
+                "play_count": 10000 + (12 - i) * 500,
+                "viral_multiplier": 2.0,
+                "engagement_rate": 0.05,
+                "video_format": "Review món ăn",
+                "food_category": "Món nước & Sợi" if i in (0, 1, 2, 8) else "Ăn vặt & Đường phố",
+                "dishes": [],
+                "city_norm": "hồ chí minh" if i % 2 == 0 else "hà nội",
+                "region": "nam" if i % 2 == 0 else "bắc",
+                "district_norm": None,
+                "poi_name": None,
+                "price_tier": "budget_lt50k",
+                "occasions": [],
+                "duration_sec": 35,
+                "duration_bucket": "short_20_45s",
+                "has_transcript": True,
+                "transcript": doc,
+                "hook_text": doc,
+                "body_beats": [doc],
+                "cta_text": "",
+                "rag_document": doc,
+            }
+            for i, (vid, doc) in enumerate(zip(vids, docs))
+        ]
+    )
+    bm25_dir = tmp_path / "bm25"
+    dense_dir = tmp_path / "dense"
+    BM25Index.build(vids, docs, min_bigram_df=1).save(bm25_dir, corpus_snapshot_id="s1")
+    sliced_df = select_eligible_corpus_slice(df, max_records=6)
+    s_vids = sliced_df["video_id"].astype(str).tolist()
+    s_docs = sliced_df["rag_document"].astype(str).tolist()
+    enc = TruncatedSvdDenseEncoder.fit(s_docs, dimension=4)
+    LocalDenseIndex.build(s_vids, enc.encode_documents(s_docs), model_id=enc.model_id).save(
+        dense_dir, corpus_snapshot_id="s1", encoder=enc
+    )
+
+    dev_queries = [
+        {
+            "query_id": "d1",
+            "phenomenon": "exact_dish",
+            "expect_no_answer": False,
+            "filters": {},
+            "query": "bún bò huế sả ớt",
+        }
+    ]
+    test_queries = [
+        {
+            "query_id": "t1",
+            "phenomenon": "exact_dish",
+            "expect_no_answer": False,
+            "filters": {},
+            "query": "bánh mì thịt nướng",
+        }
+    ]
+    qrels = {"d1": {"v00": "1"}, "t1": {"v03": "1"}}
+
+    out = benchmark_dense_backend(
+        df_videos=df,
+        bm25_dir=bm25_dir,
+        dense_dir=dense_dir,
+        dev_queries=dev_queries,
+        test_queries=test_queries,
+        qrels=qrels,
+        n_warm=2,
+        n_boot=50,
+    )
+    assert out["parity_slice_doc_count"] == 6
+    for split_name in ("dev", "locked_test"):
+        assert set(out["splits"][split_name]["configs"].keys()) == {
+            "bm25",
+            "bm25_reranked",
+            "dense",
+            "dense_reranked",
+            "hybrid_rrf",
+            "hybrid_rrf_reranked",
+        }
+        assert "dense_minus_bm25" in out["splits"][split_name]["paired_bootstrap_comparisons"]
+        cmp_d = out["splits"][split_name]["paired_bootstrap_comparisons"]["dense_minus_bm25"]["mrr_at_10"]
+        dense_mrr = out["splits"][split_name]["configs"]["dense"]["mrr_at_10"]
+        bm25_mrr = out["splits"][split_name]["configs"]["bm25"]["mrr_at_10"]
+        assert cmp_d["mean_diff"] == pytest.approx(dense_mrr - bm25_mrr, abs=1e-4)
+    assert set(out["latency_warm_requests"].keys()) == {
+        "bm25",
+        "bm25_reranked",
+        "dense",
+        "dense_reranked",
+        "hybrid_rrf",
+        "hybrid_rrf_reranked",
+    }

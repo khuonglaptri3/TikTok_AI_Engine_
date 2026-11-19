@@ -1,0 +1,6 @@
+{
+  "backend": "tfidf_svd",
+  "model_id": "tfidf_svd_vn_128d_v1",
+  "dimension": 128,
+  "vocab_size": 25000
+}

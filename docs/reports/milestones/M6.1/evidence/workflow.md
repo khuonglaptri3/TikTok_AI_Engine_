@@ -1,5 +1,23 @@
 # M6.1 — Workflow Provenance & Verification Ledger
 
+## v2_pilot Parity & FastEmbed Comparison — 2026-11-19
+
+- **Date:** 2026-11-19 (Asia/Ho_Chi_Minh)
+- **Branch:** `feat/m6.1-v2-pilot-eval` (branched from `main` @ `dcdd6233`)
+- **Spec & Plan:** [spec.md](../superpowers/spec.md), [plan.md](../superpowers/plan.md) (updated prospectively before code edits)
+- **Process:**
+  1. Audited `M2.2` assets on `main`: `data/corpus/20261118_taxonomy_fix_v1` (`70,996` rows, `21,748` transcribed), `artifacts/indexes/bm25-v3`, and `data/evaluation/v2_pilot/{dev_queries.jsonl,test_queries.jsonl,qrels_pooled_draft.jsonl}` (`408` judged pairs; `K_human_verified_all=false`, `N_human_verified_all=false`).
+  2. Verified blind `5,000`-record coverage (`(-play_count, video_id)`): `38/153` positive pairs land in the `5k` slice (`dev`: `12/81` across `6` queries; `locked_test`: `26/72` across `9` queries). Kept the query-blind slice rule intact to avoid `locked_test` leakage.
+  3. Installed `fastembed==0.9.1` (`onnxruntime==1.32.0`) in `.venv`. Confirmed `intfloat/multilingual-e5-small` is unsupported in `fastembed.TextEmbedding.list_supported_models()`, so benchmarked the supported CPU multilingual neural embedding model `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (`384`-dim, `~252 MB` cached offline after TLS-verified download using combined certifi + `/etc/ssl/certs/tma-ADCA-CA.pem`).
+  4. Applied TDD (`RED -> GREEN`): added `test_v2_pilot_split_mode_and_eligible_pool_parity` and `test_v2_pilot_suite_benchmark_structure` (`2 failed, 6 passed` RED), parameterized `evaluate_pilot_split` (`mode`, `eligible_video_ids`) and `measure_warm_latency` (`mode`) in `pipelines/benchmark_retrieval/pilot_m2_2.py`, and implemented `pipelines/benchmark_retrieval/dense_hybrid_v2_pilot.py`. Fixed inverted `cand - base` CI argument order in `_compare_pair` caught during initial inspection (`mean_diff` test assertion added, `8/8 passed` GREEN).
+  5. Built versioned `5,000`-doc dense indexes (`dense-svd-v2`: `18.756 s`, `14,898,542` B, `1,571.84 MiB` peak RSS; `dense-minilm-v1`: `193.549 s`, `7,795,253` B excluding ONNX weights, `3,265.02 MiB` peak RSS) and generated `artifacts/benchmarks/m6_1_v2_pilot.json` without modifying `dense-svd-v1` or `m6_1_dense_hybrid_spike.json`.
+- **Verification Commands & Logs:**
+  - `.venv/bin/python -m pytest -v` -> `141 passed in 18.33s` ([v2-pilot-pytest.log](v2-pilot-pytest.log))
+  - `.venv/bin/python -m ruff check packages apps pipelines scripts tests/unit/test_dense_hybrid_retrieval.py` -> `All checks passed!` ([v2-pilot-ruff.log](v2-pilot-ruff.log))
+  - `.venv/bin/python -m mypy packages apps pipelines` -> `Success: no issues found in 84 source files` ([v2-pilot-mypy.log](v2-pilot-mypy.log))
+  - `.venv/bin/python -m mypy --platform win32 packages apps pipelines` -> `Success: no issues found in 84 source files` ([v2-pilot-mypy-win32.log](v2-pilot-mypy-win32.log))
+  - `python3 scripts/check_secrets.py` -> `PASS: Zero secret leaks detected across workspace.` ([v2-pilot-secrets.log](v2-pilot-secrets.log))
+
 ## Owner-authorized Windows compatibility repair — 2026-11-18
 
 - Authorization: the owner requested fixing the current blocker, updating PR3 and bringing today's completed implementation into main. Merge authorization is explicit; gate/scientific approval is separate.
