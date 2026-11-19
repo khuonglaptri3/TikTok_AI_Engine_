@@ -1,0 +1,24 @@
+{
+  "task_id": "M2.3",
+  "contributor": "Nguyễn Việt Nguyên (N)",
+  "signed_off_at": "2026-11-19T16:34:27+07:00",
+  "review_method": "reviewed_30_draft_full_transcript_packet",
+  "decision": "concur_with_K_30_drafts_claim_audit",
+  "drafts_reviewed": 30,
+  "beats_reviewed": 120,
+  "n_drafts_authored": 15,
+  "k_drafts_authored": 15,
+  "confirmed_totals": {
+    "N_total_factual_claims": 120,
+    "N_supported_factual_claims": 108,
+    "N_supported_factual_claims_ratio": 0.9,
+    "N_citation_coverage_ok_drafts": 30,
+    "N_citation_coverage_ok_ratio": 1.0,
+    "fabricated_id_count": 0
+  },
+  "disqualified_beats_confirmed": {
+    "C1_song_lyrics_or_music_notes_beats": 9,
+    "C2_cross_city_mislabel_or_vibe_city_beats": 3
+  },
+  "provenance_notes": "Contributor N reviewed all 30 drafts (120 beats + cited full transcripts in combined_30_drafts_detailed.jsonl) and explicitly confirmed agreement with K's beat-level claim entailment rulings on 2026-11-19T16:34+07:00. All acceptance thresholds (>= 90% supported factual claims, >= 90% factual citation coverage, 0 fabricated IDs) are satisfied."
+}

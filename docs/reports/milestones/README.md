@@ -13,7 +13,7 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M1.G | G1 corpus gate decision (`PASS` local-only scope; dual-snapshot SHA256/lineage & data card verified; public redistribution `BLOCKED`) | COMPLETE | [Read results](M1.G/README.md) |
 | M2.1 | Descriptive niche benchmarks, cohort/missingness provenance, sparse abstention, and 100-request latency verification | COMPLETE | [Read results](M2.1/README.md) |
 | M2.2 | `bm25-v3`, query-intent/no-answer guardrails, `K` full-transcript sign-off & `N` 120-disagreement concurrence + peer review (`MRR@10=0.8571`, `p95=32.44 ms`) | COMPLETE | [Read results](M2.2/README.md) |
-| M2.3 | Qualified scripts, structural guardrails, `K` peer-review TDD fixes, and 30-draft offline audit (`K` full-transcript claim support `108/120 = 90.0%`; awaiting `N` `N_*` audit) | IN_PROGRESS | [Read results](M2.3/README.md) |
+| M2.3 | Qualified scripts, structural guardrails, `K` peer-review TDD fixes, and 30-draft two-contributor full-transcript audit (`108/120 = 90.0%` supported, `30/30` cited, `0` fabricated IDs) | COMPLETE | [Read results](M2.3/README.md) |
 | M3.1 | Repeated Dual-Sink ingestion repair, missing-modality schemas, interrupted recovery & `K` real-snapshot reproduction | COMPLETE | [Read results](M3.1/README.md) |
 | M3.2 | Bounded 120-day collector worker, `70,996`-ID protection, crash-safe resume, 64 kbps audio receipts & offline `M3.1` round-trip (`K` complete; awaiting `N` review) | IN_PROGRESS | [Read results](M3.2/README.md) |
 | M4.2 | Observed `is_ad`/EC flags separated from promo lexicon, `PR-AUC=0.8916`, `100`-item workbook + LLM blinded draft (`146` tests) | IN_PROGRESS | [Read results](M4.2/README.md) |

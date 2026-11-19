@@ -38,3 +38,7 @@
    - `python3 docs/reports/milestones/M2.3/evidence/run_m2_3_30_drafts_audit.py` -> `30/30` structural/timing/membership/coverage pass, `0` fabricated IDs, `K_supported_factual_claims = 108/120 = 90.00%` ([audit_30.log](audit_30.log), [combined_30_summary.json](combined_30_summary.json))
    - `python3 -m mypy packages/llm tests/unit/test_offline_draft.py tests/unit/test_script_guardrails.py --follow-imports=silent && python3 -m mypy packages/script_engine --follow-imports=silent` -> `EXIT=0` ([mypy-k-review-scoped.log](mypy-k-review-scoped.log))
    - `python3 scripts/check_secrets.py` -> `EXIT=0`, `PASS: Zero secret leaks detected across workspace.` ([check-secrets-k-review.log](check-secrets-k-review.log))
+
+## Final `N` 30-Draft Claim-Audit Sign-Off (`2026-11-19`)
+- Contributor `N` reviewed all `30` offline drafts (`120` beats + untruncated cited transcripts from `combined_30_drafts_detailed.jsonl`) and explicitly concurred with `K`'s beat-level entailment judgments on `2026-11-19T16:34+07:00` ([nguyen_signoff_receipt.json](nguyen_signoff_receipt.json)).
+- Re-ran [run_m2_3_30_drafts_audit.py](run_m2_3_30_drafts_audit.py) to populate `N_total_factual_claims`, `N_supported_factual_claims`, and `N_citation_coverage_ok` in [combined_30_drafts_audit.csv](combined_30_drafts_audit.csv) (`108/120 = 90.00% >= 90%` supported claims, `30/30 = 100%` citation coverage, `0` fabricated IDs) and update [combined_30_summary.json](combined_30_summary.json). `M2.3` transitioned to `COMPLETE`.

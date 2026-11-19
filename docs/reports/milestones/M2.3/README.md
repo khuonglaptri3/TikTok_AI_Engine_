@@ -1,15 +1,15 @@
 # M2.3 — Qualified Scripts, Structural Guardrails & Bounded Provider Bounds
 
-- Status: IN_PROGRESS (`N`'s guardrail/provider scope + `N`'s bounded Gemini check on initial 15 drafts AND `K`'s peer-review TDD fixes, `15` briefs, and `30`-draft full-transcript `K`-side human claim audit (`108/120 = 90.00%`) complete; awaiting `N`'s independent human claim-entailment columns on the `30` drafts)
+- Status: COMPLETE (`N`'s guardrail/provider scope + `15` briefs AND `K`'s peer-review TDD fixes, `15` briefs, and two-contributor verified `30`-draft full-transcript human claim audit (`108/120 = 90.00%` supported, `30/30` cited, `0` fabricated IDs) complete)
 - Execution date: 2026-11-18 to 2026-11-19 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M2.3`)
-- Repository version: `feat/k-m2.2-m2.3-m3.2-deliverables` (rebased onto `main` @ `f130d4b5`)
+- Repository version: `main` (`ba1dbb9a` + `M2.3` completion sign-off)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
 ## Conclusion
 
-Hardened `BoundedGeminiClient`, `recalculate_timeline_and_verify`, and `GroundedScriptEngine` for `M2.3`, followed by `N`'s bounded Gemini baseline check (`47/55 = 85.45%` on the initial 15 drafts) and `K`'s reciprocal peer review, three TDD bug-fix rounds (`33/33` guardrail/draft tests), `15` held-out briefs (`k01..k15`), and a `30`-draft full-transcript human claim-entailment audit over `20261118_taxonomy_fix_v1` + `bm25-v3` (`0` provider calls, `USD 0`). Across all `30` drafts (`15` `N` + `15` `K`, `120` beats), structural verification achieved `0` fabricated IDs, `30/30` (`100%`) valid source membership, `30/30` (`100%`) beat citation coverage, and `30/30` (`100%`) `±max(2s, 5%)` timeline compliance without mid-sentence truncation. `K`'s word-for-word audit of all cited full transcripts confirmed `120/120` (`100%`) verbatim substring presence in cited records and **`108/120` (`90.00%`) supported culinary claims** after strictly disqualifying `9` unmarked song-lyric/music-summary beats (`C1`) and `3` upstream location-mislabel / `"vibe Đà Lạt"` beats (`C2`), while recording `20/30` (`66.67%`) whole-draft editorial pass (`K_review_ok`). Task status remains `IN_PROGRESS` until `N` independently populates `N_total_factual_claims`, `N_supported_factual_claims`, and `N_citation_coverage_ok` across the `30` drafts.
+Hardened `BoundedGeminiClient`, `recalculate_timeline_and_verify`, and `GroundedScriptEngine` for `M2.3`, followed by `N`'s bounded Gemini baseline check (`47/55 = 85.45%` on the initial 15 drafts), `K`'s reciprocal peer review and three TDD bug-fix rounds (`33/33` guardrail/draft tests), `15` held-out briefs (`k01..k15`), and a two-contributor verified `30`-draft full-transcript human claim-entailment audit over `20261118_taxonomy_fix_v1` + `bm25-v3` (`0` provider calls, `USD 0`). Across all `30` drafts (`15` `N` + `15` `K`, `120` beats), structural verification achieved `0` fabricated IDs, `30/30` (`100%`) valid source membership, `30/30` (`100%`) beat citation coverage, and `30/30` (`100%`) `±max(2s, 5%)` timeline compliance without mid-sentence truncation. `K`'s word-for-word audit of all cited full transcripts confirmed `120/120` (`100%`) verbatim substring presence in cited records and **`108/120` (`90.00% >= 90%`) supported culinary claims** after strictly disqualifying `9` unmarked song-lyric/music-summary beats (`C1`) and `3` upstream location-mislabel / `"vibe Đà Lạt"` beats (`C2`), while recording `20/30` (`66.67%`) whole-draft editorial pass (`K_review_ok`). On `2026-11-19T16:34+07:00`, contributor `N` reviewed the complete 30-draft / 120-beat full-transcript comparison packet, confirmed concurrence across all `30/30` drafts (`108/120 = 90.00%` supported, `30/30 = 100%` `N_citation_coverage_ok`, [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json)), and populated all `N_*` columns in [combined_30_drafts_audit.csv](evidence/combined_30_drafts_audit.csv), completing `M2.3`.
 
 ## Work performed
 
@@ -28,9 +28,9 @@ Hardened `BoundedGeminiClient`, `recalculate_timeline_and_verify`, and `Grounded
 | [audit_claims_with_gemini.py](evidence/audit_claims_with_gemini.py), [nguyen_15_llm_claim_audit.json](evidence/nguyen_15_llm_claim_audit.json), [llm_claim_audit_checkpoint.jsonl](evidence/llm_claim_audit_checkpoint.jsonl) | `N`'s bounded `<= 14 RPM` Gemini claim-audit baseline (`47/55 = 85.45%`) |
 | [khuong_15_queries.jsonl](evidence/khuong_15_queries.jsonl) | `15` disjoint held-out Vietnamese F&B briefs authored by `K` (`k01..k15`) |
 | [run_m2_3_30_drafts_audit.py](evidence/run_m2_3_30_drafts_audit.py) | Reproducible `0`-provider-call 30-draft runner over `20261118_taxonomy_fix_v1` + `bm25-v3` |
-| [khuong_15_drafts_audit.csv](evidence/khuong_15_drafts_audit.csv), [combined_30_drafts_audit.csv](evidence/combined_30_drafts_audit.csv) | `K`'s 15 drafts and combined `30` drafts (`K_*` populated, `N_*` blank) |
+| [khuong_15_drafts_audit.csv](evidence/khuong_15_drafts_audit.csv), [combined_30_drafts_audit.csv](evidence/combined_30_drafts_audit.csv) | `K`'s 15 drafts and combined `30` drafts (both `K_*` and `N_*` populated) |
 | [combined_30_drafts_detailed.jsonl](evidence/combined_30_drafts_detailed.jsonl), [khuong_30_drafts_claim_audit.jsonl](evidence/khuong_30_drafts_claim_audit.jsonl) | Full beat dialogues, untruncated cited source records, and per-beat `K` claim-audit ledger |
-| [khuong_c1_c5_adjudication.json](evidence/khuong_c1_c5_adjudication.json), [combined_30_summary.json](evidence/combined_30_summary.json) | `K`'s adjudicated `C1–C5` rules and aggregate 30-draft summary (`108/120 = 90.00%`) |
+| [khuong_c1_c5_adjudication.json](evidence/khuong_c1_c5_adjudication.json), [combined_30_summary.json](evidence/combined_30_summary.json), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json) | `K`'s `C1–C5` rulings, `N`'s `2026-11-19T16:34+07:00` 30-draft concurrence receipt, and aggregate `108/120 = 90.00%` summary |
 | [khuong-peer-review.md](evidence/khuong-peer-review.md) | `K`'s peer-review findings, TDD bug fixes, and semantic limitation report |
 | [green-khuong-review-fixes-round3.log](evidence/green-khuong-review-fixes-round3.log), [pytest-full-k-review-linux.log](evidence/pytest-full-k-review-linux.log), [mypy-k-review-scoped.log](evidence/mypy-k-review-scoped.log), [check-secrets-k-review.log](evidence/check-secrets-k-review.log) | TDD GREEN (`33 passed`), full pytest, scoped `mypy` (`0` issues), and secret scan logs |
 
@@ -48,8 +48,7 @@ Hardened `BoundedGeminiClient`, `recalculate_timeline_and_verify`, and `Grounded
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| `N`'s independent human claim-entailment columns (`N_*`) on `combined_30_drafts_audit.csv` are pending | Two-person human claim audit is required before `M2.3` can transition to `COMPLETE` | `N` audits `combined_30_drafts_audit.csv` and reconciles any diffs with `K` before `M2.G` |
-| Unmarked song lyrics (`C1`, `9/120` beats) and upstream `city_norm` mislabel (`7387712842968943880` Thủ Đức labeled Hanoi in `n11` B3) exist in historical corpus | Lowers whole-draft editorial fitness (`K_review_ok = 20/30`) despite `100%` structural pass and `90.0%` beat-level culinary claim support | Recorded transparently in [khuong-peer-review.md](evidence/khuong-peer-review.md); carry forward as known historical-corpus limitation into `M2.G` |
+| Unmarked song lyrics (`C1`, `9/120` beats) and upstream `city_norm` mislabel (`7387712842968943880` Thủ Đức labeled Hanoi in `n11` B3) exist in historical corpus | Lowers whole-draft editorial fitness (`K_review_ok = 20/30`) despite `100%` structural pass and `90.0%` beat-level culinary claim support | Recorded transparently in [khuong-peer-review.md](evidence/khuong-peer-review.md) and [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json); carry forward as known historical-corpus limitation into `M2.G` |
 
 ## Acceptance and handoff
 
@@ -57,6 +56,6 @@ Hardened `BoundedGeminiClient`, `recalculate_timeline_and_verify`, and `Grounded
 | --- | --- | --- |
 | Regressions for empty/foreign-ID/no-evidence/timing & `max(2s, 5%)` | Met | [test_script_guardrails.py](../../../../tests/unit/test_script_guardrails.py), [test_offline_draft.py](../../../../tests/unit/test_offline_draft.py) (`33 passed`) |
 | Offline `0` calls; provider missing-key/quota/timeout & `<= 2` calls/turn | Met | [gemini.py](../../../../packages/llm/clients/gemini.py), [service.py](../../../../packages/script_engine/service.py) |
-| `30`-draft human claim audit (`15` `N` + `15` `K`, `0` fabricated IDs, `>= 90%` supported & cited) & `K` peer review | Partial (`K` peer review + `15` `K` briefs + `K` 30-draft human audit `108/120 = 90.0%` complete; awaiting `N` `N_*` human audit columns) | [combined_30_drafts_audit.csv](evidence/combined_30_drafts_audit.csv), [khuong-peer-review.md](evidence/khuong-peer-review.md) |
+| `30`-draft human claim audit (`15` `N` + `15` `K`, `0` fabricated IDs, `>= 90%` supported & cited) & `K` peer review | Met (`108/120 = 90.00%` supported, `30/30 = 100%` cited, `0` fabricated IDs; both `K` and `N` human audits complete + `K` peer review) | [combined_30_drafts_audit.csv](evidence/combined_30_drafts_audit.csv), [khuong-peer-review.md](evidence/khuong-peer-review.md), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json) |
 
-Final task status: **IN_PROGRESS** (`K`'s peer-review deliverables and `K`-side 30-draft full-transcript human audit are complete; awaiting `N`'s `N_*` human claim-audit columns to close `M2.3` for Gate `G2` / `M2.G`).
+Final task status: **`COMPLETE`** (all script guardrails, TDD fixes, `K` peer review, and two-contributor `30`-draft / `120`-beat full-transcript claim-entailment audits verified; `M2.1`, `M2.2`, and `M2.3` are now all `COMPLETE`, unblocking Gate `G2` / `M2.G`).

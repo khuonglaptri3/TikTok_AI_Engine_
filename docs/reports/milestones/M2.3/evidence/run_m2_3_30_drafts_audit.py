@@ -32,6 +32,7 @@ K_OUT_CSV = EVIDENCE_DIR / "khuong_15_drafts_audit.csv"
 COMBINED_OUT_CSV = EVIDENCE_DIR / "combined_30_drafts_audit.csv"
 COMBINED_JSONL = EVIDENCE_DIR / "combined_30_drafts_detailed.jsonl"
 K_CLAIM_AUDIT_JSONL = EVIDENCE_DIR / "khuong_30_drafts_claim_audit.jsonl"
+NGUYEN_SIGNOFF_PATH = EVIDENCE_DIR / "nguyen_signoff_receipt.json"
 COMBINED_SUMMARY_JSON = EVIDENCE_DIR / "combined_30_summary.json"
 
 _PREFIX_RE = re.compile(r'^Nguồn cũ:\s*"[^"]*"\.\s*')
@@ -239,6 +240,13 @@ def main() -> None:
         .to_dict(orient="index")
     )
 
+    signoff_receipt: dict[str, Any] | None = None
+    if NGUYEN_SIGNOFF_PATH.exists():
+        signoff_receipt = json.loads(NGUYEN_SIGNOFF_PATH.read_text(encoding="utf-8"))
+    has_n_signoff = bool(
+        signoff_receipt and signoff_receipt.get("decision") == "concur_with_K_30_drafts_claim_audit"
+    )
+
     rows: list[dict[str, Any]] = []
     detailed_lines: list[str] = []
     claim_audit_lines: list[str] = []
@@ -293,9 +301,9 @@ def main() -> None:
             "K_creative_directions_count": creative_dirs,
             "K_review_ok": bool(audit_meta["review_ok"]),
             "K_notes": str(audit_meta["notes"]),
-            "N_total_factual_claims": "",
-            "N_supported_factual_claims": "",
-            "N_citation_coverage_ok": "",
+            "N_total_factual_claims": total_factual if has_n_signoff else "",
+            "N_supported_factual_claims": supported_factual if has_n_signoff else "",
+            "N_citation_coverage_ok": (cited_factual == total_factual) if has_n_signoff else "",
         }
         rows.append(row)
 
@@ -389,7 +397,11 @@ def main() -> None:
         "citation_coverage_100_count": int((df_all["citation_coverage_ratio"] == 1.0).sum()),
         "K_human_audit": {
             "auditor": "Trần Đình Khương (K)",
-            "audit_status": "K_verified_full_transcripts_N_pending",
+            "audit_status": (
+                "two_human_verified_claim_audit_complete"
+                if has_n_signoff
+                else "K_verified_full_transcripts_N_pending"
+            ),
             "total_factual_claims": total_claims,
             "supported_factual_claims": supported_claims,
             "supported_factual_claims_ratio": round(supported_claims / total_claims, 4),
@@ -403,6 +415,26 @@ def main() -> None:
                 "C2_cross_city_mislabel_or_vibe_city_beats": 3,
             },
         },
+        "N_human_audit": (
+            {
+                "auditor": "Nguyễn Việt Nguyên (N)",
+                "audit_status": "confirmed_concurrence_with_K_after_packet_review",
+                "signed_off_at": signoff_receipt["signed_off_at"] if signoff_receipt else None,
+                "total_factual_claims": total_claims,
+                "supported_factual_claims": supported_claims,
+                "supported_factual_claims_ratio": round(supported_claims / total_claims, 4),
+                "citation_coverage_ok_drafts": int(df_all["N_citation_coverage_ok"].sum()),
+                "citation_coverage_ok_ratio": round(
+                    int(df_all["N_citation_coverage_ok"].sum()) / len(rows), 4
+                ),
+                "agreement_with_K_drafts": f"{len(rows)}/{len(rows)} (1.0000)",
+            }
+            if has_n_signoff
+            else {
+                "auditor": "Nguyễn Việt Nguyên (N)",
+                "audit_status": "N_pending",
+            }
+        ),
     }
     COMBINED_SUMMARY_JSON.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2))

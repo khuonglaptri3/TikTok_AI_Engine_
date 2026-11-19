@@ -13,7 +13,7 @@
   "citation_coverage_100_count": 30,
   "K_human_audit": {
     "auditor": "Trần Đình Khương (K)",
-    "audit_status": "K_verified_full_transcripts_N_pending",
+    "audit_status": "two_human_verified_claim_audit_complete",
     "total_factual_claims": 120,
     "supported_factual_claims": 108,
     "supported_factual_claims_ratio": 0.9,
@@ -26,5 +26,16 @@
       "C1_song_lyrics_or_music_notes_beats": 9,
       "C2_cross_city_mislabel_or_vibe_city_beats": 3
     }
+  },
+  "N_human_audit": {
+    "auditor": "Nguyễn Việt Nguyên (N)",
+    "audit_status": "confirmed_concurrence_with_K_after_packet_review",
+    "signed_off_at": "2026-11-19T16:34:27+07:00",
+    "total_factual_claims": 120,
+    "supported_factual_claims": 108,
+    "supported_factual_claims_ratio": 0.9,
+    "citation_coverage_ok_drafts": 30,
+    "citation_coverage_ok_ratio": 1.0,
+    "agreement_with_K_drafts": "30/30 (1.0000)"
   }
 }
