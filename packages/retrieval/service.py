@@ -14,6 +14,12 @@ from packages.retrieval.dense.encoder import DenseTextEncoder, load_saved_encode
 from packages.retrieval.dense.local_index import LocalDenseIndex
 from packages.retrieval.dense.qdrant_adapter import QdrantDenseAdapter
 from packages.retrieval.fusion.rrf import apply_viral_multiplier_boost, reciprocal_rank_fusion
+from packages.retrieval.query_intent import (
+    check_vocab_anchor_support,
+    parse_query_intent,
+    row_has_observed_anchor_word_overlap,
+    row_satisfies_intent_anchors,
+)
 from packages.retrieval.rerank.scorer import EvidenceReranker
 from packages.retrieval.sparse.bm25 import BM25Index
 
@@ -121,11 +127,14 @@ class HybridRetrievalService:
                     mask &= df[k].fillna("") == v
             return set(df.loc[mask, "video_id"].astype(str).tolist())
 
+        has_geo_filter = any(k in ("city_norm", "region") for k, _ in active)
         strict_ids = _match_ids(active)
         if len(strict_ids) >= min_pool_size:
             return strict_ids, []
 
-        relax_order = ["duration_bucket", "occasion", "price_tier", "city_norm", "region", "food_category", "video_format"]
+        # Keep explicit geographic filters (city_norm, region) strict so retrieval never
+        # fabricates cross-city support; relax only soft format/category/context facets.
+        relax_order = ["duration_bucket", "occasion", "price_tier", "food_category", "video_format"]
         remaining = list(active)
         relaxed: list[str] = []
         best_non_empty = strict_ids
@@ -143,6 +152,8 @@ class HybridRetrievalService:
                 if len(cand_ids) >= min_pool_size:
                     return cand_ids, relaxed
 
+        if has_geo_filter:
+            return best_non_empty, relaxed
         return (best_non_empty if best_non_empty else None), relaxed
 
     def _encode_dense_query(self, query: str) -> list[float] | None:
@@ -161,35 +172,85 @@ class HybridRetrievalService:
     def search(self, request: RetrievalRequest) -> RetrievalResponse:
         timer = StageTimer()
         candidate_limit = max(40, request.top_k * 8)
+        intent = parse_query_intent(request.query)
+        if not intent.positive_query and intent.negated_terms:
+            return RetrievalResponse(
+                query=request.query,
+                mode=request.mode,
+                reranked=False,
+                total_candidates=0,
+                relaxed_filters=[],
+                items=[],
+                insufficient_evidence=True,
+                abstain_reason="query_contains_only_negations",
+                timings_ms=timer.finalize(),
+            )
+        has_geo_filter = bool(request.filters.city_norm or request.filters.region)
 
         with timer.measure("filter_ms"):
             allowed_ids, relaxed_filters = self._resolve_candidate_pool(
                 request.filters, min_pool_size=max(3, request.top_k)
             )
+            if allowed_ids is not None and len(allowed_ids) == 0:
+                return RetrievalResponse(
+                    query=request.query,
+                    mode=request.mode,
+                    reranked=False,
+                    total_candidates=0,
+                    relaxed_filters=relaxed_filters,
+                    items=[],
+                    insufficient_evidence=True,
+                    abstain_reason="no_indexed_videos_in_requested_location",
+                    timings_ms=timer.finalize(),
+                )
             if allowed_ids is None and self._restrict_to_df:
                 allowed_ids = set(self.video_lookup.keys())
+
+        if request.mode == "bm25" and self.bm25.vocab:
+            early_oov = check_vocab_anchor_support(intent, self.bm25.vocab)
+            if early_oov is not None:
+                return RetrievalResponse(
+                    query=request.query,
+                    mode=request.mode,
+                    reranked=False,
+                    total_candidates=0,
+                    relaxed_filters=relaxed_filters,
+                    items=[],
+                    insufficient_evidence=True,
+                    abstain_reason=early_oov,
+                    timings_ms=timer.finalize(),
+                )
 
         bm25_hits: list[tuple[str, float]] = []
         dense_hits: list[tuple[str, float]] = []
         effective_mode = request.mode
+        bm25_query = intent.expanded_bm25_query or intent.normalized_query
 
         if request.mode in ("bm25", "hybrid_rrf"):
             with timer.measure("bm25_ms"):
                 bm25_hits = self.bm25.search(
-                    query=request.query,
+                    query=bm25_query,
                     top_k=candidate_limit,
                     allowed_video_ids=allowed_ids,
                 )
-                # If metadata filter eliminated lexical hits completely, relax back to the parity pool
                 if not bm25_hits and allowed_ids is not None:
-                    fallback_ids = set(self.video_lookup.keys()) if self._restrict_to_df else None
-                    bm25_hits = self.bm25.search(
-                        query=request.query,
-                        top_k=candidate_limit,
-                        allowed_video_ids=fallback_ids,
-                    )
-                    if "lexical_fallback_unfiltered" not in relaxed_filters:
-                        relaxed_filters.append("lexical_fallback_unfiltered")
+                    if has_geo_filter:
+                        if not intent.has_specific_anchors:
+                            ranked_geo = sorted(
+                                allowed_ids,
+                                key=lambda vid: self.viral_multipliers.get(vid, 0.0),
+                                reverse=True,
+                            )[:candidate_limit]
+                            bm25_hits = [(vid, 0.1) for vid in ranked_geo]
+                    else:
+                        fallback_ids = set(self.video_lookup.keys()) if self._restrict_to_df else None
+                        bm25_hits = self.bm25.search(
+                            query=bm25_query,
+                            top_k=candidate_limit,
+                            allowed_video_ids=fallback_ids,
+                        )
+                        if "lexical_fallback_unfiltered" not in relaxed_filters:
+                            relaxed_filters.append("lexical_fallback_unfiltered")
 
         if request.mode in ("dense", "hybrid_rrf"):
             with timer.measure("dense_ms"):
@@ -206,7 +267,8 @@ class HybridRetrievalService:
                         )
                     effective_mode = "bm25"
                 else:
-                    q_vec = self._encode_dense_query(request.query)
+                    dense_query = intent.positive_query or intent.normalized_query
+                    q_vec = self._encode_dense_query(dense_query)
                     if q_vec is None:
                         if request.mode == "dense":
                             raise IndexNotReadyError("Dense embedding model is unavailable.")
@@ -240,13 +302,67 @@ class HybridRetrievalService:
                 boost_weight=0.06,
             )
 
+        if effective_mode in ("bm25", "hybrid_rrf", "dense"):
+            oov_reason = (
+                check_vocab_anchor_support(intent, self.bm25.vocab) if self.bm25.vocab else None
+            )
+            if oov_reason is not None:
+                return RetrievalResponse(
+                    query=request.query,
+                    mode=effective_mode,
+                    reranked=False,
+                    total_candidates=0,
+                    relaxed_filters=relaxed_filters,
+                    items=[],
+                    insufficient_evidence=True,
+                    abstain_reason=oov_reason,
+                    timings_ms=timer.finalize(),
+                )
+            if intent.has_specific_anchors:
+                tier_1 = [
+                    (vid, score)
+                    for vid, score in boosted
+                    if vid in self.video_lookup
+                    and row_satisfies_intent_anchors(self.video_lookup[vid], intent)
+                ]
+                if not tier_1:
+                    reason = (
+                        "no_matching_evidence_in_requested_location"
+                        if has_geo_filter
+                        else "no_candidate_matches_query_anchors"
+                    )
+                    return RetrievalResponse(
+                        query=request.query,
+                        mode=effective_mode,
+                        reranked=False,
+                        total_candidates=0,
+                        relaxed_filters=relaxed_filters,
+                        items=[],
+                        insufficient_evidence=True,
+                        abstain_reason=reason,
+                        timings_ms=timer.finalize(),
+                    )
+                if len(tier_1) >= request.top_k:
+                    boosted = tier_1
+                else:
+                    tier_1_ids = {vid for vid, _ in tier_1}
+                    tier_2 = [
+                        (vid, score * 0.5)
+                        for vid, score in boosted
+                        if vid not in tier_1_ids
+                        and vid in self.video_lookup
+                        and row_has_observed_anchor_word_overlap(self.video_lookup[vid], intent)
+                    ]
+                    boosted = tier_1 + tier_2
+
         with timer.measure("rerank_ms"):
             if request.rerank and self.reranker.enabled:
                 final_tuples = self.reranker.rerank(
-                    query=request.query,
+                    query=intent.positive_query or intent.normalized_query,
                     candidates=boosted,
                     video_lookup=self.video_lookup,
                     top_k=request.top_k,
+                    negated_terms=intent.negated_terms,
                 )
                 did_rerank = True
             else:

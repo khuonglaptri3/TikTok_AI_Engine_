@@ -1,11 +1,25 @@
 from __future__ import annotations
 
 import math
+import re
 import unicodedata
 from typing import Any
 
 from packages.retrieval.sparse.bm25 import tokenize_vietnamese
 from packages.taxonomy import extract_dishes_from_text, extract_occasions, extract_price_tier
+
+_NEG_EXEMPT_PREFIX_RE = re.compile(
+    r"(?<!\w)(?:không|chẳng|đừng|kiêng|tránh|né|bỏ|trừ|ghét)(?:\s+[^\W_]+){0,2}\s+$",
+    flags=re.UNICODE,
+)
+
+
+def _doc_violates_negation(full_doc: str, neg: str) -> bool:
+    for match in re.finditer(rf"(?<!\w){re.escape(neg)}(?!\w)", full_doc):
+        prefix = full_doc[max(0, match.start() - 48) : match.start()]
+        if not _NEG_EXEMPT_PREFIX_RE.search(prefix):
+            return True
+    return False
 
 
 class EvidenceReranker:
@@ -20,6 +34,7 @@ class EvidenceReranker:
         candidates: list[tuple[str, float]],
         video_lookup: dict[str, dict[str, Any]],
         top_k: int = 5,
+        negated_terms: tuple[str, ...] = (),
     ) -> list[tuple[str, float, float]]:
         """Return list of (video_id, final_score, rerank_score)."""
         if not candidates:
@@ -33,6 +48,7 @@ class EvidenceReranker:
         q_dishes = set(extract_dishes_from_text(q_nfc))
         q_price = extract_price_tier(q_nfc, "")
         q_occasions = set(extract_occasions(q_nfc, ""))
+        norm_negated = tuple(unicodedata.normalize("NFC", t).lower().strip() for t in negated_terms if t.strip())
 
         reranked: list[tuple[str, float, float]] = []
         for vid, base_score in candidates:
@@ -56,7 +72,12 @@ class EvidenceReranker:
 
             raw_dishes = row.get("dishes")
             row_dishes = {str(d).lower() for d in (raw_dishes if raw_dishes is not None else [])}
-            dish_bonus = 0.18 if (q_dishes and (q_dishes & row_dishes)) else 0.0
+            if q_dishes and any(d in doc_text for d in q_dishes):
+                dish_bonus = 0.22
+            elif q_dishes and (q_dishes & row_dishes):
+                dish_bonus = 0.06
+            else:
+                dish_bonus = 0.0
 
             price_bonus = (
                 0.08
@@ -75,6 +96,17 @@ class EvidenceReranker:
             v_mult = max(0.0, min(float(row.get("viral_multiplier") or 1.0), 40.0))
             viral_signal = 0.04 * math.log1p(v_mult)
 
+            neg_penalty = 0.0
+            if norm_negated:
+                full_doc = unicodedata.normalize(
+                    "NFC",
+                    f"{lead_text} {' '.join(row_dishes)} {row.get('transcript', '')}",
+                ).lower()
+                for neg in norm_negated:
+                    if _doc_violates_negation(full_doc, neg):
+                        neg_penalty += 0.25
+                neg_penalty = min(0.50, neg_penalty)
+
             rerank_score = round(
                 0.55 * base_score
                 + 0.30 * overlap_ratio
@@ -83,7 +115,8 @@ class EvidenceReranker:
                 + price_bonus
                 + occ_bonus
                 + anatomy_bonus
-                + viral_signal,
+                + viral_signal
+                - neg_penalty,
                 5,
             )
             reranked.append((vid, rerank_score, rerank_score))

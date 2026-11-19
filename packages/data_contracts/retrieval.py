@@ -54,6 +54,8 @@ class RetrievalResponse(BaseModel):
     total_candidates: int = Field(ge=0)
     relaxed_filters: list[str]
     items: list[EvidenceCard]
+    insufficient_evidence: bool = False
+    abstain_reason: str | None = None
     timings_ms: dict[str, float]
 
     @field_validator("timings_ms")

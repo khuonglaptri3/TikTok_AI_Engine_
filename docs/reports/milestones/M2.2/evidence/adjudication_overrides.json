@@ -1,0 +1,86 @@
+{
+  "d_k03_s05": {
+    "adjudicated_rel": "1",
+    "adjudication_note": "Full transcript explicitly confirms Bánh Cuốn Ông Tới (Ba Đình, Hanoi) serves nhân thịt mộc nhĩ alongside ruốc tôm/cà cuống."
+  },
+  "d_k04_s03": {
+    "adjudicated_rel": "1",
+    "adjudication_note": "Full transcript explicitly confirms fresh coconut water ('Có nước dừa, có dừa tươi') in the bò nhúng dấm broth."
+  },
+  "d_k04_s05": {
+    "adjudicated_rel": "U",
+    "adjudication_note": "Reviews sweet-sour pineapple bò nhúng giấm broth, but coconut water (nước dừa) is not confirmed in full transcript."
+  },
+  "d_k04_s07": {
+    "adjudicated_rel": "U",
+    "adjudication_note": "Reviews sweet-light (ngọt thanh) lẩu bò nhúng giấm, but coconut water (nước dừa) is unmentioned."
+  },
+  "d_k04_s08": {
+    "adjudicated_rel": "0",
+    "adjudication_note": "Transcript consists solely of unrelated song lyrics; caption names bò nhúng dấm without nước dừa broth evidence."
+  },
+  "d_k04_s09": {
+    "adjudicated_rel": "U",
+    "adjudication_note": "Reviews lẩu bò nhúng dấm Gia Phát, but coconut water broth is unconfirmed in full transcript."
+  },
+  "d_k04_s12": {
+    "adjudicated_rel": "U",
+    "adjudication_note": "Reviews lẩu bò nhúng dấm Thanh Phát with sweet-sour broth, but coconut water is unmentioned."
+  },
+  "d_k05_s01": {
+    "adjudicated_rel": "1",
+    "adjudication_note": "Full transcript explicitly states: 'quán có chuẩn bị nước mắm cho các bạn không ăn được mắm tôm nữa'."
+  },
+  "d_k05_s08": {
+    "adjudicated_rel": "U",
+    "adjudication_note": "Mentions peanut fish sauce (nước mắm đậu) at bún đậu/nem nướng buffet; non-mắm-tôm bún đậu option unconfirmed."
+  },
+  "d_n04_s01": {
+    "adjudicated_rel": "1",
+    "adjudication_note": "Full transcript shows family seafood hotpot with sweet bone-pineapple-tomato broth and non-spicy seafood sauce."
+  },
+  "d_n04_s10": {
+    "adjudicated_rel": "1",
+    "adjudication_note": "Full transcript confirms mild, sweet-clear ('ngọt thanh') crab seafood hotpot seasoned only with shiitake-kombu."
+  },
+  "d_n04_s15": {
+    "adjudicated_rel": "0",
+    "adjudication_note": "Full transcript prepares steamed seafood over rice porridge (cháo) with 4-chili dipping salt rather than non-spicy soup hotpot."
+  },
+  "d_k08_s06": {
+    "adjudicated_rel": "1",
+    "adjudication_note": "Full transcript explicitly teaches soy-marinated grilled pork ribs brushed with honey ('quét thêm một lớp mỏng mật ong')."
+  },
+  "d_n08_s03": {
+    "adjudicated_rel": "U",
+    "adjudication_note": "Affordable 169k-199k Vũng Tàu BBQ/seafood buffet, but live seafood and beach proximity are unconfirmed."
+  },
+  "d_n08_s06": {
+    "adjudicated_rel": "0",
+    "adjudication_note": "In-alley takeaway-only cooked sauced snail/seafood stall, not live seafood dining near the beach."
+  },
+  "d_n08_s07": {
+    "adjudicated_rel": "U",
+    "adjudication_note": "Cooks live Bến Đình market seafood affordably in Vũng Tàu, but beachfront proximity ('gần biển') is unconfirmed."
+  },
+  "d_n08_s08": {
+    "adjudicated_rel": "1",
+    "adjudication_note": "Full transcript confirms live jumping shrimp/crabs, 220k price, and coastal road location ('dọc đường bờ biển gặp Hoàng Diệu') in Vũng Tàu."
+  },
+  "t_n01_s10": {
+    "adjudicated_rel": "0",
+    "adjudication_note": "Family dinner vlog eating nem rán; narrator explicitly states she is not teaching a recipe."
+  },
+  "t_k03_s07": {
+    "adjudicated_rel": "0",
+    "adjudication_note": "Southern home adaptation using 200g lemongrass and apple fish sauce, not authentic Hanoi-style bún chả."
+  },
+  "t_k05_s04": {
+    "adjudicated_rel": "1",
+    "adjudication_note": "Full transcript teaches savory soy-sauce shredded-chicken mì trộn with crispy tóp mỡ and garlic, zero chili/spice."
+  },
+  "t_k05_s11": {
+    "adjudicated_rel": "0",
+    "adjudication_note": "Full transcript adds kimchi to the mì trộn tóp mỡ, violating the non-spicy ('không cay') constraint."
+  }
+}

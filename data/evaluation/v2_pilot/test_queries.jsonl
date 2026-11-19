@@ -1,0 +1,20 @@
+{"query_id": "t_k01", "split": "locked_test", "author": "K", "phenomenon": "synonym", "expect_no_answer": false, "filters": {}, "query": "hủ tiếu nước lèo ngọt xương ăn khuya Sài Gòn"}
+{"query_id": "t_k02", "split": "locked_test", "author": "K", "phenomenon": "synonym", "expect_no_answer": false, "filters": {}, "query": "xiên bẩn viên chiên cổng trường xế chiều"}
+{"query_id": "t_n01", "split": "locked_test", "author": "N", "phenomenon": "synonym", "expect_no_answer": false, "filters": {}, "query": "công thức làm chả giò giòn lâu tại nhà"}
+{"query_id": "t_n02", "split": "locked_test", "author": "N", "phenomenon": "synonym", "expect_no_answer": false, "filters": {}, "query": "bánh flan kem trứng béo mịn tráng miệng"}
+{"query_id": "t_k03", "split": "locked_test", "author": "K", "phenomenon": "unicode_nfd", "expect_no_answer": false, "filters": {}, "query": "bún chả nướng than hoa chuẩn Hà Nội"}
+{"query_id": "t_n03", "split": "locked_test", "author": "N", "phenomenon": "unicode_nfd", "expect_no_answer": false, "filters": {}, "query": "bánh xèo tôm nhảy giòn rụm miền Trung"}
+{"query_id": "t_n04", "split": "locked_test", "author": "N", "phenomenon": "unicode_nfd", "expect_no_answer": false, "filters": {}, "query": "trà mãng cầu chua ngọt giải nhiệt mùa hè"}
+{"query_id": "t_k04", "split": "locked_test", "author": "K", "phenomenon": "negation", "expect_no_answer": false, "filters": {}, "query": "phở bò nước trong thanh ngọt không hành"}
+{"query_id": "t_k05", "split": "locked_test", "author": "K", "phenomenon": "negation", "expect_no_answer": false, "filters": {}, "query": "mì trộn tóp mỡ đậm đà không cay"}
+{"query_id": "t_n05", "split": "locked_test", "author": "N", "phenomenon": "negation", "expect_no_answer": false, "filters": {}, "query": "ức gà áp chảo ăn kiêng không dầu mỡ"}
+{"query_id": "t_k06", "split": "locked_test", "author": "K", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"city_norm": "hồ chí minh", "food_category": "Món nước & Sợi"}, "query": "review bánh canh cua đặc quánh chả cua"}
+{"query_id": "t_k07", "split": "locked_test", "author": "K", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"city_norm": "hà nội", "food_category": "Đồ ngọt, Trà & Cà phê"}, "query": "quán cà phê trứng phố cổ thơm béo"}
+{"query_id": "t_k08", "split": "locked_test", "author": "K", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"video_format": "Hướng dẫn nấu ăn"}, "query": "hướng dẫn làm sườn xào chua ngọt đưa cơm"}
+{"query_id": "t_n06", "split": "locked_test", "author": "N", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"city_norm": "đà lạt"}, "query": "review lẩu gà lá é nóng hổi buổi tối"}
+{"query_id": "t_n07", "split": "locked_test", "author": "N", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"food_category": "Ăn vặt & Đường phố"}, "query": "bánh tráng nướng giòn rụm ăn vặt sinh viên"}
+{"query_id": "t_n08", "split": "locked_test", "author": "N", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"food_category": "Ẩm thực Chay & Healthy"}, "query": "nhà hàng đồ chay thanh tịnh cho gia đình"}
+{"query_id": "t_k09", "split": "locked_test", "author": "K", "phenomenon": "no_answer", "expect_no_answer": true, "filters": {"city_norm": "cà mau"}, "query": "review quán bánh quesadilla phô mai chuẩn Mexico ở Cà Mau"}
+{"query_id": "t_k10", "split": "locked_test", "author": "K", "phenomenon": "no_answer", "expect_no_answer": true, "filters": {}, "query": "hướng dẫn chế biến escargot ốc sên Pháp đút lò bơ tỏi"}
+{"query_id": "t_n09", "split": "locked_test", "author": "N", "phenomenon": "no_answer", "expect_no_answer": true, "filters": {}, "query": "mukbang dế mèn chiên bọ cạp chiên giòn kiểu Campuchia"}
+{"query_id": "t_n10", "split": "locked_test", "author": "N", "phenomenon": "no_answer", "expect_no_answer": true, "filters": {}, "query": "review nhà hàng thịt lạc đà nướng tảng chuẩn Dubai"}

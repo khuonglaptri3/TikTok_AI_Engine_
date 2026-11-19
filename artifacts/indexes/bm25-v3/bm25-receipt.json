@@ -1,0 +1,11 @@
+{
+  "index_type": "okapi_bm25_vn_nfc_csr",
+  "corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "created_at": "2026-11-18T19:22:18.618126+00:00",
+  "document_count": 21748,
+  "vocab_size": 390943,
+  "postings_count": 9469556,
+  "avgdl": 309.76,
+  "k1": 1.5,
+  "b": 0.75
+}

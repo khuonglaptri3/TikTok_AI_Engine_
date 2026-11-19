@@ -1,0 +1,20 @@
+{"query_id": "d_k01", "split": "dev", "author": "K", "phenomenon": "synonym", "expect_no_answer": false, "filters": {}, "query": "tàu hũ nước đường gừng nóng ở Sài Gòn"}
+{"query_id": "d_k02", "split": "dev", "author": "K", "phenomenon": "synonym", "expect_no_answer": false, "filters": {}, "query": "quán nhậu lai rai mồi bén buổi tối cùng bạn bè"}
+{"query_id": "d_n01", "split": "dev", "author": "N", "phenomenon": "synonym", "expect_no_answer": false, "filters": {}, "query": "bánh mì thịt heo quay da giòn rụm buổi sáng"}
+{"query_id": "d_n02", "split": "dev", "author": "N", "phenomenon": "synonym", "expect_no_answer": false, "filters": {}, "query": "thực đơn ăn kiêng ít calo giữ dáng cho dân văn phòng"}
+{"query_id": "d_k03", "split": "dev", "author": "K", "phenomenon": "unicode_nfd", "expect_no_answer": false, "filters": {}, "query": "bánh cuốn nóng nhân thịt mộc nhĩ Hà Nội"}
+{"query_id": "d_k04", "split": "dev", "author": "K", "phenomenon": "unicode_nfd", "expect_no_answer": false, "filters": {}, "query": "lẩu bò nhúng dấm nước dừa thanh ngọt"}
+{"query_id": "d_n03", "split": "dev", "author": "N", "phenomenon": "unicode_nfd", "expect_no_answer": false, "filters": {}, "query": "cơm gà xối mỡ da giòn Quận 1"}
+{"query_id": "d_k05", "split": "dev", "author": "K", "phenomenon": "negation", "expect_no_answer": false, "filters": {}, "query": "bún đậu chấm nước mắm không mắm tôm"}
+{"query_id": "d_n04", "split": "dev", "author": "N", "phenomenon": "negation", "expect_no_answer": false, "filters": {}, "query": "lẩu hải sản thanh ngọt không cay cho gia đình"}
+{"query_id": "d_n05", "split": "dev", "author": "N", "phenomenon": "negation", "expect_no_answer": false, "filters": {}, "query": "trà trái cây tươi thanh mát không trà sữa"}
+{"query_id": "d_k06", "split": "dev", "author": "K", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"city_norm": "hà nội", "food_category": "Món nước & Sợi"}, "query": "review bún riêu cua đồng đậm đà"}
+{"query_id": "d_k07", "split": "dev", "author": "K", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"city_norm": "hồ chí minh", "video_format": "Review quán ăn"}, "query": "quán ốc hương xào bơ tỏi bình dân"}
+{"query_id": "d_k08", "split": "dev", "author": "K", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"video_format": "Hướng dẫn nấu ăn"}, "query": "cách ướp thịt nướng mật ong mềm ngon"}
+{"query_id": "d_n06", "split": "dev", "author": "N", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"city_norm": "hà nội", "food_category": "Đồ ngọt, Trà & Cà phê"}, "query": "tiệm bánh ngọt tiramisu hẹn hò lãng mạn"}
+{"query_id": "d_n07", "split": "dev", "author": "N", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"video_format": "Mukbang"}, "query": "mukbang gà rán sốt phô mai giòn tan"}
+{"query_id": "d_n08", "split": "dev", "author": "N", "phenomenon": "filtered", "expect_no_answer": false, "filters": {"city_norm": "vũng tàu"}, "query": "hải sản tươi sống giá hợp lý gần biển"}
+{"query_id": "d_k09", "split": "dev", "author": "K", "phenomenon": "no_answer", "expect_no_answer": true, "filters": {}, "query": "công thức nấu thịt kangaroo hầm rượu vang đỏ"}
+{"query_id": "d_k10", "split": "dev", "author": "K", "phenomenon": "no_answer", "expect_no_answer": true, "filters": {}, "query": "review nhà hàng sashimi cá nóc fugu chuẩn Nhật"}
+{"query_id": "d_n09", "split": "dev", "author": "N", "phenomenon": "no_answer", "expect_no_answer": true, "filters": {}, "query": "cách làm bánh haggis truyền thống Scotland tại nhà"}
+{"query_id": "d_n10", "split": "dev", "author": "N", "phenomenon": "no_answer", "expect_no_answer": true, "filters": {}, "query": "review quán thịt tuần lộc nướng Bắc Âu ở Lào Cai"}
