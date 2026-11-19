@@ -1,0 +1,408 @@
+{"slot_id": "d_k01_s01", "N_llm_rel": "0", "N_llm_note": "Video về buffet rau nấm, không liên quan đến tàu hũ nước đường.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s02", "N_llm_rel": "0", "N_llm_note": "Video về hủ tiếu bò viên, không phải tàu hũ nước đường.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s03", "N_llm_rel": "0", "N_llm_note": "Video về tào phớ ở Hà Nội, sai địa điểm (Sài Gòn).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s04", "N_llm_rel": "0", "N_llm_note": "Video về chè người Hoa, không nhắc đến tàu hũ nước đường.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s05", "N_llm_rel": "0", "N_llm_note": "Video về bánh đúc nóng, không liên quan đến tàu hũ.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s06", "N_llm_rel": "0", "N_llm_note": "Hướng dẫn làm tào phớ nhưng không có nước đường gừng nóng và không rõ địa điểm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s07", "N_llm_rel": "0", "N_llm_note": "Video về tàu hũ vàng chiên mặn, không phải tàu hũ nước đường ngọt.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s08", "N_llm_rel": "0", "N_llm_note": "Video về cơm rang, không liên quan đến tàu hũ nước đường.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s09", "N_llm_rel": "0", "N_llm_note": "Video về tàu hũ nước cốt dừa, không phải nước đường gừng nóng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s10", "N_llm_rel": "0", "N_llm_note": "Video về bún riêu cua, không liên quan đến tàu hũ nước đường.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s11", "N_llm_rel": "0", "N_llm_note": "Hướng dẫn làm tào phớ từ đậu đen, không có nước đường gừng nóng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s12", "N_llm_rel": "0", "N_llm_note": "Video về tào phớ ở Hà Nội, sai địa điểm (Sài Gòn).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s13", "N_llm_rel": "0", "N_llm_note": "Video review cơm tấm, không liên quan đến tàu hũ nước đường gừng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s14", "N_llm_rel": "0", "N_llm_note": "Video review bún riêu, không liên quan đến tàu hũ nước đường gừng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k01_s15", "N_llm_rel": "1", "N_llm_note": "Video review đúng món tàu hũ nóng đường gừng tại Gò Vấp, Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s01", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm gỏi bò, không phải review quán nhậu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s02", "N_llm_rel": "1", "N_llm_note": "Review quán nhậu núp hẻm tại Sài Gòn, phù hợp nhu cầu lai rai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s03", "N_llm_rel": "1", "N_llm_note": "Review quán nhậu Thôn Yang Kỳ tại Gò Vấp, Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s04", "N_llm_rel": "1", "N_llm_note": "Review quán nhậu Lửa BBQ tại Bình Thạnh, Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s05", "N_llm_rel": "1", "N_llm_note": "Review quán nhậu lai rai tại Quận 1, Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s06", "N_llm_rel": "U", "N_llm_note": "Transcript quá ngắn, không đủ bằng chứng về không gian quán nhậu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s07", "N_llm_rel": "1", "N_llm_note": "Review quán nhậu nổi tiếng tại Quận 5, Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s08", "N_llm_rel": "1", "N_llm_note": "Review quán nhậu lai rai tại Quận 1, Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s09", "N_llm_rel": "1", "N_llm_note": "Review quán nhậu lai rai (chay) tại Quận 4, Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s10", "N_llm_rel": "0", "N_llm_note": "Video review quán nhậu phong cách Hà Nội tại Sài Gòn, không tập trung vào quán nhậu lai rai cụ thể.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s11", "N_llm_rel": "1", "N_llm_note": "Video review quán nhậu tại Tân Bình, phù hợp với nhu cầu tìm quán lai rai buổi tối cùng bạn bè.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k02_s12", "N_llm_rel": "1", "N_llm_note": "Video review quán nhậu phong cách Hàn Quốc tại Quận 1, phù hợp với nhu cầu tìm quán lai rai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s01", "N_llm_rel": "1", "N_llm_note": "Video review bánh mì heo quay da giòn tại Cần Thơ, đúng món và đúng thời điểm buổi sáng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s02", "N_llm_rel": "0", "N_llm_note": "Video review bánh mì thịt nguội, không phải bánh mì heo quay da giòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s03", "N_llm_rel": "0", "N_llm_note": "Video không nhắc đến bánh mì heo quay, chỉ nói chung chung về bánh mì.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s04", "N_llm_rel": "1", "N_llm_note": "Video review bánh mì heo quay tại Tân Phú, phù hợp với yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s05", "N_llm_rel": "0", "N_llm_note": "Video review đồ nướng, không phải bánh mì heo quay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s06", "N_llm_rel": "0", "N_llm_note": "Video review bánh mì PewPew, không nhắc đến bánh mì heo quay da giòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s07", "N_llm_rel": "0", "N_llm_note": "Video mukbang bánh mì thịt chung chung, không rõ là heo quay da giòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s08", "N_llm_rel": "0", "N_llm_note": "Video review bánh mì bò nướng, không phải bánh mì heo quay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s09", "N_llm_rel": "0", "N_llm_note": "Video đi chợ Tết, không review quán bánh mì heo quay cụ thể.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s10", "N_llm_rel": "0", "N_llm_note": "Video review combo đồ ăn Tết, không phải bánh mì thịt heo quay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s11", "N_llm_rel": "1", "N_llm_note": "Video review heo quay tại TP.HCM, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s12", "N_llm_rel": "0", "N_llm_note": "Video review chân gà nướng, không phải bánh mì thịt heo quay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s13", "N_llm_rel": "0", "N_llm_note": "Video review bánh mì chả cá, không phải bánh mì thịt heo quay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s14", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm heo quay ăn kèm bánh mì, phù hợp truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n01_s15", "N_llm_rel": "0", "N_llm_note": "Video vlog đời sống, không liên quan đến món ăn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s01", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ thực đơn eat clean giảm cân, phù hợp truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s02", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn nấu bún sườn chua healthy, phù hợp truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s03", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ thực đơn eat clean giảm cân, phù hợp truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s04", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ thực đơn eat clean giảm cân, phù hợp truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s05", "N_llm_rel": "0", "N_llm_note": "Video thử thách ăn lương khô, không phải thực đơn healthy.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s06", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ thực đơn eat clean giảm cân, phù hợp truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s07", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ thực đơn và cách ăn uống healthy, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s08", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ thực đơn ăn trưa healthy, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s09", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ về cách ăn eat clean và thực phẩm thay thế, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s10", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ về thực đơn ăn sáng healthy, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s11", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ về cách tính calo và thực đơn eat clean, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n02_s12", "N_llm_rel": "1", "N_llm_note": "Video chia sẻ thực đơn ăn sáng và trưa healthy, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s01", "N_llm_rel": "1", "N_llm_note": "Video review quán bánh cuốn nóng nhân thịt mộc nhĩ tại Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s02", "N_llm_rel": "0", "N_llm_note": "Video review quán bánh cuốn tại TP.HCM, không khớp với địa điểm Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s03", "N_llm_rel": "0", "N_llm_note": "Video review bánh đúc nóng, không phải bánh cuốn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s04", "N_llm_rel": "1", "N_llm_note": "Video review quán bánh cuốn nóng tại Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s05", "N_llm_rel": "1", "N_llm_note": "Video review bánh cuốn cà cuống tại Hà Nội, vẫn là món bánh cuốn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s06", "N_llm_rel": "1", "N_llm_note": "Video review quán bánh cuốn nóng tại Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s07", "N_llm_rel": "1", "N_llm_note": "Video review bánh cuốn nhân thịt mộc nhĩ tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s08", "N_llm_rel": "0", "N_llm_note": "Video nói về bánh cuốn Cao Bằng, không có mộc nhĩ, sai địa điểm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s09", "N_llm_rel": "1", "N_llm_note": "Video review bánh cuốn nhân thịt mộc nhĩ tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s10", "N_llm_rel": "0", "N_llm_note": "Video tại Hải Phòng, không đề cập rõ nhân thịt mộc nhĩ.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s11", "N_llm_rel": "1", "N_llm_note": "Video review bánh cuốn nhân thịt tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k03_s12", "N_llm_rel": "0", "N_llm_note": "Video tại Hồ Chí Minh, không khớp địa điểm Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s01", "N_llm_rel": "0", "N_llm_note": "Video tại Hồ Chí Minh, không khớp địa điểm Hà Nội (nếu có yêu cầu) hoặc không rõ nước dừa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s02", "N_llm_rel": "U", "N_llm_note": "Video lẩu bò nhúng dấm tại Hà Nội nhưng không nhắc đến nước dừa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s03", "N_llm_rel": "U", "N_llm_note": "Video lẩu bò nhúng dấm tại Hà Nội nhưng không nhắc đến nước dừa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s04", "N_llm_rel": "1", "N_llm_note": "Video lẩu bò nhúng dấm tại Hà Nội, xác nhận dùng nước dừa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s05", "N_llm_rel": "U", "N_llm_note": "Video lẩu bò nhúng dấm tại Hà Nội nhưng không nhắc đến nước dừa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s06", "N_llm_rel": "0", "N_llm_note": "Video tại Hồ Chí Minh, không khớp địa điểm Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s07", "N_llm_rel": "1", "N_llm_note": "Video review lẩu bò nhúng giấm tại TP.HCM, phù hợp chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s08", "N_llm_rel": "0", "N_llm_note": "Video chỉ có nhạc và lời bài hát, không có nội dung review món ăn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s09", "N_llm_rel": "1", "N_llm_note": "Video review lẩu bò nhúng giấm tại TP.HCM, phù hợp chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s10", "N_llm_rel": "0", "N_llm_note": "Video review lẩu bò nhúng giấm tại Hà Nội, sai bộ lọc thành phố.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s11", "N_llm_rel": "0", "N_llm_note": "Video review lẩu bò nhúng giấm tại Hà Nội, sai bộ lọc thành phố.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k04_s12", "N_llm_rel": "1", "N_llm_note": "Video review lẩu bò nhúng giấm tại TP.HCM, phù hợp chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s01", "N_llm_rel": "0", "N_llm_note": "Video review cơm gà tại Quận 6, sai địa điểm Quận 1.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s02", "N_llm_rel": "1", "N_llm_note": "Video review cơm gà xối mỡ, không giới hạn địa điểm nên chấp nhận.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s03", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn nấu cơm gà xối mỡ, phù hợp chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s04", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn nấu cơm gà xối mỡ, phù hợp chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s05", "N_llm_rel": "1", "N_llm_note": "Video review cơm gà xối mỡ, phù hợp chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s06", "N_llm_rel": "1", "N_llm_note": "Video mukbang cơm gà xối mỡ, phù hợp chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s07", "N_llm_rel": "0", "N_llm_note": "Video không liên quan đến cơm gà, nội dung là vlog đời sống.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s08", "N_llm_rel": "0", "N_llm_note": "Video review quán cơm Hoa, không phải cơm gà xối mỡ Quận 1.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s09", "N_llm_rel": "1", "N_llm_note": "Video review quán cơm gà xối mỡ tại Sài Gòn (Quận 1).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s10", "N_llm_rel": "0", "N_llm_note": "Quán ở Tân Phú, không khớp với yêu cầu Quận 1.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s11", "N_llm_rel": "0", "N_llm_note": "Video ở Hà Nội, không khớp với yêu cầu Quận 1 (TP.HCM).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n03_s12", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu ăn tại nhà, không phải review quán ăn Quận 1.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s01", "N_llm_rel": "0", "N_llm_note": "Video về buffet bún đậu mắm tôm, vi phạm điều kiện không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s02", "N_llm_rel": "0", "N_llm_note": "Video mukbang xôi, không liên quan đến bún đậu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s03", "N_llm_rel": "0", "N_llm_note": "Video review bún đậu mắm tôm, vi phạm điều kiện không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s04", "N_llm_rel": "0", "N_llm_note": "Video về bún đậu mắm tôm, vi phạm điều kiện không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s05", "N_llm_rel": "0", "N_llm_note": "Video về bún đậu mắm tôm, vi phạm điều kiện không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s06", "N_llm_rel": "0", "N_llm_note": "Video về bún đậu mắm tôm, vi phạm điều kiện không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s07", "N_llm_rel": "0", "N_llm_note": "Video không đề cập đến việc dùng nước mắm thay mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s08", "N_llm_rel": "0", "N_llm_note": "Video quảng cáo buffet bún đậu mắm tôm, không đáp ứng yêu cầu không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s09", "N_llm_rel": "0", "N_llm_note": "Video quảng cáo buffet bún đậu mắm tôm, không đáp ứng yêu cầu không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s10", "N_llm_rel": "0", "N_llm_note": "Video review bún đậu mắm tôm, không đáp ứng yêu cầu không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s11", "N_llm_rel": "0", "N_llm_note": "Video quảng cáo buffet bún đậu mắm tôm, không đáp ứng yêu cầu không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s12", "N_llm_rel": "0", "N_llm_note": "Video quảng cáo buffet bún đậu mắm tôm, không đáp ứng yêu cầu không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k05_s13", "N_llm_rel": "0", "N_llm_note": "Video review bún đậu mắm tôm, không đáp ứng yêu cầu không mắm tôm.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s01", "N_llm_rel": "1", "N_llm_note": "Hướng dẫn nấu lẩu hải sản, nước dùng từ xương ống thanh ngọt, không có yếu tố cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s02", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm nước mía lên men, sai chủ đề lẩu hải sản.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s03", "N_llm_rel": "U", "N_llm_note": "Video chỉ nói về ý tưởng nấu ăn, không có nội dung hướng dẫn nấu lẩu hải sản.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s04", "N_llm_rel": "U", "N_llm_note": "Video review ăn lẩu hải sản nhưng không rõ vị có cay hay không.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s05", "N_llm_rel": "U", "N_llm_note": "Video review buffet hải sản, không rõ vị nước lẩu có cay hay không.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s06", "N_llm_rel": "0", "N_llm_note": "Video về bánh trung thu, không liên quan đến lẩu hải sản.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s07", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm chả giò, không phải lẩu hải sản.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s08", "N_llm_rel": "0", "N_llm_note": "Video review lẩu cay (Tứ Xuyên), vi phạm điều kiện không cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s09", "N_llm_rel": "0", "N_llm_note": "Video về buffet nướng, không phải lẩu hải sản.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s10", "N_llm_rel": "U", "N_llm_note": "Video hướng dẫn nấu lẩu hải sản nhưng không rõ vị có cay hay không.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s11", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm miến xào, không phải lẩu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s12", "N_llm_rel": "0", "N_llm_note": "Video review lẩu hải sản vị chua cay, vi phạm điều kiện không cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s13", "N_llm_rel": "U", "N_llm_note": "Video review lẩu hải sản nhưng không rõ vị có cay hay không.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s14", "N_llm_rel": "0", "N_llm_note": "Video review quán cơm niêu, không phải lẩu hải sản.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n04_s15", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm lẩu cháo, không phải lẩu hải sản thanh ngọt.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s01", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây tươi, không trà sữa, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s02", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây, không trà sữa, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s03", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây, không đề cập trà sữa, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s04", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây, nhấn mạnh không dùng siro, không trà sữa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s05", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây, không đề cập trà sữa, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s06", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây tươi, không đề cập trà sữa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s07", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây, không đề cập trà sữa, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s08", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây tươi, không đề cập trà sữa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s09", "N_llm_rel": "0", "N_llm_note": "Video review panna cotta, không phải trà trái cây.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s10", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây tươi, không đề cập trà sữa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s11", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây tươi, không đề cập trà sữa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s12", "N_llm_rel": "1", "N_llm_note": "Video review trà trái cây tươi, không đề cập trà sữa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n05_s13", "N_llm_rel": "0", "N_llm_note": "Video review kem bơ sầu riêng, không phải trà trái cây.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s01", "N_llm_rel": "0", "N_llm_note": "Video review bún Thái Tom Yum, không phải bún riêu cua đồng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s02", "N_llm_rel": "0", "N_llm_note": "Video là hướng dẫn nấu ăn, không phải review quán ăn theo yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s03", "N_llm_rel": "1", "N_llm_note": "Review bún riêu tại Hà Nội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s04", "N_llm_rel": "1", "N_llm_note": "Review bún riêu tại Hà Nội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s05", "N_llm_rel": "0", "N_llm_note": "Video review bún hải sản, không phải bún riêu cua.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s06", "N_llm_rel": "1", "N_llm_note": "Review bún riêu tại Hà Nội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s07", "N_llm_rel": "1", "N_llm_note": "Review bún riêu tại Hà Nội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s08", "N_llm_rel": "1", "N_llm_note": "Review bún riêu tại Hà Nội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s09", "N_llm_rel": "1", "N_llm_note": "Review bún riêu tại Hà Nội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s10", "N_llm_rel": "0", "N_llm_note": "Video review phở gà, không phải bún riêu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s11", "N_llm_rel": "1", "N_llm_note": "Review bún riêu tại Hà Nội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k06_s12", "N_llm_rel": "1", "N_llm_note": "Review bún riêu tại Hà Nội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s01", "N_llm_rel": "U", "N_llm_note": "Transcript không nhắc đến ốc hương xào bơ tỏi, chỉ có nhạc.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s02", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s03", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s04", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s05", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s06", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s07", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s08", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, có nhắc đến ốc hương xào bơ tỏi.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s09", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, có nhắc đến món xào bơ tỏi.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s10", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, có nhắc đến ốc hương.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s11", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s12", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s13", "N_llm_rel": "1", "N_llm_note": "Review quán ốc bình dân tại HCM, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s14", "N_llm_rel": "0", "N_llm_note": "Video review quán ốc nhưng không đề cập đến món ốc hương xào bơ tỏi.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s15", "N_llm_rel": "0", "N_llm_note": "Video review quán khô mực, không phải quán ốc.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s16", "N_llm_rel": "0", "N_llm_note": "Video review quán ốc nhưng không nhắc đến món ốc hương xào bơ tỏi.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k07_s17", "N_llm_rel": "1", "N_llm_note": "Video review quán ốc tại TP.HCM, có nhắc đến món ốc hương trứng muối (tương đương ốc hương).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s01", "N_llm_rel": "0", "N_llm_note": "Hướng dẫn ướp thịt nướng nhưng không có mật ong.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s02", "N_llm_rel": "0", "N_llm_note": "Hướng dẫn ướp thịt nướng nhưng không có mật ong.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s03", "N_llm_rel": "0", "N_llm_note": "Video vlog đời sống, không phải hướng dẫn nấu ăn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s04", "N_llm_rel": "0", "N_llm_note": "Hướng dẫn ướp thịt nướng nhưng không có mật ong.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s05", "N_llm_rel": "0", "N_llm_note": "Hướng dẫn ướp thịt nướng nhưng không có mật ong.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s06", "N_llm_rel": "0", "N_llm_note": "Hướng dẫn ướp sườn nướng nước tương, không có mật ong.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s07", "N_llm_rel": "1", "N_llm_note": "Hướng dẫn ướp gà nướng có sử dụng mật ong để làm mềm thịt.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s08", "N_llm_rel": "0", "N_llm_note": "Sử dụng sốt ướp sẵn, không hướng dẫn cách ướp mật ong.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s09", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn cách ướp sườn nướng, phù hợp với yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s10", "N_llm_rel": "0", "N_llm_note": "Video về bún thịt nướng, không phải hướng dẫn ướp thịt nướng mật ong.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_k08_s11", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn ướp và nướng thịt, phù hợp với yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s01", "N_llm_rel": "1", "N_llm_note": "Video review bánh tiramisu tại Hà Nội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s02", "N_llm_rel": "0", "N_llm_note": "Video review bánh kem khác, không phải tiramisu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s03", "N_llm_rel": "0", "N_llm_note": "Video review bánh croissant, không phải tiramisu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s04", "N_llm_rel": "0", "N_llm_note": "Video review quán cà phê chụp ảnh, không tập trung vào bánh tiramisu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s05", "N_llm_rel": "1", "N_llm_note": "Video review tiệm bánh tiramisu tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s06", "N_llm_rel": "1", "N_llm_note": "Video review tiệm bánh tiramisu tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s07", "N_llm_rel": "0", "N_llm_note": "Video review quán Bingsu, không phải tiramisu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s08", "N_llm_rel": "0", "N_llm_note": "Video mua bánh tại siêu thị, không phải tiệm bánh tiramisu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s09", "N_llm_rel": "0", "N_llm_note": "Video review tiệm bánh ngọt chung, không nhắc đến tiramisu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s10", "N_llm_rel": "1", "N_llm_note": "Video review tiệm bánh có tiramisu tại Hà Nội, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n06_s11", "N_llm_rel": "1", "N_llm_note": "Video review tiệm bánh có tiramisu tại Hà Nội, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s01", "N_llm_rel": "0", "N_llm_note": "Video mukbang gà rán sốt kem hành, không phải sốt phô mai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s02", "N_llm_rel": "0", "N_llm_note": "Video mukbang gà rán nguyên con, không đề cập sốt phô mai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s03", "N_llm_rel": "1", "N_llm_note": "Video mukbang gà rán sốt phô mai, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s04", "N_llm_rel": "1", "N_llm_note": "Video mukbang gà rán sốt phô mai, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s05", "N_llm_rel": "0", "N_llm_note": "Video mukbang mì cay, gà rán chỉ là món phụ, không rõ sốt phô mai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s06", "N_llm_rel": "0", "N_llm_note": "Video mukbang gà rán Bonchon, không đề cập sốt phô mai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s07", "N_llm_rel": "0", "N_llm_note": "Video mukbang gà rán KFC, không đề cập sốt phô mai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s08", "N_llm_rel": "0", "N_llm_note": "Video mukbang gà rán Lotteria, có que phô mai nhưng không phải gà sốt phô mai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s09", "N_llm_rel": "1", "N_llm_note": "Video mukbang mì trộn gà rán phô mai, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s10", "N_llm_rel": "1", "N_llm_note": "Video mukbang gà rán chấm sốt phô mai, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s11", "N_llm_rel": "0", "N_llm_note": "Video về gà rán sốt cay, không phải gà rán sốt phô mai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s12", "N_llm_rel": "0", "N_llm_note": "Video review combo mì Nhật, không tập trung vào gà rán sốt phô mai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s13", "N_llm_rel": "0", "N_llm_note": "Video về gà rán The Pizza Company, không phải gà rán sốt phô mai.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n07_s14", "N_llm_rel": "1", "N_llm_note": "Có nhắc đến cơm nắm gà sốt phô mai và mukbang gà rán.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s01", "N_llm_rel": "1", "N_llm_note": "Review nhà hàng hải sản tươi sống tại Vũng Tàu, giá hợp lý.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s02", "N_llm_rel": "0", "N_llm_note": "Video về quán bánh canh, không phải hải sản tươi sống.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s03", "N_llm_rel": "1", "N_llm_note": "Review buffet lẩu nướng hải sản tại Vũng Tàu, giá hợp lý.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s04", "N_llm_rel": "1", "N_llm_note": "Review nhà hàng có hồ hải sản tươi sống tại Vũng Tàu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s05", "N_llm_rel": "0", "N_llm_note": "Video về bánh mì xíu mại, không phải hải sản.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s06", "N_llm_rel": "1", "N_llm_note": "Review quán ốc hải sản giá rẻ tại Vũng Tàu, phù hợp yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s07", "N_llm_rel": "1", "N_llm_note": "Review quán ốc và dịch vụ chế biến hải sản tươi sống tại Vũng Tàu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s08", "N_llm_rel": "1", "N_llm_note": "Review buffet hải sản tại Vũng Tàu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s09", "N_llm_rel": "1", "N_llm_note": "Video review quán hải sản tại Vũng Tàu, giá hợp lý, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s10", "N_llm_rel": "1", "N_llm_note": "Video review quán hải sản tại Vũng Tàu, giá bình dân, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s11", "N_llm_rel": "1", "N_llm_note": "Video review buffet hải sản tại Vũng Tàu, giá hợp lý, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s12", "N_llm_rel": "1", "N_llm_note": "Video review hải sản tại Vũng Tàu, giá hợp lý, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s13", "N_llm_rel": "1", "N_llm_note": "Video review buffet hải sản tại Vũng Tàu, giá hợp lý, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s14", "N_llm_rel": "1", "N_llm_note": "Video review hủ tiếu mực hải sản tại Vũng Tàu, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "d_n08_s15", "N_llm_rel": "0", "N_llm_note": "Video review resort, không phải review quán ăn hải sản.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s01", "N_llm_rel": "1", "N_llm_note": "Review quán hủ tiếu ăn khuya tại Sài Gòn, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s02", "N_llm_rel": "0", "N_llm_note": "Nước lèo hầm từ rau củ và hải sản, không phải nước lèo ngọt xương.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s03", "N_llm_rel": "0", "N_llm_note": "Video review hủ tiếu trộn, không nhấn mạnh nước lèo ngọt xương.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s04", "N_llm_rel": "1", "N_llm_note": "Review hoành thánh lá nước dùng ngọt từ tôm khô tại Sài Gòn, phù hợp.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s05", "N_llm_rel": "0", "N_llm_note": "Review hủ tiếu sườn kho, không phải hủ tiếu nước lèo ngọt xương truyền thống.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s06", "N_llm_rel": "1", "N_llm_note": "Video review hủ tiếu tại Sài Gòn, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s07", "N_llm_rel": "1", "N_llm_note": "Video review hủ tiếu tại Sài Gòn, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s08", "N_llm_rel": "1", "N_llm_note": "Video review hủ tiếu tại Sài Gòn, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s09", "N_llm_rel": "1", "N_llm_note": "Video review hủ tiếu tại Sài Gòn, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s10", "N_llm_rel": "1", "N_llm_note": "Video review hủ tiếu tại Sài Gòn, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s11", "N_llm_rel": "1", "N_llm_note": "Video review hủ tiếu tại Sài Gòn, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k01_s12", "N_llm_rel": "1", "N_llm_note": "Video review hủ tiếu tại Sài Gòn, nhắc rõ nước lèo ngọt xương.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s01", "N_llm_rel": "0", "N_llm_note": "Sai food_category (đồ ngọt/trà) và không phải cổng trường.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s02", "N_llm_rel": "U", "N_llm_note": "Không có transcript, không đủ bằng chứng xác nhận nội dung.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s03", "N_llm_rel": "1", "N_llm_note": "Video mukbang cá viên chiên, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s04", "N_llm_rel": "1", "N_llm_note": "Video review cá viên chiên, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s05", "N_llm_rel": "1", "N_llm_note": "Video review cá viên chiên cổng trường, phù hợp với truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s06", "N_llm_rel": "1", "N_llm_note": "Video review xiên bẩn tại cổng trường, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s07", "N_llm_rel": "1", "N_llm_note": "Video review xiên bẩn tại cổng trường, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s08", "N_llm_rel": "1", "N_llm_note": "Video review xiên bẩn tại cổng trường, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s09", "N_llm_rel": "1", "N_llm_note": "Video mukbang xiên bẩn, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s10", "N_llm_rel": "1", "N_llm_note": "Video mukbang xiên bẩn, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s11", "N_llm_rel": "1", "N_llm_note": "Video review xiên bẩn, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s12", "N_llm_rel": "1", "N_llm_note": "Video review xiên bẩn, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k02_s13", "N_llm_rel": "1", "N_llm_note": "Video review xiên bẩn tại cổng trường, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s01", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm chả giò, có mẹo để giòn lâu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s02", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm chả giò, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s03", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm chả giò, có bí quyết để giòn lâu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s04", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm chả giò, đúng nội dung truy vấn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s05", "N_llm_rel": "0", "N_llm_note": "Video review buffet, không phải hướng dẫn làm chả giò tại nhà.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s06", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm chả giò (chả giò Triều Châu).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s07", "N_llm_rel": "0", "N_llm_note": "Video mukbang, không có công thức làm chả giò.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s08", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm chả giò hải sản.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s09", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm chả giò ngũ vị.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s10", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm nem rán (chả giò).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s11", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm chả giò giòn lâu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s12", "N_llm_rel": "0", "N_llm_note": "Video review món chả giò phô mai, không phải hướng dẫn làm tại nhà.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n01_s13", "N_llm_rel": "0", "N_llm_note": "Video làm món chay từ củ hủ dừa, không phải công thức chả giò.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s01", "N_llm_rel": "0", "N_llm_note": "Video review kem trứng, không phải bánh flan.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s02", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm bánh flan.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s03", "N_llm_rel": "0", "N_llm_note": "Video review khúc bạch, không phải bánh flan.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s04", "N_llm_rel": "0", "N_llm_note": "Video review bánh mì kem trứng, không phải bánh flan.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s05", "N_llm_rel": "0", "N_llm_note": "Video review xôi mặn, không liên quan đến bánh flan.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s06", "N_llm_rel": "1", "N_llm_note": "Video mukbang bánh flan sốt kem muối đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s07", "N_llm_rel": "0", "N_llm_note": "Sai thành phố (Hải Phòng thay vì Hồ Chí Minh).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s08", "N_llm_rel": "1", "N_llm_note": "Video review tiệm bánh flan tại Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s09", "N_llm_rel": "1", "N_llm_note": "Video review xe bánh flan tại Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s10", "N_llm_rel": "0", "N_llm_note": "Hướng dẫn làm kem trứng (để pha cà phê), không phải bánh flan.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s11", "N_llm_rel": "0", "N_llm_note": "Video review buffet lẩu, không liên quan đến bánh flan.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n02_s12", "N_llm_rel": "1", "N_llm_note": "Video review tiệm bánh flan tại Sài Gòn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s01", "N_llm_rel": "1", "N_llm_note": "Video review bún chả nướng than hoa tại Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s02", "N_llm_rel": "0", "N_llm_note": "Video review bún chả dùng máy nướng, không phải nướng than hoa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s03", "N_llm_rel": "0", "N_llm_note": "Hướng dẫn làm bún chả bằng nồi chiên không dầu, không phải nướng than hoa.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s04", "N_llm_rel": "0", "N_llm_note": "Video review bún chả tại TP.HCM, không phải Hà Nội và không nhấn mạnh yếu tố chuẩn Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s05", "N_llm_rel": "1", "N_llm_note": "Video review bún chả que tre nướng than hoa tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s06", "N_llm_rel": "1", "N_llm_note": "Video review bún chả nướng than hoa tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s07", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu ăn tại TP.HCM, không phải Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s08", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm bún chả nướng than hoa, nội dung phù hợp.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s09", "N_llm_rel": "0", "N_llm_note": "Video review quán bún chả của người nước ngoài, không tập trung vào bún chả nướng than hoa chuẩn Hà Nội.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s10", "N_llm_rel": "0", "N_llm_note": "Video review các món khác (ốc chuối đậu, bún bung), không phải bún chả.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s11", "N_llm_rel": "1", "N_llm_note": "Video review bún chả nướng than hoa tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s12", "N_llm_rel": "1", "N_llm_note": "Video review bún chả nướng than hoa tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k03_s13", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm bún chả nướng than hoa, nội dung phù hợp.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s01", "N_llm_rel": "0", "N_llm_note": "Video về bánh xèo miền Tây, không phải bánh xèo tôm nhảy miền Trung.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s02", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm bánh xèo miền Trung, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s03", "N_llm_rel": "1", "N_llm_note": "Video review bánh xèo miền Trung tại Bình Thạnh, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s04", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm bánh xèo miền Trung, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s05", "N_llm_rel": "1", "N_llm_note": "Video mukbang bánh xèo miền Trung, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s06", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm bánh xèo miền Trung, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s07", "N_llm_rel": "1", "N_llm_note": "Video mukbang bánh xèo miền Trung, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s08", "N_llm_rel": "1", "N_llm_note": "Video review bánh xèo khổng lồ tại lễ hội, đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s09", "N_llm_rel": "1", "N_llm_note": "Video mukbang bánh xèo miền Trung, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s10", "N_llm_rel": "1", "N_llm_note": "Video review quán bánh xèo tôm nhảy tại Hà Nội, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s11", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm bánh xèo giòn rụm, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n03_s12", "N_llm_rel": "1", "N_llm_note": "Video mukbang bánh xèo miền Trung, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s01", "N_llm_rel": "0", "N_llm_note": "Video về gà tần thuốc bắc, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s02", "N_llm_rel": "1", "N_llm_note": "Video review quán có bán trà nhiệt đới chanh mãng cầu, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s03", "N_llm_rel": "0", "N_llm_note": "Video review matcha, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s04", "N_llm_rel": "0", "N_llm_note": "Video review tào phớ, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s05", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu nước bí đao, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s06", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu canh ngao, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s07", "N_llm_rel": "0", "N_llm_note": "Video review trà trái cây chung chung, không nhắc đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s08", "N_llm_rel": "1", "N_llm_note": "Video review quán có bán trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s09", "N_llm_rel": "0", "N_llm_note": "Video review trà sữa và trà dâu, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s10", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm đác rim thơm, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s11", "N_llm_rel": "0", "N_llm_note": "Video review nước lê hầm, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s12", "N_llm_rel": "0", "N_llm_note": "Video review đồ uống từ Probi và nho hóa thạch, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s13", "N_llm_rel": "0", "N_llm_note": "Video review quán ăn vặt, không liên quan đến trà mãng cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s14", "N_llm_rel": "1", "N_llm_note": "Transcript có nhắc đến hướng dẫn làm trà mãng cầu tại nhà.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s15", "N_llm_rel": "1", "N_llm_note": "Video review trà mãng cầu đúng chủ đề giải nhiệt mùa hè.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s16", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm trà trái cây giải nhiệt đúng chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n04_s17", "N_llm_rel": "1", "N_llm_note": "Video nhắc đến trà mãng cầu, phù hợp chủ đề.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s01", "N_llm_rel": "0", "N_llm_note": "Yêu cầu không hành nhưng khách gọi nhiều hành.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s02", "N_llm_rel": "0", "N_llm_note": "Sai thành phố (Đà Lạt thay vì Hà Nội) và gọi nhiều hành.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s03", "N_llm_rel": "U", "N_llm_note": "Không rõ có hành hay không, transcript không đề cập.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s04", "N_llm_rel": "U", "N_llm_note": "Không rõ có hành hay không, transcript không đề cập.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s05", "N_llm_rel": "0", "N_llm_note": "Sai thành phố (Hồ Chí Minh thay vì Hà Nội).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s06", "N_llm_rel": "U", "N_llm_note": "Không rõ món ăn cụ thể và không đề cập hành.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s07", "N_llm_rel": "U", "N_llm_note": "Không rõ có hành hay không, transcript không đề cập.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s08", "N_llm_rel": "U", "N_llm_note": "Không rõ có hành hay không, transcript không đề cập.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s09", "N_llm_rel": "0", "N_llm_note": "Yêu cầu không hành nhưng khách gọi nhiều hành.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s10", "N_llm_rel": "1", "N_llm_note": "Video review phở bò, có nhắc đến không cay, không hành (thanh thanh).", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s11", "N_llm_rel": "0", "N_llm_note": "Video nói về phở Nam Định, không đề cập đến yêu cầu không hành.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s12", "N_llm_rel": "0", "N_llm_note": "Video yêu cầu nhiều hành, vi phạm điều kiện phủ định.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s13", "N_llm_rel": "0", "N_llm_note": "Video nói về phở gà, không phải phở bò.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s14", "N_llm_rel": "U", "N_llm_note": "Video review phở bò nhưng không rõ có hành hay không.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k04_s15", "N_llm_rel": "U", "N_llm_note": "Video review phở bò nhưng không rõ có hành hay không.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s01", "N_llm_rel": "U", "N_llm_note": "Video hướng dẫn hủ tiếu, không phải mì trộn tóp mỡ.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s02", "N_llm_rel": "1", "N_llm_note": "Video review mì trộn tóp mỡ, không đề cập đến vị cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s03", "N_llm_rel": "U", "N_llm_note": "Video review bún nước/mì trộn nhưng không rõ có tóp mỡ không.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s04", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm mì trộn tóp mỡ, không đề cập đến vị cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s05", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn có nhắc đến sa tế cay, vi phạm điều kiện không cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s06", "N_llm_rel": "1", "N_llm_note": "Video review mì trộn tóp mỡ, không đề cập đến vị cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s07", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn mì trộn tóp mỡ, không đề cập đến vị cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s08", "N_llm_rel": "0", "N_llm_note": "Video nhắc đến mì trộn cay, vi phạm điều kiện không cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s09", "N_llm_rel": "1", "N_llm_note": "Video review mì trộn tóp mỡ tại Bình Thạnh, không đề cập vị cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s10", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm mì trộn có nhắc đến vị chua cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s11", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn mì trộn tóp mỡ, không đề cập vị cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s12", "N_llm_rel": "1", "N_llm_note": "Video mukbang mì trộn tóp mỡ, không đề cập vị cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s13", "N_llm_rel": "1", "N_llm_note": "Video review mì trộn tóp mỡ tại Bình Thạnh, không đề cập vị cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k05_s14", "N_llm_rel": "1", "N_llm_note": "Video review mì trộn tóp mỡ tại Bình Thạnh, không đề cập vị cay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s01", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn thịt heo áp chảo, có sử dụng dầu ăn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s02", "N_llm_rel": "0", "N_llm_note": "Video không có món ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s03", "N_llm_rel": "0", "N_llm_note": "Video không có món ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s04", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm burger, không phải ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s05", "N_llm_rel": "0", "N_llm_note": "Video không đề cập đến ức gà áp chảo, chỉ là vlog ăn uống cá nhân.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s06", "N_llm_rel": "0", "N_llm_note": "Video nói về yến mạch, không liên quan đến ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s07", "N_llm_rel": "0", "N_llm_note": "Video nói về yến mạch, không liên quan đến ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s08", "N_llm_rel": "0", "N_llm_note": "Video nói về ức gà luộc, không phải ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s09", "N_llm_rel": "0", "N_llm_note": "Video làm snack ức gà, không phải ức gà áp chảo ăn kiêng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s10", "N_llm_rel": "0", "N_llm_note": "Video nói về bánh mì và trứng, không liên quan đến ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s11", "N_llm_rel": "0", "N_llm_note": "Video không liên quan đến chủ đề ăn kiêng hay ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s12", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn ức gà ủ lạnh, không phải ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s13", "N_llm_rel": "0", "N_llm_note": "Video nói về bánh mì và trứng, không liên quan đến ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s14", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn gà áp chảo nhưng dùng đùi gà, không phải ức gà ăn kiêng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s15", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn món ức gà ít calo, phù hợp chủ đề ăn kiêng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n05_s16", "N_llm_rel": "0", "N_llm_note": "Video nói về yến mạch, không liên quan đến ức gà áp chảo.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s01", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM, có nhắc đến chả cua.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s02", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM, có nhắc đến chả cua.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s03", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM, có nhắc đến chả cua.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s04", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s05", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s06", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM, có nhắc đến chả cua.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s07", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s08", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s09", "N_llm_rel": "0", "N_llm_note": "Video chỉ có nhạc nền và lời rap, không có nội dung review bánh canh cua.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s10", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM, có nhắc đến chả cua.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s11", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM, có nhắc đến chả cua.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k06_s12", "N_llm_rel": "1", "N_llm_note": "Review đúng bánh canh cua tại TP.HCM, nước lèo sánh sệt.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s01", "N_llm_rel": "0", "N_llm_note": "Video về xiên bẩn, không liên quan đến cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s02", "N_llm_rel": "0", "N_llm_note": "Video review tào phớ, không phải cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s03", "N_llm_rel": "0", "N_llm_note": "Video review quán cà phê nhưng không nhắc đến cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s04", "N_llm_rel": "0", "N_llm_note": "Video review quán Xofa, không nhắc đến cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s05", "N_llm_rel": "0", "N_llm_note": "Video tìm đường vào quán cà phê, không nhắc đến cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s06", "N_llm_rel": "0", "N_llm_note": "Video review quán cà phê Demuse, không nhắc đến cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s07", "N_llm_rel": "0", "N_llm_note": "Video review quán cà phê lỗ trên tường, không nhắc đến cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s08", "N_llm_rel": "0", "N_llm_note": "Video về cà phê vợt ở An Giang, không phải Hà Nội và không phải cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s09", "N_llm_rel": "0", "N_llm_note": "Video review quán Mozo, không nhắc đến cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s10", "N_llm_rel": "0", "N_llm_note": "Video review cà phê muối, không phải cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k07_s11", "N_llm_rel": "0", "N_llm_note": "Video về củ sắn, không liên quan đến cà phê trứng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s01", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn nấu sườn xào chua ngọt đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s02", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn nấu sườn xào cải chua, đúng chủ đề sườn xào.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s03", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn cách sơ chế và làm sườn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s04", "N_llm_rel": "0", "N_llm_note": "Video nói về tâm sự, không liên quan đến hướng dẫn nấu ăn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s05", "N_llm_rel": "0", "N_llm_note": "Video là vlog tâm sự, không có hướng dẫn nấu sườn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s06", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm sườn xào chua ngọt.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s07", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm sườn xào chua ngọt.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s08", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm đậu non sốt thịt, sai món.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s09", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm sườn xào chua ngọt.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s10", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm cá basa kho tộ, sai món.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s11", "N_llm_rel": "1", "N_llm_note": "Video hướng dẫn làm sườn xào chua ngọt.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_k08_s12", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm gỏi khoai môn, sai món.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s01", "N_llm_rel": "1", "N_llm_note": "Review lẩu gà lá é tại Đà Lạt, đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s02", "N_llm_rel": "0", "N_llm_note": "Video chỉ có nhạc, không có nội dung review lẩu gà lá é.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s03", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu lẩu gà nước dừa, không phải lẩu gà lá é.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s04", "N_llm_rel": "0", "N_llm_note": "Video vlog du lịch Đà Lạt, không review món ăn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s05", "N_llm_rel": "1", "N_llm_note": "Review quán lẩu gà lá é tại Đà Lạt đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s06", "N_llm_rel": "0", "N_llm_note": "Review lẩu gà ớt hiểm, không phải lẩu gà lá é.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s07", "N_llm_rel": "1", "N_llm_note": "Review quán lẩu gà lá é tại Đà Lạt đúng yêu cầu.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s08", "N_llm_rel": "0", "N_llm_note": "Review quán chân gà nướng, không phải lẩu gà lá é.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s09", "N_llm_rel": "0", "N_llm_note": "Video chỉ có nhạc, không có nội dung review món ăn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s10", "N_llm_rel": "0", "N_llm_note": "Video chỉ có nhạc, không có nội dung review món ăn.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n06_s11", "N_llm_rel": "0", "N_llm_note": "Review nhà hàng cơm trưa, không phải lẩu gà lá é.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n07_s01", "N_llm_rel": "0", "N_llm_note": "Video nói về bánh tráng mắm ruốc và bánh căn, không phải bánh tráng nướng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n07_s02", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn làm cá hấp, không liên quan đến bánh tráng nướng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s01", "N_llm_rel": "1", "N_llm_note": "Video review quán chay tại Bình Thạnh, phù hợp với nhu cầu tìm nhà hàng chay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s02", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu ăn tại nhà, không phải review nhà hàng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s03", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu ăn tại nhà, không phải review nhà hàng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s04", "N_llm_rel": "1", "N_llm_note": "Video review quán chay tại Hà Nội, phù hợp với nhu cầu tìm nhà hàng chay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s05", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu ăn, không phải review nhà hàng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s06", "N_llm_rel": "1", "N_llm_note": "Video review quán chay, phù hợp với nhu cầu tìm nhà hàng chay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s07", "N_llm_rel": "1", "N_llm_note": "Video review quán buffet chay tại Hà Nội, phù hợp với nhu cầu tìm nhà hàng chay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s08", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu ăn tại nhà, không phải review nhà hàng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s09", "N_llm_rel": "0", "N_llm_note": "Video review món ăn tự nấu, không phải nhà hàng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s10", "N_llm_rel": "1", "N_llm_note": "Video review nhà hàng chay tại Hà Nội, phù hợp với nhu cầu tìm nhà hàng chay.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s11", "N_llm_rel": "0", "N_llm_note": "Video hướng dẫn nấu ăn tại nhà, không phải review nhà hàng.", "llm_model": "gemini-3.1-flash-lite"}
+{"slot_id": "t_n08_s12", "N_llm_rel": "1", "N_llm_note": "Video review nhà hàng chay tại Hà Nội, phù hợp với nhu cầu tìm nhà hàng chay.", "llm_model": "gemini-3.1-flash-lite"}

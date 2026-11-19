@@ -47,3 +47,7 @@
   - Final full `pytest -v`: `139 passed in 25.28s` ([pytest-full.log](pytest-full.log)).
   - Final `mypy` Windows & `--platform linux`: `Success: no issues found in 83 source files` ([mypy-windows.log](mypy-windows.log), [mypy-linux-target.log](mypy-linux-target.log)).
   - Final `ruff check` & `scripts/check_secrets.py`: `All checks passed!` ([ruff.log](ruff.log)), `PASS: Zero secret leaks detected across workspace.`
+
+## Follow-up `N` LLM Pool Verification (`2026-11-19`, `feat/m2.2-m2.3-llm-audit`)
+- Per contributor override (`<= 15 RPM`), executed `verify_pool_with_gemini.py --batch-size 12 --max-rpm 14` (`gemini-3.1-flash-lite`, `34` batches, `408/408` rows).
+- Raw agreement vs `adjudicated_rel`: `299/408` (`73.28%`, `dev=69.67%`, `locked_test=77.16%`, ternary $\kappa = 0.5297`); `109` disagreement slots exported to `nguyen_llm_pool_summary.json`. `K_human_verified=False` and `N_human_verified=False` in `blinded_pool.csv` remain untouched.
