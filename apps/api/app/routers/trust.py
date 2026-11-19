@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from packages.absa import analyze_koc_vs_viewer_absa
 from packages.common.logging import StageTimer
 from packages.data_contracts.multimodal import TrustAuditRequest, TrustAuditResponse
-from packages.seeding import detect_seeding_comments
+from packages.seeding import compute_comment_filter_sensitivity, detect_seeding_comments
 
 router = APIRouter(prefix="/api/v1/trust", tags=["seeding & absa trust"])
 
@@ -24,8 +24,15 @@ async def audit_video_trust(payload: TrustAuditRequest) -> TrustAuditResponse:
             is_ad=payload.is_ad,
             is_ec_video=payload.is_ec_video,
         )
+        sensitivity = compute_comment_filter_sensitivity(
+            caption=payload.caption,
+            transcript=payload.transcript,
+            comments=cleansed,
+        )
     return TrustAuditResponse(
         comparison=comparison,
         comments=cleansed,
+        comment_filter_policy="diagnostic_only_unvalidated",
+        filter_sensitivity=sensitivity,
         timings_ms=timer.finalize(),
     )

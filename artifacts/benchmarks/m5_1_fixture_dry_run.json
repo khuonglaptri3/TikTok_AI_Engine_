@@ -1,0 +1,236 @@
+{
+  "study_id": "m5_1_fixture_dry_run_v1",
+  "fixture_type": "authored_edge_regression_fixture_NOT_real_pilot",
+  "real_pilot_comments_available": false,
+  "evaluated_at": "2026-11-19T04:09:17.894692+00:00",
+  "environment": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "cpu_count": 4,
+    "process_peak_rss_mib": 130.91
+  },
+  "organic_duplicate_ablation": {
+    "legacy_min_words_1_false_positives": 24,
+    "guarded_min_words_5_false_positives": 0
+  },
+  "split_counts": {
+    "dev": 26,
+    "calibration": 28,
+    "held_out_third": 26
+  },
+  "held_out_third_metrics": {
+    "evaluated_comment_count": 26,
+    "unique_video_count": 4,
+    "human_signoff_complete": false,
+    "truth_class_counts": {
+      "contact_or_link": 5,
+      "no_indicator_observed": 12,
+      "noise_or_empty": 3,
+      "observable_duplicate": 4,
+      "unknown_ambiguous": 2
+    },
+    "pred_class_counts": {
+      "contact_or_link": 5,
+      "no_indicator_observed": 14,
+      "noise_or_empty": 3,
+      "observable_duplicate": 4
+    },
+    "per_class_metrics": {
+      "observable_duplicate": {
+        "support": 4,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "contact_or_link": {
+        "support": 5,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "noise_or_empty": {
+        "support": 3,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "template_phrase_match": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "bootstrap_95_ci": {
+      "macro_precision": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_recall": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_f1": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      }
+    },
+    "confusion_matrix": {
+      "no_indicator_observed": {
+        "no_indicator_observed": 12
+      },
+      "contact_or_link": {
+        "contact_or_link": 5
+      },
+      "noise_or_empty": {
+        "noise_or_empty": 3
+      },
+      "observable_duplicate": {
+        "observable_duplicate": 4
+      },
+      "unknown_ambiguous": {
+        "no_indicator_observed": 2
+      }
+    },
+    "auto_filter_thresholds": {
+      "min_annotated_comments": 150,
+      "min_macro_precision": 0.85,
+      "min_macro_recall": 0.6
+    },
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "all_fixture_metrics": {
+    "evaluated_comment_count": 80,
+    "unique_video_count": 12,
+    "human_signoff_complete": false,
+    "truth_class_counts": {
+      "contact_or_link": 12,
+      "no_indicator_observed": 32,
+      "noise_or_empty": 12,
+      "observable_duplicate": 16,
+      "unknown_ambiguous": 8
+    },
+    "pred_class_counts": {
+      "contact_or_link": 12,
+      "no_indicator_observed": 40,
+      "noise_or_empty": 12,
+      "observable_duplicate": 16
+    },
+    "per_class_metrics": {
+      "observable_duplicate": {
+        "support": 16,
+        "tp": 16,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "contact_or_link": {
+        "support": 12,
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "noise_or_empty": {
+        "support": 12,
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "template_phrase_match": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "bootstrap_95_ci": {
+      "macro_precision": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_recall": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_f1": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      }
+    },
+    "confusion_matrix": {
+      "no_indicator_observed": {
+        "no_indicator_observed": 32
+      },
+      "contact_or_link": {
+        "contact_or_link": 12
+      },
+      "noise_or_empty": {
+        "noise_or_empty": 12
+      },
+      "observable_duplicate": {
+        "observable_duplicate": 16
+      },
+      "unknown_ambiguous": {
+        "no_indicator_observed": 8
+      }
+    },
+    "auto_filter_thresholds": {
+      "min_annotated_comments": 150,
+      "min_macro_precision": 0.85,
+      "min_macro_recall": 0.6
+    },
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "mean_filter_sensitivity": {
+    "videos_checked": 12,
+    "avg_flagged_per_video": 3.3333,
+    "max_abs_mean_score_shift": 0.0
+  },
+  "provenance": {
+    "code_files_sha256": {
+      "packages/seeding/detector.py": "14e1fb1a974c50a5360de0c97769b9617a60aca99855f08b733631212e59d378",
+      "packages/seeding/evaluation.py": "9ff49cad4e2b60f23ec849c383e94110967296f26f319d0bcc701318d59edab3",
+      "packages/data_contracts/multimodal.py": "7358cf7baa24ab5969befa502732435928ce3dd8ef6843b17191407ff81730b8",
+      "apps/api/app/routers/trust.py": "bf059a49d2c64028993205399470af159dd20d15b6fd93bba1aa4e1c8e65406b",
+      "apps/demo/presentation.py": "a37957b661dd5f97e5b364e34ffa9bfbfe8fad268efa0697f623a69ba27b948e",
+      "pipelines/audit_m5_1_comments/run_baseline_checks.py": "0b2c5f78ff02d1998223a40b79cb4a652cdbca79616b8d48dc8967b7d61d4547"
+    }
+  }
+}

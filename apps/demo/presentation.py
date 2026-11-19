@@ -131,7 +131,7 @@ def format_timings_markdown(timings: dict[str, Any]) -> str:
     return "**Độ trễ từng chặng (Stage Timings):** " + " • ".join(parts)
 
 
-def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True) -> str:
+def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = False) -> str:
     comp = data.get("comparison") or {}
     koc = comp.get("koc_scores") or {}
     viewer = comp.get("viewer_clean_scores") or {}
@@ -139,14 +139,26 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True)
     risk = float(comp.get("undisclosed_pr_risk") or 0.0)
     pains = comp.get("viewer_pain_points") or []
     comments = data.get("comments") or []
+    filter_policy = str(data.get("comment_filter_policy") or "diagnostic_only_unvalidated")
+    sens = data.get("filter_sensitivity") or {}
+
+    sens_line = ""
+    if sens:
+        sens_line = (
+            f"- **Độ nhạy trước/sau lọc (Filter Sensitivity):** Trước lọc `{float(sens.get('before_filter_viewer_mean') or 0.0):+.4f}` "
+            f"→ Sau loại `{sens.get('flagged_indicator_count', 0)}` bình luận có chỉ dấu: "
+            f"`{float(sens.get('after_filter_viewer_mean') or 0.0):+.4f}` (chênh `{float(sens.get('mean_score_shift') or 0.0):+.4f}`)"
+        )
 
     lines = [
-        "### Chẩn Đoán ABSA Và Mẫu Bình Luận (Baseline Heuristic)",
-        "_Điểm chưa được hiệu chuẩn trên nhãn độc lập; không xác minh khách thật, bot, seeding hay tài trợ không công khai._",
+        "### Chẩn Đoán ABSA Và Chỉ Dấu Bình Luận (Baseline Chẩn Đoán)",
+        "_Điểm chưa hiệu chuẩn trên nhãn độc lập; chỉ hiển thị chỉ dấu quan sát (trùng lặp/liên hệ/nhiễu), không khẳng định bot, thanh toán hay danh tính khách._",
+        f"- **Chính sách lọc M5.1:** `{filter_policy}` (không tự động ẩn cho tới khi đạt chuẩn xác thực `>=150` bình luận thật)",
         f"- **Chênh lệch điểm cảm xúc heuristic:** `{gap:+.2f}` • **Chỉ số quảng bá heuristic:** `{risk:.2f}` (không phải xác suất)",
-        f"- **Bình luận hợp lệ:** `{comp.get('clean_comment_count', 0)}` • **Bình luận nghi Seeding/Spam bị lọc:** `{comp.get('seeding_comment_count', 0)}`",
+        f"- **Bình luận không có chỉ dấu:** `{comp.get('clean_comment_count', 0)}` • **Bình luận có chỉ dấu quan sát:** `{comp.get('seeding_comment_count', 0)}`",
+        *( [sens_line] if sens_line else [] ),
         "",
-        "| Khía cạnh (Aspect) | Điểm lời thoại | Điểm bình luận giữ lại | Chênh lệch |",
+        "| Khía cạnh (Aspect) | Điểm lời thoại | Điểm bình luận chưa gắn cờ | Chênh lệch |",
         "| :--- | :---: | :---: | :--- |",
     ]
     for key, label in (
@@ -165,9 +177,12 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True)
         lines.extend(f"- {p}" for p in pains)
 
     shown = [c for c in comments if (not hide_seeding or not c.get("is_seeding"))]
-    lines.append(f"\n#### Danh Sách Bình Luận ({'Đã ẩn Seeding' if hide_seeding else 'Hiển thị tất cả'})")
+    lines.append(
+        f"\n#### Danh Sách Bình Luận ({'Đã ẩn bình luận có chỉ dấu' if hide_seeding else 'Chế độ chẩn đoán — hiển thị đầy đủ'})"
+    )
     for c in shown:
-        tag = f"🚫 `[SEEDING: {c.get('seeding_reason')}]`" if c.get("is_seeding") else "✅ `[CLEAN]`"
+        obs_lbl = c.get("observable_label") or (c.get("seeding_reason") if c.get("is_seeding") else "no_indicator_observed")
+        tag = f"⚑ `[{obs_lbl}]`" if c.get("is_seeding") else "ℹ️ `[no_indicator_observed]`"
         lines.append(f"- {tag} **@{c.get('author_handle') or 'user'}**: {c.get('text')}")
     return "\n".join(lines)
 

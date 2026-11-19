@@ -450,8 +450,9 @@ def _ingest_incremental_batch_to_gold(
                 voice_rows.append(seg.model_dump())
 
         cleansed_comments = detect_seeding_comments(rec.video_id, rec.comments)
+        comment_schema_cols = set(_COMMENTS_SCHEMA.names)
         for c_rec in cleansed_comments:
-            comment_rows.append(c_rec.model_dump())
+            comment_rows.append(c_rec.model_dump(include=comment_schema_cols))
 
         absa_comp = analyze_koc_vs_viewer_absa(
             video_id=rec.video_id,
@@ -523,7 +524,7 @@ def _ingest_incremental_batch_to_gold(
             CorpusFileChecksum(
                 filename=fname,
                 rows=len(df_tbl),
-                columns=len(df_tbl.columns),
+                columns=int(pa_table.num_columns),
                 sha256=_sha256_file(out_p),
                 size_bytes=out_p.stat().st_size,
             )
