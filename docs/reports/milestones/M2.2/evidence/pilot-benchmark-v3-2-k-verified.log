@@ -1,0 +1,1 @@
+PASS: wrote artifacts/benchmarks/retrieval_v3_2_k_verified_pilot.json (test bm25_reranked MRR@10=0.8571, nDCG@10=0.7178)

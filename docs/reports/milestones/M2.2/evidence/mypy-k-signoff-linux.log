@@ -1,0 +1,2 @@
+packages/retrieval/dense/encoder.py:42: error: Returning Any from function declared to return "ndarray[Any, Any]"  [no-any-return]
+Found 1 error in 1 file (checked 83 source files)

@@ -1,0 +1,79 @@
+{
+  "task_id": "M2.2",
+  "reviewer": "Trần Đình Khương (K)",
+  "adjudicated_at": "2026-11-19T10:30:30+07:00",
+  "provenance": "Full untruncated transcript audit across all 408 pooled candidates + 40 raw no_answer candidates, followed by explicit owner (K) sign-off on all 25 objective >1,000-char corrections and all 6 hard-case rule clusters (Q1..Q6). N's columns (N_rel_draft, N_human_verified=False) remain untouched.",
+  "rulings": {
+    "Q1_pho_bo_khong_hanh": {
+      "decision": "Keep U across t_k04_s06 (conflicting dine-in nhieu hanh vs takeaway khong hanh without clear-broth evidence) and all 8 unmentioned-scallion pho bo bowls per relevance_guidelines.md section 2.",
+      "overrides": {
+        "t_k04_s06": "U",
+        "t_k04_s03": "U",
+        "t_k04_s04": "U",
+        "t_k04_s05": "U",
+        "t_k04_s07": "U",
+        "t_k04_s08": "U",
+        "t_k04_s10": "U",
+        "t_k04_s14": "U",
+        "t_k04_s15": "U"
+      }
+    },
+    "Q2_synonyms_and_regional_variants": {
+      "decision": "Accept Hanoi/Haiphong smooth creamy kem trung (t_n02_s01, s04, s07 = 1); for t_k03 ('chuan Ha Noi'), accept charcoal-grilled Hanoi-style bun cha (t_k03_s04 = 1) and reject Ninh Binh square/phen variants (t_k03_s01, s02 = 0) and Southern lemongrass/apple-sauce adaptation (t_k03_s07 = 0); reject whole-chicken tip without marinade quantities (d_k08_s07 = 0) and single-dish/product-haul videos for office meal-plan query (d_n02_s02, s09 = 0).",
+      "overrides": {
+        "t_n02_s01": "1",
+        "t_n02_s04": "1",
+        "t_n02_s07": "1",
+        "t_k03_s04": "1",
+        "t_k03_s01": "0",
+        "t_k03_s02": "0",
+        "t_k03_s07": "0",
+        "d_k08_s07": "0",
+        "d_n02_s02": "0",
+        "d_n02_s09": "0"
+      }
+    },
+    "Q3_secondary_context_constraints": {
+      "decision": "Require dine-in date setting on d_n06 ('hen ho lang man'): accept scenic West Lake rooftop cafe praising tiramisu (d_n06_s04 = 1) and reject 3-6pm takeaway-only counter (d_n06_s05, s06 = 0); accept PewPew crispy roast-pork banh mi (d_n01_s06 = 1), late-night pork-rib hu tieu (t_k01_s03, s05 = 1), and live seafood in Vung Tau (d_n08_s01, s07 = 1) while rejecting alley takeaway cooked snails without live seafood (d_n08_s06 = 0).",
+      "overrides": {
+        "d_n06_s04": "1",
+        "d_n06_s05": "0",
+        "d_n06_s06": "0",
+        "d_n01_s06": "1",
+        "t_k01_s03": "1",
+        "t_k01_s05": "1",
+        "d_n08_s01": "1",
+        "d_n08_s07": "1",
+        "d_n08_s06": "0"
+      }
+    },
+    "Q4_secondary_negation_boundaries": {
+      "decision": "Accept non-mam-tom peanut fish-sauce bun dau buffet (d_k05_s08 = 1) and non-spicy family crab-milk / steamed-seafood porridge hotpots (d_n04_s14, s15 = 1); reject mi tron top mo topped with spicy homemade kimchi on 'khong cay' query (t_k05_s11 = 0).",
+      "overrides": {
+        "d_k05_s08": "1",
+        "d_n04_s14": "1",
+        "d_n04_s15": "1",
+        "t_k05_s11": "0"
+      }
+    },
+    "Q5_on_screen_only_recipes": {
+      "decision": "Mark t_k08_s09 and t_k08_s11 as U because spoken audio only tells family stories / points to on-screen sauce text without stating ingredients, matching d_k08_s10 and d_k08_s11.",
+      "overrides": {
+        "t_k08_s09": "U",
+        "t_k08_s11": "U"
+      }
+    },
+    "Q6_music_and_placeholder_transcripts": {
+      "decision": "Keep d_k01_s15 = 1 (caption explicitly states 18k hot ginger-syrup tau hu in Go Vap Saigon) and keep music/placeholder/mismatched items lacking required text details as U.",
+      "overrides": {
+        "d_k01_s15": "1",
+        "d_k04_s08": "U",
+        "d_k07_s01": "U",
+        "t_k06_s09": "U",
+        "t_n02_s06": "U",
+        "t_k02_s02": "U",
+        "t_n04_s14": "U"
+      }
+    }
+  }
+}
