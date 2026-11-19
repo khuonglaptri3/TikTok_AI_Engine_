@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/intern-nvnguyen1/Project/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 0 items / 1 error
+
+==================================== ERRORS ====================================
+_________ ERROR collecting tests/unit/test_m5_1_comment_indicators.py __________
+ImportError while importing test module '/home/intern-nvnguyen1/Project/TikTok_AI_Engine_/tests/unit/test_m5_1_comment_indicators.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_m5_1_comment_indicators.py:14: in <module>
+    from packages.seeding.evaluation import (
+E   ModuleNotFoundError: No module named 'packages.seeding.evaluation'
+=========================== short test summary info ============================
+ERROR tests/unit/test_m5_1_comment_indicators.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+=============================== 1 error in 3.26s ===============================

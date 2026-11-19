@@ -255,7 +255,10 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                         "@khach_that_2: Thịt ít xịu tính thêm rau bún vô đắt chứ không rẻ như quảng cáo lố"
                     ),
                 )
-                hide_seed_chk = gr.Checkbox(value=True, label="Ẩn bình luận Seeding / Spam khỏi danh sách hiển thị")
+                hide_seed_chk = gr.Checkbox(
+                    value=False,
+                    label="Tạm ẩn bình luận có chỉ dấu trùng lặp/liên hệ/nhiễu (mặc định tắt — chế độ chẩn đoán M5.1)",
+                )
                 audit_btn = gr.Button("Phân Tích Mẫu Bình Luận Và Điểm ABSA", variant="primary")
                 t_audit_timings = gr.Markdown()
                 t_audit_md = gr.Markdown()

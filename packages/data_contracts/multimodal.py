@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -120,10 +120,21 @@ class CommentRecord(BaseModel):
     video_id: str
     author_handle: str
     text: str
+    original_text: str = ""
     like_count: int = Field(ge=0)
     reply_count: int = Field(ge=0)
     is_seeding: bool
     seeding_reason: str | None = None
+    observable_label: Literal[
+        "observable_duplicate",
+        "contact_or_link",
+        "noise_or_empty",
+        "template_phrase_match",
+        "no_indicator_observed",
+        "unknown_ambiguous",
+    ] = "no_indicator_observed"
+    observable_reason_codes: list[str] = Field(default_factory=list)
+    diagnostic_only: bool = True
     similarity_score: float = Field(default=0.0, ge=0.0, le=1.0)
     cluster_id: int | None = None
 
@@ -205,6 +216,15 @@ class TrustAuditResponse(BaseModel):
 
     comparison: AbsaComparisonRecord
     comments: list[CommentRecord]
+    comment_filter_policy: Literal[
+        "diagnostic_only_unvalidated",
+        "validated_filter_applied",
+    ] = "diagnostic_only_unvalidated"
+    comment_filter_note: str = (
+        "M5.1 auto-filtering requires >=150 human-annotated pilot comments "
+        "(macro precision >=0.85, recall >=0.60); showing observable diagnostic indicators without filtering."
+    )
+    filter_sensitivity: dict[str, Any] = Field(default_factory=dict)
     timings_ms: dict[str, float]
 
     @field_validator("timings_ms")
