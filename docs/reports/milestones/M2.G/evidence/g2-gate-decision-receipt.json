@@ -1,0 +1,31 @@
+{
+  "gate_id": "G2",
+  "task_id": "M2.G",
+  "decision": "PASS",
+  "decision_scope": "Narrow historical local CPU core (M2.1 analytics, M2.2 BM25 retrieval + query-intent guardrails, M2.3 offline grounded scripts) verified over immutable Gold snapshots with public corpus redistribution BLOCKED per G1. Does not authorize G3-G6, multimodal trust, live trends, live crawling, free-tier Gemini SLA, or public hosting.",
+  "task_status": "COMPLETE",
+  "decided_at": "2026-11-19T16:50:40+07:00",
+  "primary_owner": "Nguyễn Việt Nguyên (N)",
+  "peer_reviewer_and_approver": "Trần Đình Khương (K, read and concurred per user confirmation on 2026-11-19T16:50+07:00)",
+  "evaluated_branch": "main",
+  "evaluated_head": "dc595f04e527289ff4e84a6d5380eb9f5c95a621",
+  "prerequisite_gates": {
+    "G0": "PASS",
+    "G1": "PASS (local-only; public redistribution BLOCKED)"
+  },
+  "upstream_tasks": {
+    "M2.1": "COMPLETE",
+    "M2.2": "COMPLETE",
+    "M2.3": "COMPLETE"
+  },
+  "referenced_evidence_sha256": {
+    "docs/reports/milestones/M2.G/evidence/g2_verification_receipt.json": "7046f297b2edb3e0e76f76233b5d8572733d1f602238b2d3ee66f11805749ddf",
+    "artifacts/benchmarks/retrieval_v3_4_final_pilot.json": "d6e073faa6a82eea766ef4b19389c3110fdb43098ed13d0afd65c91f589e4ccf"
+  },
+  "tasks_explicitly_not_closed_by_this_gate": {
+    "M3.2": "IN_PROGRESS (awaiting N peer review)",
+    "M4.2": "IN_PROGRESS (awaiting N/K manual annotation & K review)",
+    "M5.1": "IN_PROGRESS (awaiting real comments from M3.3 / M3.G and K review)",
+    "M6.1": "IN_PROGRESS (awaiting multimodal/post-M2.G review)"
+  }
+}
