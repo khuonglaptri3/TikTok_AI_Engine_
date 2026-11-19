@@ -224,3 +224,54 @@ def test_sample_historical_review_100_invariants() -> None:
     assert sum(1 for r in items if r["review_assignment"] == "N_only") == 35
     assert sum(1 for r in items if r["review_assignment"] == "K_only") == 35
     assert all(not r["N_human_verified"] and not r["K_human_verified"] for r in items)
+
+
+def test_llm_blinded_prompt_strips_flags_and_validates_draft_schema() -> None:
+    from pipelines.audit_m4_2_disclosure.llm_draft_annotate import (
+        annotate_batch_with_client,
+        build_blinded_disclosure_prompt,
+    )
+
+    sample = [
+        {
+            "item_id": "m4_2_001",
+            "food_category": "Lẩu & Nướng",
+            "has_transcript": True,
+            "caption": "Lẩu ngon giảm giá 20%",
+            "transcript_excerpt": "Ghé ăn nhé",
+            "hashtags": ["ad", "quangcao", "monngon"],
+            "observed_flag_status": "observed_ad",
+            "N_human_verified": False,
+            "K_human_verified": False,
+        }
+    ]
+    prompt = build_blinded_disclosure_prompt(sample)
+    assert "observed_ad" not in prompt
+    assert '"ad"' not in prompt
+    assert "quangcao" not in prompt
+    assert "monngon" in prompt
+
+    class _FakeClient:
+        def generate_structured_json(self, _prompt: str, turn_calls_used: int = 0) -> dict[str, object]:
+            assert turn_calls_used == 0
+            return {
+                "items": [
+                    {
+                        "item_id": "m4_2_001",
+                        "llm_observed_wording_label": "explicit_promo_cta",
+                        "llm_observed_promo_phrases": ["giảm giá 20%"],
+                        "llm_domain_or_asr_error_note": "Có từ khóa giảm giá rõ ràng.",
+                        "llm_commercial_cue_evident": True,
+                    }
+                ]
+            }
+
+    annotated = annotate_batch_with_client(
+        sample,
+        client=_FakeClient(),
+        model_name="gemini-3.1-flash-lite",
+    )
+    assert annotated[0]["llm_observed_wording_label"] == "explicit_promo_cta"
+    assert annotated[0]["N_human_verified"] is False
+    assert annotated[0]["K_human_verified"] is False
+    assert annotated[0]["llm_blinded_to_platform_flag"] is True

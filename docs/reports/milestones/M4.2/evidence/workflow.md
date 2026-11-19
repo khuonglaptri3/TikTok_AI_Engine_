@@ -25,7 +25,8 @@
 
 - `.venv/bin/python -m pytest tests/unit/test_m4_2_disclosure.py -v` (RED) -> collection error ([red-m4_2-tests.log](red-m4_2-tests.log))
 - `.venv/bin/python -m pipelines.audit_m4_2_disclosure.run_study` -> `EXIT=0`, `all PR-AUC=0.8916, Brier=0.1323`; `transcribed PR-AUC=0.9184, Brier=0.1664` ([m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json))
-- `.venv/bin/python -m pytest -v` -> `EXIT=0`, `145 passed in 22.00s` ([m4_2-pytest.log](m4_2-pytest.log))
+- `.venv/bin/python -m pytest -v` -> `EXIT=0`, `146 passed in 22.26s` ([m4_2-pytest.log](m4_2-pytest.log))
 - `.venv/bin/python -m ruff check packages apps pipelines scripts tests/unit/test_m4_2_disclosure.py` -> `EXIT=0`, `All checks passed!` ([m4_2-ruff.log](m4_2-ruff.log))
 - `.venv/bin/python -m mypy packages apps pipelines` & `--platform win32` -> verified in [m4_2-mypy.log](m4_2-mypy.log) and [m4_2-mypy-win32.log](m4_2-mypy-win32.log)
+- `.venv/bin/python -m pipelines.audit_m4_2_disclosure.llm_draft_annotate --batch-size 10 --max-rpm 12 --min-interval-sec 5.0` -> `EXIT=0`, `100/100` annotated with `gemini-3.1-flash-lite`, `N_human_verified=false`, `K_human_verified=false` ([m4_2_llm_audit_summary.json](m4_2_llm_audit_summary.json))
 - `python3 scripts/check_secrets.py` -> verified in [m4_2-secrets.log](m4_2-secrets.log)

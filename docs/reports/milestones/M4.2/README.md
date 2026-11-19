@@ -34,6 +34,20 @@ Across all `70,996` records in `data/corpus/20261118_taxonomy_fix_v1`, `8.72%` o
   - Transcribed only (`n_train=1,111` / `111` authors, `n_test=601` / `48` authors): `PR-AUC = 0.9184` (`[0.8967, 0.9381]`), `Brier = 0.1664` (`[0.1578, 0.1753]`), `ECE = 0.1917`.
 - **Qualitative error/domain notes from initial `review_sample_100.jsonl` sample check:** `m4_2_002` (`unlabeled_unknown`) contains explicit check-in discount wording despite lacking platform flags; `m4_2_007` (`observed_ad`) is an MCN/boosted street-vendor review (`#vtmgr`) with `0` promo phrases; `m4_2_008` (`observed_ad`) praises a bakery brand with `0` discount phrases; `m4_2_004` illustrates ASR background-song lyric noise.
 
+## LLM-assisted blinded draft annotation (`100` items, `gemini-3.1-flash-lite`)
+
+To accelerate manual audit without leaking platform flags or fabricating human sign-off, all `100` items in `review_sample_100.jsonl` were annotated by Free-Tier `gemini-3.1-flash-lite` (`<= 12 RPM`, blinded to `observed_flag_status` and `#ad`/`#quangcao` hashtags) into [review_sample_100_llm_draft.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl) and [m4_2_llm_audit_summary.json](evidence/m4_2_llm_audit_summary.json). **Both `N_human_verified` and `K_human_verified` remain `false`.**
+
+| Observed Flag Stratum | `explicit_promo_cta` | `brand_or_venue_focus_no_cta` | `organic_or_general_review` | `unclear_or_noisy_text` | Total |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `observed_ad` | `9` | `7` | `9` | `0` | `25` |
+| `observed_ad_and_ecommerce` | `7` | `8` | `0` | `0` | `15` |
+| `observed_ecommerce` | `5` | `12` | `7` | `1` | `25` |
+| `unlabeled_unknown` | `4` | `10` | `16` | `5` | `35` |
+| **Total (`100` items)** | **`25`** | **`37`** | **`32`** | **`6`** | **`100`** |
+
+- **Blinded LLM vs regex promo lexicon agreement:** `both_positive = 18`, `llm_only = 29` (LLM detects un-templated price/gift pitches such as `"đồng giá 27k"`, `"được tặng quà"`, `"chỉ có 79.000"`), `lex_only = 9` (generic `"menu"`/`"buffet"` mentions), `both_negative = 44`. Also, `4/35` `unlabeled_unknown` items (`m4_2_002`, `m4_2_011`, `m4_2_022`, `m4_2_063`) were rated `explicit_promo_cta` and `10/35` `brand_or_venue_focus_no_cta` purely from observable text, reinforcing that `unlabeled_unknown` cannot serve as verified non-sponsored negatives, while `9/25` `observed_ad` items read as ordinary reviews despite platform flags.
+
 ## Outputs
 
 | File | Purpose |
@@ -41,9 +55,10 @@ Across all `70,996` records in `data/corpus/20261118_taxonomy_fix_v1`, `8.72%` o
 | [workflow.md](evidence/workflow.md) | Skill provenance, target-validity decisions, and command verification receipts |
 | [m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json) | Corpus strata summary, grouped PR-AUC/Brier metrics, feature weights, and SHA256 provenance |
 | [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl) | Deterministic `100`-item stratified historical audit sheet (`30` `double_review_N_K`, `35` `N_only`, `35` `K_only`) |
+| [review_sample_100_llm_draft.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl) / [m4_2_llm_audit_summary.json](evidence/m4_2_llm_audit_summary.json) | Flag-blinded `gemini-3.1-flash-lite` draft annotations (`100` items; `human_signoff_complete=false`) and cross-tabulation |
 | [test_m4_2_disclosure.py](../../../../tests/unit/test_m4_2_disclosure.py) | `6` TDD unit/API/UI regressions covering separation, unknown retention, leakage guards, and splits |
 | [m4_2-pytest.log](evidence/m4_2-pytest.log) / [red-m4_2-tests.log](evidence/red-m4_2-tests.log) | TDD RED import failure and post-edit full pytest suite (`145 passed in 22.00s`) |
-| [m4_2-mypy.log](evidence/m4_2-mypy.log) / [m4_2-mypy-win32.log](evidence/m4_2-mypy-win32.log) | Strict `mypy` across `87` source files (Linux & `--platform win32`) |
+| [m4_2-mypy.log](evidence/m4_2-mypy.log) / [m4_2-mypy-win32.log](evidence/m4_2-mypy-win32.log) | Strict `mypy` across `88` source files (Linux & `--platform win32`) |
 | [m4_2-ruff.log](evidence/m4_2-ruff.log) / [m4_2-secrets.log](evidence/m4_2-secrets.log) | Scoped Ruff lint pass and workspace secret scan (`0` leaks) |
 
 ## Verification
@@ -51,9 +66,9 @@ Across all `70,996` records in `data/corpus/20261118_taxonomy_fix_v1`, `8.72%` o
 | Check | Result | Scope / evidence |
 | --- | --- | --- |
 | `.venv/bin/python -m pipelines.audit_m4_2_disclosure.run_study` | PASS (`PR-AUC=0.8916`, `Brier=0.1323`) | Full `70,996` corpus study + `100`-item workbook; [m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json) |
-| `.venv/bin/python -m pytest -v` | PASS (`145 passed in 22.00s`) | Full repository suite including 6 M4.2 tests + trust/demo smoke; [m4_2-pytest.log](evidence/m4_2-pytest.log) |
+| `.venv/bin/python -m pytest -v` | PASS (`146 passed in 22.26s`) | Full repository suite including 7 M4.2 tests + trust/demo smoke; [m4_2-pytest.log](evidence/m4_2-pytest.log) |
 | `.venv/bin/python -m ruff check packages apps pipelines scripts tests/unit/test_m4_2_disclosure.py` | PASS (`All checks passed!`) | Source, scripts, and M4.2 tests; [m4_2-ruff.log](evidence/m4_2-ruff.log) |
-| `.venv/bin/python -m mypy packages apps pipelines` (+ `--platform win32`) | PASS (`87 source files` each) | Strict Linux & Windows static checks; [m4_2-mypy.log](evidence/m4_2-mypy.log) |
+| `.venv/bin/python -m mypy packages apps pipelines` (+ `--platform win32`) | PASS (`88 source files` each) | Strict Linux & Windows static checks; [m4_2-mypy.log](evidence/m4_2-mypy.log) |
 | `python3 scripts/check_secrets.py` | PASS (`0` leaks) | Full workspace secret hygiene; [m4_2-secrets.log](evidence/m4_2-secrets.log) |
 
 ## Open issues

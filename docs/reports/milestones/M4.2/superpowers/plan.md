@@ -26,3 +26,9 @@
    - Re-run full `pytest -v`, `ruff check`, `mypy packages apps pipelines`, `mypy --platform win32 packages apps pipelines`, and `python3 scripts/check_secrets.py` after final edits.
    - Author `docs/reports/milestones/M4.2/evidence/workflow.md`, `docs/reports/milestones/M4.2/README.md`, and add `M4.2` (`IN_PROGRESS`) to `docs/reports/milestones/README.md`.
    - Commit and push `feat/m4.2-observed-disclosure-promo`.
+5. **LLM-Assisted 100-Item Draft Annotation Addendum:**
+   - Add unit tests for blinded prompt building, strict enum validation, and non-fabrication of human sign-off (`N_human_verified=false`, `K_human_verified=false`).
+   - Implement `pipelines/audit_m4_2_disclosure/llm_draft_annotate.py` reusing `BoundedGeminiClient` (`<= 12 RPM`, blinded 10-item batches).
+   - Run live against `data/evaluation/m4_2_disclosure/review_sample_100.jsonl` -> emit `review_sample_100_llm_draft.jsonl` + `m4_2_llm_audit_summary.json`.
+   - Re-run full `pytest`, `ruff`, `mypy`, `check_secrets.py`, update `M4.2/README.md` + `workflow.md`, commit, and push.
+

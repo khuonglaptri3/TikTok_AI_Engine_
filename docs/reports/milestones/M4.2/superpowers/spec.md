@@ -29,3 +29,8 @@ Prior repository code (`packages/absa/analyzer.py`) combined platform flags (`is
    - Enforce automated feature-leakage rejection (`is_ad`, `is_ec_video`, `#ad`/`#quangcao` explicit disclosure tags, `commerce_user`, `undisclosed_pr_risk`, and any audio/prosody fields).
    - Report held-out PR-AUC, Brier score, and bootstrap 95% CIs exclusively for the genuine `is_ad_only` vs `is_ec_only` target; hidden-intent / undisclosed-sponsorship training stays `DEFERRED`.
 5. **Milestone Boundaries:** `M4.2` stays `IN_PROGRESS` until `N` and `K` complete the 100-text manual double-review (`30` overlap) and `K` verifies target validity and report wording.
+6. **LLM-Assisted Draft Audit Addendum (2026-11-19):**
+   - Use Free-Tier `gemini-3.1-flash-lite` via `BoundedGeminiClient` (`<= 12 RPM` sliding window, batches of 10 items) strictly as an **assistant draft** on `data/evaluation/m4_2_disclosure/review_sample_100.jsonl`, blinded to `observed_flag_status` and explicit `#ad`/`#quangcao` flag tags.
+   - Persist draft fields (`llm_observed_wording_label`, `llm_observed_promo_phrases`, `llm_domain_or_asr_error_note`, `llm_commercial_cue_evident`) into `data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl` and summary `docs/reports/milestones/M4.2/evidence/m4_2_llm_audit_summary.json`.
+   - Keep `review_sample_100.jsonl` byte-identical, keep `N_human_verified=false` and `K_human_verified=false`, and preserve `M4.2 = IN_PROGRESS`.
+
