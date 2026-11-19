@@ -150,6 +150,22 @@ class AbsaComparisonRecord(BaseModel):
     viewer_clean_scores: AspectSentimentScores
     pr_hype_gap: float = Field(ge=-2.0, le=2.0)
     undisclosed_pr_risk: float = Field(ge=0.0, le=1.0)
+    disclosure_flag_status: Literal[
+        "observed_ad",
+        "observed_ecommerce",
+        "observed_ad_and_ecommerce",
+        "unlabeled_unknown",
+    ] = "unlabeled_unknown"
+    promotional_language_indicators: list[str] = Field(default_factory=list)
+    lexical_promo_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    sponsorship_ground_truth_status: Literal["undisclosed_sponsorship_deferred"] = (
+        "undisclosed_sponsorship_deferred"
+    )
+    disclosure_target_note: str = (
+        "Platform flags (is_ad / is_ec_video) indicate observed platform metadata only; "
+        "unlabeled items remain unlabeled_unknown (not verified negative), "
+        "and undisclosed sponsorship prediction remains deferred."
+    )
     viewer_pain_points: list[str]
     clean_comment_count: int = Field(ge=0)
     seeding_comment_count: int = Field(ge=0)

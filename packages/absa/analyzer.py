@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import unicodedata
 
+from packages.absa.disclosure import analyze_disclosure_and_promo
 from packages.data_contracts.multimodal import (
     AbsaComparisonRecord,
     AspectSentimentScores,
@@ -242,7 +243,15 @@ def analyze_koc_vs_viewer_absa(
     )
     hype_gap = round(koc_mean - viewer_mean, 4)
 
-    # Undisclosed PR risk combines promo phrasing, one-sided praise, seeding ratio, and hype gap
+    # M4.2 separated disclosure/commerce flags and lexical promotional cues
+    disclosure_info = analyze_disclosure_and_promo(
+        caption=caption,
+        transcript=transcript,
+        is_ad=is_ad,
+        is_ec_video=is_ec_video,
+    )
+
+    # Deprecated compatibility heuristic score (never an undisclosed sponsorship probability)
     combined_lower = unicodedata.normalize("NFC", f"{caption} {transcript}").lower()
     promo_hits = sum(1 for kw in PR_PROMO_SIGNALS if kw in combined_lower)
     seeding_ratio = (seeding_count / len(comments)) if comments else 0.0
@@ -264,6 +273,11 @@ def analyze_koc_vs_viewer_absa(
         viewer_clean_scores=viewer_scores,
         pr_hype_gap=hype_gap,
         undisclosed_pr_risk=pr_risk,
+        disclosure_flag_status=disclosure_info.disclosure_flag_status,
+        promotional_language_indicators=disclosure_info.matched_indicators,
+        lexical_promo_score=disclosure_info.lexical_promo_score,
+        sponsorship_ground_truth_status=disclosure_info.sponsorship_ground_truth_status,
+        disclosure_target_note=disclosure_info.disclosure_target_note,
         viewer_pain_points=viewer_pains,
         clean_comment_count=len(clean_comments),
         seeding_comment_count=seeding_count,
