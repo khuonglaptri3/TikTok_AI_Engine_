@@ -1,0 +1,211 @@
+{"slot_id": "d_k01_s01", "query_id": "d_k01", "video_id": "7384377160867319056", "rel": "0", "note": "Reviews savory 99k vegetable and tofu hotpot buffet in Saigon, not sweet ginger tofu."}
+{"slot_id": "d_k01_s02", "query_id": "d_k01", "video_id": "7323069999935966466", "rel": "0", "note": "Features savory hủ tiếu bò viên with stuffed tofu, not sweet tàu hũ nước đường."}
+{"slot_id": "d_k01_s03", "query_id": "d_k01", "video_id": "7477964078212861192", "rel": "0", "note": "Reviews cold jasmine-syrup tào phớ in Hanoi rather than hot ginger tàu hũ in Saigon."}
+{"slot_id": "d_k01_s04", "query_id": "d_k01", "video_id": "7337584304937061650", "rel": "0", "note": "Saigon ginger-syrup tofu pudding is explicitly served cold with ice cream, not hot."}
+{"slot_id": "d_k01_s05", "query_id": "d_k01", "video_id": "7393297425047227655", "rel": "0", "note": "Reviews savory Hanoi-style bánh đúc nóng in Phú Nhuận, wrong dish."}
+{"slot_id": "d_k01_s06", "query_id": "d_k01", "video_id": "7382173983396891911", "rel": "0", "note": "Home soy-curd recipe without ginger sugar syrup or any Saigon location."}
+{"slot_id": "d_k01_s07", "query_id": "d_k01", "video_id": "7471200100279143688", "rel": "0", "note": "Features savory fried Teochew yellow tofu with chive salt in Q5, not sweet ginger tofu."}
+{"slot_id": "d_k01_s08", "query_id": "d_k01", "video_id": "7351002740367101192", "rel": "0", "note": "Cooks black-bean rice and savory seafood soft-tofu soup, unrelated to sweet ginger tofu."}
+{"slot_id": "d_k01_s09", "query_id": "d_k01", "video_id": "7319871481926700296", "rel": "U", "note": "Matches warm ginger-syrup tàu hũ mukbang, but text gives no location to verify Saigon."}
+{"slot_id": "d_k01_s10", "query_id": "d_k01", "video_id": "7340223793954114818", "rel": "0", "note": "Reviews 30k bún riêu cua in Saigon, unrelated dish."}
+{"slot_id": "d_k01_s11", "query_id": "d_k01", "video_id": "7390346525395717396", "rel": "0", "note": "Home black-bean tofu tutorial with no ginger syrup or Saigon location."}
+{"slot_id": "d_k01_s12", "query_id": "d_k01", "video_id": "7386592460710907156", "rel": "0", "note": "Reviews tào phớ with jasmine or osmanthus syrup in Ba Đình, Hanoi, not Saigon."}
+{"slot_id": "d_k01_s13", "query_id": "d_k01", "video_id": "7407038855506873617", "rel": "0", "note": "Reviews broken rice (cơm tấm) in District 1 with braised tofu, wrong dish."}
+{"slot_id": "d_k01_s14", "query_id": "d_k01", "video_id": "7384665442318667024", "rel": "0", "note": "Reviews giant-pot bún riêu in Tân Phú, wrong dish."}
+{"slot_id": "d_k01_s15", "query_id": "d_k01", "video_id": "7451079480107355393", "rel": "1", "note": "Caption explicitly features 18k hot ginger-syrup tàu hũ shop in Gò Vấp, Saigon."}
+{"slot_id": "d_k02_s01", "query_id": "d_k02", "video_id": "7407787847077399826", "rel": "0", "note": "Home beef salad caption for husbands with song-lyric audio, not an evening quán nhậu."}
+{"slot_id": "d_k02_s02", "query_id": "d_k02", "video_id": "7428086724254764306", "rel": "1", "note": "Reviews Chợ Xưa alley quán nhậu in Phú Nhuận serving over 200 savory drinking dishes."}
+{"slot_id": "d_k02_s03", "query_id": "d_k02", "video_id": "7362546761807760647", "rel": "1", "note": "Reviews Thôn Yang Kỳ quán nhậu in Gò Vấp for casual lai rai with friends."}
+{"slot_id": "d_k02_s04", "query_id": "d_k02", "video_id": "7473804084722666760", "rel": "1", "note": "Reviews Lửa BBQ street-style quán nhậu lai rai in Bình Thạnh with beer and snacks."}
+{"slot_id": "d_k02_s05", "query_id": "d_k02", "video_id": "7415544379009486098", "rel": "1", "note": "Reviews budget Hanoi-style quán nhậu in District 1 featuring bén mồi dishes for groups."}
+{"slot_id": "d_k02_s06", "query_id": "d_k02", "video_id": "7397439975651855634", "rel": "0", "note": "Generic promo for a Thai restaurant with two-word transcript, not a quán nhậu lai rai."}
+{"slot_id": "d_k02_s07", "query_id": "d_k02", "video_id": "7450017020239695111", "rel": "1", "note": "Reviews Tân Quán Đêm evening quán nhậu in District 5 popular for gathering with friends."}
+{"slot_id": "d_k02_s08", "query_id": "d_k02", "video_id": "7470107071137074450", "rel": "1", "note": "Reviews Đặc Khu 86 Hong Kong-style evening quán nhậu with dried squid for friends."}
+{"slot_id": "d_k02_s09", "query_id": "d_k02", "video_id": "7403564360783678728", "rel": "0", "note": "Reviews a budget vegan eatery serving rice, udon, and bánh mì chảo, not mồi bén nhậu."}
+{"slot_id": "d_k02_s10", "query_id": "d_k02", "video_id": "7367755806487465234", "rel": "1", "note": "Reviews Hanoi-style quán nhậu in Saigon with draft beer and savory lai rai dishes."}
+{"slot_id": "d_k02_s11", "query_id": "d_k02", "video_id": "7351718924234312961", "rel": "1", "note": "Reviews Mộc Riêu & Nướng evening quán nhậu in Tân Bình for lai rai with friends."}
+{"slot_id": "d_k02_s12", "query_id": "d_k02", "video_id": "7461262284078189832", "rel": "1", "note": "Reviews Chichi Korean-style late-night quán nhậu in District 1 with bắt mồi dishes."}
+{"slot_id": "d_n01_s01", "query_id": "d_n01", "video_id": "7388389453255003399", "rel": "1", "note": "Reviews crispy-skin roast pork bánh mì cart operating from 5:30 AM in Cần Thơ."}
+{"slot_id": "d_n01_s02", "query_id": "d_n01", "video_id": "7400627495596215569", "rel": "0", "note": "Reviews morning cold-cut bánh mì thịt nguội and cốm in Hanoi, not roast pork bánh mì."}
+{"slot_id": "d_n01_s03", "query_id": "d_n01", "video_id": "7408411385861836040", "rel": "0", "note": "Lifestyle vlog mentioning pate bánh mì and touring a new house, no crispy roast pork."}
+{"slot_id": "d_n01_s04", "query_id": "d_n01", "video_id": "7312792395802823938", "rel": "1", "note": "Reviews budget Thoại Ngọc Hầu stall selling crispy roast pork bánh mì and bánh hỏi."}
+{"slot_id": "d_n01_s05", "query_id": "d_n01", "video_id": "7426594014222126344", "rel": "0", "note": "Reviews pan-grilled meat (nướng chảo) in Hanoi, unrelated to roast pork bánh mì."}
+{"slot_id": "d_n01_s06", "query_id": "d_n01", "video_id": "7423049590825340181", "rel": "0", "note": "Reviews Bánh mì PewPew mixed thập cẩm and honey grilled chicken sandwiches, not crispy heo quay."}
+{"slot_id": "d_n01_s07", "query_id": "d_n01", "video_id": "7442490172878392594", "rel": "0", "note": "Mukbang of generic meat bánh mì at home without crispy-skin roast pork or morning setting."}
+{"slot_id": "d_n01_s08", "query_id": "d_n01", "video_id": "7392429774674693384", "rel": "0", "note": "Mukbang of Cambodian grilled beef and pork bánh mì, not crispy roast pork."}
+{"slot_id": "d_n01_s09", "query_id": "d_n01", "video_id": "7332823915150003474", "rel": "0", "note": "Tet market tour spotting a roast pork stall at Phạm Văn Hai market, not bánh mì."}
+{"slot_id": "d_n01_s10", "query_id": "d_n01", "video_id": "7458282316180294919", "rel": "0", "note": "Reviews pre-cooked Tet food combos (salted chicken, nem rán, bánh chưng), not bánh mì."}
+{"slot_id": "d_n01_s11", "query_id": "d_n01", "video_id": "7404742320035237138", "rel": "1", "note": "Features crispy-skin roast pork bánh mì at Kim Mai stall in District 6 sold from morning."}
+{"slot_id": "d_n01_s12", "query_id": "d_n01", "video_id": "7454931024636693778", "rel": "0", "note": "Reviews late-night grilled chicken feet and wings in Hanoi, only comparing skin to heo quay."}
+{"slot_id": "d_n01_s13", "query_id": "d_n01", "video_id": "7366597308307229959", "rel": "0", "note": "Reviews fried fish-cake and shrimp-cake bánh mì, not roast pork bánh mì."}
+{"slot_id": "d_n01_s14", "query_id": "d_n01", "video_id": "7469379954074029330", "rel": "0", "note": "Home recipe frying leftover Tet roast pork with satay lemongrass for rice, not morning bánh mì."}
+{"slot_id": "d_n01_s15", "query_id": "d_n01", "video_id": "7309066313882799362", "rel": "0", "note": "Challenge eating grilled street skewers with students in Đà Nẵng, unrelated to bánh mì."}
+{"slot_id": "d_n02_s01", "query_id": "d_n02", "video_id": "7320233201027288322", "rel": "1", "note": "Shares eat-clean calorie-deficit lunch menu (boiled lean pork, greens) for weight loss and fitness."}
+{"slot_id": "d_n02_s02", "query_id": "d_n02", "video_id": "7359944471309520136", "rel": "1", "note": "Teaches healthy brown-rice bún sườn chua recipe for eat-clean diet and maintaining physique."}
+{"slot_id": "d_n02_s03", "query_id": "d_n02", "video_id": "7353996310996864257", "rel": "1", "note": "Presents daily eat-clean calorie-deficit meals with boiled chicken breast, tofu, fish, and brown rice."}
+{"slot_id": "d_n02_s04", "query_id": "d_n02", "video_id": "7382941076165856528", "rel": "U", "note": "Eat-clean tagged reply monologue shows breakfast visually but names no foods or menu in text."}
+{"slot_id": "d_n02_s05", "query_id": "d_n02", "video_id": "7390614337729105159", "rel": "0", "note": "Eating challenge trying to finish five bags of dry rations (lương khô), not diet menu."}
+{"slot_id": "d_n02_s06", "query_id": "d_n02", "video_id": "7381456331623910657", "rel": "1", "note": "Shares daily eat-clean breakfast and lunch menu with eggs, chicken, boiled greens, and brown rice."}
+{"slot_id": "d_n02_s07", "query_id": "d_n02", "video_id": "7407803443307351312", "rel": "0", "note": "Explicitly documents a calorie-surplus day (tăng calo) eating a burger and white rice."}
+{"slot_id": "d_n02_s08", "query_id": "d_n02", "video_id": "7346574936963566850", "rel": "1", "note": "Details eat-clean calorie-deficit menu with chicken breast, mushrooms, boiled greens, brown rice, and nuts."}
+{"slot_id": "d_n02_s09", "query_id": "d_n02", "video_id": "7354600210435181841", "rel": "1", "note": "Reviews mì chũ for low-oil eat-clean meals and a 1200-kcal fat-loss diet plan."}
+{"slot_id": "d_n02_s10", "query_id": "d_n02", "video_id": "7400383207968902416", "rel": "1", "note": "Shares time-saving low-calorie eat-clean meals cutting oil via boiled pork, soup, and low-fat milk."}
+{"slot_id": "d_n02_s11", "query_id": "d_n02", "video_id": "7469775229057797394", "rel": "1", "note": "Explains TDEE and a 1300-1500 kcal eat-clean meal structure for waist-slimming calorie deficit."}
+{"slot_id": "d_n02_s12", "query_id": "d_n02", "video_id": "7354367778591083793", "rel": "1", "note": "Shares filling eat-clean fat-loss menu with pumpkin oatmeal breakfast and boiled pork sweet-potato lunch."}
+{"slot_id": "d_k03_s01", "query_id": "d_k03", "video_id": "7346619900380663070", "rel": "1", "note": "Reviews hand-steamed hot bánh cuốn stuffed generously with pork and wood-ear mushroom in Hanoi."}
+{"slot_id": "d_k03_s02", "query_id": "d_k03", "video_id": "7343118118287379713", "rel": "0", "note": "Reviews Hạ Long-style bánh cuốn chả mực in District 5, HCMC, not Hanoi."}
+{"slot_id": "d_k03_s03", "query_id": "d_k03", "video_id": "7377787425692716289", "rel": "0", "note": "Reviews bánh đúc nóng in Hanoi, only comparing its pork-mushroom filling to bánh cuốn."}
+{"slot_id": "d_k03_s04", "query_id": "d_k03", "video_id": "7450808660139494674", "rel": "1", "note": "Reviews traditional hot steamed bánh cuốn stuffed with savory minced pork in Ba Đình, Hanoi."}
+{"slot_id": "d_k03_s05", "query_id": "d_k03", "video_id": "7448986811780680968", "rel": "U", "note": "Reviews Hanoi bánh cuốn with whole cà cuống and shrimp floss, pork-mushroom filling unconfirmed."}
+{"slot_id": "d_k03_s06", "query_id": "d_k03", "video_id": "7414507682553416978", "rel": "1", "note": "Reviews hand-steamed bánh cuốn at Thành Công market, Hanoi, packed with pork and wood-ear mushroom."}
+{"slot_id": "d_k03_s07", "query_id": "d_k03", "video_id": "7483111505601301768", "rel": "1", "note": "Reviews Ông Tới bánh cuốn in Hanoi featuring generous minced pork and wood-ear mushroom filling."}
+{"slot_id": "d_k03_s08", "query_id": "d_k03", "video_id": "7414458540884266248", "rel": "0", "note": "Features Cao Bằng bone-broth bánh cuốn canh explicitly made without wood-ear mushroom, not Hanoi style."}
+{"slot_id": "d_k03_s09", "query_id": "d_k03", "video_id": "7367600304570862849", "rel": "1", "note": "Reviews thin-steamed Hanoi bánh cuốn with wood-ear mushroom, fried shallots, chả quế, and dipping sauce."}
+{"slot_id": "d_k03_s10", "query_id": "d_k03", "video_id": "7469429347217067280", "rel": "0", "note": "Reviews late-night bánh cuốn and balut at Lạch Tray in Hải Phòng, not Hanoi."}
+{"slot_id": "d_k03_s11", "query_id": "d_k03", "video_id": "7477072596782058759", "rel": "1", "note": "Reviews Bánh Cuốn Quân Chi in Hanoi ordering bánh cuốn with minced pork and wood-ear mushroom."}
+{"slot_id": "d_k03_s12", "query_id": "d_k03", "video_id": "7319858739299798273", "rel": "1", "note": "Mukbang of Hanoi-specialty Thanh Trì bánh cuốn featuring minced pork and wood-ear mushroom filling."}
+{"slot_id": "d_k04_s01", "query_id": "d_k04", "video_id": "7478587871893523728", "rel": "1", "note": "Reviews A Mẹt beef vinegar hotpot cooked with fresh coconut water and vinegar."}
+{"slot_id": "d_k04_s02", "query_id": "d_k04", "video_id": "7357210392759700737", "rel": "1", "note": "Reviews Hanoi lẩu bò nhúng dấm with sweet, mild coconut-water and vinegar broth."}
+{"slot_id": "d_k04_s03", "query_id": "d_k04", "video_id": "7325727563568008456", "rel": "U", "note": "Reviews Hanoi bò nhúng dấm, but transcript truncates mid-sentence before naming broth ingredients."}
+{"slot_id": "d_k04_s04", "query_id": "d_k04", "video_id": "7422284701571812616", "rel": "1", "note": "Reviews Hanoi bò nhúng dấm pouring fresh Siamese coconut water into sweet, refreshing vinegar broth."}
+{"slot_id": "d_k04_s05", "query_id": "d_k04", "video_id": "7307837655968992513", "rel": "U", "note": "Reviews Trần Khát Chân bò nhúng giấm focusing on fresh beef cuts, coconut broth unconfirmed."}
+{"slot_id": "d_k04_s06", "query_id": "d_k04", "video_id": "7444030342857723143", "rel": "1", "note": "Reviews District 5 beef and octopus vinegar hotpot cooked with fresh coconut water."}
+{"slot_id": "d_k04_s07", "query_id": "d_k04", "video_id": "7461575126706834696", "rel": "U", "note": "Reviews Bảo Phương lẩu bò nhúng dấm relocation promo without describing coconut-water broth."}
+{"slot_id": "d_k04_s08", "query_id": "d_k04", "video_id": "7398893183771446536", "rel": "U", "note": "Caption mentions Gò Vấp lẩu bò nhúng dấm, but transcript is song lyrics without broth details."}
+{"slot_id": "d_k04_s09", "query_id": "d_k04", "video_id": "7435157644496637191", "rel": "U", "note": "Reviews Gia Phát lẩu bò nhúng giấm grand opening and dipping sauce, coconut broth unmentioned."}
+{"slot_id": "d_k04_s10", "query_id": "d_k04", "video_id": "7306497020087356680", "rel": "1", "note": "Reviews Hanoi bò nhúng giấm pouring whole Siamese coconut into sweet, refreshing vinegar broth."}
+{"slot_id": "d_k04_s11", "query_id": "d_k04", "video_id": "7424150375860587783", "rel": "1", "note": "Reviews bò nhúng dấm using 100% fresh coconut water with light fruity vinegar tang."}
+{"slot_id": "d_k04_s12", "query_id": "d_k04", "video_id": "7465720817251257608", "rel": "U", "note": "Reviews Thanh Phát bò nhúng giấm praising sweet-sour broth, but coconut water is not mentioned."}
+{"slot_id": "d_n03_s01", "query_id": "d_n03", "video_id": "7389217471254859016", "rel": "0", "note": "Reviews Gáy Sớm cơm gà xối mỡ in District 6, not District 1."}
+{"slot_id": "d_n03_s02", "query_id": "d_n03", "video_id": "7420511330886536455", "rel": "U", "note": "Fragmentary cơm gà xối mỡ eating clip with no location or District 1 evidence."}
+{"slot_id": "d_n03_s03", "query_id": "d_n03", "video_id": "7387261794957397255", "rel": "0", "note": "Home cooking tutorial for cơm gà xối mỡ, not a District 1 eatery."}
+{"slot_id": "d_n03_s04", "query_id": "d_n03", "video_id": "7379229976865950983", "rel": "0", "note": "Home air-fryer cơm gà xối mỡ recipe, not a District 1 eatery."}
+{"slot_id": "d_n03_s05", "query_id": "d_n03", "video_id": "7364387843101314312", "rel": "0", "note": "Home product review and recipe for seaweed soup, not District 1 cơm gà xối mỡ."}
+{"slot_id": "d_n03_s06", "query_id": "d_n03", "video_id": "7423295147531586823", "rel": "0", "note": "Home ASMR mukbang of crispy chicken rice with no District 1 restaurant context."}
+{"slot_id": "d_n03_s07", "query_id": "d_n03", "video_id": "7372171793873833223", "rel": "0", "note": "Caption locates the chicken rice shop in Gò Vấp (with song-lyric audio), not District 1."}
+{"slot_id": "d_n03_s08", "query_id": "d_n03", "video_id": "7462969249695386888", "rel": "0", "note": "Reviews Phú Ký Chinese rice shop in District 11, not District 1."}
+{"slot_id": "d_n03_s09", "query_id": "d_n03", "video_id": "7437362206490119431", "rel": "1", "note": "Reviews famous District 1 cơm gà xối mỡ shop using continuous hot-oil machine for crispy skin."}
+{"slot_id": "d_n03_s10", "query_id": "d_n03", "video_id": "7385092297865628936", "rel": "0", "note": "Reviews Huy Phương cơm gà xối mỡ in Tân Phú District, not District 1."}
+{"slot_id": "d_n03_s11", "query_id": "d_n03", "video_id": "7392194078324083976", "rel": "0", "note": "Reviews delivery cơm gà xối mỡ in Hanoi, not District 1."}
+{"slot_id": "d_n03_s12", "query_id": "d_n03", "video_id": "7396987055810546960", "rel": "0", "note": "Home recipe frying market-bought chicken drumsticks at home rather than dining in District 1."}
+{"slot_id": "d_k05_s01", "query_id": "d_k05", "video_id": "7387712842968943880", "rel": "U", "note": "Mentions self-serve sauce table at bún đậu buffet without confirming whether nước mắm is available."}
+{"slot_id": "d_k05_s02", "query_id": "d_k05", "video_id": "7339594399103470849", "rel": "0", "note": "Mukbang of xôi thịt kho that only mentions bún đậu chấm nước mắm as a joke."}
+{"slot_id": "d_k05_s03", "query_id": "d_k05", "video_id": "7427444389653351687", "rel": "0", "note": "Reviews traditional Hanoi-style bún đậu mắm tôm with no fish-sauce alternative mentioned."}
+{"slot_id": "d_k05_s04", "query_id": "d_k05", "video_id": "7374208393097022737", "rel": "0", "note": "Explicitly praises bún đậu mắm tôm with no fish-sauce alternative."}
+{"slot_id": "d_k05_s05", "query_id": "d_k05", "video_id": "7388759168498404626", "rel": "0", "note": "Reviews bún đậu mắm tôm in Hạ Long with no fish-sauce alternative."}
+{"slot_id": "d_k05_s06", "query_id": "d_k05", "video_id": "7324554679562636545", "rel": "0", "note": "Reviews Saigon bún đậu mắm tôm shop with no mention of dipping in fish sauce."}
+{"slot_id": "d_k05_s07", "query_id": "d_k05", "video_id": "7418177904305032466", "rel": "0", "note": "Heavily features dipping bún đậu in mắm tôm, violating the không mắm tôm constraint."}
+{"slot_id": "d_k05_s08", "query_id": "d_k05", "video_id": "7383668860857224466", "rel": "U", "note": "Mentions diverse dipping sauces at a bún đậu buffet, but text does not confirm nước mắm."}
+{"slot_id": "d_k05_s09", "query_id": "d_k05", "video_id": "7441430927315717383", "rel": "1", "note": "Bún đậu buffet explicitly offers sweet-savory fish sauce (nước mắm) alongside non-mắm-tôm sauces."}
+{"slot_id": "d_k05_s10", "query_id": "d_k05", "video_id": "7402952365583731976", "rel": "0", "note": "Eats mắm tôm and mocks dipping bún đậu in nước mắm, violating the negation."}
+{"slot_id": "d_k05_s11", "query_id": "d_k05", "video_id": "7403205386519514386", "rel": "1", "note": "Buffet with bún đậu toppings explicitly provides sweet-sour fish sauce (mắm chua ngọt) option."}
+{"slot_id": "d_k05_s12", "query_id": "d_k05", "video_id": "7432155982899203336", "rel": "1", "note": "Bún đậu buffet explicitly offers savory and sweet-sour fish sauces alongside non-mắm-tôm options."}
+{"slot_id": "d_k05_s13", "query_id": "d_k05", "video_id": "7349915651475131655", "rel": "0", "note": "Reviewer orders mắm tôm for both portions, mentioning nước mắm only as a past habit."}
+{"slot_id": "d_n04_s01", "query_id": "d_n04", "video_id": "7326526785108102408", "rel": "U", "note": "Simmers family seafood hotpot bone broth, but truncates right before naming packaged sauce spiciness."}
+{"slot_id": "d_n04_s02", "query_id": "d_n04", "video_id": "7456758489818402066", "rel": "0", "note": "Recipe for fermented sugarcane drink, only mentioning seafood as a figure of speech."}
+{"slot_id": "d_n04_s03", "query_id": "d_n04", "video_id": "7323204398123928833", "rel": "0", "note": "Teaches Tet fish-maw seafood soup (súp hải sản), not seafood hotpot (lẩu hải sản)."}
+{"slot_id": "d_n04_s04", "query_id": "d_n04", "video_id": "7325582549378485522", "rel": "U", "note": "Cooks family seafood hotpot, but transcript discusses Tet decorations without describing broth spiciness."}
+{"slot_id": "d_n04_s05", "query_id": "d_n04", "video_id": "7407016352247975176", "rel": "0", "note": "Reviews a general seafood buffet in District 10 with no mention of seafood hotpot."}
+{"slot_id": "d_n04_s06", "query_id": "d_n04", "video_id": "7400604010463497490", "rel": "0", "note": "Reviews traditional scallop XO mooncakes in Chợ Lớn, unrelated to seafood hotpot."}
+{"slot_id": "d_n04_s07", "query_id": "d_n04", "video_id": "7332464375103524104", "rel": "0", "note": "Recipe for seafood mayonnaise fried spring rolls (chả giò), not seafood hotpot."}
+{"slot_id": "d_n04_s08", "query_id": "d_n04", "video_id": "7359438348307467541", "rel": "0", "note": "Solo mini hotpot with spicy Thai and Sichuan broths (cay the the), violating không cay."}
+{"slot_id": "d_n04_s09", "query_id": "d_n04", "video_id": "7348391546280086792", "rel": "0", "note": "Reviews a 139k grill and buffet restaurant in Tân Phú without seafood hotpot."}
+{"slot_id": "d_n04_s10", "query_id": "d_n04", "video_id": "7450108486114938119", "rel": "U", "note": "Cooks winter seafood hotpot in Japan, but truncated transcript omits broth flavor and spiciness."}
+{"slot_id": "d_n04_s11", "query_id": "d_n04", "video_id": "7408158080866848018", "rel": "0", "note": "Teaches stir-fried seafood glass noodles (miến xào hải sản), not seafood hotpot."}
+{"slot_id": "d_n04_s12", "query_id": "d_n04", "video_id": "7426717828922871048", "rel": "0", "note": "Explicitly cooks spicy-sour seafood hotpot (chua chua cay cay), violating không cay."}
+{"slot_id": "d_n04_s13", "query_id": "d_n04", "video_id": "7354277301992852753", "rel": "0", "note": "Reviews family seafood hotpot with tangy-spicy broth (nước lẩu chua cay), violating không cay."}
+{"slot_id": "d_n04_s14", "query_id": "d_n04", "video_id": "7333113302937029890", "rel": "0", "note": "Reviews a Mũi Né seafood and claypot rice restaurant with no seafood hotpot mentioned."}
+{"slot_id": "d_n04_s15", "query_id": "d_n04", "video_id": "7348416608861211912", "rel": "U", "note": "Caption states family steamed seafood porridge hotpot, but transcript truncates before cooking and seasoning."}
+{"slot_id": "d_n05_s01", "query_id": "d_n05", "video_id": "7421535709342846226", "rel": "1", "note": "Reviews Tiny Tea 100% fresh syrup-free fruit tea shop in Hanoi with no milk tea."}
+{"slot_id": "d_n05_s02", "query_id": "d_n05", "video_id": "7366855229796666632", "rel": "1", "note": "Reviews refreshing 1.3L fresh tropical fruit teas in District 5 with no milk tea."}
+{"slot_id": "d_n05_s03", "query_id": "d_n05", "video_id": "7323520448514297095", "rel": "1", "note": "Centers on fresh soursop and mixed fruit teas in District 1 without promoting milk tea."}
+{"slot_id": "d_n05_s04", "query_id": "d_n05", "video_id": "7347927387595705602", "rel": "1", "note": "Reviews refreshing natural fruit teas (tropical, longan, passionfruit jackfruit) with no syrup or milk tea."}
+{"slot_id": "d_n05_s05", "query_id": "d_n05", "video_id": "7326408065874480385", "rel": "1", "note": "Reviews A Bảo shop selling refreshing fresh fruit teas and longan drink with no milk tea."}
+{"slot_id": "d_n05_s06", "query_id": "d_n05", "video_id": "7331706049117883649", "rel": "1", "note": "Reviews Hana 100% fresh tropical fruit tea with strawberry, pink guava, and soursop."}
+{"slot_id": "d_n05_s07", "query_id": "d_n05", "video_id": "7374353004092198151", "rel": "1", "note": "Focuses on syrup-free fresh fruit teas at Karma Tea Club, only briefly noting milk tea exists."}
+{"slot_id": "d_n05_s08", "query_id": "d_n05", "video_id": "7319362544043330818", "rel": "1", "note": "Reviews refreshing hand-pounded fresh fruit teas (acerola, pink guava, grape, lime) in Tân Phú."}
+{"slot_id": "d_n05_s09", "query_id": "d_n05", "video_id": "7475684999371525383", "rel": "0", "note": "Promotes fruit panna cotta dessert at a milk-tea shop, not fresh fruit tea."}
+{"slot_id": "d_n05_s10", "query_id": "d_n05", "video_id": "7375110718871440647", "rel": "1", "note": "Reviews 25k fresh fruit tea stall in District 10 using daily-prepared fresh fruit."}
+{"slot_id": "d_n05_s11", "query_id": "d_n05", "video_id": "7471166900467289352", "rel": "1", "note": "Reviews District 3 street cart selling fresh peach, guava, passionfruit, and tropical fruit teas."}
+{"slot_id": "d_n05_s12", "query_id": "d_n05", "video_id": "7412593875048484114", "rel": "1", "note": "Reviews syrup-free, lightly sweet fresh fruit teas (plus Thai bear milk) in Tân Phú."}
+{"slot_id": "d_n05_s13", "query_id": "d_n05", "video_id": "7359574033039363345", "rel": "0", "note": "Reviews avocado-durian ice cream in Phú Nhuận, only mentioning fruit tea in a promo price."}
+{"slot_id": "d_k06_s01", "query_id": "d_k06", "video_id": "7454167127579282689", "rel": "0", "note": "Reviewer orders and reviews bún Thái Tom Yum in Hanoi, only mentioning bún riêu on menu."}
+{"slot_id": "d_k06_s02", "query_id": "d_k06", "video_id": "7385537887955094791", "rel": "1", "note": "Reviews a Hanoi bún riêu shop praising rich crab roe and crab meat broth."}
+{"slot_id": "d_k06_s03", "query_id": "d_k06", "video_id": "7364757047985966354", "rel": "1", "note": "Reviews a 31-year Hanoi bún riêu shop with flavorful sour broth, crab roe, and tóp mỡ."}
+{"slot_id": "d_k06_s04", "query_id": "d_k06", "video_id": "7376639476396838162", "rel": "1", "note": "Reviews Hanoi bún riêu featuring 100% freshwater crab roe and rich, flavorful tomato broth."}
+{"slot_id": "d_k06_s05", "query_id": "d_k06", "video_id": "7356917230602358024", "rel": "1", "note": "Reviews Hoàng Gia shop in Cầu Giấy, Hanoi, including crab-roe bún riêu with full toppings."}
+{"slot_id": "d_k06_s06", "query_id": "d_k06", "video_id": "7482398590322019592", "rel": "1", "note": "Reviews Cầu Giấy bún riêu using 100% pure freshwater crab roe and balanced flavorful broth."}
+{"slot_id": "d_k06_s07", "query_id": "d_k06", "video_id": "7333173918741662994", "rel": "1", "note": "Reviews Hàng Mã bún riêu stall in Hoàn Kiếm, Hanoi, serving tangy riêu broth and toppings."}
+{"slot_id": "d_k06_s08", "query_id": "d_k06", "video_id": "7397287783963839745", "rel": "1", "note": "Reviews Huỳnh Anh bún riêu cua in Hanoi with flavorful broth, shrimp paste, and tóp mỡ."}
+{"slot_id": "d_k06_s09", "query_id": "d_k06", "video_id": "7433044030914678024", "rel": "1", "note": "Reviews Quang Trung bún riêu in Hanoi with flavorful vinegar broth and generous pure crab roe."}
+{"slot_id": "d_k06_s10", "query_id": "d_k06", "video_id": "7336501019481787656", "rel": "0", "note": "Reviews mixed chicken phở (phở gà trộn) in Hanoi, only mentioning bún riêu elsewhere."}
+{"slot_id": "d_k06_s11", "query_id": "d_k06", "video_id": "7317636891107527944", "rel": "1", "note": "Reviews Chị Hà bún riêu in Hanoi with rich tomato-vinegar broth, riêu, and crispy pork fat."}
+{"slot_id": "d_k06_s12", "query_id": "d_k06", "video_id": "7463326186861645074", "rel": "1", "note": "Reviews 24/7 Hanoi bún riêu shop with rich tomato-vinegar broth and fragrant crab riêu."}
+{"slot_id": "d_k07_s01", "query_id": "d_k07", "video_id": "7443097222708792584", "rel": "U", "note": "Caption promotes budget 9k ốc hương shop in Q7, but K-pop audio leaves bơ tỏi unverified."}
+{"slot_id": "d_k07_s02", "query_id": "d_k07", "video_id": "7325422192605302018", "rel": "0", "note": "Reviews budget Q1 snail shop featuring salted-egg ốc hương and cheese oysters, not bơ tỏi."}
+{"slot_id": "d_k07_s03", "query_id": "d_k07", "video_id": "7370570885746445585", "rel": "0", "note": "Reviews Gò Vấp snail shop featuring salted-egg ốc hương and garlic razor clams, not ốc hương bơ tỏi."}
+{"slot_id": "d_k07_s04", "query_id": "d_k07", "video_id": "7454984283560693000", "rel": "0", "note": "Reviews Ốc Rừng featuring 119k salted-egg ốc hương without garlic-butter preparation or budget pricing."}
+{"slot_id": "d_k07_s05", "query_id": "d_k07", "video_id": "7385041923586657543", "rel": "0", "note": "Reviews Northern-style boiled snails and coconut-steamed ốc hương, not stir-fried ốc hương bơ tỏi."}
+{"slot_id": "d_k07_s06", "query_id": "d_k07", "video_id": "7367972783676017936", "rel": "0", "note": "Reviews District 10 salted-egg snail shop featuring seafood noodles and cheese shrimp, no ốc hương bơ tỏi."}
+{"slot_id": "d_k07_s07", "query_id": "d_k07", "video_id": "7364728404123389192", "rel": "0", "note": "Pairs salted-egg ốc hương with satay garlic-butter squid teeth rather than ốc hương xào bơ tỏi."}
+{"slot_id": "d_k07_s08", "query_id": "d_k07", "video_id": "7395885456505785608", "rel": "0", "note": "Reviews District 6 snail shop highlighting salted-egg ốc hương without mentioning bơ tỏi."}
+{"slot_id": "d_k07_s09", "query_id": "d_k07", "video_id": "7460109757131525394", "rel": "U", "note": "Praises garlic-butter stir-fried dishes at a budget Tân Phú snail shop without confirming ốc hương."}
+{"slot_id": "d_k07_s10", "query_id": "d_k07", "video_id": "7382153259454172423", "rel": "0", "note": "Reviews Gò Vấp snail shop featuring Cajun seafood platter and oysters, not ốc hương bơ tỏi."}
+{"slot_id": "d_k07_s11", "query_id": "d_k07", "video_id": "7422522841314233608", "rel": "0", "note": "Reviews Gò Vấp Ốc Trứng Muối featuring steamed oysters and cheese shrimp, no ốc hương bơ tỏi."}
+{"slot_id": "d_k07_s12", "query_id": "d_k07", "video_id": "7322799082588622082", "rel": "0", "note": "Reviews Gò Vấp alley snail stall featuring salted-egg ốc hương and grilled ốc khế, no bơ tỏi."}
+{"slot_id": "d_k07_s13", "query_id": "d_k07", "video_id": "7357728622913899777", "rel": "0", "note": "Reviews Cityland Gò Vấp snail shop highlighting Thai shrimp and salted-egg ốc hương, no bơ tỏi."}
+{"slot_id": "d_k07_s14", "query_id": "d_k07", "video_id": "7317259841213402374", "rel": "0", "note": "Reviews Phú Nhuận cheese and salted-egg snail shop featuring cheese shrimp, no ốc hương bơ tỏi."}
+{"slot_id": "d_k07_s15", "query_id": "d_k07", "video_id": "7444515654188748050", "rel": "0", "note": "Reviews dried squid and balut stall in Tân Bình, not ốc hương xào bơ tỏi."}
+{"slot_id": "d_k07_s16", "query_id": "d_k07", "video_id": "7424379538513218824", "rel": "U", "note": "Reviews Gò Vấp alley snail shop praising bơ tỏi sauce on snails without confirming ốc hương."}
+{"slot_id": "d_k07_s17", "query_id": "d_k07", "video_id": "7402967865722195218", "rel": "0", "note": "Reviews budget Tân Phú snail shop featuring salted-egg ốc hương and butter squid teeth."}
+{"slot_id": "d_k08_s01", "query_id": "d_k08", "video_id": "7378844326740200722", "rel": "U", "note": "Teaches tender thịt nướng kim tiền preparation, but truncates before listing full marinade ingredients."}
+{"slot_id": "d_k08_s02", "query_id": "d_k08", "video_id": "7433372223903141128", "rel": "1", "note": "Step-by-step pork skewer marinade tutorial explicitly using honey, condensed milk, and aromatics."}
+{"slot_id": "d_k08_s03", "query_id": "d_k08", "video_id": "7476456508084063495", "rel": "0", "note": "Family vlog in Korea promoting honeyed ginseng and dipping paste, no meat marinade tutorial."}
+{"slot_id": "d_k08_s04", "query_id": "d_k08", "video_id": "7325023521220988161", "rel": "0", "note": "Pork marinade recipe uses sugar, fish sauce, soy sauce, and oyster sauce without honey."}
+{"slot_id": "d_k08_s05", "query_id": "d_k08", "video_id": "7445635617955925269", "rel": "0", "note": "Air-fryer grilled pork marinade uses condensed milk, fish sauce, and aromatics without honey."}
+{"slot_id": "d_k08_s06", "query_id": "d_k08", "video_id": "7480496931274312977", "rel": "0", "note": "Teaches soy-sauce and five-spice pork rib marinade without honey."}
+{"slot_id": "d_k08_s07", "query_id": "d_k08", "video_id": "7460806899215191304", "rel": "1", "note": "Teaches honey, condensed-milk, and five-spice marinade and air-fryer steps for tender grilled chicken."}
+{"slot_id": "d_k08_s08", "query_id": "d_k08", "video_id": "7312762474908880146", "rel": "1", "note": "Teaches quick grilled pork marination using honey-lemongrass-garlic Chin-Su meat marinade sauce."}
+{"slot_id": "d_k08_s09", "query_id": "d_k08", "video_id": "7447723265948208404", "rel": "U", "note": "Teaches tenderizing cơm tấm pork chops, but truncates before listing liquid marinade ingredients."}
+{"slot_id": "d_k08_s10", "query_id": "d_k08", "video_id": "7339524201142897922", "rel": "U", "note": "Bún thịt nướng tutorial puts marinade ingredients on screen only, so honey cannot be verified."}
+{"slot_id": "d_k08_s11", "query_id": "d_k08", "video_id": "7318682316916772098", "rel": "U", "note": "Bún chả grilling tutorial displays marinade recipe on screen only, leaving honey unverified."}
+{"slot_id": "d_n06_s01", "query_id": "d_n06", "video_id": "7446010572082023687", "rel": "0", "note": "Home mukbang of Soko tiramisu hand-carried from Saigon, not a Hanoi pastry shop for dates."}
+{"slot_id": "d_n06_s02", "query_id": "d_n06", "video_id": "7398139883430219009", "rel": "0", "note": "Home mukbang of Pema fruit mousse and chocolate cakes with no tiramisu featured."}
+{"slot_id": "d_n06_s03", "query_id": "d_n06", "video_id": "7338766465358777608", "rel": "0", "note": "Takeout croissant bakery with street queues in Hanoi, not a romantic tiramisu date cafe."}
+{"slot_id": "d_n06_s04", "query_id": "d_n06", "video_id": "7319098440816823570", "rel": "0", "note": "Reviews a West Lake photo-shoot coffee shop for Tet portraits with no tiramisu or cakes."}
+{"slot_id": "d_n06_s05", "query_id": "d_n06", "video_id": "7361279577051696391", "rel": "0", "note": "Afternoon takeout-only Douyin tiramisu counter in an alley, not a romantic date pastry cafe."}
+{"slot_id": "d_n06_s06", "query_id": "d_n06", "video_id": "7360984079438761217", "rel": "0", "note": "Reviews tray-sliced Douyin tiramisu takeout counter with no romantic dine-in date setting."}
+{"slot_id": "d_n06_s07", "query_id": "d_n06", "video_id": "7353485803672063249", "rel": "0", "note": "Reviews a budget shaved-ice bingsu shop (including tiramisu bingsu), not a romantic pastry shop."}
+{"slot_id": "d_n06_s08", "query_id": "d_n06", "video_id": "7444924704214797586", "rel": "0", "note": "Late-night discounted bread shopping at Lotte supermarket, unrelated to romantic tiramisu cafes."}
+{"slot_id": "d_n06_s09", "query_id": "d_n06", "video_id": "7317616096318721288", "rel": "0", "note": "Reviews a budget old-school tart and sponge-cake bakery with no tiramisu or romantic setting."}
+{"slot_id": "d_n06_s10", "query_id": "d_n06", "video_id": "7402469851916258568", "rel": "1", "note": "Reviews cute Korean-style dine-in Hanoi bakery cafe serving handmade mascarpone tiramisu combos."}
+{"slot_id": "d_n06_s11", "query_id": "d_n06", "video_id": "7375096192662768914", "rel": "1", "note": "Reviews scenic Ngọc Khánh lake-view Changi pastry cafe in Hanoi offering tiramisu and cakes."}
+{"slot_id": "d_n07_s01", "query_id": "d_n07", "video_id": "7470873061646929170", "rel": "0", "note": "Mukbang of fried chicken with onion cream sauce and rose pasta, not cheese sauce."}
+{"slot_id": "d_n07_s02", "query_id": "d_n07", "video_id": "7380660312539680018", "rel": "0", "note": "Mukbang of plain whole fried chicken and a cheese sausage, not cheese-sauced fried chicken."}
+{"slot_id": "d_n07_s03", "query_id": "d_n07", "video_id": "7470914503836814622", "rel": "1", "note": "Mukbang of crispy KFC fried chicken topped with melted cheeses and cheese sauce."}
+{"slot_id": "d_n07_s04", "query_id": "d_n07", "video_id": "7424873299584290066", "rel": "1", "note": "Mukbang of crispy Korean cheese fried chicken from Kaka Chicken with four cheese seasonings."}
+{"slot_id": "d_n07_s05", "query_id": "d_n07", "video_id": "7420031347709725970", "rel": "0", "note": "Mukbang of level-7 spicy noodles and extra-spicy fried chicken without cheese."}
+{"slot_id": "d_n07_s06", "query_id": "d_n07", "video_id": "7458627206864981256", "rel": "0", "note": "Mukbang of Bonchon fried chicken in crispy garlic, soy-garlic, and spicy sauces, no cheese."}
+{"slot_id": "d_n07_s07", "query_id": "d_n07", "video_id": "7388864027838909714", "rel": "0", "note": "Mukbang of regular KFC fried chicken and burger lunch combo with no cheese sauce."}
+{"slot_id": "d_n07_s08", "query_id": "d_n07", "video_id": "7464205429858520338", "rel": "0", "note": "Lotteria combo mukbang has plain and garlic-butter chicken plus cheese sticks, not cheese chicken."}
+{"slot_id": "d_n07_s09", "query_id": "d_n07", "video_id": "7450849916097809680", "rel": "0", "note": "Mukbang of spicy cheese-chicken instant noodles and shrimp noodles, not fried chicken."}
+{"slot_id": "d_n07_s10", "query_id": "d_n07", "video_id": "7348043245206785282", "rel": "1", "note": "Mukbang of fried chicken dipped in rich cheese sauce (noting delivery slightly softened crispiness)."}
+{"slot_id": "d_n07_s11", "query_id": "d_n07", "video_id": "7417825807088798984", "rel": "0", "note": "Makes and eats spicy Korean chicken bites using Samyang hot sauce, without cheese."}
+{"slot_id": "d_n07_s12", "query_id": "d_n07", "video_id": "7467538125900844306", "rel": "0", "note": "Japanese restaurant mukbang features tartar-sauce fried chicken and salmon rolls, not cheese fried chicken."}
+{"slot_id": "d_n07_s13", "query_id": "d_n07", "video_id": "7450709989439606023", "rel": "0", "note": "Mukbang of cheese-crust chicken pizza plus onion-cream and soy-garlic chicken, not cheese fried chicken."}
+{"slot_id": "d_n07_s14", "query_id": "d_n07", "video_id": "7477525449384414472", "rel": "0", "note": "Mukbang pairs chili-powder fried drumstick with a separate cheese-chicken rice ball, not cheese chicken."}
+{"slot_id": "d_n08_s01", "query_id": "d_n08", "video_id": "7356881657078615316", "rel": "U", "note": "Reviews Nori restaurant in Vũng Tàu with live seafood tanks, but affordability and beach proximity are unclear."}
+{"slot_id": "d_n08_s02", "query_id": "d_n08", "video_id": "7387748975903804680", "rel": "0", "note": "Reviews a crab-claw noodle soup breakfast shop (bún càng cúm), not live seafood dining."}
+{"slot_id": "d_n08_s03", "query_id": "d_n08", "video_id": "7403211356188740871", "rel": "0", "note": "General meat and chilled-seafood BBQ buffet without live seafood tanks or seaside setting."}
+{"slot_id": "d_n08_s04", "query_id": "d_n08", "video_id": "7444905131205840136", "rel": "1", "note": "Reviews Bamboo Chill in coastal Vũng Tàu with live seafood tanks and good-value 529k platters."}
+{"slot_id": "d_n08_s05", "query_id": "d_n08", "video_id": "7339855133100084482", "rel": "0", "note": "Vũng Tàu itinerary covering bánh mì xíu mại, bánh khọt, and a cafe, without live seafood."}
+{"slot_id": "d_n08_s06", "query_id": "d_n08", "video_id": "7386203440243805458", "rel": "0", "note": "Alley takeout-only cooked sauced snail stall in Vũng Tàu, not live seafood dining."}
+{"slot_id": "d_n08_s07", "query_id": "d_n08", "video_id": "7357297193474198804", "rel": "0", "note": "Home cook near Bến Đình market selling 35k cooked snails without live shrimp or crab."}
+{"slot_id": "d_n08_s08", "query_id": "d_n08", "video_id": "7379843059938233601", "rel": "U", "note": "Shows live jumping shrimp and crabs at Vũng Tàu buffet, but text omits pricing details."}
+{"slot_id": "d_n08_s09", "query_id": "d_n08", "video_id": "7396621330499652871", "rel": "1", "note": "Reviews a 229k beachfront Vũng Tàu buffet where diners catch live crabs, shrimp, and snails."}
+{"slot_id": "d_n08_s10", "query_id": "d_n08", "video_id": "7449361948908555538", "rel": "1", "note": "Reviews Khánh Hà restaurant in Vũng Tàu with live tank fish and fair, non-tourist-trap prices."}
+{"slot_id": "d_n08_s11", "query_id": "d_n08", "video_id": "7401107392848596231", "rel": "1", "note": "Reviews 179k ocean-view Hoàng Hôn buffet in Vũng Tàu with live swimming crabs and mantis shrimp."}
+{"slot_id": "d_n08_s12", "query_id": "d_n08", "video_id": "7312788589023169810", "rel": "1", "note": "Reviews 229k Vũng Tàu seafood buffet with live jumping crabs, shrimp, mantis shrimp, and oysters."}
+{"slot_id": "d_n08_s13", "query_id": "d_n08", "video_id": "7417779826586668304", "rel": "1", "note": "Reviews 239k TT seafood buffet in Vũng Tàu with live swimming crabs and shrimp."}
+{"slot_id": "d_n08_s14", "query_id": "d_n08", "video_id": "7374699751599607056", "rel": "0", "note": "Reviews a morning squid noodle soup shop (hủ tiếu mực) in Vũng Tàu, not live seafood."}
+{"slot_id": "d_n08_s15", "query_id": "d_n08", "video_id": "7379825468461124871", "rel": "0", "note": "Reviews a 5-star beachfront resort room, pools, and breakfast buffet, not live seafood dining."}

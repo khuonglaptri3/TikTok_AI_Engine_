@@ -12,7 +12,7 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M1.2 | Immutable taxonomy-corrected historical Gold snapshot (`20261118_taxonomy_fix_v1`) with verified parent lineage | COMPLETE | [Read results](M1.2/README.md) |
 | M1.G | G1 corpus gate decision (`PASS` local-only scope; dual-snapshot SHA256/lineage & data card verified; public redistribution `BLOCKED`) | COMPLETE | [Read results](M1.G/README.md) |
 | M2.1 | Descriptive niche benchmarks, cohort/missingness provenance, sparse abstention, and 100-request latency verification | COMPLETE | [Read results](M2.1/README.md) |
-| M2.2 | `bm25-v3`, query-intent/no-answer guardrails, 40-query blinded pilot (`K` full-transcript sign-off `MRR@10=0.8571`, `p95=30.16 ms` + `N` LLM audit; awaiting `N` human sign-off) | IN_PROGRESS | [Read results](M2.2/README.md) |
+| M2.2 | `bm25-v3`, query-intent/no-answer guardrails, `K` full-transcript sign-off (`MRR@10=0.8571`, `p95=30.86 ms`) + `N` adopted `gemini-3.1-flash-lite` (`N_human_verified=false`) | IN_PROGRESS | [Read results](M2.2/README.md) |
 | M2.3 | Qualified scripts, structural guardrails, `K` peer-review TDD fixes, and 30-draft offline audit (`K` full-transcript claim support `108/120 = 90.0%`; awaiting `N` `N_*` audit) | IN_PROGRESS | [Read results](M2.3/README.md) |
 | M3.1 | Repeated Dual-Sink ingestion repair, missing-modality schemas, interrupted recovery & `K` real-snapshot reproduction | COMPLETE | [Read results](M3.1/README.md) |
 | M3.2 | Bounded 120-day collector worker, `70,996`-ID protection, crash-safe resume, 64 kbps audio receipts & offline `M3.1` round-trip (`K` complete; awaiting `N` review) | IN_PROGRESS | [Read results](M3.2/README.md) |

@@ -99,7 +99,10 @@ def main() -> int:
             adj_note = kn or nn
         elif has_k_full_signoff:
             adj_rel = kr
-            adj_note = f"[K full-transcript verified={kr}; N truncated draft={nr} pending N sign-off] {kn}"
+            adj_note = (
+                f"[K full-transcript human-verified={kr}; "
+                f"N adopted gemini-3.1-flash-lite 500c={nr} without manual review] {kn}"
+            )
         elif sid in adj_overrides:
             adj_rel = str(adj_overrides[sid]["adjudicated_rel"])
             adj_note = str(adj_overrides[sid]["adjudication_note"])
@@ -211,10 +214,12 @@ def main() -> int:
     agreement_summary = {
         "total_blinded_pairs": len(candidates),
         "provenance_stage": (
-            "K_full_transcript_audit_and_owner_Q1_Q6_signoff_complete__N_truncated_draft_pending_N_human_signoff"
+            "K_full_transcript_human_verified__N_adopted_gemini_3_1_flash_lite_500c_without_manual_review"
             if has_k_full_signoff
             else "initial_truncated_blinded_draft"
         ),
+        "K_label_source": "human_full_transcript_and_Q1_Q6_adjudication" if has_k_full_signoff else "draft",
+        "N_label_source": "gemini-3.1-flash-lite_500c_adopted_by_N_without_manual_review",
         "initial_truncated_draft_agreement": {
             "raw_agreement_count": sum(1 for a, b in zip(k_initial_all, n_all) if a == b),
             "raw_agreement_rate": round(sum(1 for a, b in zip(k_initial_all, n_all) if a == b) / len(candidates), 4),
