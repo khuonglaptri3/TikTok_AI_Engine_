@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 32 items
+
+tests/unit/test_offline_draft.py ...................                     [ 59%]
+tests/unit/test_script_guardrails.py .............                       [100%]
+
+============================== 32 passed in 0.74s ==============================

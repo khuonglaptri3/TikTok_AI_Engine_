@@ -1,0 +1,48 @@
+{
+  "task_id": "M2.3",
+  "adjudicator": "Trần Đình Khương (K)",
+  "adjudication_date": "2026-11-19",
+  "corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "bm25_index_dir": "artifacts/indexes/bm25-v3",
+  "selected_option": "Option 2 — Filter trivial <3-word sign-off CTAs ('Bye bye.', 'Haha.') via TDD so Beat 4 selects culinary body_beats from the same video; strictly score C1 (song lyrics/music notes) and C2 (upstream cross-city mislabel / 'vibe Đà Lạt') as Unsupported in K_supported_factual_claims while preserving all genuine semantic issues for transparent reporting in khuong-peer-review.md.",
+  "clusters": {
+    "C1_song_lyrics_or_music_notes": {
+      "decision": "Unsupported in K_supported_factual_claims; K_review_ok = False",
+      "affected_beats_count": 9,
+      "affected_drafts": {
+        "n01": {"beats": [1, 2], "video_id": "7357939713132580103", "reason": "Spoken transcript is background song lyrics ('Về đây với, cùng tình yêu khát khao') despite #ocbinhthanh caption."},
+        "n04": {"beats": [4], "video_id": "7406631345100721425", "reason": "cta_text is song lyric ('Đong đưa in nét dài có hay.') rather than cooking instruction."},
+        "k02": {"beats": [1, 2], "video_id": "7421397039306624276", "reason": "Spoken transcript is rap lyrics ('Nhẹ gift in the house. Gurl, anh đã say mụ hôm đầu') despite #banhcanhcuaquan3 caption."},
+        "k05": {"beats": [3], "video_id": "7334299969131793672", "reason": "body_beats[2] summarizes English background song ('Nội dung có phần nổi loạn, không ngại thể hiện')."},
+        "k06": {"beats": [1, 2], "video_id": "7419586889218395399", "reason": "Spoken transcript and body_beats summarize song 'Tái Sinh' ('Cơn mưa xối tươi mát tâm hồn...', 'Tình yêu có thể mang lại...')."},
+        "k08": {"beats": [3], "video_id": "7444556348412415248", "reason": "body_beats[1] summarizes breakup song ('Nhân vật em chúc phúc cho người yêu cũ')."}
+      }
+    },
+    "C2_location_mislabel_or_vibe_city": {
+      "decision": "Unsupported in K_supported_factual_claims; K_review_ok = False",
+      "affected_beats_count": 3,
+      "affected_drafts": {
+        "n05": {"beats": [1, 2], "video_id": "7306523711614487810", "reason": "Da-Lat-themed ('vibe Đà Lạt') cafe rather than verified Đà Lạt venue (consistent with M2.2 Q4 rule)."},
+        "n11": {"beats": [3], "video_id": "7387712842968943880", "reason": "Upstream corpus city_norm mislabeled as 'hà nội', whereas full transcript states 56 Thiên Chủ, Bình Thọ, Thủ Đức (TP.HCM)."}
+      }
+    },
+    "C3_ingredient_gap_or_off_topic_cta": {
+      "decision": "Source quote factually entailed without false dish claim in draft text; K_review_ok = False on k12 due to missing salmon recipe",
+      "notes": {
+        "k12": "Cited sour fish soup recipes use cá chuồn / cá ngát / cá lóc rather than cá hồi; draft text honestly frames 'Cơm & Bữa chính' without claiming salmon.",
+        "n15": "Beats 1-2 contrast hủ tiếu Sa Tế Nai against hủ tiếu Nam Vang; Beats 3-4 review hủ tiếu Nam Vang.",
+        "k01": "Beat 4 quotes Ghana embassy visa-help CTA from a genuine 30k Hanoi bún chả video."
+      }
+    },
+    "C4_district_or_country_context": {
+      "decision": "Source quote factually entailed at city/topic level; K_review_ok = False on n14 (convenience store in China); district fallback noted in K_notes",
+      "notes": {
+        "n14": "Single matching video 7447910275665120520 reviews packaged snacks in a convenience store in China.",
+        "district_fallback_within_city": ["n01", "k01", "k10", "k14"]
+      }
+    },
+    "C5_trivial_signoff_ctas": {
+      "decision": "Resolved via TDD round 3 (_TRIVIAL_SIGNOFF_RE in packages/script_engine/service.py) so Beat 4 falls back to culinary body_beats on n07, k02, k07, k11."
+    }
+  }
+}

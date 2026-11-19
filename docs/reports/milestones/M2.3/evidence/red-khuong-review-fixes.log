@@ -1,0 +1,106 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 9 items
+
+tests/unit/test_offline_draft.py ......FFF                               [100%]
+
+=================================== FAILURES ===================================
+__ test_offline_draft_does_not_fabricate_city_from_evidence_card_or_dish_name __
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+
+    def test_offline_draft_does_not_fabricate_city_from_evidence_card_or_dish_name(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+    ) -> None:
+        benchmark, card = draft_inputs
+        card_danang = card.model_copy(update={"city_norm": "đà nẵng", "dishes": ["mì cay"]})
+        engine = object.__new__(GroundedScriptEngine)
+    
+        # 1. Dish-origin city inside "bún bò Huế tại nhà" must not become a venue city filter
+        inferred = engine._infer_effective_filters(
+            brief="Hướng dẫn nấu bún bò Huế tại nhà đơn giản tiết kiệm",
+            explicit=NicheQueryFilter(),
+            target_duration_sec=50,
+        )
+>       assert inferred.city_norm is None
+E       AssertionError: assert 'huế' is None
+E        +  where 'huế' = NicheQueryFilter(video_format='Review món ăn', food_category='Món nước & Sợi', price_tier=None, occasion=None, duration_bucket='medium_45_90s', city_norm='huế', region='central').city_norm
+
+tests/unit/test_offline_draft.py:121: AssertionError
+________ test_offline_draft_never_truncates_mid_sentence_on_35s_target _________
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+
+    def test_offline_draft_never_truncates_mid_sentence_on_35s_target(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+    ) -> None:
+        benchmark, card = draft_inputs
+        card_long = card.model_copy(
+            update={
+                "hook_text": "Quán trà sữa gần cổng trường đông học sinh mỗi buổi chiều tan học.",
+                "body_beats": [
+                    "Trà sữa matcha kem cheese có vị béo nhẹ và thơm mùi trà xanh.",
+                    "Mức giá niêm yết từ hai mươi lăm nghìn đồng một ly cỡ vừa.",
+                ],
+                "cta_text": "Các bạn học sinh quanh khu vực này có thể ghé thử sau giờ học.",
+            }
+        )
+        draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+            "Review quán trà sữa matcha kem cheese gần cổng trường cho học sinh",
+            35,
+            benchmark,
+            [card_long],
+            NicheQueryFilter(video_format="Review quán ăn"),
+        )
+        for beat in draft["beats"]:
+            text = beat["dialogue"].strip()
+>           assert text.endswith((".", "?", "!")), f"Mid-sentence truncation: {text!r}"
+E           AssertionError: Mid-sentence truncation: 'Nguồn cũ: "Quán trà sữa gần cổng trường đông học sinh mỗi buổi chiều" Hôm nay mình lên ý tưởng tìm hiểu trà sữa, matcha tại'
+E           assert False
+E            +  where False = <built-in method endswith of str object at 0x7c24d04e8a30>(('.', '?', '!'))
+E            +    where <built-in method endswith of str object at 0x7c24d04e8a30> = 'Nguồn cũ: "Quán trà sữa gần cổng trường đông học sinh mỗi buổi chiều" Hôm nay mình lên ý tưởng tìm hiểu trà sữa, matcha tại'.endswith
+
+tests/unit/test_offline_draft.py:158: AssertionError
+_ test_offline_draft_skips_music_lyric_summaries_when_selecting_source_excerpt _
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+
+    def test_offline_draft_skips_music_lyric_summaries_when_selecting_source_excerpt(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+    ) -> None:
+        benchmark, card = draft_inputs
+        card_music = card.model_copy(
+            update={
+                "hook_text": "Bài hát thể hiện niềm khát khao yêu đương và mong muốn gắn bó.",
+                "body_beats": [
+                    "Lời bài hát cho thấy sự sẵn sàng hy sinh vì người mình yêu.",
+                    "Ốc hương xào bơ tỏi giá 35k một dĩa bán từ chiều tới khuya.",
+                ],
+                "cta_text": "Ca khúc có giai điệu nhẹ nhàng, dễ thương.",
+                "transcript_excerpt": "Ốc hương xào bơ tỏi giá 35k một dĩa bán từ chiều tới khuya.",
+            }
+        )
+        draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+            "Review quán ốc sinh viên bình dân 35k",
+            45,
+            benchmark,
+            [card_music],
+            NicheQueryFilter(video_format="Review quán ăn"),
+        )
+        joined = " ".join(b["dialogue"].lower() for b in draft["beats"])
+>       assert "bài hát thể hiện" not in joined
+E       assert 'bài hát thể hiện' not in 'nguồn cũ: "... phần kết sẽ'
+E         'bài hát thể hiện' is contained here:
+E           nguồn cũ: "bài hát thể hiện niềm khát khao yêu đương và mong muốn" hôm nay mình lên ý tưởng tìm hiểu ốc tại địa phương. khi quay thực tế, mình sẽ ghi nguồn cũ: "lời bài hát cho thấy sự sẵn sàng hy sinh vì người" đây là thông tin trong nguồn cũ, cần kiểm tra lại khi đến quay. mình sẽ ghi hình phần nguồn cũ: "ốc hương xào bơ tỏi giá 35k một dĩa bán từ chiều" khi thử món, mình sẽ tách nhận xét về hương vị, khẩu phần và mức giá đang niêm yết. nguồn cũ: "ca khúc có giai điệu nhẹ nhàng, dễ thương." sau khi quay và kiểm tra thông tin, mình sẽ tổng ...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/unit/test_offline_draft.py:188: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_offline_draft.py::test_offline_draft_does_not_fabricate_city_from_evidence_card_or_dish_name
+FAILED tests/unit/test_offline_draft.py::test_offline_draft_never_truncates_mid_sentence_on_35s_target
+FAILED tests/unit/test_offline_draft.py::test_offline_draft_skips_music_lyric_summaries_when_selecting_source_excerpt
+========================= 3 failed, 6 passed in 0.78s ==========================

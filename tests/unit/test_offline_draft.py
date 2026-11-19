@@ -3,9 +3,14 @@ from __future__ import annotations
 import pytest
 
 from packages.data_contracts.analytics import NicheBenchmarkSummary
-from packages.data_contracts.query import NicheQueryFilter
-from packages.data_contracts.retrieval import EvidenceCard, VideoCitation
-from packages.llm import recalculate_timeline_and_verify
+from packages.data_contracts.query import (
+    NicheQueryFilter,
+    RetrievalRequest,
+    ScriptGenerationRequest,
+)
+from packages.data_contracts.retrieval import EvidenceCard, RetrievalResponse, VideoCitation
+from packages.llm import BoundedGeminiClient, recalculate_timeline_and_verify
+from packages.common.settings import AppSettings
 from packages.script_engine.service import GroundedScriptEngine
 
 
@@ -103,3 +108,266 @@ def test_offline_draft_selects_role_specific_source_excerpts_per_beat(
     assert "Hook_v1" not in draft["beats"][1]["dialogue"]
     assert "Body2_v2" in draft["beats"][2]["dialogue"] or "Body1_v2" in draft["beats"][2]["dialogue"]
     assert "CTA_v3" in draft["beats"][3]["dialogue"]
+
+
+def test_offline_draft_does_not_fabricate_city_from_evidence_card_or_dish_name(
+    draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+) -> None:
+    benchmark, card = draft_inputs
+    card_danang = card.model_copy(update={"city_norm": "đà nẵng", "dishes": ["mì cay"]})
+    engine = object.__new__(GroundedScriptEngine)
+
+    # 1. Dish-origin city inside "bún bò Huế tại nhà" must not become a venue city filter
+    inferred = engine._infer_effective_filters(
+        brief="Hướng dẫn nấu bún bò Huế tại nhà đơn giản tiết kiệm",
+        explicit=NicheQueryFilter(),
+        target_duration_sec=50,
+    )
+    assert inferred.city_norm is None
+
+    # 2. Brief with no city must not claim filming in card.city_norm ("Đà Nẵng")
+    draft = engine._build_offline_grounded_draft(
+        "Mukbang mì cay hải sản cấp độ 7",
+        45,
+        benchmark,
+        [card_danang],
+        NicheQueryFilter(video_format="Mukbang"),
+    )
+    assert "đà nẵng" not in draft["beats"][0]["dialogue"].lower()
+    assert "đà nẵng" not in draft["caption_draft"].lower()
+
+
+def test_offline_draft_never_truncates_mid_sentence_on_35s_target(
+    draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+) -> None:
+    benchmark, card = draft_inputs
+    card_long = card.model_copy(
+        update={
+            "hook_text": "Quán trà sữa gần cổng trường đông học sinh mỗi buổi chiều tan học.",
+            "body_beats": [
+                "Trà sữa matcha kem cheese có vị béo nhẹ và thơm mùi trà xanh.",
+                "Mức giá niêm yết từ hai mươi lăm nghìn đồng một ly cỡ vừa.",
+            ],
+            "cta_text": "Các bạn học sinh quanh khu vực này có thể ghé thử sau giờ học.",
+        }
+    )
+    draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+        "Review quán trà sữa matcha kem cheese gần cổng trường cho học sinh",
+        35,
+        benchmark,
+        [card_long],
+        NicheQueryFilter(video_format="Review quán ăn"),
+    )
+    for beat in draft["beats"]:
+        text = beat["dialogue"].strip()
+        assert text.endswith((".", "?", "!")), f"Mid-sentence truncation: {text!r}"
+    _, report = recalculate_timeline_and_verify(
+        draft["beats"], draft["hook_options"], 35.0, benchmark.median_word_per_second, {"v1"}
+    )
+    assert report.timing_valid is True
+
+
+def test_offline_draft_skips_music_lyric_summaries_when_selecting_source_excerpt(
+    draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+) -> None:
+    benchmark, card = draft_inputs
+    card_music = card.model_copy(
+        update={
+            "hook_text": "Bài hát thể hiện niềm khát khao yêu đương và mong muốn gắn bó.",
+            "body_beats": [
+                "Lời bài hát cho thấy sự sẵn sàng hy sinh vì người mình yêu.",
+                "Ốc hương xào bơ tỏi giá 35k một dĩa bán từ chiều tới khuya.",
+            ],
+            "cta_text": "Ca khúc có giai điệu nhẹ nhàng, dễ thương.",
+            "transcript_excerpt": "Ốc hương xào bơ tỏi giá 35k một dĩa bán từ chiều tới khuya.",
+        }
+    )
+    draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+        "Review quán ốc sinh viên bình dân 35k",
+        45,
+        benchmark,
+        [card_music],
+        NicheQueryFilter(video_format="Review quán ăn"),
+    )
+    joined = " ".join(b["dialogue"].lower() for b in draft["beats"])
+    assert "bài hát thể hiện" not in joined
+    assert "lời bài hát" not in joined
+    assert "ca khúc có giai điệu" not in joined
+    assert "ốc hương xào bơ tỏi" in joined
+
+
+def test_generate_keeps_explicit_and_geo_filters_without_soft_heuristic_retrieval_starvation(
+    draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+) -> None:
+    benchmark, card = draft_inputs
+    captured_retrieval_requests: list[RetrievalRequest] = []
+    captured_benchmark_filters: list[NicheQueryFilter] = []
+
+    class _FakeAnalytics:
+        def compute_benchmark(self, filters: NicheQueryFilter) -> NicheBenchmarkSummary:
+            captured_benchmark_filters.append(filters)
+            return benchmark
+
+    class _FakeRetrieval:
+        def search(self, req: RetrievalRequest) -> RetrievalResponse:
+            captured_retrieval_requests.append(req)
+            return RetrievalResponse(
+                query=req.query,
+                mode=req.mode,
+                reranked=True,
+                total_candidates=1,
+                relaxed_filters=[],
+                items=[card],
+                timings_ms={},
+            )
+
+    engine = GroundedScriptEngine(
+        analytics_engine=_FakeAnalytics(),  # type: ignore[arg-type]
+        retrieval_service=_FakeRetrieval(),  # type: ignore[arg-type]
+        gemini_client=BoundedGeminiClient(settings=AppSettings(gemini_api_key="")),
+    )
+    engine.generate(
+        ScriptGenerationRequest(
+            brief="Review bún chả nướng than hoa buổi trưa bình dân ở Ba Đình Hà Nội",
+            target_duration_sec=45,
+            generation_mode="offline_grounded",
+            filters=NicheQueryFilter(price_tier="budget"),
+        )
+    )
+    assert len(captured_benchmark_filters) == 1
+    assert captured_benchmark_filters[0].city_norm == "hà nội"
+    assert captured_benchmark_filters[0].food_category == "Lẩu & Nướng"
+
+    assert len(captured_retrieval_requests) == 1
+    ret_filters = captured_retrieval_requests[0].filters
+    # Explicit caller filter + inferred geographic scope stay strict
+    assert ret_filters.city_norm == "hà nội"
+    assert ret_filters.region == "north"
+    assert ret_filters.price_tier == "budget"
+    # Unspecified soft heuristic facets must not lock allowed_ids before BM25 + anchor matching
+    assert ret_filters.duration_bucket is None
+    assert ret_filters.food_category is None
+    assert ret_filters.video_format is None
+
+
+@pytest.mark.parametrize(
+    ("target_dur", "wps"),
+    [(35, 2.4), (35, 3.0), (40, 2.5), (45, 3.3), (50, 2.5), (50, 3.8), (55, 3.9)],
+)
+def test_offline_draft_matches_timing_tolerance_across_35s_to_55s_and_varying_wps(
+    draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+    target_dur: int,
+    wps: float,
+) -> None:
+    benchmark, card = draft_inputs
+    card_realistic = card.model_copy(
+        update={
+            "hook_text": "Tô phở bò tái lăn nóng hổi nước dùng thơm mùi gừng nướng buổi sáng.",
+            "body_beats": [
+                "Thịt bò xào nhanh trên chảo gang lửa lớn giữ được độ mềm ngọt.",
+                "Nước hầm xương trong veo chan ngập bánh phở mềm kèm hành lá.",
+            ],
+            "cta_text": "Mọi người đi ngang khu phố này buổi sáng nhớ ghé ăn thử nha.",
+        }
+    )
+    benchmark_var = benchmark.model_copy(update={"median_word_per_second": wps})
+    draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+        "Review phở bò tái lăn buổi sáng",
+        target_dur,
+        benchmark_var,
+        [card_realistic],
+        NicheQueryFilter(video_format="Review quán ăn"),
+    )
+    for beat in draft["beats"]:
+        text = beat["dialogue"].strip()
+        assert text.endswith((".", "?", "!")), f"Mid-sentence truncation: {text!r}"
+    _, report = recalculate_timeline_and_verify(
+        draft["beats"], draft["hook_options"], float(target_dur), wps, {"v1"}
+    )
+    assert report.timing_valid is True, (
+        f"target={target_dur}s wps={wps} -> estimated={report.estimated_duration_sec}s delta={report.duration_delta_sec}s"
+    )
+    assert report.passed is True
+
+
+def test_offline_draft_filters_extended_music_summaries_and_prompt_placeholders(
+    draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+) -> None:
+    benchmark, card = draft_inputs
+    card_noisy = card.model_copy(
+        update={
+            "hook_text": "Bài hát mang đến thông điệp về sự lạc quan.",
+            "body_beats": [
+                "[Please insert the Vietnamese transcript here]",
+                "Âm nhạc tạo cảm giác nhẹ nhàng, sâu lắng.",
+                "Trà mãng cầu tươi pha chua ngọt vừa miệng giá 25k.",
+            ],
+            "cta_text": "Bài hát kể về một chàng trai thất tình.",
+            "transcript_excerpt": "Trà mãng cầu tươi pha chua ngọt vừa miệng giá 25k.",
+        }
+    )
+    draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+        "Review trà mãng cầu tươi chua ngọt giải nhiệt buổi trưa",
+        40,
+        benchmark,
+        [card_noisy],
+        NicheQueryFilter(video_format="Review quán ăn"),
+    )
+    joined = " ".join(b["dialogue"].lower() for b in draft["beats"])
+    assert "bài hát" not in joined
+    assert "âm nhạc tạo" not in joined
+    assert "please insert" not in joined
+    assert "trà mãng cầu tươi" in joined
+
+
+def test_offline_draft_does_not_hijack_dish_focus_from_evidence_card_dishes_when_brief_dish_unlisted(
+    draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+) -> None:
+    benchmark, card = draft_inputs
+    card_other = card.model_copy(
+        update={"dishes": ["vây cá hồi chiên giòn", "lòng heo luộc"]}
+    )
+    draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+        "Hướng dẫn nấu canh chua cá hồi thanh mát không tanh cho bữa cơm nhà",
+        45,
+        benchmark,
+        [card_other],
+        NicheQueryFilter(video_format="Hướng dẫn nấu ăn", food_category="Cơm & Món mặn"),
+    )
+    joined = (draft["caption_draft"] + " " + " ".join(b["dialogue"] for b in draft["beats"])).lower()
+    assert "lòng heo luộc" not in joined
+    assert "vây cá hồi chiên giòn" not in joined
+
+
+def test_offline_draft_skips_trivial_signoff_cta_and_falls_back_to_culinary_body_beat(
+    draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+) -> None:
+    benchmark, card = draft_inputs
+    card_signoff = card.model_copy(
+        update={
+            "hook_text": "Bánh cuốn tráng tay mỏng mướt nóng hổi buổi sáng.",
+            "body_beats": [
+                "Quán bánh cuốn 83 Đặng Tiến Đông mở cả ngày có chả quế và gà tần.",
+                "Nước chấm bánh cuốn pha vừa miệng ăn kèm hành khô tự chiên thơm giòn.",
+            ],
+            "cta_text": "Haha.",
+            "transcript_excerpt": "Bánh cuốn tráng tay mỏng mướt nóng hổi buổi sáng.",
+        }
+    )
+    card_bye = card_signoff.model_copy(
+        update={
+            "citation": card.citation.model_copy(update={"video_id": "v2"}),
+            "cta_text": "Bye bye.",
+        }
+    )
+    draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+        "Review bánh cuốn nóng nhân thịt mộc nhĩ ăn sáng ở Đống Đa Hà Nội",
+        45,
+        benchmark,
+        [card_signoff, card_bye],
+        NicheQueryFilter(video_format="Review quán ăn", city_norm="hà nội"),
+    )
+    beat4_lower = draft["beats"][3]["dialogue"].lower()
+    assert '"haha."' not in beat4_lower
+    assert '"bye bye."' not in beat4_lower
+    assert "83 đặng tiến đông" in beat4_lower or "nước chấm bánh cuốn" in beat4_lower

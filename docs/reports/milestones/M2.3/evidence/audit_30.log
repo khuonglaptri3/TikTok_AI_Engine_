@@ -1,0 +1,30 @@
+{
+  "corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "bm25_index_dir": "artifacts/indexes/bm25-v3",
+  "generation_mode": "offline_grounded",
+  "provider_calls": 0,
+  "total_drafts": 30,
+  "n_drafts": 15,
+  "k_drafts": 15,
+  "fabricated_id_count": 0,
+  "guardrail_passed_count": 30,
+  "timing_valid_count": 30,
+  "valid_membership_100_count": 30,
+  "citation_coverage_100_count": 30,
+  "K_human_audit": {
+    "auditor": "Trần Đình Khương (K)",
+    "audit_status": "K_verified_full_transcripts_N_pending",
+    "total_factual_claims": 120,
+    "supported_factual_claims": 108,
+    "supported_factual_claims_ratio": 0.9,
+    "factual_cited_claims": 120,
+    "factual_cited_claims_ratio": 1.0,
+    "creative_directions_total": 244,
+    "editorial_review_ok_drafts": 20,
+    "editorial_review_ok_ratio": 0.6667,
+    "unsupported_breakdown": {
+      "C1_song_lyrics_or_music_notes_beats": 9,
+      "C2_cross_city_mislabel_or_vibe_city_beats": 3
+    }
+  }
+}
