@@ -62,9 +62,12 @@ def _parse_json_response(raw_text: str) -> list[dict[str, Any]]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Bounded <= 15 RPM Gemini claim auditor for M2.3.")
-    parser.add_argument("--batch-size", type=int, default=3, help="Drafts per request (default: 3 -> 5 requests).")
-    parser.add_argument("--max-rpm", type=int, default=14, help="Hard RPM ceiling <= 15 (default: 14).")
+    parser = argparse.ArgumentParser(description="Bounded Gemini claim auditor for M2.3.")
+    parser.add_argument("--model", default="", help="Gemini model override.")
+    parser.add_argument("--batch-size", type=int, default=3, help="Drafts per request.")
+    parser.add_argument("--max-rpm", type=int, default=14, help="Hard RPM ceiling.")
+    parser.add_argument("--checkpoint", type=Path, default=CHECKPOINT_JSONL)
+    parser.add_argument("--summary-out", type=Path, default=SUMMARY_JSON)
     args = parser.parse_args()
 
     df = pd.read_csv(AUDIT_CSV, dtype=str).fillna("")
@@ -74,16 +77,17 @@ def main() -> None:
     )
     video_map = {str(r["video_id"]): r for r in df_videos.to_dict(orient="records")}
 
-    done_map = _load_checkpoint(CHECKPOINT_JSONL)
+    done_map = _load_checkpoint(args.checkpoint)
     pending = df[~df["draft_id"].isin(done_map.keys())]
 
     settings = AppSettings.from_env()
-    effective_rpm = max(1, min(args.max_rpm, settings.rate_limit_rpm, 15))
-    min_interval_sec = 60.0 / float(effective_rpm) + 0.3
+    model_name = args.model.strip() or settings.gemini_fast_model
+    effective_rpm = max(1, min(args.max_rpm, settings.rate_limit_rpm))
+    min_interval_sec = 60.0 / float(effective_rpm) + 0.5
 
     print(
         f"M2.3 claim audit: total={len(df)}, checkpointed={len(done_map)}, pending={len(pending)}, "
-        f"model={settings.gemini_fast_model}, cap={effective_rpm} RPM"
+        f"model={model_name}, cap={effective_rpm} RPM (interval={min_interval_sec:.1f}s)"
     )
 
     if len(pending) > 0:
@@ -99,7 +103,7 @@ def main() -> None:
         records = pending.to_dict(orient="records")
         total_batches = (len(records) + args.batch_size - 1) // args.batch_size
 
-        with CHECKPOINT_JSONL.open("a", encoding="utf-8") as fp:
+        with args.checkpoint.open("a", encoding="utf-8") as fp:
             for b_idx in range(total_batches):
                 batch = records[b_idx * args.batch_size : (b_idx + 1) * args.batch_size]
                 batch_payload: list[dict[str, Any]] = []
@@ -114,8 +118,8 @@ def main() -> None:
                                 "city_norm": "" if pd.isna(src.get("city_norm")) else str(src.get("city_norm") or ""),
                                 "poi_name": "" if pd.isna(src.get("poi_name")) else str(src.get("poi_name") or ""),
                                 "caption": str(src.get("caption") or "")[:300],
-                                "hook_text": str(src.get("hook_text") or "")[:220],
-                                "transcript": str(src.get("transcript") or "")[:700],
+                                "hook_text": str(src.get("hook_text") or "")[:250],
+                                "transcript": str(src.get("transcript") or "")[:1200],
                             }
                         )
                     batch_payload.append(
@@ -133,7 +137,7 @@ def main() -> None:
                 t0 = time.perf_counter()
                 try:
                     resp = client.models.generate_content(
-                        model=settings.gemini_fast_model,
+                        model=model_name,
                         contents=prompt,
                         config=types.GenerateContentConfig(
                             temperature=0.1,
@@ -161,7 +165,7 @@ def main() -> None:
                         "supported_factual_claims": sup_c,
                         "citation_coverage_ok": bool(item.get("citation_coverage_ok", False)),
                         "notes": redact_secrets(str(item.get("notes", ""))[:200]),
-                        "llm_model": settings.gemini_fast_model,
+                        "llm_model": model_name,
                     }
                     fp.write(json.dumps(out_rec, ensure_ascii=False) + "\n")
                     done_map[did] = out_rec
@@ -186,7 +190,7 @@ def main() -> None:
         lambda did: done_map.get(did, {}).get("citation_coverage_ok", "")
     )
     df["K_notes"] = df["draft_id"].map(
-        lambda did: f"[LLM {settings.gemini_fast_model}] {done_map.get(did, {}).get('notes', '')}".strip()
+        lambda did: f"[LLM {model_name}] {done_map.get(did, {}).get('notes', '')}".strip()
         if did in done_map
         else ""
     )
@@ -197,7 +201,7 @@ def main() -> None:
     cov_ok_count = sum(1 for d in df["draft_id"] if d in done_map and bool(done_map[d]["citation_coverage_ok"]))
 
     summary = {
-        "audit_method": f"llm_assisted_{settings.gemini_fast_model}",
+        "audit_method": f"llm_assisted_{model_name}",
         "max_rpm_limit": effective_rpm,
         "drafts_audited": len(done_map),
         "total_factual_claims": total_claims,
@@ -208,7 +212,7 @@ def main() -> None:
         "k_15_queries_completed": False,
         "per_draft": [done_map[d] for d in df["draft_id"] if d in done_map],
     }
-    SUMMARY_JSON.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    args.summary_out.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({k: v for k, v in summary.items() if k != "per_draft"}, ensure_ascii=False, indent=2))
 
 

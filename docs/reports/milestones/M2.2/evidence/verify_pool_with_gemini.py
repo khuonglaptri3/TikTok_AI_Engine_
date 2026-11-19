@@ -70,26 +70,45 @@ def _cohens_kappa(y1: list[str], y2: list[str], labels: tuple[str, ...] = ("1", 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Bounded <= 15 RPM Gemini audit over M2.2 blinded_pool.csv.")
-    parser.add_argument("--batch-size", type=int, default=12, help="Rows per request (default: 12 -> 34 requests).")
-    parser.add_argument("--max-rpm", type=int, default=14, help="Hard RPM ceiling <= 15 (default: 14).")
+    parser = argparse.ArgumentParser(description="Bounded Gemini audit over M2.2 blinded_pool.csv.")
+    parser.add_argument("--model", default="", help="Gemini model override (default: AppSettings.gemini_fast_model).")
+    parser.add_argument("--batch-size", type=int, default=12, help="Rows per request (default: 12).")
+    parser.add_argument("--max-rpm", type=int, default=14, help="Hard RPM ceiling (e.g., 5 for gemini-3.6-flash).")
     parser.add_argument("--limit", type=int, default=500, help="Max pending rows to process.")
+    parser.add_argument(
+        "--only-disagreements-from",
+        type=Path,
+        default=None,
+        help="Optional prior summary JSON whose disagreement_slots should be re-audited with full transcript.",
+    )
+    parser.add_argument("--checkpoint", type=Path, default=CHECKPOINT_JSONL)
+    parser.add_argument("--audit-csv", type=Path, default=OUT_AUDIT_CSV)
+    parser.add_argument("--summary-json", type=Path, default=OUT_SUMMARY_JSON)
+    parser.add_argument("--transcript-chars", type=int, default=500, help="Max transcript chars sent per row.")
     args = parser.parse_args()
 
     df_pool = pd.read_csv(POOL_CSV, dtype=str).fillna("")
     df_videos = pd.read_parquet(CORPUS_VIDEOS, columns=["video_id", "transcript"])
     tr_map = {str(r["video_id"]): str(r["transcript"] or "") for r in df_videos.to_dict(orient="records")}
 
-    done_map = _load_checkpoint(CHECKPOINT_JSONL)
-    pending = df_pool[~df_pool["slot_id"].isin(done_map.keys())].head(args.limit)
+    done_map = _load_checkpoint(args.checkpoint)
+    target_df = df_pool
+    prior_summary: dict[str, Any] = {}
+    if args.only_disagreements_from is not None:
+        prior_summary = json.loads(args.only_disagreements_from.read_text(encoding="utf-8"))
+        disagree_ids = {str(x["slot_id"]) for x in prior_summary.get("disagreement_slots", [])}
+        target_df = df_pool[df_pool["slot_id"].isin(disagree_ids)]
+
+    pending = target_df[~target_df["slot_id"].isin(done_map.keys())].head(args.limit)
 
     settings = AppSettings.from_env()
-    effective_rpm = max(1, min(args.max_rpm, settings.rate_limit_rpm, 15))
-    min_interval_sec = 60.0 / float(effective_rpm) + 0.3
+    model_name = args.model.strip() or settings.gemini_fast_model
+    effective_rpm = max(1, min(args.max_rpm, settings.rate_limit_rpm))
+    min_interval_sec = 60.0 / float(effective_rpm) + 0.5
 
     print(
-        f"M2.2 pool audit: total={len(df_pool)}, checkpointed={len(done_map)}, pending={len(pending)}, "
-        f"model={settings.gemini_fast_model}, cap={effective_rpm} RPM"
+        f"M2.2 pool audit: target={len(target_df)}, checkpointed={len(done_map)}, pending={len(pending)}, "
+        f"model={model_name}, cap={effective_rpm} RPM (interval={min_interval_sec:.1f}s)"
     )
 
     if len(pending) > 0:
@@ -105,7 +124,7 @@ def main() -> None:
         records = pending.to_dict(orient="records")
         total_batches = (len(records) + args.batch_size - 1) // args.batch_size
 
-        with CHECKPOINT_JSONL.open("a", encoding="utf-8") as fp:
+        with args.checkpoint.open("a", encoding="utf-8") as fp:
             for b_idx in range(total_batches):
                 batch = records[b_idx * args.batch_size : (b_idx + 1) * args.batch_size]
                 batch_payload = [
@@ -118,8 +137,8 @@ def main() -> None:
                         "video_format": r["video_format"],
                         "food_category": r["food_category"],
                         "poi_name": r["poi_name"],
-                        "caption": r["caption"][:260],
-                        "transcript": (tr_map.get(r["video_id"]) or r["transcript_excerpt"])[:500],
+                        "caption": r["caption"][:300],
+                        "transcript": (tr_map.get(r["video_id"]) or r["transcript_excerpt"])[: args.transcript_chars],
                     }
                     for r in batch
                 ]
@@ -129,7 +148,7 @@ def main() -> None:
                 t0 = time.perf_counter()
                 try:
                     resp = client.models.generate_content(
-                        model=settings.gemini_fast_model,
+                        model=model_name,
                         contents=prompt,
                         config=types.GenerateContentConfig(
                             temperature=0.0,
@@ -155,7 +174,7 @@ def main() -> None:
                         "slot_id": sid,
                         "N_llm_rel": rel,
                         "N_llm_note": redact_secrets(str(item.get("note", ""))[:160]),
-                        "llm_model": settings.gemini_fast_model,
+                        "llm_model": model_name,
                     }
                     fp.write(json.dumps(out_rec, ensure_ascii=False) + "\n")
                     done_map[sid] = out_rec
@@ -170,10 +189,24 @@ def main() -> None:
                     if wait > 0:
                         time.sleep(wait)
 
+    # When re-checking only disagreements, also load already-agreed rows from prior CSV if requested.
+    combined_map = dict(done_map)
+    if args.only_disagreements_from is not None and OUT_AUDIT_CSV.is_file():
+        prev_df = pd.read_csv(OUT_AUDIT_CSV, dtype=str).fillna("")
+        for prev in prev_df.to_dict(orient="records"):
+            sid = str(prev["slot_id"])
+            if sid not in combined_map:
+                combined_map[sid] = {
+                    "slot_id": sid,
+                    "N_llm_rel": prev["N_llm_rel"],
+                    "N_llm_note": prev["N_llm_note"],
+                    "llm_model": prev["llm_model"],
+                }
+
     audit_rows: list[dict[str, Any]] = []
     for r in df_pool.to_dict(orient="records"):
         sid = str(r["slot_id"])
-        rec = done_map.get(sid)
+        rec = combined_map.get(sid)
         if rec is None:
             continue
         adj = str(r["adjudicated_rel"])
@@ -194,7 +227,7 @@ def main() -> None:
         )
 
     out_df = pd.DataFrame(audit_rows)
-    out_df.to_csv(OUT_AUDIT_CSV, index=False)
+    out_df.to_csv(args.audit_csv, index=False)
 
     y_adj = out_df["adjudicated_rel"].tolist()
     y_llm = out_df["N_llm_rel"].tolist()
@@ -202,7 +235,11 @@ def main() -> None:
     disagreements = out_df[~out_df["matches_adjudicated"]].to_dict(orient="records")
 
     summary = {
-        "audit_method": f"llm_assisted_{settings.gemini_fast_model}",
+        "audit_method": f"llm_assisted_{model_name}"
+        if args.only_disagreements_from is None
+        else f"llm_assisted_gemini-3.1-flash-lite_plus_{model_name}_disagreement_recheck",
+        "recheck_only_disagreements": args.only_disagreements_from is not None,
+        "rechecked_count": len(done_map) if args.only_disagreements_from is not None else len(out_df),
         "max_rpm_limit": effective_rpm,
         "total_pool_rows": len(df_pool),
         "audited_rows": len(out_df),
@@ -229,7 +266,7 @@ def main() -> None:
         ],
         "human_signoff_preserved": {"K_human_verified": False, "N_human_verified": False},
     }
-    OUT_SUMMARY_JSON.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    args.summary_json.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(
             {k: v for k, v in summary.items() if k != "disagreement_slots"},
