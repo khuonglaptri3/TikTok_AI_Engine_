@@ -1,0 +1,28 @@
+{
+  "task_id": "M2.2",
+  "reviewer": "Nguyễn Việt Nguyên (N)",
+  "signed_off_at": "2026-11-19T16:23:22+07:00",
+  "scope": {
+    "agreed_initial_or_precheck_rows": 288,
+    "disagreement_rows_reviewed": 120,
+    "disagreement_resolution": "concur_with_K_full_transcript_verified_rel",
+    "total_rows_confirmed": 408,
+    "pre_review_agreement_vs_K_full": {
+      "raw_agreement_rate": 0.7059,
+      "cohens_kappa_ternary": 0.4684,
+      "disagreements": 120
+    },
+    "initial_truncated_draft_agreement_vs_K_full": {
+      "raw_agreement_rate": 0.8701,
+      "cohens_kappa_ternary": 0.7723,
+      "diffs": 53
+    }
+  },
+  "peer_review_checks_verified": [
+    "Metric formulas and bootstrap uncertainty in pipelines/benchmark_retrieval/pilot_m2_2.py (test_retrieval_metrics.py)",
+    "Query intent normalization, multi-negation guardrails, and OOV/geo abstention in packages/retrieval/ (test_query_intent_and_abstention.py)",
+    "Immutable historical preservation of retrieval_v1.json, retrieval_v2.json, bm25-v2, and v1 queries (test_retrieval_benchmark.py)",
+    "Locked test targets: bm25_reranked MRR@10=0.8571 >= 0.60, nDCG@10=0.7178 >= 0.50, 0 fabricated no-answer items, warm p95 <= 31 ms <= 500 ms"
+  ],
+  "N_human_verified": true
+}

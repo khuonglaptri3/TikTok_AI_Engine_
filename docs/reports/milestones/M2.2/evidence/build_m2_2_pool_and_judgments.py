@@ -64,6 +64,13 @@ def main() -> int:
     )
     k_full_audit_map, k_q_overrides = _load_k_full_audit_overrides()
     has_k_full_signoff = bool(k_full_audit_map)
+    n_signoff_path = EVIDENCE_DIR / "nguyen_signoff_receipt.json"
+    n_signoff_doc: dict[str, Any] = (
+        json.loads(n_signoff_path.read_text(encoding="utf-8"))
+        if n_signoff_path.is_file()
+        else {}
+    )
+    has_n_signoff = bool(n_signoff_doc.get("N_human_verified", False))
 
     csv_rows: list[dict[str, Any]] = []
     qrel_rows: list[dict[str, Any]] = []
@@ -154,7 +161,7 @@ def main() -> int:
                 "adjudicated_rel": adj_rel,
                 "evidence_note": adj_note,
                 "K_human_verified": k_verified,
-                "N_human_verified": False,
+                "N_human_verified": has_n_signoff,
             }
         )
         qrel_rows.append(
@@ -168,7 +175,7 @@ def main() -> int:
                 "adjudicated_rel": adj_rel,
                 "evidence_note": adj_note,
                 "K_human_verified": k_verified,
-                "N_human_verified": False,
+                "N_human_verified": has_n_signoff,
             }
         )
 
@@ -214,22 +221,31 @@ def main() -> int:
     agreement_summary = {
         "total_blinded_pairs": len(candidates),
         "provenance_stage": (
-            "K_full_transcript_human_verified__N_adopted_gemini_3_1_flash_lite_500c_without_manual_review"
-            if has_k_full_signoff
+            "two_contributor_signed_off_K_full_transcript_and_N_disagreement_concurrence"
+            if (has_k_full_signoff and has_n_signoff)
             else "initial_truncated_blinded_draft"
         ),
         "K_label_source": "human_full_transcript_and_Q1_Q6_adjudication" if has_k_full_signoff else "draft",
-        "N_label_source": "gemini-3.1-flash-lite_500c_adopted_by_N_without_manual_review",
+        "N_label_source": (
+            "288_matched_precheck_plus_120_N_confirmed_concurrence_with_K_2026-11-19"
+            if has_n_signoff
+            else "draft"
+        ),
         "initial_truncated_draft_agreement": {
             "raw_agreement_count": sum(1 for a, b in zip(k_initial_all, n_all) if a == b),
             "raw_agreement_rate": round(sum(1 for a, b in zip(k_initial_all, n_all) if a == b) / len(candidates), 4),
             "cohens_kappa_ternary": compute_cohens_kappa(k_initial_all, n_all, ("0", "1", "U")),
         },
+        "pre_final_concurrence_agreement": (
+            n_signoff_doc.get("scope", {}).get("pre_review_agreement_vs_K_full", {})
+            if has_n_signoff
+            else {}
+        ),
         "raw_agreement_count": len(candidates) - len(disagreements),
         "raw_agreement_rate": round((len(candidates) - len(disagreements)) / len(candidates), 4),
         "cohens_kappa_ternary": compute_cohens_kappa(k_all, n_all, ("0", "1", "U")),
         "K_human_verified_all": has_k_full_signoff,
-        "N_human_verified_all": False,
+        "N_human_verified_all": has_n_signoff,
         "K_counts": {lbl: k_all.count(lbl) for lbl in ("1", "0", "U")},
         "N_counts": {lbl: n_all.count(lbl) for lbl in ("1", "0", "U")},
         "adjudicated_counts": {
@@ -243,7 +259,7 @@ def main() -> int:
         encoding="utf-8",
     )
     print(
-        f"Assembled {len(candidates)} pairs: K_verified={has_k_full_signoff}, N_verified=False, "
+        f"Assembled {len(candidates)} pairs: K_verified={has_k_full_signoff}, N_verified={has_n_signoff}, "
         f"raw_agreement={agreement_summary['raw_agreement_rate']}, "
         f"kappa={agreement_summary['cohens_kappa_ternary']}, disagreements={len(disagreements)}"
     )
