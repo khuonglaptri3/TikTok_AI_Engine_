@@ -1,7 +1,7 @@
 # M2.3 — Qualified Scripts, Structural Guardrails & Bounded Provider Bounds
 
-- Status: IN_PROGRESS (`N`'s scope complete: guardrail/provider hardening, unit regressions, and 15-draft structural run passed; awaiting human claim-entailment audit, `K`'s 15 queries, and peer review)
-- Execution date: 2026-11-18 (Asia/Ho_Chi_Minh)
+- Status: IN_PROGRESS (`N`'s scope + bounded `<= 14 RPM` Gemini claim audit on `N`'s 15 drafts complete (`47/55 = 85.45%` supported claims, `15/15` citation coverage); awaiting `K`'s 15 briefs, human review/remediation to `>= 90%`, and `K` peer review)
+- Execution date: 2026-11-18 (offline guardrails & 15 drafts); 2026-11-19 (`gemini-3.1-flash-lite` claim audit, Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M2.3`)
 - Repository version: `feat/m2.3-script-guardrails` (branched from `main` at `c3348e93`)
 - Specification: [spec.md](superpowers/spec.md)
@@ -17,6 +17,7 @@ Hardened `BoundedGeminiClient`, `recalculate_timeline_and_verify`, and `Grounded
 - **No-evidence guardrail clarity ([verifier.py](../../../../packages/llm/guardrails/verifier.py)):** Emits an explicit warning when `valid_evidence_ids` is empty while preserving separate `valid_citations_ratio` (source membership) and `citation_coverage_ratio` (beat coverage) reporting and `grounding_verified=False`.
 - **Role-specific beat excerpt selection ([service.py](../../../../packages/script_engine/service.py)):** Differentiated `_build_offline_grounded_draft` excerpt priority per beat (`hook_text` for Beat 1, `body_beats` for Beats 2–3, `cta_text` for Beat 4) and passed `turn_calls_used=0` on `gemini_free` synthesis.
 - **15-brief offline audit ([run_m2_3_audit.py](evidence/run_m2_3_audit.py)):** Authored [nguyen_15_queries.jsonl](evidence/nguyen_15_queries.jsonl) and generated [nguyen_15_drafts_audit.csv](evidence/nguyen_15_drafts_audit.csv): `15/15` have `0` fabricated IDs, `15/15` `valid_citations_ratio == 1.0`, `15/15` `citation_coverage_ratio == 1.0`, and `12/15` `timing_valid == True` (`n03`: `45.4s` vs `50s`; `n04`: `51.8s` vs `55s`; `n09`: `42.6s` vs `45s`).
+- **Bounded Gemini claim-entailment audit (`2026-11-19`, `<= 14 RPM` per contributor override):** Ran [audit_claims_with_gemini.py](evidence/audit_claims_with_gemini.py) (`gemini-3.1-flash-lite`, `5` batches x `3` drafts) comparing every beat against full cited `fact_videos.parquet` source text: **`47/55` factual claims (`85.45%`)** marked supported and **`15/15`** marked `citation_coverage_ok=True` ([nguyen_15_llm_claim_audit.json](evidence/nguyen_15_llm_claim_audit.json)). Flagged `8` unsupported claims stemming from truncated offline excerpts (`n01`: `"số 2 Trần"`), off-topic background song lyrics (`n01`, `n03`), unrelated dessert snippet (`n02`: `"Tiramisu"`), `"Địa Phương"` fallback (`n13`), and street-name drift (`n15`), recorded explicitly in [nguyen_15_drafts_audit.csv](evidence/nguyen_15_drafts_audit.csv).
 
 ## Outputs
 
@@ -27,6 +28,9 @@ Hardened `BoundedGeminiClient`, `recalculate_timeline_and_verify`, and `Grounded
 | [run_m2_3_audit.py](evidence/run_m2_3_audit.py) | Reproducible `0`-provider-call audit script over `N`'s 15 briefs |
 | [nguyen_15_drafts_audit.csv](evidence/nguyen_15_drafts_audit.csv) | Generated drafts, structural/membership metrics, and blank human claim-audit columns |
 | [nguyen_15_summary.json](evidence/nguyen_15_summary.json) | Automated aggregate counts across the 15 drafts |
+| [audit_claims_with_gemini.py](evidence/audit_claims_with_gemini.py) | Bounded `<= 14 RPM` Gemini claim-entailment auditor over `N`'s 15 drafts |
+| [nguyen_15_llm_claim_audit.json](evidence/nguyen_15_llm_claim_audit.json) | Per-draft & aggregate Gemini entailment receipt (`47/55 = 85.45%`, `15/15` coverage) |
+| [llm_claim_audit_checkpoint.jsonl](evidence/llm_claim_audit_checkpoint.jsonl) | Resumable per-draft Gemini audit checkpoint (`15` records) |
 | [audit_15.log](evidence/audit_15.log) | Console output from `run_m2_3_audit.py` |
 | [red-m2_3-tests.log](evidence/red-m2_3-tests.log) | TDD RED output before implementation |
 | [green-m2_3-tests.log](evidence/green-m2_3-tests.log) | TDD GREEN unit test output (`19 passed`) |
@@ -50,7 +54,7 @@ Hardened `BoundedGeminiClient`, `recalculate_timeline_and_verify`, and `Grounded
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| `K`'s 15 queries and 30-draft human claim-entailment audit pending | Structural tests alone do not verify factual entailment (`>= 90%` supported claims requirement) | `K` contributes 15 briefs; both annotate claim support across 30 drafts and review |
+| `K`'s 15 queries and 30-draft human claim-entailment audit pending | `gemini-3.1-flash-lite` audit on `N`'s 15 drafts scored `47/55 = 85.45%` supported claims (`< 90%` gate threshold) due to truncated/off-topic offline snippets (`n01`, `n02`, `n03`, `n13`, `n15`), and `K`'s `15` drafts + two-person human review are still pending | Improve offline excerpt quality/filtering (or evaluate `gemini_free`), add `K`'s 15 briefs, and complete two-human review |
 | `3/15` offline drafts (`n03`, `n04`, `n09`) fell `2.4s–4.6s` short of strict `5%` timeline tolerance | Guardrail accurately marks them `passed=False` rather than inventing padding | Expected bounded behavior for fixed offline blueprint on `50–55s` targets |
 
 ## Acceptance and handoff

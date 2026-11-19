@@ -22,3 +22,7 @@
 - `.venv/bin/python -m mypy packages apps pipelines` -> `EXIT=0`, `Success: no issues found in 76 source files` ([mypy.log](mypy.log))
 - `.venv/bin/python -m pytest -v` -> `EXIT=0`, `66 passed in 15.89s` ([pytest-full.log](pytest-full.log))
 - `.venv/bin/python scripts/check_secrets.py` -> `EXIT=0`, `PASS: Zero secret leaks detected across workspace.` ([check-secrets.log](check-secrets.log))
+
+## Follow-up Gemini Claim-Entailment Audit (`2026-11-19`, `feat/m2.2-m2.3-llm-audit`)
+- Per contributor override (`<= 15 RPM`), ran `audit_claims_with_gemini.py --batch-size 3 --max-rpm 14` (`gemini-3.1-flash-lite`, `5` requests) over `nguyen_15_drafts_audit.csv`.
+- Observed `47/55` (`85.45%`) supported factual claims and `15/15` (`100%`) `citation_coverage_ok`; results persisted in `nguyen_15_llm_claim_audit.json` and `nguyen_15_drafts_audit.csv` while keeping `human_claim_audit_completed=False`.
