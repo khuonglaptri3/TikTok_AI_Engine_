@@ -15,6 +15,7 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M2.2 | `bm25-v3`, query-intent/no-answer guardrails, 40-query blinded pilot (`MRR@10=0.8036`, `p95=29.70 ms`; awaiting human pool sign-off) | IN_PROGRESS | [Read results](M2.2/README.md) |
 | M2.3 | Qualified scripts, structural guardrails, bounded provider timeout/calls, and 15-brief offline audit | IN_PROGRESS | [Read results](M2.3/README.md) |
 | M3.1 | Repeated Dual-Sink ingestion repair, missing-modality schemas, interrupted recovery & `K` real-snapshot reproduction | COMPLETE | [Read results](M3.1/README.md) |
+| M4.2 | Observed `is_ad`/EC flags separated from promo lexicon, `PR-AUC=0.8916`, `100`-item workbook + LLM blinded draft (`146` tests) | IN_PROGRESS | [Read results](M4.2/README.md) |
 | M6.1 | `v2_pilot` (`bm25-v3`) & CPU `fastembed` MiniLM vs `tfidf_svd` parity measured (`141` tests); human qrels/review pending | IN_PROGRESS | [Read results](M6.1/README.md) |
 
 Independent cross-project assessments are listed in [task reports](../tasks/README.md). Their conclusions do not change milestone status or pass a gate.

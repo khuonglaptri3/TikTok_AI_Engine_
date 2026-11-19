@@ -1,0 +1,45 @@
+{
+  "audit_id": "m4_2_llm_draft_audit_v1",
+  "audited_at": "2026-11-19T03:56:16.023096+00:00",
+  "label_source": "llm_assisted_blinded_draft_pending_human_N_K_signoff",
+  "human_signoff_complete": false,
+  "model": "gemini-3.1-flash-lite",
+  "draft_jsonl_path": "data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl",
+  "draft_jsonl_sha256": "7c7ab62bd974af040209190a417c1795d04d989d885052237e0bf4b32aad8403",
+  "total_items": 100,
+  "llm_wording_label_counts": {
+    "brand_or_venue_focus_no_cta": 37,
+    "explicit_promo_cta": 25,
+    "organic_or_general_review": 32,
+    "unclear_or_noisy_text": 6
+  },
+  "crosstab_observed_flag_vs_llm_wording": {
+    "observed_ad": {
+      "brand_or_venue_focus_no_cta": 7,
+      "explicit_promo_cta": 9,
+      "organic_or_general_review": 9
+    },
+    "observed_ad_and_ecommerce": {
+      "brand_or_venue_focus_no_cta": 8,
+      "explicit_promo_cta": 7
+    },
+    "observed_ecommerce": {
+      "brand_or_venue_focus_no_cta": 12,
+      "explicit_promo_cta": 5,
+      "organic_or_general_review": 7,
+      "unclear_or_noisy_text": 1
+    },
+    "unlabeled_unknown": {
+      "brand_or_venue_focus_no_cta": 10,
+      "explicit_promo_cta": 4,
+      "organic_or_general_review": 16,
+      "unclear_or_noisy_text": 5
+    }
+  },
+  "commercial_cue_agreement_vs_regex_lexicon": {
+    "both_positive": 18,
+    "llm_only": 29,
+    "lex_only": 9,
+    "both_negative": 44
+  }
+}

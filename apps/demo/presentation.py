@@ -137,13 +137,19 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = True)
     viewer = comp.get("viewer_clean_scores") or {}
     gap = float(comp.get("pr_hype_gap") or 0.0)
     risk = float(comp.get("undisclosed_pr_risk") or 0.0)
+    flag_status = str(comp.get("disclosure_flag_status") or "unlabeled_unknown")
+    lex_score = float(comp.get("lexical_promo_score") or 0.0)
+    lex_cues = comp.get("promotional_language_indicators") or []
     pains = comp.get("viewer_pain_points") or []
     comments = data.get("comments") or []
 
+    cues_preview = ", ".join(f"`{c}`" for c in lex_cues[:5]) if lex_cues else "_Không ghi nhận từ khóa quảng bá_"
     lines = [
         "### Chẩn Đoán ABSA Và Mẫu Bình Luận (Baseline Heuristic)",
         "_Điểm chưa được hiệu chuẩn trên nhãn độc lập; không xác minh khách thật, bot, seeding hay tài trợ không công khai._",
-        f"- **Chênh lệch điểm cảm xúc heuristic:** `{gap:+.2f}` • **Chỉ số quảng bá heuristic:** `{risk:.2f}` (không phải xác suất)",
+        f"- **Trạng thái gắn cờ nền tảng (Observed Flag):** `{flag_status}` _(mục chưa gắn cờ vẫn là `unlabeled_unknown`, không phải bằng chứng không tài trợ)_",
+        f"- **Chỉ dấu ngôn ngữ quảng bá (Lexical Promo):** `{lex_score:.2f}` • {cues_preview}",
+        f"- **Chênh lệch điểm cảm xúc heuristic:** `{gap:+.2f}` • **Heuristic tổng hợp cũ:** `{risk:.2f}` _(không phải xác suất tài trợ ngầm; nghiên cứu tài trợ ẩn đang hoãn)_",
         f"- **Bình luận hợp lệ:** `{comp.get('clean_comment_count', 0)}` • **Bình luận nghi Seeding/Spam bị lọc:** `{comp.get('seeding_comment_count', 0)}`",
         "",
         "| Khía cạnh (Aspect) | Điểm lời thoại | Điểm bình luận giữ lại | Chênh lệch |",
