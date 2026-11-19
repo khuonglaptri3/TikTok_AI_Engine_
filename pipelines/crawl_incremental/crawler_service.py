@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -21,8 +22,10 @@ def is_within_rolling_window(
     cutoff_utc: datetime,
 ) -> bool:
     """Return True strictly when video create_time >= 4-month rolling cutoff."""
+    if isinstance(create_time_iso, bool):
+        return False
     try:
-        if isinstance(create_time_iso, (int, float)) or str(create_time_iso).isdigit():
+        if isinstance(create_time_iso, int | float) or str(create_time_iso).isdigit():
             dt = datetime.fromtimestamp(float(create_time_iso), tz=UTC)
         else:
             dt = datetime.fromisoformat(str(create_time_iso).replace("Z", "+00:00"))
@@ -58,6 +61,7 @@ def download_audio_mp3_64k(tiktok_url: str, output_mp3: Path) -> bool:
     output_mp3.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
         "yt-dlp",
+        "--force-overwrites",
         "-f",
         "bestaudio/best",
         "--extract-audio",
@@ -85,7 +89,9 @@ def write_incremental_batch(
 ) -> Path:
     batch_dir.mkdir(parents=True, exist_ok=True)
     out_jsonl = batch_dir / "videos_4m.jsonl"
-    with out_jsonl.open("w", encoding="utf-8") as fp:
+    tmp_jsonl = batch_dir / "videos_4m.jsonl.tmp"
+    with tmp_jsonl.open("w", encoding="utf-8") as fp:
         for rec in records:
             fp.write(json.dumps(rec.model_dump(), ensure_ascii=False) + "\n")
+    os.replace(tmp_jsonl, out_jsonl)
     return out_jsonl

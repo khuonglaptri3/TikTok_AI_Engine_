@@ -1,0 +1,82 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 3 items
+
+tests/unit/test_bounded_collector_worker.py ..F                          [100%]
+
+=================================== FAILURES ===================================
+_ test_capped_retries_secret_redacted_failures_and_idempotent_checkpoint_resume _
+
+tmp_path = PosixPath('/tmp/pytest-of-intern-tdkhuong/pytest-13/test_capped_retries_secret_red0')
+
+    def test_capped_retries_secret_redacted_failures_and_idempotent_checkpoint_resume(tmp_path: Path) -> None:
+        as_of = datetime(2026, 11, 19, 12, 0, 0, tzinfo=UTC)
+        candidates = [
+            _make_candidate("v_ok_1", as_of - timedelta(days=2)),
+            _make_candidate("v_flaky_once", as_of - timedelta(days=3)),
+            _make_candidate("v_always_fails", as_of - timedelta(days=4)),
+        ]
+        fixture_file = tmp_path / "fixture_retry.jsonl"
+        fixture_file.write_text(
+            "\n".join(json.dumps(c, ensure_ascii=False) for c in candidates) + "\n",
+            encoding="utf-8",
+        )
+    
+        fake_google_tok = "AIza" + "FakeUnitRedactionToken123"
+        fake_ms_tok = "secret_ms_tok_val_789"
+    
+        class _FlakyProvider(OfflineFixtureCollectorProvider):
+            def __init__(self, path: Path) -> None:
+                super().__init__(path)
+                self.fail_always = True
+                self._flaky_calls = 0
+    
+            def fetch_video_detail(self, candidate: dict[str, Any]) -> dict[str, Any]:
+                vid = str(candidate.get("video_id") or "")
+                if vid == "v_flaky_once":
+                    self._flaky_calls += 1
+                    if self._flaky_calls == 1:
+                        raise TransientCollectorError("rate limited temporary 429")
+                if vid == "v_always_fails" and self.fail_always:
+                    raise TransientCollectorError(
+                        f"upstream error key={fake_google_tok} ms_token={fake_ms_tok} Bearer my_bearer_xyz"
+                    )
+                return super().fetch_video_detail(candidate)
+    
+        sleeps: list[float] = []
+        provider = _FlakyProvider(fixture_file)
+        bounds = CollectorBounds(max_retries=2)
+        collector = BoundedIncrementalCollector(
+            provider=provider,
+            audio_converter=OfflineFixtureAudioConverter(),
+            bounds=bounds,
+            sleep_fn=sleeps.append,
+        )
+    
+        out_dir = tmp_path / "resume_batch"
+>       m1 = collector.run(output_dir=out_dir, as_of_utc=as_of, historical_video_ids=set(), resume=False)
+
+tests/unit/test_bounded_collector_worker.py:194: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+pipelines/crawl_incremental/worker.py:195: in run
+    detail = self.provider.fetch_video_detail(cand)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_bounded_collector_worker.test_capped_retries_secret_redacted_failures_and_idempotent_checkpoint_resume.<locals>._FlakyProvider object at 0x7671b4b0f710>
+candidate = {'author_handle': 'creator_a', 'create_time': '2026-11-16T12:00:00+00:00', 'video_id': 'v_flaky_once'}
+
+    def fetch_video_detail(self, candidate: dict[str, Any]) -> dict[str, Any]:
+        vid = str(candidate.get("video_id") or "")
+        if vid == "v_flaky_once":
+            self._flaky_calls += 1
+            if self._flaky_calls == 1:
+>               raise TransientCollectorError("rate limited temporary 429")
+E               pipelines.crawl_incremental.providers.TransientCollectorError: rate limited temporary 429
+
+tests/unit/test_bounded_collector_worker.py:176: TransientCollectorError
+=========================== short test summary info ============================
+FAILED tests/unit/test_bounded_collector_worker.py::test_capped_retries_secret_redacted_failures_and_idempotent_checkpoint_resume
+========================= 1 failed, 2 passed in 0.24s ==========================

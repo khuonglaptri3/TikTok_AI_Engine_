@@ -1,0 +1,28 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collected 177 items
+
+tests/contract/test_data_contracts.py ..........                         [  5%]
+tests/eval/test_retrieval_benchmark.py ...                               [  7%]
+tests/smoke/test_api_and_demo.py .                                       [  7%]
+tests/unit/test_analytics_and_retrieval.py .....                         [ 10%]
+tests/unit/test_bounded_collector_worker.py ............                 [ 17%]
+tests/unit/test_dense_hybrid_retrieval.py ........                       [ 22%]
+tests/unit/test_incremental_absa_seeding.py ...                          [ 23%]
+tests/unit/test_llm_call_budget.py .........................             [ 37%]
+tests/unit/test_m4_2_disclosure.py .......                               [ 41%]
+tests/unit/test_m5_1_comment_indicators.py ...                           [ 43%]
+tests/unit/test_offline_draft.py ....................                    [ 54%]
+tests/unit/test_query_intent_and_abstention.py ..............            [ 62%]
+tests/unit/test_resource_measurements.py ........                        [ 67%]
+tests/unit/test_retrieval_metrics.py ..........                          [ 72%]
+tests/unit/test_script_guardrails.py .............                       [ 80%]
+tests/unit/test_secret_hygiene.py ..                                     [ 81%]
+tests/unit/test_snapshot_continuity.py ..........................        [ 96%]
+tests/unit/test_taxonomy_and_corpus.py .......                           [100%]
+
+============================= 177 passed in 31.53s =============================

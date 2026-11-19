@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -13,6 +14,15 @@ from packages.data_contracts.multimodal import (
     RawWhisperSegment,
 )
 from pipelines.crawl_incremental.crawler_service import compute_cutoff_utc, write_incremental_batch
+from pipelines.crawl_incremental.models import CollectorBounds, CollectorItemReceipt, CrawlManifest
+from pipelines.crawl_incremental.providers import (
+    LiveNetworkDisabledError,
+    LiveTikTokCollectorProvider,
+    OfflineFixtureAudioConverter,
+    OfflineFixtureCollectorProvider,
+    YtDlpAudioConverter64k,
+)
+from pipelines.crawl_incremental.worker import BoundedIncrementalCollector, _atomic_write_json
 
 
 def _build_seed_demo_records(now_utc: datetime) -> list[RawIncrementalVideoRecord]:
@@ -92,38 +102,126 @@ def _build_seed_demo_records(now_utc: datetime) -> list[RawIncrementalVideoRecor
     ]
 
 
+def _load_protected_corpus_ids(base_corpus_dir: Path) -> tuple[set[str], str]:
+    snapshot_id = base_corpus_dir.name
+    manifest_file = base_corpus_dir / "manifest.json"
+    if manifest_file.is_file():
+        data = json.loads(manifest_file.read_text(encoding="utf-8"))
+        snapshot_id = str(data.get("snapshot_id") or snapshot_id)
+    fact_path = base_corpus_dir / "fact_videos.parquet"
+    if not fact_path.is_file():
+        return set(), snapshot_id
+    ids = set(pd.read_parquet(fact_path, columns=["video_id"])["video_id"].astype(str).tolist())
+    return ids, snapshot_id
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Crawl fresh 4-month TikTok F&B videos (never re-crawls historical 1.50 GB corpus)."
+        description="Bounded 120-day incremental collector worker (never re-crawls historical Gold corpus)."
     )
-    parser.add_argument("--base-corpus", type=Path, default=Path("data/corpus/20261117_recovered_v1"))
+    parser.add_argument(
+        "--base-corpus",
+        type=Path,
+        default=Path("data/corpus/20261118_taxonomy_fix_v1"),
+    )
     parser.add_argument("--output-dir", type=Path, default=Path("data/raw_incremental/batch_latest"))
-    parser.add_argument("--window-days", type=int, default=120, help="Rolling window in days (default: 120 = 4 months).")
+    parser.add_argument(
+        "--window-days",
+        type=int,
+        default=120,
+        help="Rolling operational window in days (default: 120 = 4 months).",
+    )
+    parser.add_argument(
+        "--source",
+        choices=("offline_fixture", "live_provider"),
+        default=None,
+        help="Explicit acquisition source: offline_fixture (synthetic/0 network) or live_provider.",
+    )
+    parser.add_argument("--fixture-path", type=Path, default=None, help="JSON/JSONL fixture file for --source offline_fixture.")
+    parser.add_argument("--as-of", type=str, default=None, help="ISO-8601 reference timestamp for 120-day cutoff.")
+    parser.add_argument("--creator", action="append", default=None, help="Creator handle(s) to discover (repeatable).")
+    parser.add_argument("--resume", action="store_true", help="Resume from collector_checkpoint.json in --output-dir.")
+    parser.add_argument(
+        "--allow-live-network",
+        action="store_true",
+        help="Explicit opt-in required for --source live_provider after Gate G2.",
+    )
+    parser.add_argument("--max-creators", type=int, default=5)
+    parser.add_argument("--max-candidates", type=int, default=50)
+    parser.add_argument("--max-succeeded", type=int, default=30)
+    parser.add_argument("--max-audio-minutes", type=float, default=60.0)
+    parser.add_argument("--max-comments-total", type=int, default=1000)
+    parser.add_argument("--max-retries", type=int, default=2)
     parser.add_argument(
         "--seed-demo-batch",
         action="store_true",
-        help="Write a deterministic 4-month multimodal sample batch for offline verification.",
+        help="Write a deterministic 4-month synthetic sample batch for offline verification.",
     )
     args = parser.parse_args()
 
-    cutoff = compute_cutoff_utc(window_days=args.window_days)
-    existing_ids: set[str] = set()
-    fact_path = args.base_corpus / "fact_videos.parquet"
-    if fact_path.is_file():
-        existing_ids = set(pd.read_parquet(fact_path, columns=["video_id"])["video_id"].astype(str).tolist())
+    as_of_utc = (
+        datetime.fromisoformat(args.as_of.replace("Z", "+00:00"))
+        if args.as_of
+        else datetime.now(UTC)
+    )
+    if as_of_utc.tzinfo is None:
+        as_of_utc = as_of_utc.replace(tzinfo=UTC)
+
+    cutoff = compute_cutoff_utc(reference_now=as_of_utc, window_days=args.window_days)
+    existing_ids, snapshot_id = _load_protected_corpus_ids(args.base_corpus)
+
+    bounds = CollectorBounds(
+        window_days=args.window_days,
+        max_creators=args.max_creators,
+        max_candidate_videos=args.max_candidates,
+        max_succeeded_videos=args.max_succeeded,
+        max_audio_minutes=args.max_audio_minutes,
+        max_comments_total=args.max_comments_total,
+        max_retries=args.max_retries,
+    )
 
     if args.seed_demo_batch:
-        records = [
-            r for r in _build_seed_demo_records(datetime.now(UTC)) if r.video_id not in existing_ids
+        seed_all = _build_seed_demo_records(as_of_utc)
+        accepted = [r for r in seed_all if r.video_id not in existing_ids]
+        out_file = write_incremental_batch(accepted, args.output_dir)
+        seed_items = [
+            CollectorItemReceipt(
+                video_id=r.video_id,
+                author_handle=r.author_handle,
+                create_time=r.create_time,
+                status="succeeded" if r.video_id not in existing_ids else "skipped",
+                attempts=1 if r.video_id not in existing_ids else 0,
+                reason="ok" if r.video_id not in existing_ids else "historical_protected_id",
+                comment_count=len(r.comments),
+            )
+            for r in seed_all
         ]
-        out_file = write_incremental_batch(records, args.output_dir)
+        seed_manifest = CrawlManifest(
+            source_mode="offline_fixture",
+            is_synthetic_fixture=True,
+            as_of_utc=as_of_utc.isoformat(),
+            cutoff_utc=cutoff.isoformat(),
+            base_corpus_snapshot_id=snapshot_id,
+            historical_protected_count=len(existing_ids),
+            bounds=bounds,
+            requested_count=len(seed_all),
+            succeeded_count=len(accepted),
+            failed_count=0,
+            skipped_count=len(seed_all) - len(accepted),
+            collected_comments_count=sum(len(r.comments) for r in accepted),
+            output_jsonl=out_file.name,
+            items=seed_items,
+            timings_ms={"total_ms": 0.0},
+        )
+        _atomic_write_json(args.output_dir / "crawl_manifest.json", seed_manifest.model_dump())
         print(
             json.dumps(
                 {
                     "status": "seeded_demo_batch",
+                    "is_synthetic_fixture": True,
                     "cutoff_utc": cutoff.isoformat(),
                     "historical_skipped_pool": len(existing_ids),
-                    "written_records": len(records),
+                    "written_records": len(accepted),
                     "output_jsonl": str(out_file),
                 },
                 ensure_ascii=False,
@@ -132,13 +230,60 @@ def main() -> None:
         )
         return
 
+    if args.source == "offline_fixture":
+        if args.fixture_path is None:
+            raise ValueError("--fixture-path is required when --source offline_fixture is selected.")
+        collector = BoundedIncrementalCollector(
+            provider=OfflineFixtureCollectorProvider(args.fixture_path),
+            audio_converter=OfflineFixtureAudioConverter(),
+            bounds=bounds,
+            sleep_fn=lambda _: None,
+        )
+        manifest = collector.run(
+            output_dir=args.output_dir,
+            as_of_utc=as_of_utc,
+            historical_video_ids=existing_ids,
+            base_corpus_snapshot_id=snapshot_id,
+            creators=args.creator,
+            resume=args.resume,
+        )
+        print(json.dumps(manifest.model_dump(), ensure_ascii=False, indent=2))
+        return
+
+    if args.source == "live_provider":
+        if not existing_ids:
+            raise LiveNetworkDisabledError(
+                f"Refusing live_provider execution without a populated historical --base-corpus protection set at {args.base_corpus}."
+            )
+        ms_tok = os.environ.get("MS_TOKEN", "")
+        live_provider = LiveTikTokCollectorProvider(
+            allow_live_network=args.allow_live_network,
+            ms_token=ms_tok,
+        )
+        live_audio = YtDlpAudioConverter64k(allow_live_network=args.allow_live_network)
+        collector = BoundedIncrementalCollector(
+            provider=live_provider,
+            audio_converter=live_audio,
+            bounds=bounds,
+        )
+        manifest = collector.run(
+            output_dir=args.output_dir,
+            as_of_utc=as_of_utc,
+            historical_video_ids=existing_ids,
+            base_corpus_snapshot_id=snapshot_id,
+            creators=args.creator,
+            resume=args.resume,
+        )
+        print(json.dumps(manifest.model_dump(), ensure_ascii=False, indent=2))
+        return
+
     print(
         json.dumps(
             {
-                "status": "ready_for_live_crawl",
+                "status": "idle_no_source_selected",
                 "cutoff_utc": cutoff.isoformat(),
                 "historical_protected_videos": len(existing_ids),
-                "note": "Configure MS_TOKEN in .env and invoke TikTokApi + yt-dlp worker on host network, or pass --seed-demo-batch for offline pipeline testing.",
+                "note": "Pass --source offline_fixture --fixture-path <file> for offline bounded worker verification, or --source live_provider --allow-live-network after Gate G2.",
             },
             ensure_ascii=False,
             indent=2,

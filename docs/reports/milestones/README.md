@@ -12,9 +12,10 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M1.2 | Immutable taxonomy-corrected historical Gold snapshot (`20261118_taxonomy_fix_v1`) with verified parent lineage | COMPLETE | [Read results](M1.2/README.md) |
 | M1.G | G1 corpus gate decision (`PASS` local-only scope; dual-snapshot SHA256/lineage & data card verified; public redistribution `BLOCKED`) | COMPLETE | [Read results](M1.G/README.md) |
 | M2.1 | Descriptive niche benchmarks, cohort/missingness provenance, sparse abstention, and 100-request latency verification | COMPLETE | [Read results](M2.1/README.md) |
-| M2.2 | `bm25-v3`, query-intent/no-answer guardrails, 40-query blinded pilot (`MRR@10=0.8036`, `p95=29.70 ms`; awaiting human pool sign-off) | IN_PROGRESS | [Read results](M2.2/README.md) |
-| M2.3 | Qualified scripts, structural guardrails, bounded provider timeout/calls, and 15-brief offline audit | IN_PROGRESS | [Read results](M2.3/README.md) |
+| M2.2 | `bm25-v3`, query-intent/no-answer guardrails, 40-query blinded pilot (`K` full-transcript sign-off `MRR@10=0.8571`, `p95=30.16 ms` + `N` LLM audit; awaiting `N` human sign-off) | IN_PROGRESS | [Read results](M2.2/README.md) |
+| M2.3 | Qualified scripts, structural guardrails, `K` peer-review TDD fixes, and 30-draft offline audit (`K` full-transcript claim support `108/120 = 90.0%`; awaiting `N` `N_*` audit) | IN_PROGRESS | [Read results](M2.3/README.md) |
 | M3.1 | Repeated Dual-Sink ingestion repair, missing-modality schemas, interrupted recovery & `K` real-snapshot reproduction | COMPLETE | [Read results](M3.1/README.md) |
+| M3.2 | Bounded 120-day collector worker, `70,996`-ID protection, crash-safe resume, 64 kbps audio receipts & offline `M3.1` round-trip (`K` complete; awaiting `N` review) | IN_PROGRESS | [Read results](M3.2/README.md) |
 | M4.2 | Observed `is_ad`/EC flags separated from promo lexicon, `PR-AUC=0.8916`, `100`-item workbook + LLM blinded draft (`146` tests) | IN_PROGRESS | [Read results](M4.2/README.md) |
 | M5.1 | Observable duplicate/contact/noise indicators, organic-dup FP fix, diagnostic default, guidelines & fixture dry-run (`142` tests) | IN_PROGRESS | [Read results](M5.1/README.md) |
 | M6.1 | `v2_pilot` (`bm25-v3`) & CPU `fastembed` MiniLM vs `tfidf_svd` parity measured (`141` tests); human qrels/review pending | IN_PROGRESS | [Read results](M6.1/README.md) |
