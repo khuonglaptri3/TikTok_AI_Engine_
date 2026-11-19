@@ -1,4 +1,4 @@
-"""Assemble blinded K_draft & N_draft judgments, compute Cohen's kappa, and emit blinded_pool.csv + qrels."""
+"""Assemble blinded K & N judgments, apply K's owner-confirmed full-transcript audit & Q1..Q6 rulings, and emit blinded_pool.csv + qrels."""
 from __future__ import annotations
 
 import csv
@@ -29,6 +29,20 @@ def compute_cohens_kappa(labels_a: list[str], labels_b: list[str], categories: t
     return round((po - pe) / (1.0 - pe), 4)
 
 
+def _load_k_full_audit_overrides() -> tuple[dict[str, dict[str, Any]], dict[str, str]]:
+    audit_path = EVIDENCE_DIR / "khuong_408_full_transcript_audit.jsonl"
+    rulings_path = EVIDENCE_DIR / "khuong_q1_q6_adjudication.json"
+    if not audit_path.is_file() or not rulings_path.is_file():
+        return {}, {}
+    audit_map = {str(r["slot_id"]): r for r in _load_jsonl(audit_path)}
+    rulings_doc = json.loads(rulings_path.read_text(encoding="utf-8"))
+    q_overrides: dict[str, str] = {}
+    for cluster in rulings_doc.get("rulings", {}).values():
+        for sid, lbl in cluster.get("overrides", {}).items():
+            q_overrides[str(sid)] = str(lbl).strip().upper()
+    return audit_map, q_overrides
+
+
 def main() -> int:
     candidates = _load_jsonl(EVIDENCE_DIR / "blinded_candidates_only.jsonl")
     k_rows = _load_jsonl(EVIDENCE_DIR / "judgments_K_dev.jsonl") + _load_jsonl(EVIDENCE_DIR / "judgments_K_test.jsonl")
@@ -42,38 +56,54 @@ def main() -> int:
     if missing_k or missing_n:
         raise ValueError(f"Missing judgments: K={len(missing_k)}, N={len(missing_n)}")
 
-    # Optional manual adjudication overrides written after inspecting disagreements
     adj_overrides_path = EVIDENCE_DIR / "adjudication_overrides.json"
     adj_overrides: dict[str, dict[str, str]] = (
         json.loads(adj_overrides_path.read_text(encoding="utf-8"))
         if adj_overrides_path.is_file()
         else {}
     )
+    k_full_audit_map, k_q_overrides = _load_k_full_audit_overrides()
+    has_k_full_signoff = bool(k_full_audit_map)
 
     csv_rows: list[dict[str, Any]] = []
     qrel_rows: list[dict[str, Any]] = []
     disagreements: list[dict[str, Any]] = []
 
+    k_initial_all: list[str] = []
     k_all: list[str] = []
     n_all: list[str] = []
 
     for cand in candidates:
         sid = str(cand["slot_id"])
-        kr = str(k_map[sid]["rel"]).strip().upper()
+        kr_initial = str(k_map[sid]["rel"]).strip().upper()
         nr = str(n_map[sid]["rel"]).strip().upper()
-        kn = str(k_map[sid].get("note", "")).strip()
+        kn_initial = str(k_map[sid].get("note", "")).strip()
         nn = str(n_map[sid].get("note", "")).strip()
+        k_initial_all.append(kr_initial)
+
+        if has_k_full_signoff:
+            audit_rec = k_full_audit_map[sid]
+            kr = k_q_overrides.get(sid, str(audit_rec["provisional_K_full_transcript_rel"]).strip().upper())
+            kn = str(audit_rec.get("note", "")).strip() or kn_initial
+            k_verified = True
+        else:
+            kr = kr_initial
+            kn = kn_initial
+            k_verified = False
+
         k_all.append(kr)
         n_all.append(nr)
 
         if kr == nr:
             adj_rel = kr
             adj_note = kn or nn
+        elif has_k_full_signoff:
+            adj_rel = kr
+            adj_note = f"[K full-transcript verified={kr}; N truncated draft={nr} pending N sign-off] {kn}"
         elif sid in adj_overrides:
             adj_rel = str(adj_overrides[sid]["adjudicated_rel"])
             adj_note = str(adj_overrides[sid]["adjudication_note"])
         else:
-            # Conservative tie-break until explicit override: if either is U or 0 vs 1 without override, flag U
             adj_rel = "U"
             adj_note = f"Pending adjudication: K={kr} ({kn}) vs N={nr} ({nn})"
 
@@ -120,7 +150,7 @@ def main() -> int:
                 "N_rel_draft": nr,
                 "adjudicated_rel": adj_rel,
                 "evidence_note": adj_note,
-                "K_human_verified": False,
+                "K_human_verified": k_verified,
                 "N_human_verified": False,
             }
         )
@@ -134,7 +164,7 @@ def main() -> int:
                 "N_rel_draft": nr,
                 "adjudicated_rel": adj_rel,
                 "evidence_note": adj_note,
-                "K_human_verified": False,
+                "K_human_verified": k_verified,
                 "N_human_verified": False,
             }
         )
@@ -149,15 +179,20 @@ def main() -> int:
         for r in qrel_rows:
             fp.write(json.dumps(r, ensure_ascii=False) + "\n")
 
-    # Also write no_answer_raw_audit.csv
+    no_ans_special_notes = {
+        "7445291514290375943": "Partial single-ingredient overlap (fairground dried scorpion mukbang only; lacks fried crickets & Cambodian style)",
+        "7414434775777201438": "Japanese Omakase multi-course sashimi set mentioning pufferfish ('cá nóc') once in passing alongside whale/tuna/cod; not a fugu sashimi review",
+        "7420417135618379015": "Japanese Omakase serving pufferfish milt ('tinh hoàn cá nóc Shirako'), not fugu sashimi",
+        "7463049980094237960": "Nha Trang curried/grilled porcupine pufferfish ('cá nóc nhím um cà ri'), not Japanese fugu sashimi",
+        "7307968717030296850": "Western restaurant review mentioning French whelk ('ốc bulot Pháp'), not escargot land-snail baking recipe",
+    }
     raw_no_ans = _load_jsonl(EVIDENCE_DIR / "no_answer_raw_candidates.jsonl")
     audited_no_ans: list[dict[str, Any]] = []
     for r in raw_no_ans:
         vid = str(r["video_id"])
-        note = (
-            "Partial single-ingredient overlap (fairground scorpion mukbang only; lacks fried crickets & Cambodian style)"
-            if vid == "7445291514290375943"
-            else "Non-relevant boilerplate/partial token match; requested dish/cuisine absent"
+        note = no_ans_special_notes.get(
+            vid,
+            "Non-relevant boilerplate/partial token match; requested dish/cuisine absent",
         )
         audited_no_ans.append(
             {
@@ -175,9 +210,21 @@ def main() -> int:
 
     agreement_summary = {
         "total_blinded_pairs": len(candidates),
+        "provenance_stage": (
+            "K_full_transcript_audit_and_owner_Q1_Q6_signoff_complete__N_truncated_draft_pending_N_human_signoff"
+            if has_k_full_signoff
+            else "initial_truncated_blinded_draft"
+        ),
+        "initial_truncated_draft_agreement": {
+            "raw_agreement_count": sum(1 for a, b in zip(k_initial_all, n_all) if a == b),
+            "raw_agreement_rate": round(sum(1 for a, b in zip(k_initial_all, n_all) if a == b) / len(candidates), 4),
+            "cohens_kappa_ternary": compute_cohens_kappa(k_initial_all, n_all, ("0", "1", "U")),
+        },
         "raw_agreement_count": len(candidates) - len(disagreements),
         "raw_agreement_rate": round((len(candidates) - len(disagreements)) / len(candidates), 4),
         "cohens_kappa_ternary": compute_cohens_kappa(k_all, n_all, ("0", "1", "U")),
+        "K_human_verified_all": has_k_full_signoff,
+        "N_human_verified_all": False,
         "K_counts": {lbl: k_all.count(lbl) for lbl in ("1", "0", "U")},
         "N_counts": {lbl: n_all.count(lbl) for lbl in ("1", "0", "U")},
         "adjudicated_counts": {
@@ -191,7 +238,8 @@ def main() -> int:
         encoding="utf-8",
     )
     print(
-        f"Assembled {len(candidates)} pairs: raw_agreement={agreement_summary['raw_agreement_rate']}, "
+        f"Assembled {len(candidates)} pairs: K_verified={has_k_full_signoff}, N_verified=False, "
+        f"raw_agreement={agreement_summary['raw_agreement_rate']}, "
         f"kappa={agreement_summary['cohens_kappa_ternary']}, disagreements={len(disagreements)}"
     )
     return 0

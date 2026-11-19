@@ -1,0 +1,233 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 19 items
+
+tests/unit/test_offline_draft.py .........FF.F....FF                     [100%]
+
+=================================== FAILURES ===================================
+_ test_generate_keeps_explicit_and_geo_filters_without_soft_heuristic_retrieval_starvation _
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+
+    def test_generate_keeps_explicit_and_geo_filters_without_soft_heuristic_retrieval_starvation(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+    ) -> None:
+        benchmark, card = draft_inputs
+        captured_retrieval_requests: list[RetrievalRequest] = []
+        captured_benchmark_filters: list[NicheQueryFilter] = []
+    
+        class _FakeAnalytics:
+            def compute_benchmark(self, filters: NicheQueryFilter) -> NicheBenchmarkSummary:
+                captured_benchmark_filters.append(filters)
+                return benchmark
+    
+        class _FakeRetrieval:
+            def search(self, req: RetrievalRequest) -> RetrievalResponse:
+                captured_retrieval_requests.append(req)
+                return RetrievalResponse(
+                    query=req.query,
+                    mode=req.mode,
+                    reranked=True,
+                    total_candidates=1,
+                    relaxed_filters=[],
+                    items=[card],
+                    timings_ms={},
+                )
+    
+        engine = GroundedScriptEngine(
+            analytics_engine=_FakeAnalytics(),  # type: ignore[arg-type]
+            retrieval_service=_FakeRetrieval(),  # type: ignore[arg-type]
+            gemini_client=BoundedGeminiClient(settings=AppSettings(gemini_api_key="")),
+        )
+        engine.generate(
+            ScriptGenerationRequest(
+                brief="Review bún chả nướng than hoa buổi trưa bình dân ở Ba Đình Hà Nội",
+                target_duration_sec=45,
+                generation_mode="offline_grounded",
+                filters=NicheQueryFilter(price_tier="budget"),
+            )
+        )
+        assert len(captured_benchmark_filters) == 1
+        assert captured_benchmark_filters[0].city_norm == "hà nội"
+        assert captured_benchmark_filters[0].food_category == "Lẩu & Nướng"
+    
+        assert len(captured_retrieval_requests) == 1
+        ret_filters = captured_retrieval_requests[0].filters
+        # Explicit caller filter + inferred geographic scope stay strict
+        assert ret_filters.city_norm == "hà nội"
+        assert ret_filters.region == "north"
+        assert ret_filters.price_tier == "budget"
+        # Unspecified soft heuristic facets must not lock allowed_ids before BM25 + anchor matching
+>       assert ret_filters.duration_bucket is None
+E       AssertionError: assert 'short_20_45s' is None
+E        +  where 'short_20_45s' = NicheQueryFilter(video_format='Review món ăn', food_category='Lẩu & Nướng', price_tier='budget', occasion=None, duration_bucket='short_20_45s', city_norm='hà nội', region='north').duration_bucket
+
+tests/unit/test_offline_draft.py:248: AssertionError
+_ test_offline_draft_matches_timing_tolerance_across_35s_to_55s_and_varying_wps[35-2.4] _
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+target_dur = 35, wps = 2.4
+
+    @pytest.mark.parametrize(
+        ("target_dur", "wps"),
+        [(35, 2.4), (35, 3.0), (40, 2.5), (45, 3.3), (50, 2.5), (50, 3.8), (55, 3.9)],
+    )
+    def test_offline_draft_matches_timing_tolerance_across_35s_to_55s_and_varying_wps(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+        target_dur: int,
+        wps: float,
+    ) -> None:
+        benchmark, card = draft_inputs
+        card_realistic = card.model_copy(
+            update={
+                "hook_text": "Tô phở bò tái lăn nóng hổi nước dùng thơm mùi gừng nướng buổi sáng.",
+                "body_beats": [
+                    "Thịt bò xào nhanh trên chảo gang lửa lớn giữ được độ mềm ngọt.",
+                    "Nước hầm xương trong veo chan ngập bánh phở mềm kèm hành lá.",
+                ],
+                "cta_text": "Mọi người đi ngang khu phố này buổi sáng nhớ ghé ăn thử nha.",
+            }
+        )
+        benchmark_var = benchmark.model_copy(update={"median_word_per_second": wps})
+        draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+            "Review phở bò tái lăn buổi sáng",
+            target_dur,
+            benchmark_var,
+            [card_realistic],
+            NicheQueryFilter(video_format="Review quán ăn"),
+        )
+        for beat in draft["beats"]:
+            text = beat["dialogue"].strip()
+            assert text.endswith((".", "?", "!")), f"Mid-sentence truncation: {text!r}"
+        _, report = recalculate_timeline_and_verify(
+            draft["beats"], draft["hook_options"], float(target_dur), wps, {"v1"}
+        )
+>       assert report.timing_valid is True, (
+            f"target={target_dur}s wps={wps} -> estimated={report.estimated_duration_sec}s delta={report.duration_delta_sec}s"
+        )
+E       AssertionError: target=35s wps=2.4 -> estimated=39.2s delta=4.2s
+E       assert False is True
+E        +  where False = GuardrailReport(passed=False, estimated_duration_sec=39.2, target_duration_sec=35.0, duration_delta_sec=4.2, total_wor...tation_coverage_ratio=1.0, timing_valid=False, grounding_verified=False, validation_scope='structure_citations_timing').timing_valid
+
+tests/unit/test_offline_draft.py:287: AssertionError
+_ test_offline_draft_matches_timing_tolerance_across_35s_to_55s_and_varying_wps[40-2.5] _
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+target_dur = 40, wps = 2.5
+
+    @pytest.mark.parametrize(
+        ("target_dur", "wps"),
+        [(35, 2.4), (35, 3.0), (40, 2.5), (45, 3.3), (50, 2.5), (50, 3.8), (55, 3.9)],
+    )
+    def test_offline_draft_matches_timing_tolerance_across_35s_to_55s_and_varying_wps(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+        target_dur: int,
+        wps: float,
+    ) -> None:
+        benchmark, card = draft_inputs
+        card_realistic = card.model_copy(
+            update={
+                "hook_text": "Tô phở bò tái lăn nóng hổi nước dùng thơm mùi gừng nướng buổi sáng.",
+                "body_beats": [
+                    "Thịt bò xào nhanh trên chảo gang lửa lớn giữ được độ mềm ngọt.",
+                    "Nước hầm xương trong veo chan ngập bánh phở mềm kèm hành lá.",
+                ],
+                "cta_text": "Mọi người đi ngang khu phố này buổi sáng nhớ ghé ăn thử nha.",
+            }
+        )
+        benchmark_var = benchmark.model_copy(update={"median_word_per_second": wps})
+        draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+            "Review phở bò tái lăn buổi sáng",
+            target_dur,
+            benchmark_var,
+            [card_realistic],
+            NicheQueryFilter(video_format="Review quán ăn"),
+        )
+        for beat in draft["beats"]:
+            text = beat["dialogue"].strip()
+            assert text.endswith((".", "?", "!")), f"Mid-sentence truncation: {text!r}"
+        _, report = recalculate_timeline_and_verify(
+            draft["beats"], draft["hook_options"], float(target_dur), wps, {"v1"}
+        )
+>       assert report.timing_valid is True, (
+            f"target={target_dur}s wps={wps} -> estimated={report.estimated_duration_sec}s delta={report.duration_delta_sec}s"
+        )
+E       AssertionError: target=40s wps=2.5 -> estimated=37.6s delta=-2.4s
+E       assert False is True
+E        +  where False = GuardrailReport(passed=False, estimated_duration_sec=37.6, target_duration_sec=40.0, duration_delta_sec=-2.4, total_wo...tation_coverage_ratio=1.0, timing_valid=False, grounding_verified=False, validation_scope='structure_citations_timing').timing_valid
+
+tests/unit/test_offline_draft.py:287: AssertionError
+_ test_offline_draft_filters_extended_music_summaries_and_prompt_placeholders __
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+
+    def test_offline_draft_filters_extended_music_summaries_and_prompt_placeholders(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+    ) -> None:
+        benchmark, card = draft_inputs
+        card_noisy = card.model_copy(
+            update={
+                "hook_text": "Bài hát mang đến thông điệp về sự lạc quan.",
+                "body_beats": [
+                    "[Please insert the Vietnamese transcript here]",
+                    "Âm nhạc tạo cảm giác nhẹ nhàng, sâu lắng.",
+                    "Trà mãng cầu tươi pha chua ngọt vừa miệng giá 25k.",
+                ],
+                "cta_text": "Bài hát kể về một chàng trai thất tình.",
+                "transcript_excerpt": "Trà mãng cầu tươi pha chua ngọt vừa miệng giá 25k.",
+            }
+        )
+        draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+            "Review trà mãng cầu tươi chua ngọt giải nhiệt buổi trưa",
+            40,
+            benchmark,
+            [card_noisy],
+            NicheQueryFilter(video_format="Review quán ăn"),
+        )
+        joined = " ".join(b["dialogue"].lower() for b in draft["beats"])
+>       assert "bài hát" not in joined
+E       assert 'bài hát' not in 'nguồn cũ: "...hợp của phở.'
+E         'bài hát' is contained here:
+E         ?            ^^^^^^^^^
+E           nguồn cũ: "bài hát mang đến thông điệp về sự lạc quan.". mình đang lên ý tưởng tìm hiểu phở. khi quay thực tế, mình sẽ ghi lại món ăn và bảng giá trước khi nhận xét. bạn muốn biết thêm điều gì về món này? nguồn cũ: "[please insert the vietnamese transcript here]". đây là chi tiết từ nguồn cũ, cần kiểm tra lại khi đến quay. nguồn cũ: "âm nhạc tạo cảm giác nhẹ nhàng, sâu lắng.". khi thử món, mình sẽ tách nhận xét về hương vị, khẩu phần và giá niêm yết. nguồn cũ: "bài hát kể về một chàng trai thất tình.". sau khi kiểm tra, mình sẽ tổng kết điểm phù hợp của phở.
+E         ?            ^^^^^^^^^^^^^^^^
+
+tests/unit/test_offline_draft.py:317: AssertionError
+_ test_offline_draft_does_not_hijack_dish_focus_from_evidence_card_dishes_when_brief_dish_unlisted _
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+
+    def test_offline_draft_does_not_hijack_dish_focus_from_evidence_card_dishes_when_brief_dish_unlisted(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+    ) -> None:
+        benchmark, card = draft_inputs
+        card_other = card.model_copy(
+            update={"dishes": ["vây cá hồi chiên giòn", "lòng heo luộc"]}
+        )
+        draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+            "Hướng dẫn nấu canh chua cá hồi thanh mát không tanh cho bữa cơm nhà",
+            45,
+            benchmark,
+            [card_other],
+            NicheQueryFilter(video_format="Hướng dẫn nấu ăn", food_category="Cơm & Món mặn"),
+        )
+        joined = (draft["caption_draft"] + " " + " ".join(b["dialogue"] for b in draft["beats"])).lower()
+>       assert "lòng heo luộc" not in joined
+E       assert 'lòng heo luộc' not in 'bản nháp về...ng heo luộc.'
+E         'lòng heo luộc' is contained here:
+E         ?                                    ^
+E           bản nháp về vây cá hồi chiên giòn, lòng heo luộc, lấy ý tưởng từ nguồn tham khảo lịch sử; cần kiểm chứng trước khi quay. nguồn cũ: "một đoạn mở đầu tham khảo.". mình đang lên ý tưởng tìm hiểu vây cá hồi chiên giòn, lòng heo luộc. khi quay thực tế, mình sẽ ghi lại món ăn và bảng giá trước khi nhận xét. nguồn cũ: "người dẫn giới thiệu món ăn.". đây là chi tiết từ nguồn cũ, cần kiểm tra lại khi đến quay. mình sẽ ghi hình phần chế biến nếu được phép và mô tả đúng quan sát. nguồn cũ: "người dẫn giới thiệu món ăn."....
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/unit/test_offline_draft.py:338: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_offline_draft.py::test_generate_keeps_explicit_and_geo_filters_without_soft_heuristic_retrieval_starvation
+FAILED tests/unit/test_offline_draft.py::test_offline_draft_matches_timing_tolerance_across_35s_to_55s_and_varying_wps[35-2.4]
+FAILED tests/unit/test_offline_draft.py::test_offline_draft_matches_timing_tolerance_across_35s_to_55s_and_varying_wps[40-2.5]
+FAILED tests/unit/test_offline_draft.py::test_offline_draft_filters_extended_music_summaries_and_prompt_placeholders
+FAILED tests/unit/test_offline_draft.py::test_offline_draft_does_not_hijack_dish_focus_from_evidence_card_dishes_when_brief_dish_unlisted
+========================= 5 failed, 14 passed in 0.86s =========================

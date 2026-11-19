@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from itertools import product
+import re
 from typing import Any
 
 from packages.analytics import NicheAnalyticsEngine
@@ -28,6 +30,44 @@ from packages.taxonomy import (
     map_food_category,
     resolve_location,
 )
+
+
+_DISH_ORIGIN_CITY_PHRASES: re.Pattern[str] = re.compile(
+    r"(?i)\b(?:"
+    r"bún\s+bò\s+huế|nem\s+nướng\s+nha\s+trang|bánh\s+mì\s+(?:cay\s+)?hải\s+phòng|"
+    r"cơm\s+gà\s+hội\s+an|cao\s+lầu\s+hội\s+an|hủ\s+tiếu\s+mỹ\s+tho|"
+    r"(?:xôi\s+cua|bánh\s+tầm(?:\s+cay)?|cua)\s+cà\s+mau|"
+    r"(?:chuẩn\s+vị|hương\s+vị|phong\s+cách|kiểu)\s+(?:hà\s+nội|sài\s+gòn|huế|đà\s+nẵng|nha\s+trang|cà\s+mau)"
+    r")\b"
+)
+
+_NON_CULINARY_SPAN_MARKERS: tuple[str, ...] = (
+    "bài hát ",
+    "bài hát thể hiện",
+    "lời bài hát",
+    "ca khúc ",
+    "giai điệu nhẹ nhàng",
+    "giai điệu sôi động",
+    "âm nhạc tạo",
+    "không tìm thấy transcript",
+    "[please insert",
+    "insert the vietnamese transcript",
+)
+
+
+_TRIVIAL_SIGNOFF_RE: re.Pattern[str] = re.compile(
+    r"(?i)^[\s.,!?;:\-–—]*(?:bye(?:\s+bye)?|bái\s+bai|tạm\s+biệt|haha+|hihi+|hehe+|ok(?:ay)?)(?:\s+(?:nha|nhé|mọi\s+người|cả\s+nhà))?[\s.,!?;:\-–—]*$"
+)
+
+
+def _is_usable_culinary_span(text: str) -> bool:
+    cleaned = text.strip()
+    if not cleaned:
+        return False
+    if _TRIVIAL_SIGNOFF_RE.match(cleaned):
+        return False
+    lowered = cleaned.lower()
+    return not any(marker in lowered for marker in _NON_CULINARY_SPAN_MARKERS)
 
 
 class GroundedScriptEngine:
@@ -65,9 +105,10 @@ class GroundedScriptEngine:
         occ_list = extract_occasions(brief, inferred_fmt)
         inferred_occ = explicit.occasion or (occ_list[0] if occ_list else None)
 
+        brief_for_location = _DISH_ORIGIN_CITY_PHRASES.sub(" ", brief)
         city_auto, _, region_auto, _ = resolve_location(
             poi_city=None,
-            poi_address=brief,
+            poi_address=brief_for_location,
             llm_city=None,
             llm_district=None,
         )
@@ -87,6 +128,22 @@ class GroundedScriptEngine:
             region=inferred_region,
         )
 
+    @staticmethod
+    def _build_retrieval_filters(
+        explicit: NicheQueryFilter,
+        effective: NicheQueryFilter,
+    ) -> NicheQueryFilter:
+        """Keep explicit caller filters + inferred geographic scope strict without soft-facet starvation."""
+        return NicheQueryFilter(
+            video_format=explicit.video_format,
+            food_category=explicit.food_category,
+            price_tier=explicit.price_tier,
+            occasion=explicit.occasion,
+            duration_bucket=explicit.duration_bucket,
+            city_norm=explicit.city_norm or effective.city_norm,
+            region=explicit.region or effective.region,
+        )
+
     def _build_offline_grounded_draft(
         self,
         brief: str,
@@ -100,79 +157,149 @@ class GroundedScriptEngine:
         c2 = evidence_cards[2] if len(evidence_cards) > 2 else c0
 
         dishes = extract_dishes_from_text(brief)
-        if not dishes and c0 and c0.dishes:
-            dishes = c0.dishes[:2]
-        dish_focus = ", ".join(dishes[:2]) if dishes else (effective_filters.food_category or "món ăn đặc trưng")
-        city_focus = (effective_filters.city_norm or (c0.city_norm if c0 else None) or "địa phương").title()
+        fallback_cat = (
+            effective_filters.food_category
+            if effective_filters.food_category and effective_filters.food_category != "Ẩm thực Tổng hợp"
+            else "món ăn theo chủ đề đã chọn"
+        )
+        dish_focus = ", ".join(dishes[:2]) if dishes else fallback_cat
+        explicit_city = (effective_filters.city_norm or "").strip()
+        city_focus = explicit_city.title() if explicit_city else ""
+        loc_clause = f" tại {city_focus}" if city_focus else ""
+        setting_loc = f" tại {city_focus}" if city_focus else ""
         fmt = effective_filters.video_format or "Review quán ăn"
 
-        ref_hook_0 = c0.hook_text[:110] if (c0 and c0.hook_text) else f"Tìm hiểu {dish_focus} tại {city_focus}"
+        usable_hook_0 = (
+            c0.hook_text[:110]
+            if (c0 and _is_usable_culinary_span(c0.hook_text))
+            else f"Tìm hiểu {dish_focus}{loc_clause}"
+        )
         hook_options = [
-            f"Nếu quay về {dish_focus} tại {city_focus}, bạn muốn kiểm tra hương vị hay mức giá trước?",
+            f"Nếu quay về {dish_focus}{loc_clause}, bạn muốn kiểm tra hương vị hay mức giá trước?",
             f"Cùng lên ý tưởng tìm hiểu {dish_focus}: cần ghi lại điều gì để người xem tự đánh giá?",
-            (f"Mở đầu tham khảo từ kho @{c0.citation.author_handle}: '{ref_hook_0}'"
-             if c0 and c0.hook_text.strip() else f"Gợi ý mở đầu sáng tạo: '{ref_hook_0}'"),
+            (
+                f"Mở đầu tham khảo từ kho @{c0.citation.author_handle}: '{usable_hook_0}'"
+                if (c0 and _is_usable_culinary_span(c0.hook_text))
+                else f"Gợi ý mở đầu sáng tạo: '{usable_hook_0}'"
+            ),
         ]
 
         # Whitespace-token pacing is an estimate, not measured acoustic alignment.
-        wps = max(2.0, min(benchmark.median_word_per_second, 5.0))
-        target_words = max(55, int(round(target_duration_sec * wps)))
+        wps = max(2.0, min(float(benchmark.median_word_per_second or 3.3), 5.0))
+        raw_target_words = max(12, int(round(target_duration_sec * wps)))
+        target_words = max(55, raw_target_words)
 
-        beat1_text = (
-            f"Hôm nay mình lên ý tưởng tìm hiểu {dish_focus} tại {city_focus}. "
-            "Khi quay thực tế, mình sẽ ghi lại món ăn và bảng giá trước khi đưa ra nhận xét. "
-            "Bạn muốn biết điều gì về món này?"
-        )
-        beat2_text = (
-            "Đây là thông tin trong nguồn cũ, cần kiểm tra lại khi đến quay. "
-            "Mình sẽ ghi hình phần chế biến nếu được phép và mô tả đúng những gì quan sát được."
-        )
-        beat3_text = (
-            "Khi thử món, mình sẽ tách nhận xét về hương vị, khẩu phần và mức giá đang niêm yết. "
-            "Những nhận định này cần trải nghiệm thực tế trước khi đưa vào bản quay cuối."
-        )
-        beat4_text = (
-            f"Sau khi quay và kiểm tra thông tin, mình sẽ tổng kết điểm phù hợp của {dish_focus} với nhu cầu người xem. "
-            "Phần kết sẽ nêu rõ thời điểm trải nghiệm và điều còn chưa xác minh. "
-            "Bạn muốn mình tìm hiểu thêm chi tiết nào?"
-        )
+        beat_compact: list[str] = [
+            "Cần kiểm chứng thêm khi quay.",
+            "Chi tiết cần đối chiếu trực tiếp.",
+            "Nhận xét cần trải nghiệm thực tế.",
+            "Tổng kết sau khi kiểm tra món.",
+        ]
+        beat_sentence_ladder: list[list[str]] = [
+            [
+                f"Mình đang lên ý tưởng tìm hiểu {dish_focus}{loc_clause}.",
+                "Khi quay thực tế, mình sẽ ghi lại món ăn và bảng giá trước khi nhận xét.",
+                "Khung giờ phục vụ và bối cảnh thực tế cũng cần xác minh tại chỗ.",
+                "Mình ưu tiên nêu rõ điều kiện ghi hình để người xem dễ đối chiếu.",
+                "Bạn muốn biết thêm điều gì về món này?",
+            ],
+            [
+                "Đây là chi tiết từ nguồn cũ, cần kiểm tra lại khi đến quay.",
+                "Mình sẽ ghi hình phần chế biến nếu được phép và mô tả đúng quan sát.",
+                "Nguyên liệu và định lượng cần đối chiếu trực tiếp tại chỗ.",
+                "Các bước chuẩn bị hoặc cách phục vụ sẽ được ghi chú rõ ràng theo thực tế.",
+                "Mọi thông tin chưa rõ sẽ được đánh dấu cần kiểm chứng thêm.",
+            ],
+            [
+                "Khi thử món, mình sẽ tách nhận xét về hương vị, khẩu phần và giá niêm yết.",
+                "Những nhận định này cần trải nghiệm thực tế trước khi đưa vào bản cuối.",
+                "Có thể bổ sung cảnh bảng giá và phần chia sẻ của người bán nếu được đồng ý.",
+                "Độ đậm nhạt và kết cấu món ăn nên mô tả cụ thể thay vì khen chung chung.",
+                "Người xem có thể đối chiếu hình ảnh cận cảnh để tự đánh giá.",
+            ],
+            [
+                f"Sau khi kiểm tra, mình sẽ tổng kết điểm phù hợp của {dish_focus}.",
+                "Phần kết sẽ nêu rõ thời điểm trải nghiệm và điều còn chưa xác minh.",
+                "Nếu mức giá hoặc thực đơn thay đổi, bản quay thực tế sẽ cập nhật lại.",
+                "Các thông tin tham khảo lịch sử chỉ đóng vai trò gợi ý ban đầu.",
+                "Bạn muốn mình tìm hiểu thêm chi tiết nào?",
+            ],
+        ]
 
-        # Pad middle beat slightly if target_duration_sec > 55s so pacing matches target duration
-        current_words = sum(len(t.split()) for t in (beat1_text, beat2_text, beat3_text, beat4_text))
-        if target_words - current_words >= 25 and c2 and c2.transcript_excerpt:
-            beat3_text += (
-                " Có thể bổ sung cảnh bảng giá, khẩu phần và phần trả lời của người bán nếu được đồng ý. "
-                "Mình sẽ ghi rõ thông tin nào được quan sát và thông tin nào chỉ lấy từ nguồn tham khảo."
-            )
-
-        # Keep short requests within their spoken-word budget. Longer drafts may
-        # deliberately fail the timing check instead of padding with invented facts.
-        dialogue_texts = [beat1_text, beat2_text, beat3_text, beat4_text]
         budgets = [max(1, target_words // 4)] * 3
         budgets.append(max(1, target_words - sum(budgets)))
+
+        def _candidate_spans(card: EvidenceCard, beat_idx: int) -> list[str]:
+            if beat_idx == 0:
+                raw = [card.hook_text, *card.body_beats, card.transcript_excerpt, card.cta_text]
+            elif beat_idx == 1:
+                raw = [*card.body_beats, card.transcript_excerpt, card.hook_text, card.cta_text]
+            elif beat_idx == 2:
+                raw = [*card.body_beats[1:], *card.body_beats[:1], card.transcript_excerpt, card.hook_text, card.cta_text]
+            else:
+                raw = [card.cta_text, *card.body_beats, card.transcript_excerpt, card.hook_text]
+            return [s for s in raw if _is_usable_culinary_span(s)]
+
+        prefixes: list[str] = []
         citation_ids: list[list[str]] = []
-        for idx, (card, budget) in enumerate(zip([c0, c0, c1, c2], budgets)):
-            if not card:
-                candidates: list[str] = []
-            elif idx == 0:
-                candidates = [card.hook_text, *card.body_beats, card.transcript_excerpt, card.cta_text]
-            elif idx == 1:
-                candidates = [*card.body_beats, card.transcript_excerpt, card.hook_text, card.cta_text]
-            elif idx == 2:
-                candidates = [*card.body_beats[1:], *card.body_beats[:1], card.transcript_excerpt, card.hook_text, card.cta_text]
+        excerpt_cap = 8 if raw_target_words <= 115 else 10
+        for idx, (preferred_card, budget) in enumerate(zip([c0, c0, c1, c2], budgets)):
+            chosen_card: EvidenceCard | None = None
+            excerpt = ""
+            search_order = (
+                [preferred_card, *[c for c in evidence_cards if c is not preferred_card]]
+                if preferred_card is not None
+                else []
+            )
+            for candidate_card in search_order:
+                if candidate_card is None:
+                    continue
+                spans = _candidate_spans(candidate_card, idx)
+                if spans:
+                    chosen_card = candidate_card
+                    excerpt = spans[0]
+                    break
+            max_excerpt_words = min(excerpt_cap, max(1, budget - 6))
+            excerpt = " ".join(excerpt.split()[:max_excerpt_words]).rstrip(",;:")
+            if chosen_card and excerpt:
+                prefixes.append(f'Nguồn cũ: "{excerpt}". ')
+                citation_ids.append([chosen_card.citation.video_id])
             else:
-                candidates = [card.cta_text, *card.body_beats, card.transcript_excerpt, card.hook_text]
-            excerpt = next((text for text in candidates if text.strip()), "")
-            # Attribute only content actually incorporated in this beat. Bound
-            # the excerpt before shortening so its attribution cannot be cut off.
-            excerpt = " ".join(excerpt.split()[:min(12, max(1, budget - 4))])
-            if card and excerpt:
-                dialogue_texts[idx] = f'Nguồn cũ: "{excerpt}" ' + dialogue_texts[idx]
-                citation_ids.append([card.citation.video_id])
-            else:
+                prefixes.append("")
                 citation_ids.append([])
-        if sum(len(text.split()) for text in dialogue_texts) > target_words:
-            dialogue_texts = [" ".join(text.split()[:budget]) for text, budget in zip(dialogue_texts, budgets)]
+
+        # Assemble complete sentences per beat (never truncating mid-sentence) to match target_duration_sec at wps
+        beat_options: list[list[str]] = []
+        beat_durs: list[list[float]] = []
+        for i in range(4):
+            opts_i = [beat_compact[i]] + [
+                " ".join(beat_sentence_ladder[i][:k]) for k in range(1, len(beat_sentence_ladder[i]) + 1)
+            ]
+            beat_options.append(opts_i)
+            beat_durs.append(
+                [max(3.0, len((prefixes[i] + body).split()) / wps) for body in opts_i]
+            )
+
+        tol_sec = max(2.0, float(target_duration_sec) * 0.05)
+        best_choice: tuple[int, int, int, int] = (1, 1, 1, 1)
+        best_key: tuple[int, float, int, float] | None = None
+        for choice in product(range(len(beat_options[0])), repeat=4):
+            est_sec = round(sum(beat_durs[i][choice[i]] for i in range(4)), 1)
+            abs_delta = round(abs(est_sec - float(target_duration_sec)), 3)
+            outside_tol = 0 if abs_delta <= tol_sec else 1
+            compact_count = sum(1 for k in choice if k == 0)
+            spread = float(max(choice) - min(choice))
+            # Prefer within-tolerance combinations that avoid compact tier-0 unless needed for short/slow slices
+            key = (outside_tol, abs_delta if outside_tol else 0.0, compact_count, abs_delta + 0.05 * spread)
+            if best_key is None or key < best_key:
+                best_key = key
+                best_choice = choice  # type: ignore[assignment]
+
+        dialogue_texts = [
+            (prefixes[i] + beat_options[i][best_choice[i]]).strip()
+            for i in range(4)
+        ]
+
         beat1_text, beat2_text, beat3_text, beat4_text = dialogue_texts
 
         if fmt == "Hướng dẫn nấu ăn":
@@ -183,7 +310,7 @@ class GroundedScriptEngine:
                 "Cận cảnh gắp thành phẩm ra đĩa trắng ăn kèm cơm nóng ở cuối video",
             ]
         else:
-            setting = f"Không gian trải nghiệm thực tế tại {city_focus}, ưu tiên bàn gần nguồn sáng tự nhiên."
+            setting = f"Không gian trải nghiệm thực tế{setting_loc}, ưu tiên bàn gần nguồn sáng tự nhiên."
             cam_angles = [
                 "3 giây đầu: cận cảnh 45 độ món chính vừa bốc khói đặt xuống bàn trước khi quay mặt người",
                 "Góc POV gắp/cắt đôi món ăn để lộ nhân hoặc kết cấu bên trong và chấm ngập nước sốt",
@@ -191,11 +318,12 @@ class GroundedScriptEngine:
             ]
 
         hashtags = benchmark.top_hashtags[:6] or ["ancungtiktok", "reviewanngon", "foodtiktok"]
+        caption_loc = f" tại {city_focus}" if city_focus else ""
         return {
             "draft_status": "creative_draft",
             "grounding_verified": False,
             "hook_options": hook_options,
-            "caption_draft": f"Bản nháp về {dish_focus} tại {city_focus}, lấy ý tưởng từ nguồn tham khảo lịch sử; cần kiểm chứng trước khi quay.",
+            "caption_draft": f"Bản nháp về {dish_focus}{caption_loc}, lấy ý tưởng từ nguồn tham khảo lịch sử; cần kiểm chứng trước khi quay.",
             "recommended_hashtags": hashtags,
             "setting": setting,
             "persona_tone": "Bản nháp sáng tạo; tách nguồn tham khảo và nhận xét cần trải nghiệm thực tế",
@@ -253,13 +381,17 @@ class GroundedScriptEngine:
             benchmark = self.analytics.compute_benchmark(effective_filters)
 
         with timer.measure("retrieval_ms"):
+            retrieval_filters = self._build_retrieval_filters(
+                explicit=request.filters,
+                effective=effective_filters,
+            )
             ret_resp = self.retrieval.search(
                 RetrievalRequest(
                     query=request.brief,
                     mode="hybrid_rrf",
                     top_k=request.top_k_evidence,
                     rerank=True,
-                    filters=effective_filters,
+                    filters=retrieval_filters,
                 )
             )
             evidence_cards = ret_resp.items

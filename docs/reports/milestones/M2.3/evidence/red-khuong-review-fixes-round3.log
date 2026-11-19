@@ -1,0 +1,53 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 20 items
+
+tests/unit/test_offline_draft.py ...................F                    [100%]
+
+=================================== FAILURES ===================================
+_ test_offline_draft_skips_trivial_signoff_cta_and_falls_back_to_culinary_body_beat _
+
+draft_inputs = (NicheBenchmarkSummary(matched_videos=10, transcribed_videos=10, poi_tagged_videos=0, median_plays=1000.0, p75_plays=2...ham khảo.', body_beats=['Người dẫn giới thiệu món ăn.'], cta_text='', transcript_excerpt='Một đoạn mở đầu tham khảo.'))
+
+    def test_offline_draft_skips_trivial_signoff_cta_and_falls_back_to_culinary_body_beat(
+        draft_inputs: tuple[NicheBenchmarkSummary, EvidenceCard],
+    ) -> None:
+        benchmark, card = draft_inputs
+        card_signoff = card.model_copy(
+            update={
+                "hook_text": "Bánh cuốn tráng tay mỏng mướt nóng hổi buổi sáng.",
+                "body_beats": [
+                    "Quán bánh cuốn 83 Đặng Tiến Đông mở cả ngày có chả quế và gà tần.",
+                    "Nước chấm bánh cuốn pha vừa miệng ăn kèm hành khô tự chiên thơm giòn.",
+                ],
+                "cta_text": "Haha.",
+                "transcript_excerpt": "Bánh cuốn tráng tay mỏng mướt nóng hổi buổi sáng.",
+            }
+        )
+        card_bye = card_signoff.model_copy(
+            update={
+                "citation": card.citation.model_copy(update={"video_id": "v2"}),
+                "cta_text": "Bye bye.",
+            }
+        )
+        draft = object.__new__(GroundedScriptEngine)._build_offline_grounded_draft(
+            "Review bánh cuốn nóng nhân thịt mộc nhĩ ăn sáng ở Đống Đa Hà Nội",
+            45,
+            benchmark,
+            [card_signoff, card_bye],
+            NicheQueryFilter(video_format="Review quán ăn", city_norm="hà nội"),
+        )
+        beat4_lower = draft["beats"][3]["dialogue"].lower()
+>       assert '"haha."' not in beat4_lower
+E       assert '"haha."' not in 'nguồn cũ: "...ưa xác minh.'
+E         '"haha."' is contained here:
+E           nguồn cũ: "haha.". sau khi kiểm tra, mình sẽ tổng kết điểm phù hợp của bánh cuốn. phần kết sẽ nêu rõ thời điểm trải nghiệm và điều còn chưa xác minh.
+E         ?           +++++ ++
+
+tests/unit/test_offline_draft.py:371: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_offline_draft.py::test_offline_draft_skips_trivial_signoff_cta_and_falls_back_to_culinary_body_beat
+========================= 1 failed, 19 passed in 0.78s =========================

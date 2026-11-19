@@ -1,0 +1,35 @@
+{
+  "task_id": "M3.2",
+  "verified_at_utc": "2026-11-19T07:57:52.838603+00:00",
+  "base_corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "historical_protected_count": 70996,
+  "base_snapshot_byte_identical": true,
+  "base_snapshot_sha256": {
+    "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+    "fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3",
+    "manifest.json": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de"
+  },
+  "live_provider_fail_closed_verified": true,
+  "run1_summary": {
+    "source_mode": "offline_fixture",
+    "is_synthetic_fixture": true,
+    "requested_count": 12,
+    "succeeded_count": 3,
+    "failed_count": 2,
+    "skipped_count": 7,
+    "converted_audio_count": 2
+  },
+  "run2_resume_summary": {
+    "requested_count": 12,
+    "succeeded_count": 1,
+    "failed_count": 1,
+    "skipped_count": 10,
+    "persisted_records_count": 4,
+    "total_deduplicated_jsonl_rows": 4
+  },
+  "m3_1_gold_roundtrip": {
+    "parent_snapshot_id": "20261118_taxonomy_fix_v1",
+    "resulting_total_videos": 71000,
+    "published_tables_count": 5
+  }
+}
