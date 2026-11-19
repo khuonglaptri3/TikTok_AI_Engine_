@@ -1,5 +1,12 @@
 # M0.G (G0) — Workflow Provenance & Verification Ledger
 
+## Owner formal G0 PASS decision recorded 2026-11-18
+
+- Authorization: on `2026-11-18T21:26:08+07:00`, the project owner (`Trần Đình Khương`, `K`) explicitly approved `G0 = PASS` (`M0.G = COMPLETE`) on synchronized `main` (`e050d7d5bbcf90e310bbfd144407086d82479341`, merged PR #3 `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`).
+- Skills read/applied: `using-superpowers`, `brainstorming` (bounded classification & explicit owner gate confirmation before recording `PASS`), `writing-plans`, `verification-before-completion`.
+- Preservation: copied pre-decision `M0.G/README.md` byte-for-byte to [report-before-owner-pass-decision.md](report-before-owner-pass-decision.md) (`sha256=147ed89a51224aa9e4cdad2ac74eb61d55a958b9f85034029ca7233636a02b4c`) and recorded [owner-gate-decision-receipt.json](owner-gate-decision-receipt.json) with zero production code or data changes.
+- Scope boundaries preserved: `G0 = PASS` applies strictly to the local CPU/offline foundation (`M0.1`–`M0.3`); `G1`–`G6` remain `NOT_RUN`, and `M2.3`, `M3.1`, and `M6.1` remain `IN_PROGRESS`.
+
 ## GitHub publication started 2026-11-18
 
 - Authorization: owner requested "Push lên github đi theo chuản gitflow chưa ?" after verifying the two G0 repairs. This authorizes a distinct topic branch, conventional commits, normal push and a reviewable PR; it does not approve G0 or merge to main.

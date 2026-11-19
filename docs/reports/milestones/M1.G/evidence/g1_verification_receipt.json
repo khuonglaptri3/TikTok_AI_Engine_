@@ -1,0 +1,85 @@
+{
+  "gate_id": "G1",
+  "task_id": "M1.G",
+  "checked_at": "2026-11-18T14:48:49.920935+00:00",
+  "head": "e050d7d5bbcf90e310bbfd144407086d82479341",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "cpu_count": 12,
+  "elapsed_seconds": 5.841,
+  "prerequisite_g0": "PASS",
+  "upstream_tasks": {
+    "M1.1": "COMPLETE",
+    "M1.2": "COMPLETE"
+  },
+  "snapshots": {
+    "20261117_recovered_v1": {
+      "hashes": {
+        "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+        "fact_videos.parquet": "1bfc6c6f819b4c0176345029e5ae4e630a4e9c0438c89548aab893e1d30c1ecd",
+        "manifest.json": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4"
+      },
+      "creators_shape": [
+        264,
+        15
+      ],
+      "videos_shape": [
+        70996,
+        49
+      ],
+      "bytes_unchanged": true
+    },
+    "20261118_taxonomy_fix_v1": {
+      "hashes": {
+        "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+        "fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3",
+        "manifest.json": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de"
+      },
+      "parent_snapshot_id": "20261117_recovered_v1",
+      "parent_manifest_sha256": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+      "creators_shape": [
+        264,
+        15
+      ],
+      "videos_shape": [
+        70996,
+        49
+      ],
+      "bytes_unchanged": true
+    }
+  },
+  "verified_deltas": {
+    "city_norm_nonnull": {
+      "v1": 17014,
+      "v2": 23478,
+      "delta": 6464
+    },
+    "district_norm_nonnull": {
+      "v1": 4670,
+      "v2": 13151,
+      "delta": 8481
+    },
+    "region_known": {
+      "v1": 15931,
+      "v2": 22986,
+      "delta": 7055
+    },
+    "dish_oc_count": {
+      "v1": 5391,
+      "v2": 1606,
+      "delta": -3785
+    },
+    "occasion_an_vat_xe_chieu_count": {
+      "v1": 59765,
+      "v2": 1365,
+      "delta": -58400
+    }
+  },
+  "data_card_path": "docs/data-cards/tiktok_fnb_corpus_v1.md",
+  "data_card_sha256": "5f65b2800ca38adb218976c00ac8eb489a85bbe6960e6edee155a996a9645d10",
+  "public_corpus_redistribution": "BLOCKED (upstream reuse/redistribution terms unresolved)",
+  "local_demonstration_scope": "ELIGIBLE",
+  "secret_scan_exit_code": 0,
+  "technical_recommendation": "PASS (local-only corpus scope; public redistribution BLOCKED)",
+  "formal_gate_status": "NOT_RUN (awaiting reciprocal peer review by Nguyễn Việt Nguyên, N)"
+}

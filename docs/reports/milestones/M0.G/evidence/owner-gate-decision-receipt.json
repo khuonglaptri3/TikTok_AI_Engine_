@@ -1,0 +1,31 @@
+{
+  "gate_id": "G0",
+  "task_id": "M0.G",
+  "decision": "PASS",
+  "task_status": "COMPLETE",
+  "decided_at": "2026-11-18T21:26:08+07:00",
+  "decided_by": "Project owner / Trần Đình Khương (K)",
+  "primary_evidence_owner": "Nguyễn Việt Nguyên (N)",
+  "evaluated_branch": "main",
+  "evaluated_head": "e050d7d5bbcf90e310bbfd144407086d82479341",
+  "merged_pr_source_commit": "eb43b0df3d46007b7550de8f4314dc2dbca9c51f",
+  "upstream_tasks": {
+    "M0.1": "COMPLETE",
+    "M0.2": "COMPLETE",
+    "M0.3": "COMPLETE"
+  },
+  "referenced_evidence_sha256": {
+    "docs/reports/milestones/M0.G/evidence/report-before-owner-pass-decision.md": "147ed89a51224aa9e4cdad2ac74eb61d55a958b9f85034029ca7233636a02b4c",
+    "docs/reports/milestones/M6.1/evidence/main-verification.json": "42ac6807a7d816c8d99ab327a549a09eda1e76a9a26f80ae6ee6d0d6d26b73d0",
+    "docs/reports/milestones/M0.G/evidence/merge-runtime-receipt.json": "e6859431cc19d5741531924164bef6d33a0076c6681c3eed1f19cb8bf2642469",
+    "docs/reports/milestones/M0.G/evidence/merge-package-results.json": "9bb1b66be5bd0e63dff59f2dc8a7e5bb855b4e184cd3b225df83650b3fc86ab0"
+  },
+  "approved_scope": "Local CPU/offline foundation across M0.1, M0.2, and M0.3 (secret hygiene, bounded contracts/settings with <=2 LLM calls/turn, finite ms timings, log/traceback redaction, source wheel installation, and real-corpus FastAPI + ASGI Gradio /demo/ smoke/runtime checks at USD 0).",
+  "explicit_non_approvals": [
+    "Does not approve G1, G2, G3, G4, G5, or G6 (all remain NOT_RUN).",
+    "Does not close M2.2, M2.3, M3.1, or M6.1 scientific/human peer-review requirements.",
+    "Does not establish upstream historical dataset redistribution rights.",
+    "Does not assert an executed Docker container image run.",
+    "Does not infer live Gemini API quota entitlement or public free-tier hosting eligibility."
+  ]
+}

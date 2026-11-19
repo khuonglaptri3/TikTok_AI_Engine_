@@ -1,0 +1,105 @@
+{
+  "task_id": "M3.1",
+  "reviewer": "Trần Đình Khương (K)",
+  "primary_owner": "Nguyễn Việt Nguyên (N)",
+  "verdict": "APPROVED — M3.1 COMPLETE",
+  "checked_at": "2026-11-18T14:58:47.956667+00:00",
+  "head": "e050d7d5bbcf90e310bbfd144407086d82479341",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "cpu_count": 12,
+  "elapsed_seconds": 160.878,
+  "base_snapshot_id": "20261118_taxonomy_fix_v1",
+  "base_hashes_before": {
+    "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+    "fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3",
+    "manifest.json": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de"
+  },
+  "base_hashes_after": {
+    "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+    "fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3",
+    "manifest.json": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de"
+  },
+  "base_bytes_100_percent_identical": true,
+  "steps_verified": {
+    "batch_a": {
+      "total_videos": 70997,
+      "total_creators": 265,
+      "date_window_end": "2026-10-05"
+    },
+    "missing_modalities_zero_row_schemas": {
+      "fact_voice_segments.parquet": {
+        "rows": 0,
+        "schema": {
+          "segment_id": "string",
+          "video_id": "string",
+          "seq_no": "int64",
+          "start_sec": "double",
+          "end_sec": "double",
+          "timestamp_source": "string",
+          "text": "string",
+          "words_per_sec": "double",
+          "pitch_std": "double",
+          "energy_cv": "double"
+        }
+      },
+      "fact_comments.parquet": {
+        "rows": 0,
+        "schema": {
+          "comment_id": "string",
+          "video_id": "string",
+          "author_handle": "string",
+          "text": "string",
+          "like_count": "int64",
+          "reply_count": "int64",
+          "is_seeding": "bool",
+          "seeding_reason": "string",
+          "similarity_score": "double",
+          "cluster_id": "int64"
+        }
+      },
+      "fact_absa_reviews.parquet": {
+        "rows": 1,
+        "schema": {
+          "video_id": "string",
+          "koc_taste": "double",
+          "koc_price": "double",
+          "koc_hygiene": "double",
+          "koc_service": "double",
+          "viewer_taste": "double",
+          "viewer_price": "double",
+          "viewer_hygiene": "double",
+          "viewer_service": "double",
+          "pr_hype_gap": "double",
+          "undisclosed_pr_risk": "double",
+          "viewer_pain_points": "list<element: string>",
+          "clean_comment_count": "int64",
+          "seeding_comment_count": "int64"
+        }
+      }
+    },
+    "replay_b": {
+      "total_videos": 70998,
+      "date_window_end": "2026-10-12"
+    },
+    "empty_batch": {
+      "total_videos": 70998,
+      "date_window_end": "2026-10-12"
+    },
+    "enrichment_real_nan_row": {
+      "historical_video_id": "7382199247048920338",
+      "preserved_play_count": 655200,
+      "transcribed_videos_delta": 1,
+      "merged_inc_k_v1_comments": [
+        "c_k_1",
+        "c_k_2"
+      ]
+    },
+    "interrupted_and_retried": {
+      "partial_target_after_abort": false,
+      "leftover_staging_or_locks": [],
+      "retried_total_videos": 70999,
+      "retried_date_window_end": "2026-10-15"
+    }
+  }
+}

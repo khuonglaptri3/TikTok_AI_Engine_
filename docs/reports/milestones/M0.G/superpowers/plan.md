@@ -1,5 +1,16 @@
 # M0.G (G0) — Execution Plan
 
+## Owner formal G0 PASS record — 2026-11-18
+
+**Goal:** Record the project owner's explicit `G0 = PASS` (`M0.G = COMPLETE`) decision against synchronized `main` (`e050d7d5bbcf90e310bbfd144407086d82479341`) without mutating any production source, historical data, or prior verification receipts.
+**Spec:** [spec.md](spec.md), Owner formal G0 PASS decision addendum.
+
+- [x] Confirm explicit owner `G0 = PASS` authorization (`2026-11-18T21:26:08+07:00`) and synchronized `main` (`e050d7d5`).
+- [x] Copy pre-decision `M0.G/README.md` byte-for-byte to `evidence/report-before-owner-pass-decision.md`.
+- [x] Emit `evidence/owner-gate-decision-receipt.json` and append decision/verification provenance to `evidence/workflow.md`.
+- [x] Update `M0.G/README.md`, `docs/reports/milestones/README.md`, and `docs/planning/TikTok_AI_Engine_Milestone.md` to record `M0.G = COMPLETE` and `G0 = PASS` while preserving `G1–G6 = NOT_RUN` and all scope boundaries.
+- [x] Run `scripts/check_secrets.py` and verify bundle layout, relative markdown links, and untouched source/data/untracked files.
+
 ## Owner-selected integration repair and merge — 2026-11-18
 
 Follow [M6.1's repair plan](../../M6.1/superpowers/plan.md), revalidate G0 on the final integrated source, update the report/index and PR3 to reflect current passing results, and merge through the PR after checks and review. Record actual GitHub merge/main verification separately from formal G0 acceptance. The user's latest instruction explicitly supersedes the earlier draft-only publication boundary; no additional merge permission is required.

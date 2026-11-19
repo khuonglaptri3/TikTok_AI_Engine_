@@ -59,3 +59,11 @@ pipelines/build_dense_sparse_index/dense.py -text
 pipelines/benchmark_retrieval/dense_hybrid_pilot.py -text
 tests/unit/test_resource_measurements.py -text
 pipelines/crawl_incremental/crawler_service.py -text
+packages/data_contracts/retrieval.py -text
+packages/retrieval/__init__.py -text
+packages/retrieval/query_intent.py -text
+pipelines/benchmark_retrieval/pilot_m2_2.py -text
+tests/unit/test_query_intent_and_abstention.py -text
+artifacts/benchmarks/retrieval_v3_pilot.json -text
+artifacts/benchmarks/retrieval_v3_1_pilot.json -text
+docs/data-cards/tiktok_fnb_corpus_v1.md -text

@@ -1,0 +1,30 @@
+{
+  "gate_id": "G1",
+  "task_id": "M1.G",
+  "decision": "PASS",
+  "decision_scope": "Local-only CPU demonstration and private team evaluation; public corpus redistribution BLOCKED until upstream source reuse/redistribution terms are established.",
+  "task_status": "COMPLETE",
+  "decided_at": "2026-11-18T22:17:25+07:00",
+  "primary_owner": "Trần Đình Khương (K)",
+  "peer_reviewer": "Nguyễn Việt Nguyên (N, peer review confirmed by project owner on 2026-11-18)",
+  "evaluated_branch": "main",
+  "evaluated_head": "e050d7d5bbcf90e310bbfd144407086d82479341",
+  "prerequisite_gates": {
+    "G0": "PASS"
+  },
+  "upstream_tasks": {
+    "M1.1": "COMPLETE",
+    "M1.2": "COMPLETE"
+  },
+  "referenced_evidence_sha256": {
+    "docs/reports/milestones/M1.G/evidence/report-before-n-review-confirmation.md": "091734ef81f752292be0defa4954fa81d9561dc178c3900c14b6d96522edaadb",
+    "docs/reports/milestones/M1.G/evidence/g1_verification_receipt.json": "52b44a30feb66dac9af1de0b373ff432af05ddcf9a912de9ae7cb17a40590bea",
+    "docs/data-cards/tiktok_fnb_corpus_v1.md": "5f65b2800ca38adb218976c00ac8eb489a85bbe6960e6edee155a996a9645d10"
+  },
+  "public_corpus_redistribution": "BLOCKED",
+  "local_demonstration_scope": "PASS",
+  "tasks_explicitly_not_closed_by_this_review": {
+    "M2.3": "IN_PROGRESS (awaiting K's 15 queries and 30-draft human claim-entailment audit)",
+    "M6.1": "IN_PROGRESS (awaiting M2.2 frozen human-judged qrels, conditional M4.G/M5.G, and K review)"
+  }
+}

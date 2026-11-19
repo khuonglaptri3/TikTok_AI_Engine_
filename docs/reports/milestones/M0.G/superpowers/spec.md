@@ -2,6 +2,15 @@
 
 - **Task ID:** `M0.G` (Gate `G0`)
 
+## Owner formal G0 PASS decision — 2026-11-18
+
+On `2026-11-18T21:26:08+07:00`, the project owner (`Trần Đình Khương`, `K`) explicitly approved **`G0 = PASS` (`M0.G = COMPLETE`)** based on the verified post-merge `main` results (`e050d7d5bbcf90e310bbfd144407086d82479341`, incorporating merged PR #3 `eb43b0df3d46007b7550de8f4314dc2dbca9c51f` with `120/120` passing tests, `81`-file Windows/Linux `mypy`, clean Ruff, `38/38` runtime assertions, clean wheel/installed ASGI checks, and `0` secret leaks).
+
+- Archive the pre-decision `M0.G/README.md` byte-for-byte to `evidence/report-before-owner-pass-decision.md`.
+- Record the formal gate decision receipt in `evidence/owner-gate-decision-receipt.json` and append provenance to `evidence/workflow.md`.
+- Update `M0.G/README.md`, `docs/reports/milestones/README.md`, and `docs/planning/TikTok_AI_Engine_Milestone.md` so `M0.G` is `COMPLETE` and `G0` is `PASS`.
+- Explicit scope boundary: `G0 = PASS` approves only the local CPU/offline foundation (`M0.1`–`M0.3`). It does **not** approve `G1`–`G6`, close `M2.3`/`M3.1`/`M6.1`, establish upstream dataset redistribution rights, verify Docker container execution, or imply live Gemini entitlement or public hosting eligibility.
+
 ## Authorized integration repair and PR merge — 2026-11-18
 
 The owner now explicitly authorizes fixing the M6.1 Windows blocker, updating/readying PR3 and merging the completed work into main after verification. The implementation plan and resource-measurement criteria are owned by [M6.1's spec](../../M6.1/superpowers/spec.md) and [plan](../../M6.1/superpowers/plan.md). G0 reports must reflect fresh integrated results without rewriting previous failed evidence or automatically setting formal G0 PASS.

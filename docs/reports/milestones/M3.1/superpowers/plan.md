@@ -14,3 +14,10 @@
    - Add `--update-existing` to `pipelines/ingest_incremental_to_gold/__main__.py` and update `datetime.now(UTC)` imports for clean Ruff compliance.
 3. **TDD GREEN & Gate Checks:** Verify targeted tests, `ruff check`, strict `mypy packages apps pipelines`, full `pytest -v`, and `scripts/check_secrets.py`.
 4. **Reporting:** Record `M3.1/evidence/workflow.md`, `M3.1/README.md`, and `docs/reports/milestones/README.md` (`IN_PROGRESS` pending `K` verification).
+
+## Peer Review Execution Plan (`K` — 2026-11-18)
+
+- [x] **Step 1:** Record prospective peer-review addendum in `superpowers/spec.md` and `superpowers/plan.md`.
+- [x] **Step 2:** Archive pre-review `M3.1/README.md` byte-for-byte to `evidence/report-before-khuong-peer-review.md`.
+- [x] **Step 3:** Run `pytest tests/unit/test_snapshot_continuity.py -v` and execute `evidence/run_khuong_m3_1_reproduction.py` against `data/corpus/20261118_taxonomy_fix_v1` in a temporary directory; save `evidence/khuong_m3_1_reproduction.json` and `evidence/khuong_m3_1_reproduction.log`.
+- [x] **Step 4:** Publish `evidence/khuong-peer-review.md`, update `evidence/workflow.md`, `M3.1/README.md`, and `docs/reports/milestones/README.md` to `COMPLETE`, and verify `scripts/check_secrets.py`, bundle layout, and relative links.
