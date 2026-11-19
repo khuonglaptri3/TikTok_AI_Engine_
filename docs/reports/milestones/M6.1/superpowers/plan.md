@@ -1,5 +1,20 @@
 # M6.1 — Execution & Verification Plan
 
+## v2_pilot Parity & FastEmbed Comparison Plan — 2026-11-19
+
+**Goal:** Measure `tfidf_svd_vn_128d_v1` and CPU `fastembed` (`intfloat/multilingual-e5-small`) against `bm25-v3` on `data/corpus/20261118_taxonomy_fix_v1` and `data/evaluation/v2_pilot` while keeping `M6.1` `IN_PROGRESS` and preserving original `dense-svd-v1` / `m6_1_dense_hybrid_spike.json` receipts.
+**Spec:** [spec.md](spec.md) (`M6.1 v2_pilot Upgrade — 2026-11-19`).
+
+1. **TDD RED:** Add unit tests in `tests/unit/test_dense_hybrid_retrieval.py` covering `evaluate_pilot_split(..., mode=..., eligible_video_ids=...)` (`bm25` vs `dense` vs `hybrid_rrf`, `eligible_video_ids` restriction producing accurate `zero_relevant_pool` / `no_answer` abstention accounting) and `run_v2_pilot_benchmark` report structure.
+2. **Implementation (Shared Helper Reuse):**
+   - Parameterize `evaluate_pilot_split` (`mode`, `eligible_video_ids`) and `measure_warm_latency` (`mode`) in `pipelines/benchmark_retrieval/pilot_m2_2.py` with full backward compatibility for existing callers.
+   - Add `pipelines/benchmark_retrieval/dense_hybrid_v2_pilot.py` reusing `pilot_m2_2` + `select_eligible_corpus_slice` + `get_peak_rss_mib` to benchmark one or more dense indexes (`dense-svd-v2`, `dense-e5-v1`) on the exact `5,000`-doc slice plus full-corpus `bm25-v3` reference.
+3. **TDD GREEN & Build/Measure:**
+   - Run targeted unit tests, build `artifacts/indexes/dense-svd-v2` and (if `fastembed` ONNX download fits CPU/RAM cleanly) `artifacts/indexes/dense-e5-v1`, then run `dense_hybrid_v2_pilot` writing `artifacts/benchmarks/m6_1_v2_pilot.json`.
+4. **Full Verification & Documentation:**
+   - Run `pytest -v`, `ruff check`, `mypy packages apps pipelines`, `mypy --platform win32` (static Windows check if supported) / Linux target, and `python3 scripts/check_secrets.py`.
+   - Update `docs/reports/milestones/M6.1/{README.md,evidence/workflow.md}` and `docs/reports/milestones/README.md`, commit, and push `feat/m6.1-v2-pilot-eval`.
+
 ## Windows repair and authorized merge plan — 2026-11-18
 
 **Goal:** Resolve the upstream Windows resource import/type blocker and deliver the current PR safely into main.

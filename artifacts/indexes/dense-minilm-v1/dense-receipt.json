@@ -1,0 +1,31 @@
+{
+  "index_type": "dense_cosine_f32_local",
+  "corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "model_id": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "created_at": "2026-11-19T03:18:02.971995+00:00",
+  "document_count": 5000,
+  "dimension": 384,
+  "index_bytes": 7795253,
+  "files": {
+    "embeddings.npy": {
+      "sha256": "60ca42e7a454f98111492078bff1350a435f59ca4bb5e6221b24e044778347b6",
+      "size_bytes": 7680128
+    },
+    "video_ids.json": {
+      "sha256": "0378d16c131554105c719b6949ec52052a4a8ca584505b5eff4922356b0dc272",
+      "size_bytes": 115000
+    },
+    "encoder_meta.json": {
+      "sha256": "62ad7eb3d0658aed9de1e14399ea946942bac1276494702dda9042e75a2cc7a1",
+      "size_bytes": 125
+    }
+  },
+  "encoder_backend": "fastembed",
+  "max_records_cap": 5000,
+  "selection_rule": "eligible transcribed rag_document sorted by (-play_count, video_id)",
+  "build_time_sec": 193.549,
+  "peak_rss_mb": 3265.02,
+  "peak_rss_unit": "MiB",
+  "peak_rss_scope": "process_lifetime",
+  "qdrant_populated": false
+}

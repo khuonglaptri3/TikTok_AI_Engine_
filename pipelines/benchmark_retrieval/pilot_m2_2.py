@@ -11,7 +11,7 @@ import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 
@@ -124,8 +124,10 @@ def evaluate_pilot_split(
     queries: list[dict[str, Any]],
     qrels: dict[str, dict[str, str]],
     *,
+    mode: Literal["bm25", "dense", "hybrid_rrf"] = "bm25",
     rerank: bool,
     k: int = 10,
+    eligible_video_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     """Evaluate answerable pooled metrics, U-uncertainty counts, and no-answer abstention."""
     recalls: list[float] = []
@@ -156,7 +158,7 @@ def evaluate_pilot_split(
         phenomenon = str(q.get("phenomenon", "unspecified"))
         req = RetrievalRequest(
             query=str(q["query"]),
-            mode="bm25",
+            mode=mode,
             top_k=k,
             rerank=rerank,
             filters=NicheQueryFilter(**q.get("filters", {})),
@@ -164,7 +166,12 @@ def evaluate_pilot_split(
         resp = service.search(req)
         retrieved_ids = [card.citation.video_id for card in resp.items[:k]]
 
-        q_judgments = qrels.get(qid, {})
+        raw_judgments = qrels.get(qid, {})
+        q_judgments = (
+            {vid: lbl for vid, lbl in raw_judgments.items() if vid in eligible_video_ids}
+            if eligible_video_ids is not None
+            else raw_judgments
+        )
         total_judged_pairs += len(q_judgments)
         q_uncertain = sum(1 for lbl in q_judgments.values() if str(lbl).upper() == "U")
         uncertain_judgment_count += q_uncertain
@@ -312,6 +319,7 @@ def measure_warm_latency(
     service: HybridRetrievalService,
     queries: list[dict[str, Any]],
     *,
+    mode: Literal["bm25", "dense", "hybrid_rrf"] = "bm25",
     rerank: bool,
     n_warm: int = 100,
     k: int = 10,
@@ -325,7 +333,7 @@ def measure_warm_latency(
     service.search(
         RetrievalRequest(
             query=str(first["query"]),
-            mode="bm25",
+            mode=mode,
             top_k=k,
             rerank=rerank,
             filters=NicheQueryFilter(**first.get("filters", {})),
@@ -338,7 +346,7 @@ def measure_warm_latency(
         q = queries[idx % len(queries)]
         req = RetrievalRequest(
             query=str(q["query"]),
-            mode="bm25",
+            mode=mode,
             top_k=k,
             rerank=rerank,
             filters=NicheQueryFilter(**q.get("filters", {})),

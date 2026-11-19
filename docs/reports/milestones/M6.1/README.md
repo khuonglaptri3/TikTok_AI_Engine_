@@ -1,16 +1,52 @@
 # M6.1 — CPU Dense & Hybrid Retrieval Pilot (Text-Only Spike)
 
-- Status: IN_PROGRESS (`N`'s text-only CPU dense index, Qdrant upsert adapter, `HybridRetrievalService` parity integration, 100-request CPU latency/RAM benchmark, and paired bootstrap comparison complete; awaiting `M2.2` frozen human-judged qrels, conditional multimodal evaluation after `M4.G`/`M5.G`, and `K` peer review)
-- Execution date: 2026-11-18 (Asia/Ho_Chi_Minh)
+- Status: IN_PROGRESS (`N`'s text-only CPU dense/hybrid stack verified on `20261118_taxonomy_fix_v1` + `v2_pilot` with both `tfidf_svd` and CPU `fastembed` `paraphrase-multilingual-MiniLM-L12-v2` against `bm25-v3`; awaiting `M2.2` human `K`/`N` sign-off on `qrels_pooled_draft.jsonl`, conditional multimodal evaluation after `M4.G`/`M5.G`, and `K` peer review)
+- Execution date: 2026-11-19 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M6.1`)
-- Original experiment repository version: `feat/m6.1-dense-hybrid-spike` (branched from `main` @ `c6c36131`)
+- Current branch: `feat/m6.1-v2-pilot-eval` (branched from `main` @ `dcdd6233`; prior Windows/PR3 merge at `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`; original spike on `feat/m6.1-dense-hybrid-spike` @ `c6c36131`)
 - Primary owner: Nguyễn Việt Nguyên (`N`) · Peer reviewer: Trần Đình Khương (`K`)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
-- Current repair: owner-authorized Windows compatibility work on `fix/g0-call-budget-and-lint`, base `40c457e2`, with exact [tested source SHA256](evidence/windows-check-results.json).
+## Conclusion (`v2_pilot` + `fastembed` Upgrade — 2026-11-19)
 
-## Conclusion
+**Scientific & resource outcome:** Both **`tfidf_svd_vn_128d_v1`** (`dense-svd-v2`) and pretrained CPU ONNX **`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`** (`dense-minilm-v1` via `fastembed==0.9.1`) stay comfortably inside `M6.1` CPU budgets (`<= 5,000` records, `<= 8,192 MiB` RAM, warm `p95 <= 1,000 ms`), **while `bm25-v3` + rule reranking consistently outperforms dense and `hybrid_rrf` on Vietnamese F&B `v2_pilot` queries** ([m6_1_v2_pilot.json](../../../../artifacts/benchmarks/m6_1_v2_pilot.json)). Therefore, **`bm25-v3` remains the recommended production default**, and `M6.1` stays **`IN_PROGRESS`** pending `K`/`N` human verification of `qrels_pooled_draft.jsonl`, multimodal scope (`M4.G`/`M5.G`), and `K` review.
+
+- **Exact `5,000`-doc parity (`20261118_taxonomy_fix_v1`, `dev` & `locked_test`):** Using query-blind deterministic slicing (`(-play_count, video_id)`), `38/153` draft positive pairs land inside the `5k` pool (`dev`: `6` pos-pool queries + `4` `no_answer` + `10` `zero_relevant_pool`; `locked_test`: `9` pos-pool queries + `4` `no_answer` + `7` `zero_relevant_pool`). All evaluated parity configurations enforce `restrict_to_df=True` and score **`4/4` `no_answer` abstentions (`0` fabricated support)** on both splits.
+- **Pretrained multilingual MiniLM vs domain `tfidf_svd` vs `bm25-v3` (`locked_test` positive-pool `n=9`):**
+  - `bm25_reranked`: `MRR@10 = 0.9444`, `nDCG@10 = 0.9534`, `Recall@10 = 1.0000`, `p95 = 22.70–23.94 ms`
+  - `bm25`: `MRR@10 = 0.8704`, `nDCG@10 = 0.8865`, `Recall@10 = 1.0000`, `p95 = 11.89–14.19 ms`
+  - `hybrid_rrf_reranked (tfidf_svd)`: `MRR@10 = 0.8704`, `nDCG@10 = 0.8983` (`delta_nDCG = -0.0550`, 95% CI `[-0.1678, +0.0034]`), `p95 = 51.96 ms`
+  - `hybrid_rrf_reranked (MiniLM)`: `MRR@10 = 0.7111`, `nDCG@10 = 0.7727` (`delta_nDCG = -0.1807`, 95% CI `[-0.3665, +0.0000]`), `p95 = 104.31 ms`
+  - `dense (tfidf_svd)`: `MRR@10 = 0.5463`, `nDCG@10 = 0.6048` (`delta_nDCG = -0.2817`, 95% CI `[-0.5253, -0.0959]`), `p95 = 28.27 ms`
+  - `dense (MiniLM)`: `MRR@10 = 0.3000`, `nDCG@10 = 0.2001` (`delta_nDCG = -0.6864`, 95% CI `[-0.8717, -0.4832]`), `p95 = 79.19 ms`
+- **Why general multilingual MiniLM underperforms on Vietnamese F&B:** General 50-language MiniLM collapses fine-grained Vietnamese culinary compounds and street-food entities compared to exact `bm25-v3` lexical + bigram matching and corpus-fit `tfidf_svd` character+word n-grams, while consuming `~2.1x` peak build RAM (`3,265.02 MiB` vs `1,571.84 MiB`), `~10.3x` build time (`193.55 s` vs `18.76 s`), and `~4–5x` higher inference `p95` (`79–104 ms` vs `12–24 ms`). (Note: `intfloat/multilingual-e5-small` is absent from `fastembed 0.9.1`'s `TextEmbedding.list_supported_models()`, so `paraphrase-multilingual-MiniLM-L12-v2` (`384d`, `~252 MB`) was evaluated.)
+- **Full-corpus `bm25-v3` reference (`21,748` docs):** `dev bm25_reranked` `MRR@10 = 0.8833`, `nDCG@10 = 0.7726`; `locked_test bm25_reranked` `MRR@10 = 0.8036`, `nDCG@10 = 0.7475`, `0` false abstentions (`t_n07` abstained only inside the `5k` subset where its matching pool was empty).
+- **Historical artifact integrity & full checks:** `artifacts/indexes/dense-svd-v1/` and `artifacts/benchmarks/m6_1_dense_hybrid_spike.json` remain byte-untouched. All `141` pytest tests (`18.33s`), scoped `ruff`, strict `mypy` (`84` files, Linux and `--platform win32`), and `scripts/check_secrets.py` (`0` leaks) pass.
+
+## Measured `v2_pilot` Resource & `locked_test` Parity Summary (`5,000`-Doc Slice)
+
+| Backend / Config | Index Bytes | Build Time | Peak RSS (Build / Eval) | Test `MRR@10` (pos / all-16) | Test `nDCG@10` (pos / all-16) | Warm p50 / p95 (100 req) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `bm25` (`bm25-v3`, `5k` parity) | — | — | — / `1,091–1,318 MiB` | `0.8704` / `0.4896` | `0.8865` / `0.4986` | `3.22–3.29 ms` / `11.89–14.19 ms` |
+| `bm25_reranked` (`bm25-v3`, `5k`) | — | — | — / `1,091–1,318 MiB` | **`0.9444`** / **`0.5312`** | **`0.9534`** / **`0.5363`** | `6.69–7.05 ms` / `22.70–23.94 ms` |
+| `dense` (`tfidf_svd_vn_128d_v1`) | `14,898,542` | `18.756 s` | `1,571.84` / `1,091.29 MiB` | `0.5463` / `0.3073` | `0.6048` / `0.3402` | `10.59 ms` / `28.27 ms` |
+| `hybrid_rrf_reranked` (`tfidf_svd`) | `14,898,542` | `18.756 s` | `1,571.84` / `1,091.29 MiB` | `0.8704` / `0.4896` | `0.8983` / `0.5053` | `19.47 ms` / `51.96 ms` |
+| `dense` (`MiniLM-L12-v2`, `fastembed`) | `7,795,253` | `193.549 s` | `3,265.02` / `1,317.96 MiB` | `0.3000` / `0.1688` | `0.2001` / `0.1125` | `36.42 ms` / `79.19 ms` |
+| `hybrid_rrf_reranked` (`MiniLM`) | `7,795,253` | `193.549 s` | `3,265.02` / `1,317.96 MiB` | `0.7111` / `0.4000` | `0.7727` / `0.4346` | `54.05 ms` / `104.31 ms` |
+
+## `v2_pilot` Verification & New Artifacts (`2026-11-19`)
+
+| Artifact / Check | Result | Scope / Evidence |
+| --- | --- | --- |
+| Build `dense-svd-v2` (`tfidf_svd`, `5,000` docs) | PASS (`18.756 s`, `1,571.84 MiB`) | [dense-receipt.json](../../../../artifacts/indexes/dense-svd-v2/dense-receipt.json) |
+| Build `dense-minilm-v1` (`fastembed` MiniLM, `5,000` docs) | PASS (`193.549 s`, `3,265.02 MiB`) | [dense-receipt.json](../../../../artifacts/indexes/dense-minilm-v1/dense-receipt.json) |
+| `dense_hybrid_v2_pilot` (`dev` + `locked_test` + 100-req latency) | PASS (`p95 <= 104.31 ms`, `0` fabricated `no_answer`) | [m6_1_v2_pilot.json](../../../../artifacts/benchmarks/m6_1_v2_pilot.json), [dense_hybrid_v2_pilot.py](../../../../pipelines/benchmark_retrieval/dense_hybrid_v2_pilot.py) |
+| Full `pytest -v` | PASS (`141 passed in 18.33s`) | Includes 2 new TDD regressions in [test_dense_hybrid_retrieval.py](../../../../tests/unit/test_dense_hybrid_retrieval.py); [v2-pilot-pytest.log](evidence/v2-pilot-pytest.log) |
+| `mypy` (`packages apps pipelines`, Linux & `--platform win32`) | PASS (`84 source files` each) | [v2-pilot-mypy.log](evidence/v2-pilot-mypy.log), [v2-pilot-mypy-win32.log](evidence/v2-pilot-mypy-win32.log) |
+| `ruff check` (source + scripts + changed tests) & secret scan | PASS (`All checks passed!`, `0` leaks) | [v2-pilot-ruff.log](evidence/v2-pilot-ruff.log), [v2-pilot-secrets.log](evidence/v2-pilot-secrets.log); note: unrelated repo test files had 3 pre-existing style notices untouched |
+
+## Prior Conclusion & Windows Repair / PR3 Record (2026-11-18, preserved)
 
 **Code integration completed:** [PR3](https://github.com/khuonglaptri3/TikTok_AI_Engine_/pull/3) merged at `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`; a new full run on merged main records **120 passed in 58.09s**. [Main verification](evidence/main-verification.json), [full log](evidence/main-pytest.log), [GitHub merge receipt](../M0.G/evidence/merge-github-receipt.json).
 

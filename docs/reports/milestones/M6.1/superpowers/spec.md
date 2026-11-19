@@ -2,6 +2,17 @@
 
 - **Task ID:** `M6.1` (Text-Only Spike on CPU)
 
+## M6.1 v2_pilot Upgrade (`20261118_taxonomy_fix_v1` + `bm25-v3` + `fastembed` side-by-side) — 2026-11-19
+
+Evaluate the `M6.1` dense + `hybrid_rrf` stack against the newly landed `M2.2` `v2_pilot` evaluation set (`dev_queries.jsonl`, `test_queries.jsonl`, `qrels_pooled_draft.jsonl`) on `data/corpus/20261118_taxonomy_fix_v1` and `artifacts/indexes/bm25-v3`, using branch `feat/m6.1-v2-pilot-eval`.
+
+- **Preserve Historical Artifacts:** Keep `artifacts/indexes/dense-svd-v1/` and `artifacts/benchmarks/m6_1_dense_hybrid_spike.json` untouched. Write new versioned artifacts (`artifacts/indexes/dense-svd-v2/`, optional `artifacts/indexes/dense-e5-v1/`, and `artifacts/benchmarks/m6_1_v2_pilot.json`).
+- **Backends Compared on Exact `5,000`-Doc Slice (`restrict_to_df=True`):**
+  1. `tfidf_svd_vn_128d_v1` (`artifacts/indexes/dense-svd-v2/`, `max_records=5000` via deterministic query-blind `(-play_count, video_id)` slice).
+  2. `intfloat/multilingual-e5-small` via CPU ONNX `fastembed` (`artifacts/indexes/dense-e5-v1/` on the exact same `5,000` docs, if installation/download completes cleanly within `< 8 GiB` CPU RSS).
+- **Parity, Abstention & Leak-Free Metrics:** Parameterize shared helpers in `pipelines/benchmark_retrieval/pilot_m2_2.py` (`evaluate_pilot_split`, `measure_warm_latency`) with `mode` and `eligible_video_ids` rather than duplicating evaluation code. Measure `bm25`, `bm25_reranked`, `dense`, `dense_reranked`, `hybrid_rrf`, and `hybrid_rrf_reranked` across `dev` (`20` queries) and `locked_test` (`20` queries): positive-pool and all-answerable `Recall@10`, `Precision@10`, `MRR@10`, `nDCG@10`, `no_answer` abstention (`0` fabricated support), false abstentions, `U`-uncertainty rate, paired 95% bootstrap CIs, build time/bytes, peak RSS (`<= 8,192 MiB`), and 100-request warm `p50`/`p95` (`<= 1,000 ms`). Also include the full `21,748`-doc `bm25-v3` baseline for transparent coverage comparison.
+- **Honest Milestone Status:** Keep `M6.1` `IN_PROGRESS` (draft qrels still have `K_human_verified=false`, `N_human_verified=false`; multimodal voice segments wait on `M4.G`/`M5.G`; `K` peer review is pending).
+
 ## Owner-authorized Windows repair and integration — 2026-11-18
 
 The owner explicitly requested resolving the Windows integration blocker, updating PR #3, and merging today's completed implementation work into `main` after checks pass. This repair does not complete the scientific M6.1 acceptance or approve G0.
