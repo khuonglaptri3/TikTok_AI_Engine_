@@ -1,5 +1,10 @@
 # M6.1 — Workflow Provenance & Verification Ledger
 
+## Human-Verified Qrels Re-Evaluation & `N` Sign-Off — 2026-11-20
+- **Date:** 2026-11-20 (Asia/Ho_Chi_Minh)
+- Re-ran `.venv/bin/python -m pipelines.benchmark_retrieval.dense_hybrid_v2_pilot --dense-dirs artifacts/indexes/dense-svd-v2 artifacts/indexes/dense-minilm-v1 --benchmark-id m6_1_v2_pilot_human_verified --output artifacts/benchmarks/m6_1_v2_pilot_human_verified.json` against frozen two-human-verified `M2.2` qrels (`408/408` verified pairs; `K_human_verified_all=true`, `N_human_verified_all=true`).
+- Preserved `m6_1_dense_hybrid_spike.json` and `m6_1_v2_pilot.json` untouched; confirmed `bm25-v3` (+ rule reranker) retention per `M6.1` simplicity rule ([nguyen_text_spike_signoff_receipt.json](nguyen_text_spike_signoff_receipt.json)). Remaining for `M6.1 = COMPLETE`: `K` peer review and conditional multimodal check after `M4.G`/`M5.G`.
+
 ## v2_pilot Parity & FastEmbed Comparison — 2026-11-19
 
 - **Date:** 2026-11-19 (Asia/Ho_Chi_Minh)

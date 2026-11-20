@@ -1,0 +1,20 @@
+{
+  "task_id": "M6.1",
+  "scope": "text_only_cpu_parity_on_m2_2_human_verified_qrels",
+  "contributor": "Nguyễn Việt Nguyên (N)",
+  "signed_off_at": "2026-11-20T09:23:36+07:00",
+  "benchmark_receipt": "artifacts/benchmarks/m6_1_v2_pilot_human_verified.json",
+  "benchmark_receipt_sha256": "86763d88d4f0cd3ed12519e69edf27271ff736c50c16d7c68bfe62eca66ac5dd",
+  "qrels_verified": {
+    "label_source": "two_human_verified_pooled_judgments",
+    "K_human_verified_all": true,
+    "N_human_verified_all": true,
+    "total_qrel_rows": 408
+  },
+  "recommended_production_default": "bm25-v3 (+ rule reranker)",
+  "rationale": "On frozen human-verified M2.2 qrels across both dev (n=7 in 5k) and locked_test (n=11 in 5k), MiniLM underperforms bm25_reranked on quality and latency (p95=74.90-80.54 ms), while tfidf_svd hybrid_rrf_reranked shows no statistically significant gain (locked_test 95% CI dMRR=[+0.0000, +0.1818], dnDCG=[-0.0136, +0.1261]; lower than bm25_reranked on dev) at ~2x warm p95 (49.93 ms vs 25.45 ms). Retain bm25-v3 per M6.1 simplicity rule.",
+  "remaining_for_task_completion": [
+    "Peer review of parity and cost evidence by Trần Đình Khương (K)",
+    "Conditional multimodal segment evaluation after M4.G and M5.G pass"
+  ]
+}
