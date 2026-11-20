@@ -91,13 +91,17 @@ class QdrantDenseAdapter:
         top_k: int = 50,
         allowed_video_ids: set[str] | None = None,
     ) -> list[tuple[str, float]]:
+        if allowed_video_ids is not None and len(allowed_video_ids) == 0:
+            return []
         url = f"{self.base_url}/collections/{self.collection_name}/points/search"
+        server_side_filter = allowed_video_ids is not None and len(allowed_video_ids) <= 5000
+        req_limit = top_k if (allowed_video_ids is None or server_side_filter) else max(top_k * 6, 300)
         payload: dict[str, Any] = {
             "vector": query_vector,
-            "limit": top_k,
+            "limit": req_limit,
             "with_payload": ["video_id"],
         }
-        if allowed_video_ids is not None and len(allowed_video_ids) <= 5000:
+        if server_side_filter and allowed_video_ids is not None:
             payload["filter"] = {
                 "must": [{"key": "video_id", "match": {"any": list(allowed_video_ids)}}]
             }
@@ -115,6 +119,11 @@ class QdrantDenseAdapter:
         results: list[tuple[str, float]] = []
         for hit in hits:
             vid = str((hit.get("payload") or {}).get("video_id") or hit.get("id") or "")
-            if vid:
-                results.append((vid, round(float(hit.get("score") or 0.0), 4)))
+            if not vid:
+                continue
+            if allowed_video_ids is not None and vid not in allowed_video_ids:
+                continue
+            results.append((vid, round(float(hit.get("score") or 0.0), 4)))
+            if len(results) >= top_k:
+                break
         return results

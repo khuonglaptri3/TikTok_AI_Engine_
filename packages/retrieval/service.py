@@ -159,9 +159,7 @@ class HybridRetrievalService:
     def _encode_dense_query(self, query: str) -> list[float] | None:
         try:
             if self._dense_encoder is None:
-                from sentence_transformers import SentenceTransformer  # type: ignore[import-not-found]
-
-                self._dense_encoder = SentenceTransformer("intfloat/multilingual-e5-base")
+                return None
             if isinstance(self._dense_encoder, DenseTextEncoder):
                 return self._dense_encoder.encode_query(query)
             vec = self._dense_encoder.encode(f"query: {query}", normalize_embeddings=True)
@@ -206,20 +204,19 @@ class HybridRetrievalService:
             if allowed_ids is None and self._restrict_to_df:
                 allowed_ids = set(self.video_lookup.keys())
 
-        if request.mode == "bm25" and self.bm25.vocab:
-            early_oov = check_vocab_anchor_support(intent, self.bm25.vocab)
-            if early_oov is not None:
-                return RetrievalResponse(
-                    query=request.query,
-                    mode=request.mode,
-                    reranked=False,
-                    total_candidates=0,
-                    relaxed_filters=relaxed_filters,
-                    items=[],
-                    insufficient_evidence=True,
-                    abstain_reason=early_oov,
-                    timings_ms=timer.finalize(),
-                )
+        early_oov = check_vocab_anchor_support(intent, self.bm25.vocab) if self.bm25.vocab else None
+        if request.mode in ("bm25", "hybrid_rrf") and early_oov is not None:
+            return RetrievalResponse(
+                query=request.query,
+                mode=request.mode,
+                reranked=False,
+                total_candidates=0,
+                relaxed_filters=relaxed_filters,
+                items=[],
+                insufficient_evidence=True,
+                abstain_reason=early_oov,
+                timings_ms=timer.finalize(),
+            )
 
         bm25_hits: list[tuple[str, float]] = []
         dense_hits: list[tuple[str, float]] = []
@@ -267,6 +264,18 @@ class HybridRetrievalService:
                         )
                     effective_mode = "bm25"
                 else:
+                    if early_oov is not None:
+                        return RetrievalResponse(
+                            query=request.query,
+                            mode=effective_mode,
+                            reranked=False,
+                            total_candidates=0,
+                            relaxed_filters=relaxed_filters,
+                            items=[],
+                            insufficient_evidence=True,
+                            abstain_reason=early_oov,
+                            timings_ms=timer.finalize(),
+                        )
                     dense_query = intent.positive_query or intent.normalized_query
                     q_vec = self._encode_dense_query(dense_query)
                     if q_vec is None:
@@ -296,8 +305,9 @@ class HybridRetrievalService:
             else:
                 fused_raw = bm25_hits
 
+            in_lookup_raw = [(vid, score) for vid, score in fused_raw if vid in self.video_lookup]
             boosted = apply_viral_multiplier_boost(
-                candidates=fused_raw,
+                candidates=in_lookup_raw,
                 viral_multipliers=self.viral_multipliers,
                 boost_weight=0.06,
             )
@@ -370,10 +380,11 @@ class HybridRetrievalService:
                 did_rerank = False
 
         cards: list[EvidenceCard] = []
-        for rank_idx, (vid, final_score, r_score) in enumerate(final_tuples, start=1):
+        for vid, final_score, r_score in final_tuples:
             row = self.video_lookup.get(vid)
             if not row:
                 continue
+            rank_idx = len(cards) + 1
             tr_full = str(row.get("transcript") or "")
             excerpt = tr_full[:320] + ("..." if len(tr_full) > 320 else "")
             cards.append(

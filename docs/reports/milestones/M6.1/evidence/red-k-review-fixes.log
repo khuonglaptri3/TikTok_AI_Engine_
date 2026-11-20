@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 10 items
+
+tests/unit/test_dense_hybrid_retrieval.py ........FF                     [100%]
+
+=================================== FAILURES ===================================
+_ test_k_review_v2_pilot_enforces_restrict_to_df_when_bm25_exceeds_candidate_limit _
+>       assert len(bm25_cfg["per_query"][0]["retrieved_ids"]) == 10
+E       assert 0 == 10
+E        +  where 0 = len([])
+
+tests/unit/test_dense_hybrid_retrieval.py:511: AssertionError
+_ test_k_review_qdrant_large_allowed_pool_never_leaks_unallowed_ids_and_oov_fast_path _
+>       assert [vid for vid, _ in hits] == ["v_allowed_1", "v_allowed_2"]
+E       AssertionError: assert ['v_wrong_city', 'v_allowed_1', 'v_allowed_2'] == ['v_allowed_1', 'v_allowed_2']
+
+tests/unit/test_dense_hybrid_retrieval.py:535: AssertionError
+========================= 2 failed, 8 passed in 1.40s ==========================

@@ -1,5 +1,14 @@
 # M6.1 — Workflow Provenance & Verification Ledger
 
+## Phase 2 — `K` Adversarial Parity, Finalized-Qrels & Cost Peer Review — 2026-11-20
+
+- **Reviewer:** Trần Đình Khương (`K`) on branch `feat/k-m4.2-m5.1-m6.1-peer-reviews` (from `main` @ `1531174e`, after `M2.2` finalized two-human qrels at `ba1dbb9a`).
+- **Skills loaded:** `using-superpowers`, `brainstorming`, `receiving-code-review`, `dispatching-parallel-agents`, `test-driven-development`, `verification-before-completion`.
+- **Key findings & TDD fixes ([khuong_peer_review.md](khuong_peer_review.md)):**
+  1. Discovered that `pipelines/benchmark_retrieval/dense_hybrid_v2_pilot.py:97` omitted `restrict_to_df=True`, causing unfiltered `bm25` and `hybrid_rrf` queries in `m6_1_v2_pilot.json` to search all `21,748` docs instead of the `5,000`-doc parity slice (`<10` results on `d_k02`, `d_n02`, `d_k04`, `t_n05`), and that `m6_1_v2_pilot.json` used pre-signoff draft qrels (`46a2263f...`, `38` 5k positives) prior to `M2.2` closure (`9a478e54...`, `47` 5k positives, `K` & `N` `408/408` verified).
+  2. Added `2` TDD regressions in `tests/unit/test_dense_hybrid_retrieval.py` + `dense_hybrid_v2_pilot` import guard in `tests/unit/test_resource_measurements.py` ([red-k-review-fixes.log](red-k-review-fixes.log) `2 failed` -> [green-k-review-fixes.log](green-k-review-fixes.log) `18 passed`): enforced `restrict_to_df=True`, hardened `QdrantDenseAdapter.search_vectors` so `len(allowed_video_ids) > 5000` never leaks unallowed IDs, aligned early OOV short-circuiting across modes in `packages/retrieval/service.py`, removed implicit `SentenceTransformer("intfloat/multilingual-e5-base")` download fallback, and added `unjudged_rate_at_10` in `pilot_m2_2.py`.
+  3. Executed [m6_1_v2_final_qrels_parity.json](../../../../../artifacts/benchmarks/m6_1_v2_final_qrels_parity.json) (`dense-svd-v2`, exact `restrict_to_df=True` parity on finalized `M2.2` qrels) and [khuong_m6_1_qrels_and_parity_audit.json](khuong_m6_1_qrels_and_parity_audit.json), preserving `m6_1_v2_pilot.json` untouched.
+
 ## v2_pilot Parity & FastEmbed Comparison — 2026-11-19
 
 - **Date:** 2026-11-19 (Asia/Ho_Chi_Minh)
@@ -23,7 +32,7 @@
 - Authorization: the owner requested fixing the current blocker, updating PR3 and bringing today's completed implementation into main. Merge authorization is explicit; gate/scientific approval is separate.
 - Existing source: PR3 head40c457e2 over mainad7eb92f. The prior publication logs reproduce Windows pytest collection failure on unconditional `import resource` and4 configured-mypy errors at getrusage/RUSAGE_SELF in the two M6.1 pipelines.
 - Root cause: Unix-only resource imports execute during module import, before tests can collect. The process-memory measurement has a platform-specific API and unit convention; suppressing type errors or returning zero would not verify the memory requirement.
-- Skills actually read/reused: installed Superpowers7.0.1 using-superpowers (+ Codex reference), systematic-debugging, test-driven-development (+ writing-good-tests), writing-plans, executing-plans, verification-before-completion, requesting-code-review and finishing-a-development-branch. Paths are under `C:/Users/lanph/.codex/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/`; the first three and verification were read again for this task, the other already-read instructions are reused.
+- Skills actually read/reused: installed Superpowers 7.0.1 using-superpowers (+ Codex reference), systematic-debugging, test-driven-development (+ writing-good-tests), writing-plans, executing-plans, verification-before-completion, requesting-code-review and finishing-a-development-branch (loaded from the local Superpowers plugin skill cache); the first three and verification were read again for this task, the other already-read instructions are reused.
 - Prospective spec/plan addenda above precede new tests and source edits. Native ledger/evidence remain under this existing task bundle per repository policy; user requested continuing the current local branch, so no unrelated worktree is created.
 - Evidence sources: Python resource documentation states Unix availability; Microsoft documents PeakWorkingSetSize in bytes; Linux getrusage documents ru_maxrss in KiB. New measurements will be process-lifetime peak resident memory normalized to MiB, not per-operation allocation or total host RAM.
 - Task1 IN_PROGRESS: baseline/report preservation, RED regressions, then minimal implementation. No original benchmark is rerun or overwritten by planning.

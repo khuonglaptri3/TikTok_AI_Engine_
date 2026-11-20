@@ -20,6 +20,7 @@ def no_resource(name, *args, **kwargs):
 builtins.__import__ = no_resource
 import pipelines.build_dense_sparse_index.dense
 import pipelines.benchmark_retrieval.dense_hybrid_pilot
+import pipelines.benchmark_retrieval.dense_hybrid_v2_pilot
 """
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr

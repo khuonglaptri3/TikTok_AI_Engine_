@@ -17,9 +17,9 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M2.G | G2 historical core gate decision (`PASS` on `main` @ `dc595f04`: `177` pytest, `95`-file `mypy`, `sdist+whl` build, real-corpus ASGI `/demo/`; confirmed by `N` & `K`) | COMPLETE | [Read results](M2.G/README.md) |
 | M3.1 | Repeated Dual-Sink ingestion repair, missing-modality schemas, interrupted recovery & `K` real-snapshot reproduction | COMPLETE | [Read results](M3.1/README.md) |
 | M3.2 | Bounded 120-day collector worker, `70,996`-ID protection, crash-safe resume, 64 kbps audio receipts & offline `M3.1` round-trip (`K` complete; awaiting `N` review) | IN_PROGRESS | [Read results](M3.2/README.md) |
-| M4.2 | Observed `is_ad`/EC flags separated from promo lexicon, `PR-AUC=0.8916`, `100`-item workbook + LLM blinded draft (`146` tests) | IN_PROGRESS | [Read results](M4.2/README.md) |
-| M5.1 | Observable duplicate/contact/noise indicators, organic-dup FP fix, diagnostic default, guidelines & fixture dry-run (`142` tests) | IN_PROGRESS | [Read results](M5.1/README.md) |
-| M6.1 | `v2_pilot` (`bm25-v3`) & CPU `fastembed` MiniLM vs `tfidf_svd` parity measured (`141` tests); human qrels/review pending | IN_PROGRESS | [Read results](M6.1/README.md) |
+| M4.2 | Observed `is_ad`/EC flags separated from promo lexicon (`PR-AUC=0.8915` / `0.8728` no-MCN, cluster CI), `K` peer review & `K` `65/65` human audit complete; awaiting `N` `65/65` (`188` tests) | IN_PROGRESS | [Read results](M4.2/README.md) |
+| M5.1 | Observable duplicate/contact/noise indicators, `K` baseline code/leakage/sensitivity peer review & TDD fixes (`188` tests); awaiting `M3.3` real pilot comments | IN_PROGRESS | [Read results](M5.1/README.md) |
+| M6.1 | `5,000`-doc `restrict_to_df=True` parity on finalized `M2.2` human qrels (`tfidf_svd` & `MiniLM` vs `bm25-v3`) + `K` peer review (`bm25-v3` default confirmed; `188` tests) | IN_PROGRESS | [Read results](M6.1/README.md) |
 
 Independent cross-project assessments are listed in [task reports](../tasks/README.md). Their conclusions do not change milestone status or pass a gate.
 

@@ -424,3 +424,164 @@ def test_v2_pilot_suite_benchmark_structure(tmp_path: Path) -> None:
         "hybrid_rrf",
         "hybrid_rrf_reranked",
     }
+
+
+def test_k_review_v2_pilot_enforces_restrict_to_df_when_bm25_exceeds_candidate_limit(
+    tmp_path: Path,
+) -> None:
+    from pipelines.benchmark_retrieval.dense_hybrid_v2_pilot import benchmark_dense_backend
+
+    rows: list[dict[str, Any]] = []
+    vids: list[str] = []
+    docs: list[str] = []
+    # First 10 docs have highest play_count (selected into parity slice); next 90 out-of-slice docs
+    # repeat the query terms heavily so global BM25 top-80 would completely starve the 10-doc slice
+    # unless restrict_to_df=True is enforced inside benchmark_dense_backend.
+    for i in range(100):
+        in_slice = i < 10
+        vid = f"v_{i:03d}"
+        doc = (
+            f"bún bò huế sả ớt ngon số {i}"
+            if in_slice
+            else ("bún bò huế sả ớt bún bò huế sả ớt bún bò huế đậm đà " * 3)
+        )
+        vids.append(vid)
+        docs.append(doc)
+        rows.append(
+            {
+                "video_id": vid,
+                "author_handle": f"creator_{i}",
+                "tiktok_url": f"https://www.tiktok.com/@creator_{i}/video/{vid}",
+                "play_count": (500_000 - i * 100) if in_slice else (1_000 + i),
+                "viral_multiplier": 2.0,
+                "engagement_rate": 0.05,
+                "video_format": "Review món ăn",
+                "food_category": "Món nước & Sợi",
+                "dishes": [],
+                "city_norm": "hồ chí minh",
+                "region": "nam",
+                "district_norm": None,
+                "poi_name": None,
+                "price_tier": "budget_lt50k",
+                "occasions": [],
+                "duration_sec": 35,
+                "duration_bucket": "short_20_45s",
+                "has_transcript": True,
+                "transcript": doc,
+                "hook_text": doc,
+                "body_beats": [doc],
+                "cta_text": "",
+                "rag_document": doc,
+            }
+        )
+    df = pd.DataFrame(rows)
+    bm25_dir = tmp_path / "bm25_100"
+    dense_dir = tmp_path / "dense_10"
+    BM25Index.build(vids, docs, min_bigram_df=1).save(bm25_dir, corpus_snapshot_id="s_100")
+
+    sliced_df = select_eligible_corpus_slice(df, max_records=10)
+    s_vids = sliced_df["video_id"].astype(str).tolist()
+    s_docs = sliced_df["rag_document"].astype(str).tolist()
+    enc = TruncatedSvdDenseEncoder.fit(s_docs, dimension=4)
+    LocalDenseIndex.build(s_vids, enc.encode_documents(s_docs), model_id=enc.model_id).save(
+        dense_dir, corpus_snapshot_id="s_100", encoder=enc
+    )
+
+    q_list = [
+        {
+            "query_id": "q_starve",
+            "phenomenon": "exact_dish",
+            "expect_no_answer": False,
+            "filters": {},
+            "query": "bún bò huế sả ớt",
+        }
+    ]
+    qrels = {"q_starve": {"v_000": "1"}}
+    out = benchmark_dense_backend(
+        df_videos=df,
+        bm25_dir=bm25_dir,
+        dense_dir=dense_dir,
+        dev_queries=q_list,
+        test_queries=q_list,
+        qrels=qrels,
+        n_warm=2,
+        n_boot=20,
+    )
+    bm25_cfg = out["splits"]["locked_test"]["configs"]["bm25"]
+    assert len(bm25_cfg["per_query"][0]["retrieved_ids"]) == 10
+    assert bm25_cfg["mrr_at_10"] > 0.0
+    assert "unjudged_rate_at_10" in bm25_cfg
+
+
+def test_k_review_qdrant_large_allowed_pool_never_leaks_unallowed_ids_and_oov_fast_path(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def _fake_post(url: str, json: dict[str, Any], timeout: float) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "result": [
+                    {"id": 1, "score": 0.99, "payload": {"video_id": "v_wrong_city"}},
+                    {"id": 2, "score": 0.88, "payload": {"video_id": "v_allowed_1"}},
+                    {"id": 3, "score": 0.77, "payload": {"video_id": "v_allowed_2"}},
+                ]
+            },
+        )
+
+    monkeypatch.setattr(httpx, "post", _fake_post)
+    adapter = QdrantDenseAdapter("http://127.0.0.1:6333", "tiktok_test")
+    big_allowed = {f"v_allowed_{i}" for i in range(5005)}
+    hits = adapter.search_vectors([0.1, 0.2], top_k=5, allowed_video_ids=big_allowed)
+    assert [vid for vid, _ in hits] == ["v_allowed_1", "v_allowed_2"]
+
+    # Early OOV anchor check must also avoid needless dense query encoding on dense / hybrid_rrf
+    vids, docs = _sample_docs()
+    df = pd.DataFrame(
+        [
+            {
+                "video_id": vid,
+                "author_handle": f"creator_{i}",
+                "tiktok_url": f"https://www.tiktok.com/@creator_{i}/video/{vid}",
+                "play_count": 10000,
+                "viral_multiplier": 1.0,
+                "engagement_rate": 0.05,
+                "video_format": "Review món ăn",
+                "food_category": "Món nước & Sợi",
+                "dishes": [],
+                "city_norm": "hồ chí minh",
+                "region": "nam",
+                "district_norm": None,
+                "poi_name": None,
+                "price_tier": "budget_lt50k",
+                "occasions": [],
+                "duration_sec": 30,
+                "duration_bucket": "short_20_45s",
+                "has_transcript": True,
+                "transcript": doc,
+                "hook_text": doc,
+                "body_beats": [doc],
+                "cta_text": "",
+                "rag_document": doc,
+            }
+            for i, (vid, doc) in enumerate(zip(vids, docs))
+        ]
+    )
+    bm25 = BM25Index.build(vids, docs, min_bigram_df=1)
+    enc = TruncatedSvdDenseEncoder.fit(docs, dimension=8)
+    dense = LocalDenseIndex.build(vids, enc.encode_documents(docs), model_id=enc.model_id)
+
+    encode_calls = 0
+    orig_encode = enc.encode_query
+
+    def _counted_encode(q: str) -> list[float]:
+        nonlocal encode_calls
+        encode_calls += 1
+        return orig_encode(q)
+
+    monkeypatch.setattr(enc, "encode_query", _counted_encode)
+    svc = HybridRetrievalService(df_videos=df, bm25_index=bm25, dense_index=dense, dense_encoder=enc)
+    for mode in ("dense", "hybrid_rrf"):
+        resp = svc.search(RetrievalRequest(query="lẩu sao hỏa zzzqx99", mode=mode, top_k=3))  # type: ignore[arg-type]
+        assert resp.insufficient_evidence is True
+    assert encode_calls == 0
+
