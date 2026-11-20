@@ -13,6 +13,7 @@ from apps.demo.presentation import (
     format_script_markdown,
     format_timings_markdown,
     format_trust_audit_markdown,
+    parse_demo_comment_lines,
 )
 from packages.taxonomy import FOOD_CATEGORIES, OCCASION_LABELS, PRICE_TIERS, VIDEO_FORMATS
 
@@ -135,24 +136,20 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
         transcript: str,
         raw_comments_lines: str,
         hide_seeding: bool,
+        is_ad: bool = False,
+        is_ec_video: bool = False,
     ) -> tuple[str, str]:
-        comments_payload = []
-        for idx, line in enumerate(raw_comments_lines.splitlines(), start=1):
-            clean = line.strip()
-            if not clean:
-                continue
-            if ":" in clean:
-                user_part, text_part = clean.split(":", 1)
-                handle = user_part.strip().lstrip("@")
-                txt = text_part.strip()
-            else:
-                handle = f"viewer_{idx}"
-                txt = clean
-            comments_payload.append({"comment_id": f"c{idx}", "author_handle": handle, "text": txt})
+        comments_payload = parse_demo_comment_lines(raw_comments_lines)
 
         status, data = await _post_api(
             "/api/v1/trust/audit-video",
-            {"caption": caption, "transcript": transcript, "comments": comments_payload},
+            {
+                "caption": caption,
+                "transcript": transcript,
+                "is_ad": bool(is_ad),
+                "is_ec_video": bool(is_ec_video),
+                "comments": comments_payload,
+            },
         )
         if status != 200:
             return f"### ⚠️ Lỗi (`{status}`)\n{json.dumps(data, ensure_ascii=False)}", ""
@@ -248,23 +245,32 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                     label="Danh sách Bình luận (mỗi dòng: @user: nội dung)",
                     lines=5,
                     value=(
-                        "@seed_01: Quán ruột của mình mỗi tuần đều ghé ăn lẩu bò xuất sắc luôn\n"
-                        "@seed_02: Quán ruột của mình mỗi tuần đều ghé ăn lẩu bò xuất sắc nha\n"
-                        "@spam_bot: Nhận tuyển CTV việc nhẹ lương cao inbox zalo 0909123456\n"
-                        "@khach_that_1: Nước lẩu mặn chát mà bàn ghế bẩn đầy khói, nhân viên phục vụ quá chậm chờ 40 phút\n"
-                        "@khach_that_2: Thịt ít xịu tính thêm rau bún vô đắt chứ không rẻ như quảng cáo lố"
+                        "@viewer_01: Nhìn nước lẩu ở quán này sôi sùng sục thơm mùi sả ớt hấp dẫn ghê mọi người ơi\n"
+                        "@viewer_02: Nhìn nước lẩu ở quán này sôi sùng sục thơm mùi sả ớt hấp dẫn ghê mọi người nha\n"
+                        "@viewer_03: Nhận tuyển CTV việc nhẹ lương cao inbox zalo 0909123456\n"
+                        "@viewer_04: Nước lẩu mặn chát mà bàn ghế bẩn đầy khói, nhân viên phục vụ quá chậm chờ 40 phút\n"
+                        "@viewer_05: Thịt ít xịu tính thêm rau bún vô đắt chứ không rẻ như lời khen"
                     ),
                 )
-                hide_seed_chk = gr.Checkbox(
-                    value=False,
-                    label="Tạm ẩn bình luận có chỉ dấu trùng lặp/liên hệ/nhiễu (mặc định tắt — chế độ chẩn đoán M5.1)",
-                )
+                with gr.Row():
+                    t_is_ad = gr.Checkbox(
+                        value=False,
+                        label="Cờ nền tảng is_ad (Observed Ad Flag)",
+                    )
+                    t_is_ec = gr.Checkbox(
+                        value=False,
+                        label="Cờ giỏ hàng is_ec_video (Observed E-Commerce Flag)",
+                    )
+                    hide_seed_chk = gr.Checkbox(
+                        value=False,
+                        label="Tạm ẩn bình luận có chỉ dấu trùng lặp/liên hệ/nhiễu (mặc định tắt — chế độ chẩn đoán M5.1)",
+                    )
                 audit_btn = gr.Button("Phân Tích Mẫu Bình Luận Và Điểm ABSA", variant="primary")
                 t_audit_timings = gr.Markdown()
                 t_audit_md = gr.Markdown()
                 audit_btn.click(
                     fn=handle_trust_audit,
-                    inputs=[t_cap, t_tr, t_comms, hide_seed_chk],
+                    inputs=[t_cap, t_tr, t_comms, hide_seed_chk, t_is_ad, t_is_ec],
                     outputs=[t_audit_md, t_audit_timings],
                 )
 

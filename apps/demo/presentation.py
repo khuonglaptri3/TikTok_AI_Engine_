@@ -1,6 +1,30 @@
 from __future__ import annotations
 
+import re
 from typing import Any
+
+_HANDLE_PREFIX_RE = re.compile(
+    r"^(?:@([A-Za-z0-9_.\-]{1,32})|([A-Za-z0-9_.\-]*[0-9_.][A-Za-z0-9_.\-]*)):\s*(?!//)(.+)$",
+    flags=re.DOTALL,
+)
+
+
+def parse_demo_comment_lines(raw_comments_lines: str) -> list[dict[str, str]]:
+    """Parse manual demo comment lines without breaking bare https:// URLs or non-handle colons."""
+    comments_payload: list[dict[str, str]] = []
+    for idx, line in enumerate(raw_comments_lines.splitlines(), start=1):
+        clean = line.strip()
+        if not clean:
+            continue
+        m = _HANDLE_PREFIX_RE.match(clean)
+        if m is not None:
+            handle = (m.group(1) or m.group(2) or f"viewer_{idx}").strip().lstrip("@")
+            txt = m.group(3).strip()
+        else:
+            handle = f"viewer_{idx}"
+            txt = clean
+        comments_payload.append({"comment_id": f"c{idx}", "author_handle": handle, "text": txt})
+    return comments_payload
 
 
 def format_benchmark_markdown(bench: dict[str, Any]) -> str:
@@ -147,11 +171,21 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = False
 
     sens_line = ""
     if sens:
-        sens_line = (
-            f"- **Độ nhạy trước/sau lọc (Filter Sensitivity):** Trước lọc `{float(sens.get('before_filter_viewer_mean') or 0.0):+.4f}` "
-            f"→ Sau loại `{sens.get('flagged_indicator_count', 0)}` bình luận có chỉ dấu: "
-            f"`{float(sens.get('after_filter_viewer_mean') or 0.0):+.4f}` (chênh `{float(sens.get('mean_score_shift') or 0.0):+.4f}`)"
-        )
+        b_mean = sens.get("before_filter_viewer_mean")
+        b_str = f"`{float(b_mean):+.4f}`" if b_mean is not None else "`N/A`"
+        if sens.get("after_filter_abstained") or sens.get("after_filter_viewer_mean") is None:
+            sens_line = (
+                f"- **Độ nhạy trước/sau lọc (Filter Sensitivity):** Trước lọc {b_str} "
+                f"→ Sau loại `{sens.get('flagged_indicator_count', 0)}` bình luận có chỉ dấu: "
+                "`tạm dừng (0 bình luận chưa gắn cờ — không suy diễn điểm 0.0)`"
+            )
+        else:
+            sens_line = (
+                f"- **Độ nhạy trước/sau lọc (Filter Sensitivity):** Trước lọc {b_str} "
+                f"→ Sau loại `{sens.get('flagged_indicator_count', 0)}` bình luận có chỉ dấu: "
+                f"`{float(sens.get('after_filter_viewer_mean') or 0.0):+.4f}` "
+                f"(chênh `{float(sens.get('mean_score_shift') or 0.0):+.4f}`)"
+            )
 
     cues_preview = ", ".join(f"`{c}`" for c in lex_cues[:5]) if lex_cues else "_Không ghi nhận từ khóa quảng bá_"
     lines = [
@@ -189,6 +223,7 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = False
     for c in shown:
         obs_lbl = c.get("observable_label") or (c.get("seeding_reason") if c.get("is_seeding") else "no_indicator_observed")
         tag = f"⚑ `[{obs_lbl}]`" if c.get("is_seeding") else "ℹ️ `[no_indicator_observed]`"
-        lines.append(f"- {tag} **@{c.get('author_handle') or 'user'}**: {c.get('text')}")
+        safe_txt = " ".join(str(c.get("text") or "").splitlines())
+        lines.append(f"- {tag} **@{c.get('author_handle') or 'user'}**: {safe_txt}")
     return "\n".join(lines)
 

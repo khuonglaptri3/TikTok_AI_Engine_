@@ -20,6 +20,7 @@ from packages.seeding.evaluation import (
     build_annotation_pool,
     compute_comment_filter_sensitivity,
     evaluate_comment_indicator_metrics,
+    reconstruct_observable_predictions,
     split_comments_by_video,
 )
 
@@ -50,7 +51,8 @@ def _authored_edge_fixture_threads() -> list[dict[str, Any]]:
         ("dup_1", "d1", "Nước dùng ở quán này đậm đà ngon xuất sắc luôn mọi người", "observable_duplicate"),
         ("dup_2", "d2", "Nước dùng ở quán này đậm đà ngon xuất sắc luôn mọi người nha", "observable_duplicate"),
         # Clean nuanced critiques / ambiguous unknown
-        ("cln_1", "r1", "Thịt bò hơi dai nhưng nước dùng vừa miệng, phục vụ nhanh", "no_indicator_observed"),
+        ("cln_1", "r1", "Thịt bò hơi dai và mặn chát, bàn ghế bẩn phục vụ quá chậm", "no_indicator_observed"),
+        ("tpl_1", "t1", "Quán ruột của mình mỗi tuần đều ghé ăn ngon xuất sắc", "template_phrase_match"),
         ("unk_1", "x1", "Chị chủ dễ tính ghê á hihi", "unknown_ambiguous"),
     ]
     rows: list[dict[str, Any]] = []
@@ -58,16 +60,12 @@ def _authored_edge_fixture_threads() -> list[dict[str, Any]]:
     for v_idx in range(12):
         vid = f"fixture_vid_{v_idx:02d}"
         # Keep paired duplicates inside the same thread so duplicate clusters trigger within thread
-        subset = (
-            specs[:6]
-            if v_idx % 3 == 0
-            else (specs[6:10] + specs[10:12])
-            if v_idx % 3 == 1
-            else (specs[2:4] + specs[8:12])
-        )
-        # Ensure each split receives clean, contact, noise, duplicate, and unknown cases
-        if v_idx % 3 == 2:
-            subset = [specs[0], specs[1], specs[4], specs[6], specs[8], specs[9], specs[10], specs[11]]
+        if v_idx % 3 == 0:
+            subset = specs[:6] + [specs[10]]
+        elif v_idx % 3 == 1:
+            subset = specs[6:13]
+        else:
+            subset = [specs[0], specs[1], specs[4], specs[6], specs[8], specs[9], specs[10], specs[11], specs[12]]
         for cid_suffix, handle, text, gold in subset:
             rows.append(
                 {
@@ -136,6 +134,7 @@ def run_fixture_dry_run(*, output: Path) -> dict[str, Any]:
         pred_col="pred_label",
         truth_col="adjudicated_label",
         human_signoff_complete=False,
+        total_annotated_pool_count=len(evaluated_rows),
         n_boot=200,
         seed=42,
     )
@@ -175,7 +174,14 @@ def run_fixture_dry_run(*, output: Path) -> dict[str, Any]:
                 4,
             ),
             "max_abs_mean_score_shift": round(
-                max(abs(s["mean_score_shift"]) for s in sensitivity_samples),
+                max(
+                    (
+                        abs(float(s["mean_score_shift"]))
+                        for s in sensitivity_samples
+                        if s["mean_score_shift"] is not None
+                    ),
+                    default=0.0,
+                ),
                 4,
             ),
         },
@@ -207,11 +213,24 @@ def run_real_pool_export(
     if output_jsonl.exists():
         raise FileExistsError(f"Output pool already exists: {output_jsonl}")
     df = pd.read_parquet(comments_parquet)
-    pool = build_annotation_pool(df, max_items=max_items, double_overlap=min(60, len(df)), seed=seed)
+    pool = build_annotation_pool(
+        df,
+        max_items=max_items,
+        double_overlap=min(60, len(df)),
+        seed=seed,
+        include_predictions=False,
+    )
+    preds = reconstruct_observable_predictions(df, pool)
+    pred_key_path = output_jsonl.with_name(f"{output_jsonl.stem}_locked_predictions.jsonl")
+    if pred_key_path.exists():
+        raise FileExistsError(f"Locked prediction file already exists: {pred_key_path}")
     output_jsonl.parent.mkdir(parents=True, exist_ok=True)
     with output_jsonl.open("x", encoding="utf-8") as fp:
         for row in pool:
             fp.write(json.dumps(row, ensure_ascii=False) + "\n")
+    with pred_key_path.open("x", encoding="utf-8") as fp_pred:
+        for row in preds:
+            fp_pred.write(json.dumps(row, ensure_ascii=False) + "\n")
     return pool
 
 

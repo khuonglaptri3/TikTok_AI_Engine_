@@ -1,63 +1,61 @@
 # M5.1 — Duplicate, Contact/Link, and Noise Comment Indicators
 
-- Status: IN_PROGRESS (`N`'s observable indicator refactor, short-organic-duplicate false-positive guard, diagnostic-only API/UI default with filter sensitivity, video-disjoint evaluation pipeline, written annotation guidelines, and synthetic dry-run verification complete; awaiting `150`–`300` real pilot comments from `M3.3` / `M3.G`, human `N`/`K` double-annotation, and `K` peer review)
-- Execution date: 2026-11-19 (Asia/Ho_Chi_Minh)
+- Status: IN_PROGRESS (`N`'s observable indicator baseline + `K`'s adversarial code/leakage/sensitivity peer review & `5`-test TDD hardening complete (`188` repo tests); awaiting `150`–`300` real pilot comments from `M3.3` / `M3.G` and `N`/`K` double-annotation)
+- Execution date: 2026-11-19 to 2026-11-20 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M5.1`)
-- Repository version: `feat/m5.1-observable-comment-indicators` (branched from `main` @ `dcdd6233`)
-- Primary owner: Nguyễn Việt Nguyên (`N`) · Peer reviewer: Trần Đình Khương (`K`)
+- Repository version: `feat/k-m4.2-m5.1-m6.1-peer-reviews` (branched from `main` @ `1531174e`)
+- Primary owner: Nguyễn Việt Nguyên (`N`) · Peer reviewer: Trần Đình Khương (`K`, baseline code/leakage/sensitivity review complete)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
 ## Conclusion
 
-**Code, diagnostic-only defaults, video-disjoint evaluation harness, and annotation guidelines are complete and verified (`142 passed`, `86`-file Linux/Windows `mypy`); real-comment evaluation remains `BLOCKED` on `M3.3` / `M3.G` pilot collection (`IN_PROGRESS`).**
+**Code, diagnostic-only defaults, `K` adversarial peer-review TDD fixes (`8/8` M5.1 tests, `188/188` repo tests, `95`-file Linux/Windows `mypy`), blinded video-grouped pool sampler, and annotation guidelines are complete and verified; real-comment evaluation remains `BLOCKED` on `M3.3` / `M3.G` pilot collection (`IN_PROGRESS`).**
 
-- `packages/seeding/detector.py` now preserves `original_text` alongside normalized `text`, emits non-accusatory observable classes (`observable_duplicate`, `contact_or_link`, `noise_or_empty`, `template_phrase_match`, `no_indicator_observed`, `unknown_ambiguous`) with zero bot/payment/verified-diner assertions, and exempts short organic repeated phrases (`min_duplicate_words = 5`, `short_organic_phrase_exempt`), eliminating `24 -> 0` organic short-duplicate false positives on the authored `12`-video edge fixture ([m5_1_fixture_dry_run.json](../../../../artifacts/benchmarks/m5_1_fixture_dry_run.json)).
-- `/api/v1/trust/audit-video` (`apps/api/app/routers/trust.py`) and `/demo/` (`apps/demo/presentation.py`, `apps/demo/ui.py`) now default to **`diagnostic_only_unvalidated`** (`hide_seeding=False` checkbox unchecked by default), surfacing all comments with observable diagnostic tags plus exact before/after ABSA `filter_sensitivity` shifts rather than silently hiding comments before the M5.1 gate (`>= 150` annotated real comments, `macro precision >= 0.85`, `macro recall >= 0.60`) is met.
-- `pipelines/ingest_incremental_to_gold/converter.py` now projects `CommentRecord` rows cleanly to `_COMMENTS_SCHEMA` and records `int(pa_table.num_columns)` so extended `CommentRecord` fields preserve 100% Gold Parquet schema continuity (`10` columns).
+- `packages/seeding/detector.py` preserves `original_text` verbatim alongside trimmed `text`, emits non-accusatory observable classes (`observable_duplicate`, `contact_or_link`, `noise_or_empty`, `template_phrase_match`, `no_indicator_observed`, `unknown_ambiguous`) with zero bot/payment/verified-diner assertions, exempts both `< 5`-token reactions (`24 -> 0` on the synthetic fixture) and **5–8 syllable ordinary Vietnamese diner inquiries** (`"Cho mình xin địa chỉ"`, `"Quán này ở đâu vậy"`), isolates `contact_or_link` and `noise_or_empty` before pairwise clustering so spam comments never contaminate clean viewers, prioritizes `template_phrase_match`, unifies transitive duplicate clusters via Union-Find, and enforces digit boundaries `(?<!\d)...(?!\d)` so 19-digit TikTok video IDs never false-positive as phone numbers.
+- `packages/seeding/evaluation.py` and `pipelines/audit_m5_1_comments/run_baseline_checks.py` now evaluate `auto_filter_eligible` against `total_annotated_pool_count >= 150` (`>= 45` on `held_out_third`, fixing the prior `300/3 = 100 < 150` gate deadlock), sample contiguous whole-video threads **blinded to model predictions** (`include_predictions=False`, saving a separate `*_locked_predictions.jsonl` key reconstructed from 10-column `fact_comments.parquet`), validate strict `OBSERVABLE_COMMENT_CLASSES`, use video-cluster bootstrap CIs, and abstain cleanly (`after_filter_abstained=True`, `after_filter_viewer_mean=None`) instead of fabricating `0.0` neutral sentiment when 100% of comments are flagged.
+- `/demo/` (`apps/demo/presentation.py`, `apps/demo/ui.py`) uses `parse_demo_comment_lines` so bare `https://` links and colons (`"19:30"`, `"Giá: 45k"`) are never corrupted, uses neutral `@viewer_01..@viewer_05` example handles, and keeps `hide_seeding=False` unchecked by default.
 
 ## Work performed
 
-- **Observable indicator & contract upgrade ([detector.py](../../../../packages/seeding/detector.py), [multimodal.py](../../../../packages/data_contracts/multimodal.py), [converter.py](../../../../pipelines/ingest_incremental_to_gold/converter.py)):** Added `original_text`, `observable_label`, `observable_reason_codes`, and `diagnostic_only=True` on `CommentRecord`; added `comment_filter_policy`, `comment_filter_note`, and `filter_sensitivity` on `TrustAuditResponse`; added `min_duplicate_words=5` organic short-reaction exemption while preserving `is_seeding`/`seeding_reason` and Gold `fact_comments.parquet` compatibility.
-- **Diagnostic-only UI & filter sensitivity ([trust.py](../../../../apps/api/app/routers/trust.py), [presentation.py](../../../../apps/demo/presentation.py), [ui.py](../../../../apps/demo/ui.py)):** Defaulted Gradio audit checkbox to `value=False`, replaced bot/seeding-spam labels with observable diagnostic tags, and rendered before/after filter sensitivity shifts.
-- **Disjoint splitter, metrics, pool sampler & guidelines ([evaluation.py](../../../../packages/seeding/evaluation.py), [run_baseline_checks.py](../../../../pipelines/audit_m5_1_comments/run_baseline_checks.py), [annotation_guidelines.md](evidence/annotation_guidelines.md)):** Built `split_comments_by_video`, `compute_inter_annotator_agreement` (Cohen's kappa retaining `unknown_ambiguous`), `evaluate_comment_indicator_metrics` (per-class P/R/F1, confusion matrix, bootstrap 95% CIs, M5.1 gate enforcement), `build_annotation_pool` (capped at `<= 300`), and authored double-annotation guidelines.
+- **Observable indicator & organic-inquiry hardening ([detector.py](../../../../packages/seeding/detector.py), [multimodal.py](../../../../packages/data_contracts/multimodal.py), [converter.py](../../../../pipelines/ingest_incremental_to_gold/converter.py)):** Preserved `original_text` and 10-column Gold Parquet continuity; added `K`-review fixes for 5–8 syllable Vietnamese diner inquiries, pre-clustering contact/noise isolation, `template_phrase_match` reachability, Union-Find transitive clusters, Telegram/Facebook + repeated-character noise matching, and 19-digit ID phone-regex boundaries.
+- **Diagnostic-only UI, URL-safe parser & abstaining filter sensitivity ([trust.py](../../../../apps/api/app/routers/trust.py), [presentation.py](../../../../apps/demo/presentation.py), [ui.py](../../../../apps/demo/ui.py)):** Defaulted `hide_seeding=False`, added `parse_demo_comment_lines`, replaced legacy `@spam_bot`/`@khach_that_*` sample handles, and added `after_filter_abstained` handling when `unflagged_comment_count == 0`.
+- **Gate-reachable video-cluster evaluator & blinded pool export ([evaluation.py](../../../../packages/seeding/evaluation.py), [run_baseline_checks.py](../../../../pipelines/audit_m5_1_comments/run_baseline_checks.py), [annotation_guidelines.md](evidence/annotation_guidelines.md)):** Fixed `held_out_third` gate arithmetic (`total_annotated_pool_count >= 150`), blinded human annotation sheets while adding `reconstruct_observable_predictions` for Gold Parquet, enforced strict label validation + `support > 0` macro-recall denominators, and re-verified [m5_1_fixture_dry_run_v2_k_review.json](../../../../artifacts/benchmarks/m5_1_fixture_dry_run_v2_k_review.json) (preserving `m5_1_fixture_dry_run.json` untouched).
 
 ## Outputs
 
 | File | Purpose |
 | --- | --- |
-| [workflow.md](evidence/workflow.md) | Decisions, TDD trace, and command receipts |
-| [annotation_guidelines.md](evidence/annotation_guidelines.md) | Written `N`/`K` double-annotation rules (`150`–`300` real comments, `unknown_ambiguous` & organic-duplicate policy) |
-| [m5_1_fixture_dry_run.json](../../../../artifacts/benchmarks/m5_1_fixture_dry_run.json) | Non-real synthetic edge-fixture dry-run verifying `24 -> 0` organic-dup FP drop and `diagnostic_only_without_filtering` gate |
-| [test_m5_1_comment_indicators.py](../../../../tests/unit/test_m5_1_comment_indicators.py) | `3` TDD unit/API/UI regressions covering observable labels, organic exemption, video-disjoint splits, and diagnostic UI |
-| [m5_1-pytest.log](evidence/m5_1-pytest.log) / [red-m5_1-tests.log](evidence/red-m5_1-tests.log) | TDD RED log and final full suite (`142 passed in 21.91s`) |
-| [m5_1-mypy.log](evidence/m5_1-mypy.log) / [m5_1-mypy-win32.log](evidence/m5_1-mypy-win32.log) | Strict `mypy` across `86` source files (Linux & `--platform win32`) |
-| [m5_1-ruff.log](evidence/m5_1-ruff.log) / [m5_1-secrets.log](evidence/m5_1-secrets.log) | Scoped Ruff lint pass (`All checks passed!`) and workspace secret scan (`0` leaks) |
+| [workflow.md](evidence/workflow.md) | `N` baseline + `K` peer-review TDD trace and command receipts |
+| [khuong_baseline_peer_review.md](evidence/khuong_baseline_peer_review.md) | `K`'s adversarial audit of label leakage, organic-duplicate FPs, gate math, and filter sensitivity |
+| [annotation_guidelines.md](evidence/annotation_guidelines.md) | Written `N`/`K` double-annotation rules (within-thread scope & 5–8 syllable Vietnamese inquiry exclusion) |
+| [m5_1_fixture_dry_run_v2_k_review.json](../../../../artifacts/benchmarks/m5_1_fixture_dry_run_v2_k_review.json) / [m5_1_fixture_dry_run.json](../../../../artifacts/benchmarks/m5_1_fixture_dry_run.json) | Post-review synthetic edge-fixture dry-run (`24 -> 0` org-dup FP; `max_abs_mean_score_shift > 0`; v1 preserved) |
+| [test_m5_1_comment_indicators.py](../../../../tests/unit/test_m5_1_comment_indicators.py) | `8` TDD unit/API/UI regressions (`3` baseline + `5` `K`-review regressions) |
+| [red-k-review-fixes.log](evidence/red-k-review-fixes.log) / [green-k-review-fixes.log](evidence/green-k-review-fixes.log) | `K` peer-review TDD RED (`5 failed`) -> GREEN (`11 passed` across M5.1 + M3.1) logs |
 
 ## Verification
 
 | Check | Result | Scope / evidence |
 | --- | --- | --- |
-| `.venv/bin/python -m pipelines.audit_m5_1_comments.run_baseline_checks --mode fixture_dry_run` | PASS (`24 -> 0` org-dup FP; `recommended_mode=diagnostic_only_without_filtering`) | Non-real `12`-video/`80`-eval-row edge fixture; [m5_1_fixture_dry_run.json](../../../../artifacts/benchmarks/m5_1_fixture_dry_run.json) |
-| `.venv/bin/python -m pytest -v` | PASS (`142 passed in 21.91s`) | Full repository suite (M5.1 tests, Dual-Sink continuity, trust/demo smoke); [m5_1-pytest.log](evidence/m5_1-pytest.log) |
-| `.venv/bin/python -m ruff check packages apps pipelines scripts tests/unit/test_m5_1_comment_indicators.py` | PASS (`All checks passed!`) | Source, scripts, and M5.1 tests; [m5_1-ruff.log](evidence/m5_1-ruff.log) |
-| `.venv/bin/python -m mypy packages apps pipelines` (+ `--platform win32`) | PASS (`86 source files` each) | Strict Linux & Windows static checks; [m5_1-mypy.log](evidence/m5_1-mypy.log) |
-| `python3 scripts/check_secrets.py` | PASS (`0` leaks) | Full workspace secret hygiene; [m5_1-secrets.log](evidence/m5_1-secrets.log) |
+| `python3 -m pipelines.audit_m5_1_comments.run_baseline_checks --mode fixture_dry_run --output artifacts/benchmarks/m5_1_fixture_dry_run_v2_k_review.json` | PASS (`24 -> 0` org-dup FP; `diagnostic_only_without_filtering`) | Non-real `12`-video edge fixture; [m5_1_fixture_dry_run_v2_k_review.json](../../../../artifacts/benchmarks/m5_1_fixture_dry_run_v2_k_review.json) |
+| `python3 -m pytest tests/unit/test_m5_1_comment_indicators.py tests/unit/test_incremental_absa_seeding.py -v` | PASS (`11 passed in 9.80s`) | M5.1 regressions + M3.1 Dual-Sink continuity; [green-k-review-fixes.log](evidence/green-k-review-fixes.log) |
+| `python3 -m pytest -v` | PASS (`188 passed`) | Full workspace test suite |
+| `python3 -m mypy packages apps pipelines` (+ `--platform win32`) | PASS (`95 source files` each) | Strict Linux & Windows static checks |
+| `python3 scripts/check_secrets.py` | PASS (`0` leaks) | Full workspace secret hygiene |
 
 ## Open issues
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Real pilot comments (`150`–`300`) unavailable (`M3.3` / `M3.G` pending) | Held-out macro P/R/F1 on real TikTok comments and human Cohen's kappa cannot be measured yet; automated filtering remains disabled (`diagnostic_only_unvalidated`) | Collect real comments under `M3.3`, run `run_baseline_checks.py --mode real_pool`, and double-annotate (`N` & `K`) |
-| `K` peer review pending | Independent audit of label leakage, organic-duplicate false positives, and filter sensitivity awaits `K` | Hand off `feat/m5.1-observable-comment-indicators` for `K` review |
+| Real pilot comments (`150`–`300`) unavailable (`M3.3` / `M3.G` pending) | Held-out macro P/R/F1 on real TikTok comments and human Cohen's kappa cannot be measured yet; automated filtering remains disabled (`diagnostic_only_unvalidated`) | Collect real comments under `M3.3`, run `run_baseline_checks --mode real_pool`, and double-annotate (`N` & `K`) |
 
 ## Acceptance and handoff
 
 | Task criterion | Result | Evidence |
 | --- | --- | --- |
-| Preserve originals and reasons; observable duplicate/contact/noise labels; no bot/payment/seeding/identity assertions | Met | [detector.py](../../../../packages/seeding/detector.py), [presentation.py](../../../../apps/demo/presentation.py) |
-| Diagnostic flags without automatic filtering until `>= 150` real annotated comments pass `P >= 0.85`, `R >= 0.60` | Met | [trust.py](../../../../apps/api/app/routers/trust.py), [ui.py](../../../../apps/demo/ui.py) |
-| Video/thread-disjoint splitting, agreement, P/R/F1 + bootstrap uncertainty, written guidelines | Framework verified on fixtures; awaiting real comments | [evaluation.py](../../../../packages/seeding/evaluation.py), [annotation_guidelines.md](evidence/annotation_guidelines.md) |
-| Independently annotate `150`–`300` real pilot comments & `K` peer review | Pending (`M3.3` prerequisite) | `data/raw_incremental/` absent on disk |
+| Preserve originals and reasons; observable duplicate/contact/noise labels; no bot/payment/seeding/identity assertions | Met (`N` + `K` verified) | [detector.py](../../../../packages/seeding/detector.py), [khuong_baseline_peer_review.md](evidence/khuong_baseline_peer_review.md) |
+| Diagnostic flags without automatic filtering until `>= 150` real annotated comments pass `P >= 0.85`, `R >= 0.60` | Met (`held_out_third` gate deadlock fixed & verified) | [evaluation.py](../../../../packages/seeding/evaluation.py), [ui.py](../../../../apps/demo/ui.py) |
+| Video/thread-disjoint splitting, agreement, P/R/F1 + bootstrap uncertainty, blinded pool export, written guidelines | Met on fixtures; awaiting real comments | [evaluation.py](../../../../packages/seeding/evaluation.py), [annotation_guidelines.md](evidence/annotation_guidelines.md) |
+| Independently annotate `150`–`300` real pilot comments after `M3.3` | Pending (`M3.3` prerequisite; `K` baseline code review complete) | `data/raw_incremental/` awaits `M3.3` |
 
-Final task status: **IN_PROGRESS** (M5.1 code hardening, diagnostic-only default, filter sensitivity, disjoint evaluator, and annotation guidelines complete on `feat/m5.1-observable-comment-indicators`; real-pilot annotation and quality gate await `M3.3` / `M3.G` real comments and `K` peer review).
+Final task status: **IN_PROGRESS** (`N` implementation + `K` baseline code, leakage, organic-duplicate, and sensitivity peer review complete; awaiting `M3.3` real pilot comments for `150`–`300`-item human double-annotation prior to `M5.G`).
