@@ -3,7 +3,7 @@
 - **Date:** 2026-11-19 (Asia/Ho_Chi_Minh)
 - **Task ID:** `M3.2`
 - **Primary Owner:** Trần Đình Khương (`K`)
-- **Peer Reviewer:** Nguyễn Việt Nguyên (`N`, pending)
+- **Peer Reviewer:** Nguyễn Việt Nguyên (`N`, completed & approved `2026-11-20`)
 - **Spec:** [../superpowers/spec.md](../superpowers/spec.md)
 - **Plan:** [../superpowers/plan.md](../superpowers/plan.md)
 
@@ -32,3 +32,7 @@
 - `python3 docs/reports/milestones/M3.2/evidence/run_m3_2_fixture_verification.py` -> `EXIT=0`, `70,996` historical IDs protected, `base_snapshot_byte_identical=true`, `M3.1` round-trip `71,000` rows ([m3_2_fixture_verification_receipt.json](m3_2_fixture_verification_receipt.json))
 - `python3 -m pytest -v` -> `EXIT=0`, `177 passed in 31.53s` ([pytest-full-m3_2-linux.log](pytest-full-m3_2-linux.log))
 - `python3 scripts/check_secrets.py` -> `EXIT=0`, `PASS: Zero secret leaks detected across workspace.` ([check-secrets-m3_2.log](check-secrets-m3_2.log))
+
+## Independent Peer Review Sign-Off (`N`, `2026-11-20`)
+- Contributor `N` audited `worker.py`, `providers.py`, `crawler_service.py`, `models.py`, `__main__.py`, and `test_bounded_collector_worker.py`, and reproduced `pytest` (`12 passed in 12.62s`), `run_m3_2_fixture_verification.py` (`70,996` protected IDs, `base_snapshot_byte_identical=true`, `71,000`-row round-trip), `ruff check`, `mypy` (`7` files), and `scripts/check_secrets.py` (`0` leaks).
+- Zero blocking findings; recorded [nguyen-peer-review.md](nguyen-peer-review.md) and [nguyen_signoff_receipt.json](nguyen_signoff_receipt.json), transitioning `M3.2` to `COMPLETE`.

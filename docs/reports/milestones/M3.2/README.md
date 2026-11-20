@@ -1,15 +1,15 @@
 # M3.2 — Actual Bounded Collector Worker
 
-- Status: IN_PROGRESS (`K`'s bounded collector worker, 12-test TDD suite, fresh-context code review fix pass, and offline verification over `70,996` historical IDs + `M3.1` Gold round-trip complete; awaiting `N`'s peer review before any `M3.3` network pilot)
-- Execution date: 2026-11-19 (Asia/Ho_Chi_Minh)
+- Status: COMPLETE (`K`'s bounded collector worker, 12-test TDD suite, fresh-context code review fix pass, offline verification over `70,996` historical IDs + `M3.1` Gold round-trip, AND `N`'s independent peer review of cutoff, failure, and resume behavior complete on `2026-11-20`)
+- Execution date: 2026-11-19 to 2026-11-20 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.2`)
-- Repository version: `feat/k-m2.2-m2.3-m3.2-deliverables` (rebased onto `main` @ `f130d4b5`)
+- Repository version: `main` @ `1531174e` + `N` peer review sign-off
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
 ## Conclusion
 
-Implemented and verified the protocol-driven bounded incremental collector worker in [pipelines/crawl_incremental/](../../../../pipelines/crawl_incremental/) (`models.py`, `providers.py`, `worker.py`, `crawler_service.py`, `__main__.py`). All `12/12` dedicated worker/CLI tests, `177/177` workspace pytest tests, `7`-file `mypy` static type checks, `scripts/check_secrets.py`, and an end-to-end offline fixture probe against the real `70,996`-video `data/corpus/20261118_taxonomy_fix_v1` Gold snapshot pass with `100%` byte preservation of historical files and zero live TikTok network requests. Authored fixture runs (`source_mode="offline_fixture"`, `is_synthetic_fixture=True`) remain visibly separate from fail-closed live collection (`source_mode="live_provider"`, `is_synthetic_fixture=False`). Task status remains `IN_PROGRESS` pending reciprocal peer review by Nguyễn Việt Nguyên (`N`) prior to `M3.3`.
+Implemented and verified the protocol-driven bounded incremental collector worker in [pipelines/crawl_incremental/](../../../../pipelines/crawl_incremental/) (`models.py`, `providers.py`, `worker.py`, `crawler_service.py`, `__main__.py`). All `12/12` dedicated worker/CLI tests, `177/177` workspace pytest tests, `7`-file `mypy` static type checks, `scripts/check_secrets.py`, and an end-to-end offline fixture probe against the real `70,996`-video `data/corpus/20261118_taxonomy_fix_v1` Gold snapshot pass with `100%` byte preservation of historical files and zero live TikTok network requests. Authored fixture runs (`source_mode="offline_fixture"`, `is_synthetic_fixture=True`) remain visibly separate from fail-closed live collection (`source_mode="live_provider"`, `is_synthetic_fixture=False`). On `2026-11-20T09:03+07:00`, contributor Nguyễn Việt Nguyên (`N`) completed independent peer review of cutoff, failure/retry/redaction, and resume behavior ([nguyen-peer-review.md](evidence/nguyen-peer-review.md), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json)), reproducing all `12/12` tests, the `70,996`-ID protection probe, `ruff`, `7`-file `mypy`, and `scripts/check_secrets.py` with zero blocking findings. Task `M3.2` is now **`COMPLETE`**, unlocking bounded live pilot `M3.3`.
 
 ## Work performed
 
@@ -22,7 +22,7 @@ Implemented and verified the protocol-driven bounded incremental collector worke
 
 | File | Purpose |
 | --- | --- |
-| [workflow.md](evidence/workflow.md) | Superpowers execution ledger, rulings, code-review fix pass, and verification receipts |
+| [workflow.md](evidence/workflow.md), [nguyen-peer-review.md](evidence/nguyen-peer-review.md), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json) | Superpowers execution ledger and `N`'s peer review + `2026-11-20` sign-off receipt |
 | [run_m3_2_fixture_verification.py](evidence/run_m3_2_fixture_verification.py) | End-to-end offline fixture + resume + `70,996`-ID protection + `M3.1` Gold round-trip probe |
 | [m3_2_fixture_verification_receipt.json](evidence/m3_2_fixture_verification_receipt.json) | Machine-readable receipt proving `70,996` protected IDs, SHA256 preservation, and `71,000`-row round-trip |
 | [red-task1-bounds-cutoff.log](evidence/red-task1-bounds-cutoff.log), [green-task1-bounds-cutoff.log](evidence/green-task1-bounds-cutoff.log) | Task 1 TDD RED/GREEN logs (120d boundary, historical skip, ceilings) |
@@ -47,8 +47,7 @@ Implemented and verified the protocol-driven bounded incremental collector worke
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Independent peer review by `N` is pending | `M3.2` cannot transition to `COMPLETE` or unlock `M3.3` network pilot without `N`'s review | `N` reviews cutoff, failure, and resume behavior on `M3.2` (`TikTok_AI_Engine_Milestone.md` `M3.2`) |
-| Live TikTok host-network acquisition is intentionally not exercised in `M3.2` | Offline fixture receipts prove worker logic, not live TikTok rate-limit or `yt-dlp` extractor yield | Capped live pilot (`<= 5` creators, `<= 50` candidates, `<= 30` videos) runs only in `M3.3` after Gate `G2` (`M2.G`) and `M3.2` review |
+| Live TikTok host-network acquisition is intentionally not exercised in `M3.2` | Offline fixture receipts prove worker logic, not live TikTok rate-limit or `yt-dlp` extractor yield | Capped live pilot (`<= 5` creators, `<= 50` candidates, `<= 30` videos) runs in `M3.3` (`G2 = PASS` and `M3.2 = COMPLETE`) |
 
 ## Acceptance and handoff
 
@@ -58,6 +57,6 @@ Implemented and verified the protocol-driven bounded incremental collector worke
 | Authored fixture mode stays visibly separate (`is_synthetic_fixture=True`) & zero historical recrawl / unlimited discovery | Met | [providers.py](../../../../pipelines/crawl_incremental/providers.py), [__main__.py](../../../../pipelines/crawl_incremental/__main__.py), [m3_2_fixture_verification_receipt.json](evidence/m3_2_fixture_verification_receipt.json) |
 | `as_of` / cutoff tests enforce `120`-day window and skip every historical ID (`70,996` IDs) | Met | [test_bounded_collector_worker.py](../../../../tests/unit/test_bounded_collector_worker.py), [m3_2_fixture_verification_receipt.json](evidence/m3_2_fixture_verification_receipt.json) |
 | Manifests distinguish `requested / succeeded / failed / skipped` and record `64 kbps` `.mp3` conversion where available | Met | [models.py](../../../../pipelines/crawl_incremental/models.py), [green-final-review-fixes.log](evidence/green-final-review-fixes.log) |
-| Reciprocal peer review of cutoff, failure, and resume behavior by `N` before network pilot | Not verified (pending `N`) | Handoff ready in `pipelines/crawl_incremental/` and `docs/reports/milestones/M3.2/` |
+| Reciprocal peer review of cutoff, failure, and resume behavior by `N` before network pilot | Met (`APPROVED`, `0` blocking issues) | [nguyen-peer-review.md](evidence/nguyen-peer-review.md), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json) |
 
-Final task status: **IN_PROGRESS** (`K`'s implementation and offline verification are complete; ready for `N`'s peer review prior to `M3.3` and Gate `G3`, which remain `NOT_STARTED` / `NOT_RUN`).
+Final task status: **`COMPLETE`** (`K`'s bounded collector implementation + `N`'s independent peer review and verification complete on `main`; ready to run capped live pilot `M3.3` with `G2 = PASS`).

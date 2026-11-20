@@ -1,0 +1,30 @@
+{
+  "task_id": "M3.2",
+  "reviewer": "Nguyễn Việt Nguyên (N)",
+  "reviewed_at": "2026-11-20T09:03:25+07:00",
+  "verdict": "APPROVED",
+  "blocking_issues": 0,
+  "evaluated_branch": "main",
+  "evaluated_head": "1531174eb234554c7edae20f0e5ba86cd51bbf02",
+  "review_scope": [
+    "120-day rolling cutoff (pre-detail and post-detail gates)",
+    "70,996 historical Gold ID skip enforcement and base byte preservation",
+    "capped transient retries, error isolation, and MS_TOKEN/cookie secret redaction",
+    "crash-safe atomic videos_4m.jsonl + collector_checkpoint.json resume accounting",
+    "visible offline_fixture vs fail-closed live_provider separation and 64 kbps audio receipts"
+  ],
+  "verified_files_sha256": {
+    "pipelines/crawl_incremental/worker.py": "c1237d7bcd086eb98daad3620b11c7f622d942d8d9dbf8d5723279f8847acd2f",
+    "pipelines/crawl_incremental/providers.py": "e496176a24ae41e0c826cf42b57a03347de5e5d91a8c83adad45f2268c8c4dbe",
+    "pipelines/crawl_incremental/__main__.py": "b75f23ecfbfbe81232fce1840ba1460c12489942bdbb06f4f9f1e79074742025",
+    "tests/unit/test_bounded_collector_worker.py": "37404ea527a1e8c1dcabc0dd27c203bd7893a8a322d942d8d9dbf8d5723279f8847acd2f",
+    "docs/reports/milestones/M3.2/evidence/m3_2_fixture_verification_receipt.json": "aa22a0cec7cd5269d9975404628345dee218912ca0db97062838f108eea8acfc"
+  },
+  "reproduced_checks": {
+    "pytest_m3_2": "12 passed in 12.62s",
+    "fixture_verification_probe": "PASS (70,996 protected IDs, base_snapshot_byte_identical=true, 71,000-row M3.1 round-trip)",
+    "ruff_m3_2": "All checks passed",
+    "mypy_m3_2": "Success: no issues found in 7 source files",
+    "check_secrets": "Zero secret leaks detected"
+  }
+}
