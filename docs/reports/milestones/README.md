@@ -17,6 +17,7 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M2.G | G2 historical core gate decision (`PASS` on `main` @ `dc595f04`: `177` pytest, `95`-file `mypy`, `sdist+whl` build, real-corpus ASGI `/demo/`; confirmed by `N` & `K`) | COMPLETE | [Read results](M2.G/README.md) |
 | M3.1 | Repeated Dual-Sink ingestion repair, missing-modality schemas, interrupted recovery & `K` real-snapshot reproduction | COMPLETE | [Read results](M3.1/README.md) |
 | M3.2 | Bounded 120-day collector worker, `70,996`-ID protection, crash-safe resume, 64 kbps audio receipts, offline `M3.1` round-trip & `N` peer review | COMPLETE | [Read results](M3.2/README.md) |
+| M3.3 | Capture->CPU ASR (`<=10` vids/`20`m)->Gold->BM25->search pipeline & 50/50 inspection scaffolded (`181` tests, `100`-file mypy; live run awaiting tools/`MS_TOKEN`) | IN_PROGRESS | [Read results](M3.3/README.md) |
 | M4.2 | Observed `is_ad`/EC flags separated from promo lexicon, `PR-AUC=0.8916`, `N` `65/65` full-transcript sign-off (`K` `65`-item audit & peer review pending) | IN_PROGRESS | [Read results](M4.2/README.md) |
 | M5.1 | Observable duplicate/contact/noise indicators, organic-dup FP fix, diagnostic default, guidelines & fixture dry-run (`142` tests) | IN_PROGRESS | [Read results](M5.1/README.md) |
 | M6.1 | `v2_pilot` (`bm25-v3`) vs `tfidf_svd` & CPU `MiniLM` measured on human-verified `408/408` qrels (`N` confirmed; awaiting `K` peer review & multimodal after `M4.G`/`M5.G`) | IN_PROGRESS | [Read results](M6.1/README.md) |

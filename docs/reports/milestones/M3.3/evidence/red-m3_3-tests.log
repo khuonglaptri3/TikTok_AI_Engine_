@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/intern-nvnguyen1/Project/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 0 items / 1 error
+
+==================================== ERRORS ====================================
+___________ ERROR collecting tests/unit/test_m3_3_pilot_pipeline.py ____________
+ImportError while importing test module '/home/intern-nvnguyen1/Project/TikTok_AI_Engine_/tests/unit/test_m3_3_pilot_pipeline.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_m3_3_pilot_pipeline.py:17: in <module>
+    from pipelines.pilot_m3_3.asr import BoundedCpuAsrRunner, FasterWhisperCpuAsrEngine
+E   ModuleNotFoundError: No module named 'pipelines.pilot_m3_3'
+=========================== short test summary info ============================
+ERROR tests/unit/test_m3_3_pilot_pipeline.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+=============================== 1 error in 0.66s ===============================
