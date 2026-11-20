@@ -275,3 +275,143 @@ def test_llm_blinded_prompt_strips_flags_and_validates_draft_schema() -> None:
     assert annotated[0]["N_human_verified"] is False
     assert annotated[0]["K_human_verified"] is False
     assert annotated[0]["llm_blinded_to_platform_flag"] is True
+
+
+def test_k_review_inline_caption_hashtag_bigram_and_prompt_leakage_blocked() -> None:
+    from packages.absa.disclosure_eval import _tokenize_for_study
+    from pipelines.audit_m4_2_disclosure.llm_draft_annotate import build_blinded_disclosure_prompt
+
+    toks = _tokenize_for_study(
+        "Review lẩu ngon ưu đãi #ad #quảngcáo #sponsored #tàitrợ quán mới",
+        ["monngon", "ad", "quảngcáo", "sponsored"],
+    )
+    forbidden_fragments = {"ad", "ads", "quangcao", "quảngcáo", "qc", "sponsored", "taitro", "tàitrợ"}
+    for tok in toks:
+        parts = set(tok.removeprefix("tag_").split("_"))
+        assert parts.isdisjoint(forbidden_fragments), f"Leaked forbidden disclosure token/bigram: {tok}"
+
+    prompt = build_blinded_disclosure_prompt(
+        [
+            {
+                "item_id": "m4_2_099",
+                "food_category": "Lẩu & Nướng",
+                "has_transcript": True,
+                "caption": "Lẩu bò siêu ngon #ad #quangcao #quảngcáo #sponsored",
+                "transcript_excerpt": "Đoạn đầu giới thiệu quán",
+                "transcript_full": "Đoạn đầu giới thiệu quán. Cuối clip bấm vào giỏ hàng góc trái nha.",
+                "hashtags": ["ad", "quảngcáo", "laubo"],
+                "observed_flag_status": "observed_ad",
+            }
+        ]
+    )
+    assert "#ad" not in prompt.lower()
+    assert "quangcao" not in prompt.lower()
+    assert "quảngcáo" not in prompt.lower()
+    assert "#sponsored" not in prompt.lower()
+    assert "bấm vào giỏ hàng góc trái" in prompt
+
+    for indirect_leak in ("video_format", "has_cta", "poi_id", "poi_name", "poi_category_tiny"):
+        with pytest.raises(ValueError):
+            assert_no_feature_leakage(["caption", indirect_leak])
+
+
+def test_k_review_negation_word_boundary_and_disclosure_hashtags() -> None:
+    english_sub = analyze_disclosure_and_promo(
+        caption="Ideal spot for morning pho in Hanoi",
+        transcript="Nước dùng phở thanh ngọt tự nhiên",
+    )
+    assert english_sub.matched_indicators == []
+
+    negated = analyze_disclosure_and_promo(
+        caption="Video tự trả tiền 100%, không quảng cáo, không nhận tài trợ, không booking nha",
+        transcript="Quán này trên mạng quảng cáo lố quá chứ ăn bình thường",
+    )
+    assert negated.matched_indicators == []
+    assert negated.lexical_promo_score == 0.0
+
+    tag_disclosed = analyze_disclosure_and_promo(
+        caption="Mời mọi người ăn bánh",
+        transcript="Bánh mềm thơm",
+        hashtags=["ad", "quảngcáo", "sponsored"],
+    )
+    assert "explicit_text_disclosure" in tag_disclosed.matched_categories
+
+
+def test_k_review_author_cluster_bootstrap_and_hashseed_determinism() -> None:
+    import numpy as np
+    from packages.absa.disclosure_eval import _bootstrap_metric_ci, _fit_tfidf_logreg
+
+    # 4 authors x 50 identical predictions = 200 rows; author-cluster CI must be much wider than row i.i.d.
+    y_true = np.array([1] * 50 + [1] * 50 + [0] * 50 + [0] * 50, dtype=np.float64)
+    y_prob = np.array([0.9] * 50 + [0.2] * 50 + [0.8] * 50 + [0.1] * 50, dtype=np.float64)
+    authors = np.array(["a1"] * 50 + ["a2"] * 50 + ["a3"] * 50 + ["a4"] * 50)
+
+    ci_row = _bootstrap_metric_ci(y_true, y_prob, n_boot=300, seed=42)
+    ci_cluster = _bootstrap_metric_ci(y_true, y_prob, groups=authors, n_boot=300, seed=42)
+    row_width = ci_row["brier_score"]["ci95_high"] - ci_row["brier_score"]["ci95_low"]
+    cluster_width = ci_cluster["brier_score"]["ci95_high"] - ci_cluster["brier_score"]["ci95_low"]
+    assert cluster_width > row_width * 2.0
+
+    # Tied DF tokens under max_features cap must select identical features regardless of input order
+    toks_a = [[f"tok_{k}" for k in range(10)], [f"tok_{k}" for k in range(10)], ["other_a"], ["other_b"]]
+    toks_b = [[f"tok_{k}" for k in reversed(range(10))], [f"tok_{k}" for k in reversed(range(10))], ["other_a"], ["other_b"]]
+    y_tr = np.array([1.0, 0.0, 1.0, 0.0])
+    _, feats_a, _ = _fit_tfidf_logreg(toks_a, [["tok_1"]], ["c1"] * 4, ["c1"], y_tr, min_df=2, max_features=4)
+    _, feats_b, _ = _fit_tfidf_logreg(toks_b, [["tok_1"]], ["c1"] * 4, ["c1"], y_tr, min_df=2, max_features=4)
+    assert feats_a == feats_b
+
+
+def test_k_review_full_transcript_workbook_and_trust_api_hashtags_flags() -> None:
+    from pipelines.audit_m4_2_disclosure.run_study import sample_historical_review_100
+
+    long_prefix = "Hôm nay mình ăn thử khô mực Nha Trang ngon dai ngọt tự nhiên. " * 15
+    closing_cta = "Cuối video cả nhà bấm vào giỏ hàng góc trái mua ngay giúp mình nha."
+    rows = [
+        {
+            "video_id": f"vid_{i:04d}",
+            "author_handle": f"author_{i % 8}",
+            "is_ad": (i % 4) in (0, 2),
+            "is_ec_video": (i % 4) in (1, 2),
+            "has_transcript": True,
+            "caption": f"Review món số {i}",
+            "transcript": long_prefix + closing_cta,
+            "hashtags": ["ancungtiktok"],
+            "food_category": "Ăn vặt & Đường phố",
+        }
+        for i in range(120)
+    ]
+    sampled = sample_historical_review_100(pd.DataFrame(rows), seed=42)
+    assert len(sampled[0]["transcript_excerpt"]) == 600
+    assert closing_cta not in sampled[0]["transcript_excerpt"]
+    assert closing_cta in sampled[0]["transcript_full"]
+
+    app = create_app(
+        settings=AppSettings.from_env().model_copy(update={"gemini_api_key": ""}),
+        mount_demo=False,
+    )
+
+    async def _call() -> dict[str, object]:
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+        ) as client:
+            r = await client.post(
+                "/api/v1/trust/audit-video",
+                json={
+                    "video_id": "v_tag_flag",
+                    "caption": "Bánh ngọt mới ra mắt",
+                    "transcript": "Ăn thơm béo",
+                    "hashtags": ["quangcao"],
+                    "is_ad": True,
+                    "is_ec_video": True,
+                    "comments": [],
+                },
+            )
+            assert r.status_code == 200
+            return dict(r.json())
+
+    res = asyncio.run(_call())
+    comp = res["comparison"]
+    assert isinstance(comp, dict)
+    assert comp["disclosure_flag_status"] == "observed_ad_and_ecommerce"
+    assert any("explicit_text_disclosure" in s for s in comp["promotional_language_indicators"])
+

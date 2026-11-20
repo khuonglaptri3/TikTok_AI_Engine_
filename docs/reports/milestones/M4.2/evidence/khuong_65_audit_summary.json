@@ -1,0 +1,231 @@
+{
+  "auditor": "K",
+  "k_verified_count": 65,
+  "n_verified_count": 0,
+  "k_items_with_post_600_transcript": 32,
+  "k_label_counts": {
+    "brand_or_venue_focus_no_cta": 18,
+    "explicit_promo_cta": 17,
+    "organic_or_general_review": 17,
+    "unclear_or_noisy_text": 13
+  },
+  "k_by_observed_flag_stratum": {
+    "observed_ad": {
+      "brand_or_venue_focus_no_cta": 8,
+      "explicit_promo_cta": 4,
+      "organic_or_general_review": 3,
+      "unclear_or_noisy_text": 2
+    },
+    "observed_ad_and_ecommerce": {
+      "brand_or_venue_focus_no_cta": 4,
+      "explicit_promo_cta": 5,
+      "organic_or_general_review": 1,
+      "unclear_or_noisy_text": 1
+    },
+    "observed_ecommerce": {
+      "brand_or_venue_focus_no_cta": 4,
+      "explicit_promo_cta": 6,
+      "organic_or_general_review": 3,
+      "unclear_or_noisy_text": 3
+    },
+    "unlabeled_unknown": {
+      "brand_or_venue_focus_no_cta": 2,
+      "explicit_promo_cta": 2,
+      "organic_or_general_review": 10,
+      "unclear_or_noisy_text": 7
+    }
+  },
+  "k_vs_llm_draft_agreement_65": 0.6769,
+  "k_vs_llm_disagreement_count": 21,
+  "k_vs_llm_disagreements": [
+    {
+      "item_id": "m4_2_006",
+      "video_id": "7451205108349635847",
+      "full_transcript_len": 605,
+      "truncated_at_600": true,
+      "K_label": "organic_or_general_review",
+      "llm_draft_label": "brand_or_venue_focus_no_cta",
+      "K_note": "Instant-noodle and generic Russian-style beef tendon sausage mukbang with no brand name, venue, or shop CTA."
+    },
+    {
+      "item_id": "m4_2_010",
+      "video_id": "7453691168967183624",
+      "full_transcript_len": 3155,
+      "truncated_at_600": true,
+      "K_label": "explicit_promo_cta",
+      "llm_draft_label": "brand_or_venue_focus_no_cta",
+      "K_note": "Full 3,155-char live-style pitch combining restaurant delivery (71 Tân Triều, 140k/dish), out-of-domain 140k puffer jacket TikTok Shop CTA ('ấn vào giỏ hàng', 'free ship'), and paid cooking lessons."
+    },
+    {
+      "item_id": "m4_2_013",
+      "video_id": "7375018693614521601",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "unclear_or_noisy_text",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "Missing transcript and 6-word caption ('Lòng Hoa Bằng ngày mát dời') provide insufficient text to verify specific venue branding or promotional cues."
+    },
+    {
+      "item_id": "m4_2_014",
+      "video_id": "7444039157300661511",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "explicit_promo_cta",
+      "llm_draft_label": "brand_or_venue_focus_no_cta",
+      "K_note": "Caption-only TikTok Shop cart reference ('Một giỏ hàng toàn là ớt') paired with #tuongotchinsu brand tag."
+    },
+    {
+      "item_id": "m4_2_015",
+      "video_id": "7363152638331931912",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "brand_or_venue_focus_no_cta",
+      "llm_draft_label": "explicit_promo_cta",
+      "K_note": "Out-of-domain non-F&B neck massager endorsement (#maymassage #bomidivietnam) in creator feed; caption-only brand recommendation without explicit cart/discount CTA."
+    },
+    {
+      "item_id": "m4_2_016",
+      "video_id": "7382437681596239122",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "brand_or_venue_focus_no_cta",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "Caption-only Hanoi vegetarian venue mention (#vegito) with missing transcript and no discount or booking CTA."
+    },
+    {
+      "item_id": "m4_2_020",
+      "video_id": "7433270260972670215",
+      "full_transcript_len": 2842,
+      "truncated_at_600": true,
+      "K_label": "explicit_promo_cta",
+      "llm_draft_label": "brand_or_venue_focus_no_cta",
+      "K_note": "Full 2,842-char transcript (beyond 600-char excerpt) reveals explicit bundle gift ('Mua hai hũ... tặng thêm một chai muối chanh') and TikTok Shop cart CTA ('bấm vào giỏ hàng bên dưới') for #79food dried squid."
+    },
+    {
+      "item_id": "m4_2_021",
+      "video_id": "7320459678461316360",
+      "full_transcript_len": 525,
+      "truncated_at_600": false,
+      "K_label": "unclear_or_noisy_text",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "ASR captured 100% background pop-song lyrics ('Baby chill out...') while caption gives only generic street-BBQ mood without venue name."
+    },
+    {
+      "item_id": "m4_2_022",
+      "video_id": "7338417769177697537",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "organic_or_general_review",
+      "llm_draft_label": "explicit_promo_cta",
+      "K_note": "Caption-only cheap street-food observation ('5ka/ gói xôi đầy ụ ở giữa lòng Phố Cổ', #vtmgr) with no named shop, address, or commercial CTA."
+    },
+    {
+      "item_id": "m4_2_026",
+      "video_id": "7458653379338718472",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "brand_or_venue_focus_no_cta",
+      "llm_draft_label": "explicit_promo_cta",
+      "K_note": "Caption-only recommendation to buy Thai hotpot broth from named restaurant Khrua Baan Thai for Tết, without price/voucher/cart CTA."
+    },
+    {
+      "item_id": "m4_2_027",
+      "video_id": "7356583727629192465",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "unclear_or_noisy_text",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "Missing transcript with 3-word reply caption ('Chải nước mínnn') and #vulaci hashtag; too sparse to classify wording."
+    },
+    {
+      "item_id": "m4_2_030",
+      "video_id": "7321301826706377992",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "unclear_or_noisy_text",
+      "llm_draft_label": "brand_or_venue_focus_no_cta",
+      "K_note": "Missing transcript with 6-word clickbait question ('Nem Tôm làm bằng bìa cát tông?!'); insufficient text to determine brand or review stance."
+    },
+    {
+      "item_id": "m4_2_072",
+      "video_id": "7366249017841437960",
+      "full_transcript_len": 1555,
+      "truncated_at_600": true,
+      "K_label": "brand_or_venue_focus_no_cta",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "Mid-recipe native product placement pitching 'bánh tráng sốt bò nhà Beo' (#banhnhapeo, 'bestseller của shop', 'mới mua một combo') inside an Ô Thum grilled-chicken cooking video, without explicit cart link."
+    },
+    {
+      "item_id": "m4_2_076",
+      "video_id": "7454128748753915144",
+      "full_transcript_len": 1984,
+      "truncated_at_600": true,
+      "K_label": "brand_or_venue_focus_no_cta",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "Full 1,984-char transcript starts as flan-jelly cooking then pivots after char 650 into a branded FMCG kitchen-cleaner pitch for Sunlight Powerfoam (#SunlightLaubep #5giaySachDauMo)."
+    },
+    {
+      "item_id": "m4_2_079",
+      "video_id": "7401826048595299602",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "unclear_or_noisy_text",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "Missing transcript and incomplete teaser caption ('Mình thèm ăn nướng, nó thèm sashimi thì…'); POI is AEON Long Biên but text lacks identifiable venue or wording stance."
+    },
+    {
+      "item_id": "m4_2_082",
+      "video_id": "7436238219647274248",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "organic_or_general_review",
+      "llm_draft_label": "brand_or_venue_focus_no_cta",
+      "K_note": "Caption-only generic budget student-rice review hook with missing transcript and no named venue or CTA."
+    },
+    {
+      "item_id": "m4_2_084",
+      "video_id": "7309757746038017287",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "unclear_or_noisy_text",
+      "llm_draft_label": "brand_or_venue_focus_no_cta",
+      "K_note": "Missing transcript with cryptic 4-word caption ('Lại tới nữa rồi 🤣 #emartphanhuyich')."
+    },
+    {
+      "item_id": "m4_2_085",
+      "video_id": "7480865836769496328",
+      "full_transcript_len": 182,
+      "truncated_at_600": false,
+      "K_label": "unclear_or_noisy_text",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "ASR transcribed romantic background song lyrics ('Dành hết nữa của đời...') while caption provides an organic home-cooking grilled-oyster dipping-sauce recipe."
+    },
+    {
+      "item_id": "m4_2_091",
+      "video_id": "7370195217456041232",
+      "full_transcript_len": 0,
+      "truncated_at_600": false,
+      "K_label": "unclear_or_noisy_text",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "Missing transcript and 5-word generic caption ('Phần 13 | Dẻo dẻo thơm thơm') without identifiable dish or brand."
+    },
+    {
+      "item_id": "m4_2_095",
+      "video_id": "7321289469674425602",
+      "full_transcript_len": 2813,
+      "truncated_at_600": true,
+      "K_label": "brand_or_venue_focus_no_cta",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "Full 2,813-char transcript starts with baguette recipe then devotes >2,000 chars after char 850 to pitching #kochivietnam tabletop dishwasher (>5M VND) without explicit cart link."
+    },
+    {
+      "item_id": "m4_2_097",
+      "video_id": "7425598926637534484",
+      "full_transcript_len": 1490,
+      "truncated_at_600": true,
+      "K_label": "explicit_promo_cta",
+      "llm_draft_label": "organic_or_general_review",
+      "K_note": "Full 1,490-char mukbang of #kashay caramel bread crumbs and coffee cookies ending at char ~1,350 with explicit cart CTA ('Mua thì mình để ở góc trái màn hình ấy')."
+    }
+  ]
+}

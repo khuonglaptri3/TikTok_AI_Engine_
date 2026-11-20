@@ -23,6 +23,7 @@ async def audit_video_trust(payload: TrustAuditRequest) -> TrustAuditResponse:
             comments=cleansed,
             is_ad=payload.is_ad,
             is_ec_video=payload.is_ec_video,
+            hashtags=payload.hashtags,
         )
         sensitivity = compute_comment_filter_sensitivity(
             caption=payload.caption,

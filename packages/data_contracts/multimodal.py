@@ -193,6 +193,7 @@ class TrustAuditRequest(BaseModel):
     video_id: str = "live_audit"
     caption: str = ""
     transcript: str = Field(min_length=5, max_length=10000)
+    hashtags: list[str] = Field(default_factory=list)
     is_ad: bool = False
     is_ec_video: bool = False
     comments: list[RawCommentInput] = Field(default_factory=list)
