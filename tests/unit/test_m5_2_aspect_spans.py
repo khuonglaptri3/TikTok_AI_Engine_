@@ -27,10 +27,12 @@ from packages.data_contracts.multimodal import (
     AspectSpanEvidence,
     CommentRecord,
     ObservedAspectPolarity,
+    RawCommentInput,
     RawWhisperSegment,
     TextUnitSourceKind,
     TrustAuditRequest,
 )
+from packages.seeding import detect_seeding_comments
 
 
 def test_m5_2_contract_span_and_summary_invariants() -> None:
@@ -520,4 +522,216 @@ def test_m5_2_litotes_bare_factual_abstention_branches_and_reexports() -> None:
     # Transcript fallback used when utterances is None
     assert any(s.unit_id == "v3_caption" for s in comp.source_spans)
     assert any(s.unit_id == "v3_transcript" for s in comp.source_spans)
+
+
+def test_m5_2_task2_review_regressions() -> None:
+    # Critical 1: Leading-whitespace NFD RawCommentInput through detect_seeding_comments -> analyze_koc_vs_viewer_absa
+    raw_input = RawCommentInput(
+        comment_id="c_ws_nfd",
+        author_handle="diner_ws",
+        text=unicodedata.normalize(
+            "NFD",
+            "   \t Nước dùng đậm đà nhưng phục vụ quá chậm!  ",
+        ),
+    )
+    seeded_records = detect_seeding_comments("v_ws", [raw_input])
+    assert len(seeded_records) == 1
+    assert seeded_records[0].text != seeded_records[0].original_text  # stripped vs raw preserved
+    comp_ws = analyze_koc_vs_viewer_absa(
+        video_id="v_ws",
+        caption="",
+        transcript="Nước dùng thơm ngon",
+        comments=seeded_records,
+    )
+    ws_spans = [sp for sp in comp_ws.source_spans if sp.unit_id == "c_ws_nfd"]
+    assert {sp.aspect for sp in ws_spans} == {"taste", "service"}
+    nfc_raw = unicodedata.normalize("NFC", raw_input.text)
+    for sp in ws_spans:
+        assert sp.start_char >= 5
+        assert nfc_raw[sp.start_char : sp.end_char] == sp.span_text
+
+    # Important 1: Preposition "với" & leading evaluative aspect-free chunks preserved
+    s_voi_neg = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_voi_1",
+            source_kind="viewer_comment",
+            text="Thất vọng với thái độ nhân viên",
+        )
+    )
+    assert len(s_voi_neg) == 1
+    assert s_voi_neg[0].aspect == "service"
+    assert s_voi_neg[0].polarity_label == "negative"
+    assert s_voi_neg[0].polarity_score < 0.0
+
+    s_voi_pos = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_voi_2",
+            source_kind="viewer_comment",
+            text="Xứng đáng với giá tiền",
+        )
+    )
+    assert len(s_voi_pos) == 1
+    assert s_voi_pos[0].aspect == "price"
+    assert s_voi_pos[0].polarity_label == "positive"
+    assert s_voi_pos[0].polarity_score > 0.0
+
+    s_voi_space = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_voi_3",
+            source_kind="viewer_comment",
+            text="Rất ưng với không gian quán",
+        )
+    )
+    assert len(s_voi_space) == 1
+    assert s_voi_space[0].aspect == "hygiene"
+    assert s_voi_space[0].polarity_label == "positive"
+
+    s_so_voi = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_voi_4",
+            source_kind="viewer_comment",
+            text="Khẩu phần quá ít so với mức giá 80k",
+        )
+    )
+    assert len(s_so_voi) == 1
+    assert s_so_voi[0].aspect == "price"
+    assert s_so_voi[0].polarity_label == "negative"
+
+    s_lead_eval = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_lead_1",
+            source_kind="viewer_comment",
+            text="Rất tệ, bàn ghế dơ",
+        )
+    )
+    assert len(s_lead_eval) == 1
+    assert s_lead_eval[0].aspect == "hygiene"
+    assert s_lead_eval[0].polarity_label == "negative"
+    assert s_lead_eval[0].start_char == 0
+    assert s_lead_eval[0].span_text == "Rất tệ, bàn ghế dơ"
+
+    s_lead_only_eval = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_lead_2",
+            source_kind="viewer_comment",
+            text="Rất thất vọng, nhân viên phục vụ kiểu gì vậy",
+        )
+    )
+    assert len(s_lead_only_eval) == 1
+    assert s_lead_only_eval[0].aspect == "service"
+    assert s_lead_only_eval[0].polarity_label == "negative"
+
+    # Important 2: Bare "\s+mà" restricted out of unconditional contrastive splits
+    s_sao_ma = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_ma_1",
+            source_kind="viewer_comment",
+            text="Phục vụ sao mà chậm thế!",
+        )
+    )
+    assert len(s_sao_ma) == 1
+    assert s_sao_ma[0].aspect == "service"
+    assert s_sao_ma[0].polarity_label == "negative"
+
+    s_gia_ma_dat = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_ma_2",
+            source_kind="viewer_comment",
+            text="Giá tiền sao mà đắt quá",
+        )
+    )
+    assert len(s_gia_ma_dat) == 1
+    assert s_gia_ma_dat[0].aspect == "price"
+    assert s_gia_ma_dat[0].polarity_label == "negative"
+
+    s_lau_ma = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_ma_3",
+            source_kind="viewer_comment",
+            text="Bàn ghế lau rồi mà không sạch",
+        )
+    )
+    assert len(s_lau_ma) == 1
+    assert s_lau_ma[0].aspect == "hygiene"
+    assert s_lau_ma[0].polarity_label == "negative"
+
+    # Contrastive "nhưng mà", ", mà", and distinct-aspect "\s+mà\s+" still split properly
+    s_comma_ma = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_ma_4",
+            source_kind="viewer_comment",
+            text="Nước dùng đậm đà, mà giá hơi đắt",
+        )
+    )
+    assert {(sp.aspect, sp.polarity_label) for sp in s_comma_ma} == {
+        ("taste", "positive"),
+        ("price", "negative"),
+    }
+
+    s_coord_ma = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_ma_5",
+            source_kind="viewer_comment",
+            text="Nước dùng ngon mà phục vụ chậm",
+        )
+    )
+    assert {(sp.aspect, sp.polarity_label) for sp in s_coord_ma} == {
+        ("taste", "positive"),
+        ("service", "negative"),
+    }
+
+    # Important 3: Vietnamese F&B false-positive compounds ("lâu đời", "ăn sạch", "giá đỗ"/"giá mà") & negated neutrals
+    for non_aspect_text in (
+        "Quán phở lâu đời ở Quận 3",
+        "Quán bán lâu năm",
+        "Lâu lắm rồi mới ăn lại",
+        "Ăn sạch cả tô luôn, húp sạch tới giọt cuối",
+        "Quán đông khách bán sạch và hết sạch từ sớm",
+        "Giá như quán mở gần nhà, giá mà biết sớm hơn",
+        "Cho thêm dĩa giá trụng, giá đỗ và rau giá sống nhé",
+    ):
+        assert (
+            extract_unit_aspect_spans(
+                TextUnitInput(unit_id="c_fp", source_kind="viewer_comment", text=non_aspect_text)
+            )
+            == []
+        ), f"Expected 0 spans for {non_aspect_text!r}"
+
+    s_lau_doi_pos = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_lau_pos",
+            source_kind="viewer_comment",
+            text="Nước dùng quán lâu đời ngon",
+        )
+    )
+    assert len(s_lau_doi_pos) == 1
+    assert s_lau_doi_pos[0].aspect == "taste"
+    assert s_lau_doi_pos[0].polarity_label == "positive"
+    assert s_lau_doi_pos[0].polarity_score == 1.0
+
+    s_ban_sach_neg = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_sach_mask",
+            source_kind="viewer_comment",
+            text="Bàn ghế hơi bẩn, quán bán sạch từ tối",
+        )
+    )
+    assert len(s_ban_sach_neg) == 1
+    assert s_ban_sach_neg[0].aspect == "hygiene"
+    assert s_ban_sach_neg[0].polarity_label == "negative"
+
+    for neg_neutral_text, expected_aspect in (
+        ("Thái độ nhân viên không chấp nhận được", "service"),
+        ("Phục vụ không ổn", "service"),
+        ("Phục vụ chưa ổn", "service"),
+        ("Giá tiền thế này không ổn áp", "price"),
+    ):
+        spans_nn = extract_unit_aspect_spans(
+            TextUnitInput(unit_id="c_nn", source_kind="viewer_comment", text=neg_neutral_text)
+        )
+        assert len(spans_nn) == 1, f"Expected 1 span for {neg_neutral_text!r}"
+        assert spans_nn[0].aspect == expected_aspect
+        assert spans_nn[0].polarity_label == "negative"
+        assert spans_nn[0].polarity_score < 0.0
+
 

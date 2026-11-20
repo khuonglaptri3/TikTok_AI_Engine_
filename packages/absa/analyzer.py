@@ -323,15 +323,17 @@ def analyze_koc_vs_viewer_absa(
         polarity_tau=polarity_tau,
     )
 
-    viewer_units = [
-        TextUnitInput(
-            unit_id=c.comment_id,
-            source_kind="viewer_comment",
-            text=c.text,
-        )
-        for c in clean_comments
-        if c.text.strip()
-    ]
+    viewer_units: list[TextUnitInput] = []
+    for c in clean_comments:
+        raw_text = c.original_text if c.original_text.strip() else c.text
+        if raw_text.strip():
+            viewer_units.append(
+                TextUnitInput(
+                    unit_id=c.comment_id,
+                    source_kind="viewer_comment",
+                    text=raw_text,
+                )
+            )
     viewer_aspect_summaries, viewer_spans, span_viewer_pains = summarize_units_aspects(
         viewer_units,
         min_support_units=min_viewer_comments,

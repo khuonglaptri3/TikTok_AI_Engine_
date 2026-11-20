@@ -56,14 +56,14 @@ def _compile_word_phrases(phrases: tuple[str, ...]) -> str:
 _SENTENCE_DELIMITER_RE = re.compile(r"[.!?…\n;]+")
 
 _CONTRASTIVE_DELIMITER_RE = re.compile(
-    r"(?:,\s*|\s+)(?:"
+    r"(?:(?:,\s*|\s+)(?:"
     r"nhưng\s+mà|nhưng|tuy\s+nhiên|bù\s+lại|ngược\s+lại|"
     r"chỉ\s+có\s+điều|điểm\s+trừ\s+là|điểm\s+cộng\s+là|"
-    r"mặt\s+khác|còn\s+về|chứ\s+còn|mà"
-    r")(?!\w)"
+    r"mặt\s+khác|còn\s+về|chứ\s+còn"
+    r")|,\s*mà)(?!\w)"
 )
 
-_COORD_DELIMITER_RE = re.compile(r",\s*|\s+(?:và|còn|với)\s+")
+_COORD_DELIMITER_RE = re.compile(r",\s*|\s+(?:và|còn|mà)\s+")
 
 _PRE_MODIFIER_TAIL_RE = re.compile(
     r"(?:(?:cũng|lại|vẫn|hơi\s+bị)\s+)?"
@@ -252,6 +252,18 @@ _SERVICE_PHRASES: tuple[str, ...] = (
     "quá chậm",
     "hơi chậm",
     "chậm",
+    "chờ hơi lâu",
+    "đợi hơi lâu",
+    "chờ quá lâu",
+    "đợi quá lâu",
+    "chờ khá lâu",
+    "đợi khá lâu",
+    "lên món lâu",
+    "ra món lâu",
+    "gọi món lâu",
+    "phục vụ lâu",
+    "chờ món",
+    "đợi món",
     "chờ lâu",
     "đợi lâu",
     "phải chờ",
@@ -278,6 +290,24 @@ _IGNORED_ASPECT_COMPOUNDS: tuple[str, ...] = (
     "tất cả",
     "ăn lâu",
     "ngồi lâu",
+    "lâu đời",
+    "lâu năm",
+    "lâu rồi",
+    "lâu lắm",
+    "lâu nay",
+    "lâu lâu",
+    "bao lâu",
+    "ăn sạch",
+    "húp sạch",
+    "uống sạch",
+    "hết sạch",
+    "bán sạch",
+    "giá như",
+    "giá mà",
+    "giá đỗ",
+    "rau giá",
+    "giá sống",
+    "giá trụng",
 )
 
 _IGNORED_ASPECT_COMPOUNDS_RE = re.compile(
@@ -301,12 +331,7 @@ _ASPECT_PATTERNS: dict[AspectName, re.Pattern[str]] = {
         + r")(?!\w)"
     ),
     "hygiene": re.compile(r"(?<!\w)(?:" + _compile_word_phrases(_HYGIENE_PHRASES) + r")(?!\w)"),
-    "service": re.compile(
-        r"(?<!\w)(?:"
-        + _compile_word_phrases(_SERVICE_PHRASES)
-        + r"|lâu"
-        + r")(?!\w)"
-    ),
+    "service": re.compile(r"(?<!\w)(?:" + _compile_word_phrases(_SERVICE_PHRASES) + r")(?!\w)"),
 }
 
 _POS_PHRASES: tuple[str, ...] = (
@@ -521,10 +546,40 @@ _DISH_DRY_COMPOUNDS: tuple[str, ...] = (
     "khô heo",
 )
 
+_POLARITY_MASK_COMPOUNDS: tuple[str, ...] = (
+    "ăn lâu",
+    "ngồi lâu",
+    "lâu đời",
+    "lâu năm",
+    "lâu rồi",
+    "lâu lắm",
+    "lâu nay",
+    "lâu lâu",
+    "bao lâu",
+    "ăn sạch",
+    "húp sạch",
+    "uống sạch",
+    "hết sạch",
+    "bán sạch",
+)
+
+_NEGATED_NEUTRAL_TARGETS: tuple[str, ...] = (
+    "thể chấp nhận được",
+    "thể chấp nhận",
+    "chấp nhận được",
+    "chấp nhận",
+    "ổn áp",
+    "ổn",
+)
+
 _POS_ALT = _compile_word_phrases(_POS_PHRASES)
 _NEG_ALT = _compile_word_phrases(_NEG_PHRASES) + r"|khô"
 _NEUTRAL_ALT = _compile_word_phrases(_NEUTRAL_PHRASES + _DISH_DRY_COMPOUNDS)
 _LITOTES_ALT = _compile_word_phrases(_LITOTES_NEG_TARGETS)
+_POLARITY_MASK_ALT = _compile_word_phrases(_POLARITY_MASK_COMPOUNDS)
+_NEGATED_NEUTRAL_ALT = _compile_word_phrases(_NEGATED_NEUTRAL_TARGETS)
+
+_POLARITY_MASK_RE = re.compile(r"(?<!\w)(?:" + _POLARITY_MASK_ALT + r")(?!\w)")
 
 _LITOTES_RE = re.compile(
     r"(?<!\w)(?:không|chẳng|chả|chưa)\s+(?:quá\s+|hề\s+|bị\s+|đến\s+nỗi\s+)?(?:"
@@ -536,6 +591,13 @@ _NEGATED_POS_RE = re.compile(
     r"(?<!\w)(?:không|chẳng|chả|chưa|kém|thiếu)"
     r"(?:\s+(?:được|hề|có|mấy|quá|rất|thấy))?\s+(?:"
     + _POS_ALT
+    + r")(?!\w)"
+)
+
+_NEGATED_NEUTRAL_RE = re.compile(
+    r"(?<!\w)(?:không|chẳng|chả|chưa|khó)"
+    r"(?:\s+(?:thể|hề|được|mấy|thấy|có))?\s+(?:"
+    + _NEGATED_NEUTRAL_ALT
     + r")(?!\w)"
 )
 
@@ -557,9 +619,11 @@ def _split_by_regex(text: str, start: int, end: int, pattern: re.Pattern[str]) -
 
 
 def _detect_aspects_in_range(lower_text: str, start: int, end: int) -> list[tuple[int, int, AspectName]]:
+    scan_start = max(0, start - 24)
+    scan_end = min(len(lower_text), end + 24)
     ignored = [
         (m.start(), m.end())
-        for m in _IGNORED_ASPECT_COMPOUNDS_RE.finditer(lower_text, start, end)
+        for m in _IGNORED_ASPECT_COMPOUNDS_RE.finditer(lower_text, scan_start, scan_end)
     ]
     hits: list[tuple[int, int, AspectName]] = []
     for aspect in ASPECT_NAMES:
@@ -617,8 +681,14 @@ def _subsplit_coordinated_clause(
             else:
                 merged[-1] = (prev_s, e, prev_aspects | aspects)
         elif not prev_aspects and aspects:
-            # Drop leading aspect-free filler chunk (e.g., "Hôm qua ghé quán, ") when followed by an aspect chunk
-            merged[-1] = (s, e, set(aspects))
+            prev_score, _ = _score_local_polarity(
+                lower_text[prev_s:prev_e], polarity_tau=polarity_tau
+            )
+            if prev_score != 0.0:
+                merged[-1] = (prev_s, e, set(aspects))
+            else:
+                # Drop leading aspect-free filler chunk (e.g., "Hôm qua ghé quán, ") when followed by an aspect chunk
+                merged[-1] = (s, e, set(aspects))
         else:
             # Keep trailing predicate/modifier chunk attached to preceding aspect chunk
             merged[-1] = (prev_s, e, prev_aspects | aspects)
@@ -675,6 +745,11 @@ def _score_local_polarity(
     pos = 0.0
     neg = 0.0
 
+    # 0. Non-sentiment idioms/temporal compounds ("lâu đời", "ăn sạch", "bán sạch") -> mask 0.0
+    for m in _POLARITY_MASK_RE.finditer(lower_slice):
+        if not _overlaps_any(m.start(), m.end(), occupied):
+            occupied.append((m.start(), m.end()))
+
     # 1. Softened litotes ("không quá đắt", "không tệ") -> neutral 0.0
     for m in _LITOTES_RE.finditer(lower_slice):
         if not _overlaps_any(m.start(), m.end(), occupied):
@@ -686,18 +761,24 @@ def _score_local_polarity(
             occupied.append((m.start(), m.end()))
             neg += 1.0
 
-    # 3. Explicit neutral phrases ("bình thường", "tạm ổn", "ổn áp", "vừa phải", "tầm trung") -> neutral 0.0
+    # 3. Negated neutral/acceptability phrases ("không chấp nhận được", "không ổn", "chưa ổn") -> negative
+    for m in _NEGATED_NEUTRAL_RE.finditer(lower_slice):
+        if not _overlaps_any(m.start(), m.end(), occupied):
+            occupied.append((m.start(), m.end()))
+            neg += 1.0
+
+    # 4. Explicit neutral phrases ("bình thường", "tạm ổn", "ổn áp", "vừa phải", "tầm trung") -> neutral 0.0
     for m in _NEUTRAL_RE.finditer(lower_slice):
         if not _overlaps_any(m.start(), m.end(), occupied):
             occupied.append((m.start(), m.end()))
 
-    # 4. Remaining unnegated positive phrases
+    # 5. Remaining unnegated positive phrases
     for m in _POS_RE.finditer(lower_slice):
         if not _overlaps_any(m.start(), m.end(), occupied):
             occupied.append((m.start(), m.end()))
             pos += 1.0
 
-    # 5. Remaining unnegated negative phrases
+    # 6. Remaining unnegated negative phrases
     for m in _NEG_RE.finditer(lower_slice):
         if not _overlaps_any(m.start(), m.end(), occupied):
             occupied.append((m.start(), m.end()))
