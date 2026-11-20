@@ -4,10 +4,17 @@ import re
 import unicodedata
 
 from packages.absa.disclosure import analyze_disclosure_and_promo
+from packages.absa.spans import TextUnitInput, summarize_units_aspects
 from packages.data_contracts.multimodal import (
+    ASPECT_NAMES,
+    DEFAULT_DISCREPANCY_INTERPRETATION_NOTE,
     AbsaComparisonRecord,
+    AspectComparisonStatus,
+    AspectDiscrepancyDetail,
+    AspectName,
     AspectSentimentScores,
     CommentRecord,
+    RawWhisperSegment,
 )
 
 SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?…])\s+|\n+|[,;]\s+(?:nhưng|mà|tuy nhiên)\s+")
@@ -225,7 +232,13 @@ def analyze_koc_vs_viewer_absa(
     is_ad: bool = False,
     is_ec_video: bool = False,
     hashtags: list[str] | tuple[str, ...] | None = None,
+    utterances: list[RawWhisperSegment] | None = None,
+    min_viewer_comments: int = 3,
+    polarity_tau: float = 0.15,
 ) -> AbsaComparisonRecord:
+    if min_viewer_comments < 1:
+        raise ValueError("min_viewer_comments must be >= 1")
+
     koc_scores, _ = score_text_aspects([f"{caption}. {transcript}"])
     clean_comments = [c for c in comments if not c.is_seeding]
     seeding_count = len(comments) - len(clean_comments)
@@ -269,6 +282,121 @@ def analyze_koc_vs_viewer_absa(
         )
         pr_risk = round(max(0.0, min(0.98, raw_risk)), 4)
 
+    # M5.2 NFC-exact 4-aspect span evidence and support-gated discrepancy
+    clean_vid = video_id.strip() or video_id
+    creator_units: list[TextUnitInput] = []
+    if caption.strip():
+        creator_units.append(
+            TextUnitInput(
+                unit_id=f"{clean_vid}_caption",
+                source_kind="creator_caption",
+                text=caption,
+            )
+        )
+    utt_units = (
+        [
+            TextUnitInput(
+                unit_id=f"{clean_vid}_utt_{idx:03d}",
+                source_kind="creator_utterance",
+                text=seg.text,
+            )
+            for idx, seg in enumerate(utterances)
+            if seg.text.strip()
+        ]
+        if utterances
+        else []
+    )
+    if utt_units:
+        creator_units.extend(utt_units)
+    elif transcript.strip():
+        creator_units.append(
+            TextUnitInput(
+                unit_id=f"{clean_vid}_transcript",
+                source_kind="creator_transcript",
+                text=transcript,
+            )
+        )
+
+    koc_aspect_summaries, koc_spans, _ = summarize_units_aspects(
+        creator_units,
+        min_support_units=1,
+        polarity_tau=polarity_tau,
+    )
+
+    viewer_units = [
+        TextUnitInput(
+            unit_id=c.comment_id,
+            source_kind="viewer_comment",
+            text=c.text,
+        )
+        for c in clean_comments
+        if c.text.strip()
+    ]
+    viewer_aspect_summaries, viewer_spans, span_viewer_pains = summarize_units_aspects(
+        viewer_units,
+        min_support_units=min_viewer_comments,
+        polarity_tau=polarity_tau,
+    )
+
+    merged_viewer_pains = list(viewer_pains)
+    for pain in span_viewer_pains:
+        if pain not in merged_viewer_pains and len(merged_viewer_pains) < 6:
+            merged_viewer_pains.append(pain)
+
+    aspect_discrepancies: dict[AspectName, AspectDiscrepancyDetail] = {}
+    for aspect in ASPECT_NAMES:
+        koc_sum = koc_aspect_summaries[aspect]
+        viewer_sum = viewer_aspect_summaries[aspect]
+        comparison_status: AspectComparisonStatus
+        sentiment_discrepancy: float | None
+        if koc_sum.presence_status != "observed":
+            comparison_status = "abstained_creator_absent"
+            sentiment_discrepancy = None
+        elif viewer_sum.presence_status != "observed":
+            comparison_status = "abstained_viewer_absent"
+            sentiment_discrepancy = None
+        elif viewer_sum.mention_unit_count < min_viewer_comments:
+            comparison_status = "abstained_viewer_low_support"
+            sentiment_discrepancy = None
+        else:
+            assert koc_sum.mean_score is not None
+            assert viewer_sum.mean_score is not None
+            comparison_status = "compared_supported_overlap"
+            sentiment_discrepancy = round(
+                float(koc_sum.mean_score) - float(viewer_sum.mean_score),
+                4,
+            )
+        aspect_discrepancies[aspect] = AspectDiscrepancyDetail(
+            aspect=aspect,
+            comparison_status=comparison_status,
+            creator_mean_score=koc_sum.mean_score,
+            viewer_mean_score=viewer_sum.mean_score,
+            viewer_support_count=viewer_sum.mention_unit_count,
+            min_viewer_support_required=min_viewer_comments,
+            sentiment_discrepancy=sentiment_discrepancy,
+        )
+
+    supported_overlapping_aspects: list[AspectName] = [
+        aspect
+        for aspect in ASPECT_NAMES
+        if aspect_discrepancies[aspect].comparison_status == "compared_supported_overlap"
+    ]
+    if supported_overlapping_aspects:
+        supported_sentiment_discrepancy: float | None = round(
+            sum(
+                float(aspect_discrepancies[aspect].sentiment_discrepancy or 0.0)
+                for aspect in supported_overlapping_aspects
+            )
+            / len(supported_overlapping_aspects),
+            4,
+        )
+        discrepancy_abstention_reason: str | None = None
+    else:
+        supported_sentiment_discrepancy = None
+        discrepancy_abstention_reason = (
+            f"insufficient_overlapping_aspect_support_min_{min_viewer_comments}_comments"
+        )
+
     return AbsaComparisonRecord(
         video_id=video_id,
         koc_scores=koc_scores,
@@ -280,7 +408,15 @@ def analyze_koc_vs_viewer_absa(
         lexical_promo_score=disclosure_info.lexical_promo_score,
         sponsorship_ground_truth_status=disclosure_info.sponsorship_ground_truth_status,
         disclosure_target_note=disclosure_info.disclosure_target_note,
-        viewer_pain_points=viewer_pains,
+        viewer_pain_points=merged_viewer_pains,
         clean_comment_count=len(clean_comments),
         seeding_comment_count=seeding_count,
+        koc_aspect_summaries=koc_aspect_summaries,
+        viewer_aspect_summaries=viewer_aspect_summaries,
+        aspect_discrepancies=aspect_discrepancies,
+        supported_overlapping_aspects=supported_overlapping_aspects,
+        supported_sentiment_discrepancy=supported_sentiment_discrepancy,
+        discrepancy_abstention_reason=discrepancy_abstention_reason,
+        discrepancy_interpretation_note=DEFAULT_DISCREPANCY_INTERPRETATION_NOTE,
+        source_spans=[*koc_spans, *viewer_spans],
     )
