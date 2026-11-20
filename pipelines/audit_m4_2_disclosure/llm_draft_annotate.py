@@ -5,11 +5,13 @@ import argparse
 import hashlib
 import json
 import time
+import unicodedata
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
 
 from packages.absa.disclosure import FORBIDDEN_DISCLOSURE_HASHTAGS
+from packages.absa.disclosure_eval import strip_forbidden_inline_hashtags
 from packages.common.exceptions import QuotaBlockedError
 from packages.common.settings import AppSettings
 from packages.llm.clients.gemini import BoundedGeminiClient, SlidingWindowRateLimiter
@@ -42,17 +44,21 @@ def build_blinded_disclosure_prompt(batch: list[dict[str, Any]]) -> str:
     payload_items: list[dict[str, Any]] = []
     for row in batch:
         clean_tags = [
-            str(t)
+            unicodedata.normalize("NFC", str(t))
             for t in (row.get("hashtags") or [])
-            if str(t).strip().lstrip("#").lower() not in FORBIDDEN_DISCLOSURE_HASHTAGS
+            if unicodedata.normalize("NFC", str(t)).strip().lstrip("#").lower()
+            not in FORBIDDEN_DISCLOSURE_HASHTAGS
         ]
+        scrubbed_caption = strip_forbidden_inline_hashtags(str(row.get("caption") or ""))[:400]
+        full_or_excerpt = str(row.get("transcript_full") or row.get("transcript_excerpt") or "")
+        scrubbed_transcript = strip_forbidden_inline_hashtags(full_or_excerpt)[:3500]
         payload_items.append(
             {
                 "item_id": str(row["item_id"]),
                 "food_category": str(row.get("food_category") or ""),
                 "has_transcript": bool(row.get("has_transcript", False)),
-                "caption": str(row.get("caption") or "")[:400],
-                "transcript_excerpt": str(row.get("transcript_excerpt") or "")[:550],
+                "caption": scrubbed_caption,
+                "transcript_excerpt": scrubbed_transcript,
                 "hashtags": clean_tags[:12],
             }
         )

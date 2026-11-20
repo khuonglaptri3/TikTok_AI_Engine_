@@ -461,6 +461,7 @@ def _ingest_incremental_batch_to_gold(
             comments=cleansed_comments,
             is_ad=rec.is_ad,
             is_ec_video=rec.is_ec_video,
+            hashtags=rec.hashtags,
         )
         absa_rows.append(
             {

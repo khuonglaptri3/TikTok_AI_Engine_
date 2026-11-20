@@ -1,0 +1,167 @@
+{
+  "task_id": "M4.2",
+  "total_unique_items": 100,
+  "N_human_verified_count": 65,
+  "K_human_verified_count": 65,
+  "both_contributors_complete": true,
+  "double_review_overlap_count": 30,
+  "overlap_exact_agreement_count": 22,
+  "overlap_raw_agreement": 0.7333,
+  "overlap_cohens_kappa": 0.6364,
+  "overlap_disagreement_count": 8,
+  "overlap_disagreements": [
+    {
+      "item_id": "m4_2_006",
+      "video_id": "7451205108349635847",
+      "observed_flag_status": "observed_ad_and_ecommerce",
+      "N_label": "brand_or_venue_focus_no_cta",
+      "K_label": "organic_or_general_review",
+      "N_note": "Review xúc xích gân bò, có nhắc đến việc mua ăn Tết nhưng không phải CTA trực tiếp từ nhãn hàng.",
+      "K_note": "Instant-noodle and generic Russian-style beef tendon sausage mukbang with no brand name, venue, or shop CTA."
+    },
+    {
+      "item_id": "m4_2_013",
+      "video_id": "7375018693614521601",
+      "observed_flag_status": "observed_ecommerce",
+      "N_label": "organic_or_general_review",
+      "K_label": "unclear_or_noisy_text",
+      "N_note": "Review địa điểm ăn uống thông thường, không có yếu tố thương mại rõ rệt.",
+      "K_note": "Missing transcript and 6-word caption ('Lòng Hoa Bằng ngày mát dời') provide insufficient text to verify specific venue branding or promotional cues."
+    },
+    {
+      "item_id": "m4_2_014",
+      "video_id": "7444039157300661511",
+      "observed_flag_status": "observed_ecommerce",
+      "N_label": "brand_or_venue_focus_no_cta",
+      "K_label": "explicit_promo_cta",
+      "N_note": "Nhắc đến thương hiệu cụ thể (Chinsu) trong bối cảnh trưng bày sản phẩm.",
+      "K_note": "Caption-only TikTok Shop cart reference ('Một giỏ hàng toàn là ớt') paired with #tuongotchinsu brand tag."
+    },
+    {
+      "item_id": "m4_2_015",
+      "video_id": "7363152638331931912",
+      "observed_flag_status": "observed_ad_and_ecommerce",
+      "N_label": "explicit_promo_cta",
+      "K_label": "brand_or_venue_focus_no_cta",
+      "N_note": "domain_non_food: máy massage cổ vai gáy Bomidi. Nội dung quảng cáo thiết bị massage (ngoài danh mục F&B) với lời kêu gọi dùng thử.",
+      "K_note": "Out-of-domain non-F&B neck massager endorsement (#maymassage #bomidivietnam) in creator feed; caption-only brand recommendation without explicit cart/discount CTA."
+    },
+    {
+      "item_id": "m4_2_016",
+      "video_id": "7382437681596239122",
+      "observed_flag_status": "unlabeled_unknown",
+      "N_label": "organic_or_general_review",
+      "K_label": "brand_or_venue_focus_no_cta",
+      "N_note": "Chia sẻ trải nghiệm ăn chay cá nhân, không có nội dung quảng bá thương hiệu cụ thể.",
+      "K_note": "Caption-only Hanoi vegetarian venue mention (#vegito) with missing transcript and no discount or booking CTA."
+    },
+    {
+      "item_id": "m4_2_022",
+      "video_id": "7338417769177697537",
+      "observed_flag_status": "unlabeled_unknown",
+      "N_label": "explicit_promo_cta",
+      "K_label": "organic_or_general_review",
+      "N_note": "Có đề cập giá bán cụ thể (5k một gói) mang tính chất quảng bá cho món ăn.",
+      "K_note": "Caption-only cheap street-food observation ('5ka/ gói xôi đầy ụ ở giữa lòng Phố Cổ', #vtmgr) with no named shop, address, or commercial CTA."
+    },
+    {
+      "item_id": "m4_2_026",
+      "video_id": "7458653379338718472",
+      "observed_flag_status": "observed_ad",
+      "N_label": "explicit_promo_cta",
+      "K_label": "brand_or_venue_focus_no_cta",
+      "N_note": "Có lời kêu gọi mua hàng (mua nước lẩu) và chỉ đích danh thương hiệu.",
+      "K_note": "Caption-only recommendation to buy Thai hotpot broth from named restaurant Khrua Baan Thai for Tết, without price/voucher/cart CTA."
+    },
+    {
+      "item_id": "m4_2_030",
+      "video_id": "7321301826706377992",
+      "observed_flag_status": "observed_ad_and_ecommerce",
+      "N_label": "brand_or_venue_focus_no_cta",
+      "K_label": "unclear_or_noisy_text",
+      "N_note": "Video nhắc đến thương hiệu (Baanhemfood) trong ngữ cảnh review/thử thách, không có CTA mua hàng trực tiếp.",
+      "K_note": "Missing transcript with 6-word clickbait question ('Nem Tôm làm bằng bìa cát tông?!'); insufficient text to determine brand or review stance."
+    }
+  ],
+  "review_sample_100_sha256": "fdb64e12276dcd2b5c8944f36f31655294ba38f96eef6fe44a41cf27a47688fc",
+  "N_label_counts": {
+    "brand_or_venue_focus_no_cta": 25,
+    "explicit_promo_cta": 22,
+    "organic_or_general_review": 14,
+    "unclear_or_noisy_text": 4
+  },
+  "K_label_counts": {
+    "brand_or_venue_focus_no_cta": 18,
+    "explicit_promo_cta": 17,
+    "organic_or_general_review": 17,
+    "unclear_or_noisy_text": 13
+  },
+  "by_observed_flag_status": {
+    "observed_ad": {
+      "total_items": 25,
+      "N_verified": 14,
+      "K_verified": 17,
+      "N_labels": {
+        "brand_or_venue_focus_no_cta": 6,
+        "explicit_promo_cta": 6,
+        "organic_or_general_review": 1,
+        "unclear_or_noisy_text": 1
+      },
+      "K_labels": {
+        "brand_or_venue_focus_no_cta": 8,
+        "explicit_promo_cta": 4,
+        "organic_or_general_review": 3,
+        "unclear_or_noisy_text": 2
+      }
+    },
+    "observed_ad_and_ecommerce": {
+      "total_items": 15,
+      "N_verified": 12,
+      "K_verified": 11,
+      "N_labels": {
+        "brand_or_venue_focus_no_cta": 6,
+        "explicit_promo_cta": 6
+      },
+      "K_labels": {
+        "brand_or_venue_focus_no_cta": 4,
+        "explicit_promo_cta": 5,
+        "organic_or_general_review": 1,
+        "unclear_or_noisy_text": 1
+      }
+    },
+    "observed_ecommerce": {
+      "total_items": 25,
+      "N_verified": 16,
+      "K_verified": 16,
+      "N_labels": {
+        "brand_or_venue_focus_no_cta": 6,
+        "explicit_promo_cta": 6,
+        "organic_or_general_review": 3,
+        "unclear_or_noisy_text": 1
+      },
+      "K_labels": {
+        "brand_or_venue_focus_no_cta": 4,
+        "explicit_promo_cta": 6,
+        "organic_or_general_review": 3,
+        "unclear_or_noisy_text": 3
+      }
+    },
+    "unlabeled_unknown": {
+      "total_items": 35,
+      "N_verified": 23,
+      "K_verified": 21,
+      "N_labels": {
+        "brand_or_venue_focus_no_cta": 7,
+        "explicit_promo_cta": 4,
+        "organic_or_general_review": 10,
+        "unclear_or_noisy_text": 2
+      },
+      "K_labels": {
+        "brand_or_venue_focus_no_cta": 2,
+        "explicit_promo_cta": 2,
+        "organic_or_general_review": 10,
+        "unclear_or_noisy_text": 7
+      }
+    }
+  }
+}

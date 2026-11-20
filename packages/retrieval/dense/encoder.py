@@ -39,7 +39,8 @@ def _l2_normalize_rows(mat: np.ndarray) -> np.ndarray:
         return arr / norm if norm > 1e-12 else arr
     norms = np.linalg.norm(arr, axis=1, keepdims=True)
     safe_norms = np.where(norms > 1e-12, norms, 1.0)
-    return (arr / safe_norms).astype(np.float32)
+    res: np.ndarray = np.asarray(arr / safe_norms, dtype=np.float32)
+    return res
 
 
 @runtime_checkable

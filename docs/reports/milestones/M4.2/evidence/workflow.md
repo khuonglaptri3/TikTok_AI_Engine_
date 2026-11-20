@@ -1,10 +1,10 @@
 # M4.2 — Workflow Provenance & Verification Ledger
 
-- **Date:** 2026-11-19 (Asia/Ho_Chi_Minh)
+- **Date:** 2026-11-19 to 2026-11-20 (Asia/Ho_Chi_Minh)
 - **Task ID:** `M4.2` (Observed disclosure/commerce flags and promotional language; undisclosed sponsorship deferred)
 - **Primary Owner:** Nguyễn Việt Nguyên (`N`)
-- **Peer Reviewer:** Trần Đình Khương (`K`, pending human review)
-- **Branch:** `feat/m4.2-observed-disclosure-promo` (branched from `main` @ `dcdd6233`)
+- **Peer Reviewer:** Trần Đình Khương (`K`, peer review & 65-item audit complete)
+- **Branches:** `feat/m4.2-observed-disclosure-promo`, `feat/k-m4.2-m5.1-m6.1-peer-reviews` -> merged into `main`
 - **Spec & Plan:** [spec.md](../superpowers/spec.md), [plan.md](../superpowers/plan.md)
 
 ## Process Check (`AGENTS.md` Section 7)
@@ -31,5 +31,16 @@
 - `.venv/bin/python -m pipelines.audit_m4_2_disclosure.llm_draft_annotate --batch-size 10 --max-rpm 12 --min-interval-sec 5.0` -> `EXIT=0`, `100/100` annotated with `gemini-3.1-flash-lite`, `N_human_verified=false`, `K_human_verified=false` ([m4_2_llm_audit_summary.json](m4_2_llm_audit_summary.json))
 - `python3 scripts/check_secrets.py` -> verified in [m4_2-secrets.log](m4_2-secrets.log)
 
-## `N` 65-Item Full-Transcript Annotation (`2026-11-20`)
-- Contributor `N` reviewed all `65` assigned items (`30` `double_review_N_K` `m4_2_001..030` + `35` `N_only` `m4_2_031..065`) against full untruncated transcripts from `fact_videos.parquet`, corrected `8` labels vs. the initial `600`-char excerpt baseline (`m4_2_010, 020, 021, 027, 059, 061, 062, 064`), set `N_human_verified=true` across those `65` rows in `data/evaluation/m4_2_disclosure/review_sample_100.jsonl`, and recorded [nguyen_signoff_receipt.json](nguyen_signoff_receipt.json). `K_*` entries remain untouched (`IN_PROGRESS`).
+## Phase 2 — `N` 65-Item Full-Transcript Annotation (`2026-11-20`)
+
+- Contributor `N` reviewed all `65` assigned items (`30` `double_review_N_K` `m4_2_001..030` + `35` `N_only` `m4_2_031..065`) against full untruncated transcripts from `fact_videos.parquet`, corrected `8` labels vs. the initial `600`-char excerpt baseline (`m4_2_010, 020, 021, 027, 059, 061, 062, 064`), set `N_human_verified=true` across those `65` rows in `data/evaluation/m4_2_disclosure/review_sample_100.jsonl`, and recorded [nguyen_signoff_receipt.json](nguyen_signoff_receipt.json).
+
+## Phase 3 — `K` Adversarial Peer Review, TDD Hardening, 65-Item Audit & Two-Human Convergence (`2026-11-20`)
+
+- **Reviewer:** Trần Đình Khương (`K`) on branch `feat/k-m4.2-m5.1-m6.1-peer-reviews` (merged into `main` over `14becda0`).
+- **Skills loaded:** `using-superpowers`, `brainstorming` (*Bounded* Chặng 4 design approved by `K`), `receiving-code-review`, `dispatching-parallel-agents`, `test-driven-development`, `verification-before-completion`, `finishing-a-development-branch`.
+- **Key findings & TDD fixes ([khuong_peer_review.md](khuong_peer_review.md)):**
+  1. Extracted full `caption` + full `transcript` from `fact_videos.parquet` (`32/65` `K` items exceeded the `600`-char excerpt ceiling) and completed blinded human inspection of all `65` `K`-assigned items (`m4_2_001..030` + `m4_2_066..100`, `K_human_verified=True`).
+  2. Added `4` TDD regressions (`test_m4_2_disclosure.py`: [red-k-review-fixes.log](red-k-review-fixes.log) `4 failed` -> [green-k-review-fixes.log](green-k-review-fixes.log) `11 passed`) fixing inline `#ad`/`#quảngcáo` caption bigram leakage, indirect `video_format`/`has_cta`/`poi_*` leakage guards, Unicode word-boundary + negation matching (`"Ideal"`, `"không quảng cáo"`, `"quảng cáo lố"`), `author_handle` cluster bootstrap CIs, `PYTHONHASHSEED` tie-breaking, `transcript_full` workbook preservation, and `/demo/` Tab 3 `is_ad`/`is_ec_video` checkboxes.
+  3. Generated [m4_2_observed_disclosure_study_v2_k_review.json](../../../../../artifacts/benchmarks/m4_2_observed_disclosure_study_v2_k_review.json) (`PR-AUC=0.8915`, cluster CI `[0.7845, 0.9502]`; `0.8728` without MCN/Shop tags; `0.9183` transcribed without MCN/Shop tags) while preserving original `m4_2_observed_disclosure_study.json` untouched.
+  4. Merged `N`'s `65/65` and `K`'s `65/65` independent full-transcript annotations (`100/100` items human-verified; `22/30 = 73.33%` exact 4-class overlap agreement, **`Cohen's kappa = 0.6364`**) in `data/evaluation/m4_2_disclosure/review_sample_100.jsonl` and [n_k_100_combined_audit_summary.json](n_k_100_combined_audit_summary.json), closing **`M4.2` as `COMPLETE`** (`194 passed` full pytest, `100`-file `mypy`, `0` secret leaks).

@@ -224,6 +224,7 @@ def analyze_koc_vs_viewer_absa(
     comments: list[CommentRecord],
     is_ad: bool = False,
     is_ec_video: bool = False,
+    hashtags: list[str] | tuple[str, ...] | None = None,
 ) -> AbsaComparisonRecord:
     koc_scores, _ = score_text_aspects([f"{caption}. {transcript}"])
     clean_comments = [c for c in comments if not c.is_seeding]
@@ -249,6 +250,7 @@ def analyze_koc_vs_viewer_absa(
         transcript=transcript,
         is_ad=is_ad,
         is_ec_video=is_ec_video,
+        hashtags=hashtags,
     )
 
     # Deprecated compatibility heuristic score (never an undisclosed sponsorship probability)

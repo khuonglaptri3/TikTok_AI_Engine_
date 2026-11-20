@@ -108,6 +108,7 @@ def sample_historical_review_100(df: pd.DataFrame, *, seed: int = 42) -> list[di
                 "has_transcript": bool(row.get("has_transcript", False)),
                 "caption": caption,
                 "transcript_excerpt": transcript[:600],
+                "transcript_full": transcript,
                 "hashtags": tags,
                 "observed_flag_status": analysis.disclosure_flag_status,
                 "auto_lexical_promo_indicators": analysis.matched_indicators,

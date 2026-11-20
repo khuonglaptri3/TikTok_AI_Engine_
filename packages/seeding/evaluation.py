@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 
 from packages.absa.analyzer import score_text_aspects
-from packages.data_contracts.multimodal import CommentRecord
+from packages.data_contracts.multimodal import CommentRecord, RawCommentInput
+from packages.seeding.detector import detect_seeding_comments
 
 OBSERVABLE_COMMENT_CLASSES: tuple[str, ...] = (
     "observable_duplicate",
@@ -18,6 +19,7 @@ OBSERVABLE_COMMENT_CLASSES: tuple[str, ...] = (
     "no_indicator_observed",
     "unknown_ambiguous",
 )
+_VALID_CLASS_SET: frozenset[str] = frozenset(OBSERVABLE_COMMENT_CLASSES)
 
 POSITIVE_INDICATOR_CLASSES: tuple[str, ...] = (
     "observable_duplicate",
@@ -25,6 +27,22 @@ POSITIVE_INDICATOR_CLASSES: tuple[str, ...] = (
     "noise_or_empty",
     "template_phrase_match",
 )
+
+SEEDING_REASON_TO_OBSERVABLE_LABEL: dict[str, str] = {
+    "contact_or_link_spam": "contact_or_link",
+    "emoji_or_empty_noise": "noise_or_empty",
+    "duplicate_seeding_cluster": "observable_duplicate",
+    "canned_praise_template": "template_phrase_match",
+}
+
+
+def _require_valid_label(val: object, field_name: str) -> str:
+    if val is None or not isinstance(val, str):
+        raise ValueError(f"{field_name} must be a non-null string in OBSERVABLE_COMMENT_CLASSES, got {val!r}")
+    cleaned: str = val.strip()
+    if cleaned not in _VALID_CLASS_SET:
+        raise ValueError(f"Invalid {field_name} {cleaned!r}; allowed: {OBSERVABLE_COMMENT_CLASSES}")
+    return cleaned
 
 
 def split_comments_by_video(
@@ -34,7 +52,14 @@ def split_comments_by_video(
     seed: int = 42,
 ) -> dict[str, list[dict[str, Any]]]:
     """Partition comments strictly by video/thread ID into 3 disjoint thirds."""
-    vids = sorted({str(r[video_id_col]) for r in rows})
+    vids_set: set[str] = set()
+    for r in rows:
+        raw_vid = r.get(video_id_col)
+        if raw_vid is None or not str(raw_vid).strip():
+            raise ValueError(f"Missing or blank {video_id_col} in comment row")
+        vids_set.add(str(raw_vid).strip())
+
+    vids = sorted(vids_set)
     if len(vids) < 3:
         raise ValueError(f"Need at least 3 distinct {video_id_col} values for 3-way disjoint split")
 
@@ -42,7 +67,6 @@ def split_comments_by_video(
     shuffled = list(vids)
     rng.shuffle(shuffled)
 
-    # Round-robin modulo 3 guarantees each third stays balanced and video-disjoint.
     buckets: dict[str, set[str]] = {
         "dev": set(),
         "calibration": set(),
@@ -54,7 +78,7 @@ def split_comments_by_video(
 
     out: dict[str, list[dict[str, Any]]] = {name: [] for name in names}
     for row in rows:
-        vid = str(row[video_id_col])
+        vid = str(row[video_id_col]).strip()
         for name in names:
             if vid in buckets[name]:
                 out[name].append(row)
@@ -70,20 +94,23 @@ def compute_inter_annotator_agreement(
     if len(labels_n) != len(labels_k) or not labels_n:
         raise ValueError("Paired annotation lists must be equal-length and non-empty")
 
-    total = len(labels_n)
-    agree = sum(1 for a, b in zip(labels_n, labels_k) if a == b)
+    clean_n = [_require_valid_label(x, "labels_n") for x in labels_n]
+    clean_k = [_require_valid_label(x, "labels_k") for x in labels_k]
+
+    total = len(clean_n)
+    agree = sum(1 for a, b in zip(clean_n, clean_k) if a == b)
     raw_agreement = agree / total
 
-    all_labels = sorted(set(labels_n) | set(labels_k))
-    counts_a = Counter(labels_n)
-    counts_b = Counter(labels_k)
+    all_labels = sorted(set(clean_n) | set(clean_k))
+    counts_a = Counter(clean_n)
+    counts_b = Counter(clean_k)
     p_expected = sum((counts_a[lbl] / total) * (counts_b[lbl] / total) for lbl in all_labels)
     kappa = (raw_agreement - p_expected) / (1.0 - p_expected) if p_expected < 1.0 else 1.0
 
     unknown_count = sum(
-        1 for a, b in zip(labels_n, labels_k) if a == "unknown_ambiguous" or b == "unknown_ambiguous"
+        1 for a, b in zip(clean_n, clean_k) if a == "unknown_ambiguous" or b == "unknown_ambiguous"
     )
-    pair_counts = Counter(f"{a} -> {b}" for a, b in zip(labels_n, labels_k))
+    pair_counts = Counter(f"{a} -> {b}" for a, b in zip(clean_n, clean_k))
     return {
         "total_double_annotated": total,
         "raw_agreement": round(raw_agreement, 4),
@@ -121,7 +148,9 @@ def _compute_class_prf(
         }
         if support > 0 or (tp + fp) > 0:
             active_p.append(prec)
+        if support > 0:
             active_r.append(rec)
+        if support > 0 or (tp + fp) > 0:
             active_f1.append(f1)
 
     macro_p = float(sum(active_p) / len(active_p)) if active_p else 0.0
@@ -136,27 +165,39 @@ def evaluate_comment_indicator_metrics(
     pred_col: str = "pred_label",
     truth_col: str = "adjudicated_label",
     human_signoff_complete: bool = False,
+    total_annotated_pool_count: int | None = None,
     n_boot: int = 500,
     seed: int = 42,
 ) -> dict[str, Any]:
-    """Compute per-class P/R/F1, confusion matrix, bootstrap uncertainty, and M5.1 filter gate."""
+    """Compute per-class P/R/F1, confusion matrix, video-cluster bootstrap CIs, and M5.1 filter gate."""
     if not rows:
         raise ValueError("rows must be non-empty for evaluation")
 
-    y_true = [str(r[truth_col]) for r in rows]
-    y_pred = [str(r[pred_col]) for r in rows]
+    y_true = [_require_valid_label(r.get(truth_col), truth_col) for r in rows]
+    y_pred = [_require_valid_label(r.get(pred_col), pred_col) for r in rows]
 
     per_class, macro_p, macro_r, macro_f1 = _compute_class_prf(y_true, y_pred)
 
     rng = np.random.default_rng(seed)
     n = len(rows)
+    vids = [str(r.get("video_id") or "").strip() for r in rows]
+    unique_vids = sorted({v for v in vids if v})
+    cluster_indices: dict[str, list[int]] = {}
+    if len(unique_vids) >= 2 and all(vids):
+        for idx_i, v in enumerate(vids):
+            cluster_indices.setdefault(v, []).append(idx_i)
+
     boot_p: list[float] = []
     boot_r: list[float] = []
     boot_f1: list[float] = []
     for _ in range(n_boot):
-        idx = rng.integers(0, n, size=n)
-        yt_b = [y_true[int(i)] for i in idx]
-        yp_b = [y_pred[int(i)] for i in idx]
+        if cluster_indices:
+            drawn_v = rng.integers(0, len(unique_vids), size=len(unique_vids))
+            sample_idx = [i for vc in drawn_v for i in cluster_indices[unique_vids[int(vc)]]]
+        else:
+            sample_idx = [int(i) for i in rng.integers(0, n, size=n)]
+        yt_b = [y_true[i] for i in sample_idx]
+        yp_b = [y_pred[i] for i in sample_idx]
         _, mp, mr, mf = _compute_class_prf(yt_b, yp_b)
         boot_p.append(mp)
         boot_r.append(mr)
@@ -174,9 +215,11 @@ def evaluate_comment_indicator_metrics(
     truth_counts = dict(sorted(Counter(y_true).items()))
     pred_counts = dict(sorted(Counter(y_pred).items()))
 
-    # M5.1 gate: >= 150 human-verified comments, macro precision >= 0.85, macro recall >= 0.60
+    eff_pool_count = int(total_annotated_pool_count) if total_annotated_pool_count is not None else len(rows)
+    # M5.1 gate: >= 150 total human-verified pilot comments (>= 45 in held_out_third), P >= 0.85, R >= 0.60
     auto_filter_eligible = (
-        len(rows) >= 150
+        eff_pool_count >= 150
+        and len(rows) >= 45
         and human_signoff_complete
         and macro_p >= 0.85
         and macro_r >= 0.60
@@ -184,8 +227,10 @@ def evaluate_comment_indicator_metrics(
 
     return {
         "evaluated_comment_count": len(rows),
-        "unique_video_count": len({str(r.get("video_id", "")) for r in rows}),
+        "total_annotated_pool_count": eff_pool_count,
+        "unique_video_count": len(unique_vids),
         "human_signoff_complete": human_signoff_complete,
+        "bootstrap_mode": "video_cluster_resample" if cluster_indices else "row_iid_resample",
         "truth_class_counts": truth_counts,
         "pred_class_counts": pred_counts,
         "per_class_metrics": per_class,
@@ -200,6 +245,7 @@ def evaluate_comment_indicator_metrics(
         "confusion_matrix": confusion,
         "auto_filter_thresholds": {
             "min_annotated_comments": 150,
+            "min_held_out_comments": 45,
             "min_macro_precision": 0.85,
             "min_macro_recall": 0.60,
         },
@@ -218,20 +264,34 @@ def build_annotation_pool(
     max_items: int = 300,
     double_overlap: int = 60,
     seed: int = 42,
+    include_predictions: bool = False,
 ) -> list[dict[str, Any]]:
-    """Sample <= 300 real comments with deterministic N/K overlap ready for human annotation."""
+    """Sample <= 300 comments grouped contiguously by video_id with blinded N/K human assignments."""
     if max_items < 1 or max_items > 300:
         raise ValueError("M5.1 caps real pilot comment sample at <= 300 items")
     if comments_df.empty:
         return []
 
-    n_take = min(max_items, len(comments_df))
-    rng = np.random.default_rng(seed)
-    idx = rng.choice(len(comments_df), size=n_take, replace=False)
-    sampled = comments_df.iloc[idx].sort_values(["video_id", "comment_id"]).reset_index(drop=True)
-    perm = rng.permutation(len(sampled))
-    sampled = sampled.iloc[perm].reset_index(drop=True)
+    work = comments_df.copy()
+    work["video_id"] = work["video_id"].astype(str)
+    work["comment_id"] = work["comment_id"].astype(str)
 
+    rng = np.random.default_rng(seed)
+    unique_vids = sorted(work["video_id"].unique().tolist())
+    rng.shuffle(unique_vids)
+
+    # Select whole video threads in shuffled video order so within-thread duplicates stay observable
+    selected_chunks: list[pd.DataFrame] = []
+    collected = 0
+    for vid in unique_vids:
+        if collected >= max_items:
+            break
+        v_df = work[work["video_id"] == vid].sort_values("comment_id")
+        need = max_items - collected
+        selected_chunks.append(v_df.iloc[:need])
+        collected += min(len(v_df), need)
+
+    sampled = pd.concat(selected_chunks, ignore_index=True)
     overlap = min(double_overlap, len(sampled))
     remaining = len(sampled) - overlap
     n_only_cutoff = overlap + (remaining // 2)
@@ -244,28 +304,77 @@ def build_annotation_pool(
             assign = "N_only"
         else:
             assign = "K_only"
-        items.append(
+
+        entry: dict[str, Any] = {
+            "item_id": f"m5_1_{i + 1:03d}",
+            "comment_id": str(row["comment_id"]),
+            "video_id": str(row["video_id"]),
+            "author_handle": str(row.get("author_handle") or ""),
+            "original_text": str(row.get("original_text") or row.get("text") or ""),
+            "review_assignment": assign,
+            "N_label": None,
+            "N_note": "",
+            "N_human_verified": False,
+            "K_label": None,
+            "K_note": "",
+            "K_human_verified": False,
+            "adjudicated_label": None,
+        }
+        if include_predictions:
+            obs = row.get("observable_label")
+            if not obs:
+                sr = row.get("seeding_reason")
+                obs = SEEDING_REASON_TO_OBSERVABLE_LABEL.get(str(sr), "no_indicator_observed") if sr else "no_indicator_observed"
+            entry["predicted_observable_label"] = str(obs)
+            entry["predicted_reason_codes"] = list(row.get("observable_reason_codes") or [])
+        items.append(entry)
+    return items
+
+
+def reconstruct_observable_predictions(
+    comments_df: pd.DataFrame,
+    pool_items: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Compute or reconstruct detector predictions per full video thread without leaking into human sheets."""
+    work = comments_df.copy()
+    work["video_id"] = work["video_id"].astype(str)
+    work["comment_id"] = work["comment_id"].astype(str)
+
+    pool_vids = {str(item["video_id"]) for item in pool_items}
+    pred_lookup: dict[tuple[str, str], CommentRecord] = {}
+    for vid in sorted(pool_vids):
+        v_df = work[work["video_id"] == vid].sort_values("comment_id")
+        raw_inputs = [
+            RawCommentInput(
+                comment_id=str(r["comment_id"]),
+                author_handle=str(r.get("author_handle") or ""),
+                text=str(r.get("original_text") or r.get("text") or ""),
+                like_count=int(r.get("like_count") or 0),
+                reply_count=int(r.get("reply_count") or 0),
+            )
+            for r in v_df.to_dict("records")
+        ]
+        for rec in detect_seeding_comments(vid, raw_inputs):
+            pred_lookup[(vid, rec.comment_id)] = rec
+
+    enriched: list[dict[str, Any]] = []
+    for item in pool_items:
+        key = (str(item["video_id"]), str(item["comment_id"]))
+        rec_opt = pred_lookup.get(key)
+        enriched.append(
             {
-                "item_id": f"m5_1_{i + 1:03d}",
-                "comment_id": str(row["comment_id"]),
-                "video_id": str(row["video_id"]),
-                "author_handle": str(row.get("author_handle") or ""),
-                "original_text": str(row.get("original_text") or row.get("text") or ""),
-                "predicted_observable_label": str(
-                    row.get("observable_label") or "no_indicator_observed"
+                "item_id": item["item_id"],
+                "video_id": str(item["video_id"]),
+                "comment_id": str(item["comment_id"]),
+                "predicted_observable_label": (
+                    rec_opt.observable_label if rec_opt is not None else "no_indicator_observed"
                 ),
-                "predicted_reason_codes": list(row.get("observable_reason_codes") or []),
-                "review_assignment": assign,
-                "N_label": None,
-                "N_note": "",
-                "N_human_verified": False,
-                "K_label": None,
-                "K_note": "",
-                "K_human_verified": False,
-                "adjudicated_label": None,
+                "predicted_reason_codes": (
+                    list(rec_opt.observable_reason_codes) if rec_opt is not None else []
+                ),
             }
         )
-    return items
+    return enriched
 
 
 def compute_comment_filter_sensitivity(
@@ -283,41 +392,60 @@ def compute_comment_filter_sensitivity(
 
     if all_texts:
         before_scores, _ = score_text_aspects(all_texts)
-        before_mean = (
+        before_mean: float | None = (
             before_scores.taste
             + before_scores.price
             + before_scores.hygiene
             + before_scores.service
         ) / 4.0
+        before_scores_dict: dict[str, float] | None = before_scores.model_dump()
     else:
-        before_mean = 0.0
+        before_mean = None
+        before_scores_dict = None
 
     if unflagged_texts:
         after_scores, _ = score_text_aspects(unflagged_texts)
-        after_mean = (
+        after_mean: float | None = (
             after_scores.taste + after_scores.price + after_scores.hygiene + after_scores.service
         ) / 4.0
+        after_scores_dict: dict[str, float] | None = after_scores.model_dump()
+        after_abstained = False
     else:
-        after_mean = 0.0
+        after_mean = None
+        after_scores_dict = None
+        after_abstained = True
+
+    mean_shift = (
+        round(float(after_mean - before_mean), 4)
+        if (before_mean is not None and after_mean is not None)
+        else None
+    )
+    before_gap = round(float(koc_mean - before_mean), 4) if before_mean is not None else 0.0
+    after_gap = round(float(koc_mean - after_mean), 4) if after_mean is not None else 0.0
 
     return {
         "total_comments": len(comments),
         "flagged_indicator_count": len(comments) - len(unflagged_texts),
         "unflagged_comment_count": len(unflagged_texts),
-        "before_filter_viewer_mean": round(float(before_mean), 4),
-        "after_filter_viewer_mean": round(float(after_mean), 4),
-        "mean_score_shift": round(float(after_mean - before_mean), 4),
-        "before_filter_hype_gap": round(float(koc_mean - before_mean), 4),
-        "after_filter_hype_gap": round(float(koc_mean - after_mean), 4),
+        "after_filter_abstained": after_abstained,
+        "before_filter_scores": before_scores_dict,
+        "after_filter_scores": after_scores_dict,
+        "before_filter_viewer_mean": round(float(before_mean), 4) if before_mean is not None else None,
+        "after_filter_viewer_mean": round(float(after_mean), 4) if after_mean is not None else None,
+        "mean_score_shift": mean_shift,
+        "before_filter_hype_gap": before_gap,
+        "after_filter_hype_gap": after_gap,
     }
 
 
 __all__ = [
     "OBSERVABLE_COMMENT_CLASSES",
     "POSITIVE_INDICATOR_CLASSES",
+    "SEEDING_REASON_TO_OBSERVABLE_LABEL",
     "build_annotation_pool",
     "compute_comment_filter_sensitivity",
     "compute_inter_annotator_agreement",
     "evaluate_comment_indicator_metrics",
+    "reconstruct_observable_predictions",
     "split_comments_by_video",
 ]

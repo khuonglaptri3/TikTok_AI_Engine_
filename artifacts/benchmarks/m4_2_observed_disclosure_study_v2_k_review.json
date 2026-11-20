@@ -1,0 +1,895 @@
+{
+  "study_id": "m4_2_observed_disclosure_study_v2_k_review",
+  "corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "evaluated_at": "2026-11-20T03:22:59.417002+00:00",
+  "environment": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.11.14 | packaged by conda-forge | (main, Oct 13 2025, 14:09:32) [GCC 14.3.0]",
+    "cpu_count": 4,
+    "process_peak_rss_mib": 800.34
+  },
+  "target_policy": {
+    "undisclosed_sponsorship_status": "DEFERRED",
+    "unlabeled_items_treated_as_verified_negative": false,
+    "flag_feature_leakage_excluded": true,
+    "inline_caption_hashtag_bigram_leakage_blocked": true,
+    "historical_audio_prosody_joined": false,
+    "bootstrap_mode": "author_cluster_resample"
+  },
+  "review_workbook": {
+    "path": "data/evaluation/m4_2_disclosure/review_sample_100.jsonl",
+    "sha256": "f67c132df1eec0c4e1aadf431698d4ecef871a02974e483038b90d2d2ab143a4",
+    "total_items": 100,
+    "double_review_overlap_count": 30,
+    "N_assigned_count": 65,
+    "K_assigned_count": 65,
+    "K_human_verified_count": 65,
+    "N_human_verified_count": 0,
+    "human_review_completed": false
+  },
+  "k_human_audit_summary": {
+    "auditor": "K",
+    "k_verified_count": 65,
+    "n_verified_count": 0,
+    "k_items_with_post_600_transcript": 32,
+    "k_label_counts": {
+      "brand_or_venue_focus_no_cta": 18,
+      "explicit_promo_cta": 17,
+      "organic_or_general_review": 17,
+      "unclear_or_noisy_text": 13
+    },
+    "k_by_observed_flag_stratum": {
+      "observed_ad": {
+        "brand_or_venue_focus_no_cta": 8,
+        "explicit_promo_cta": 4,
+        "organic_or_general_review": 3,
+        "unclear_or_noisy_text": 2
+      },
+      "observed_ad_and_ecommerce": {
+        "brand_or_venue_focus_no_cta": 4,
+        "explicit_promo_cta": 5,
+        "organic_or_general_review": 1,
+        "unclear_or_noisy_text": 1
+      },
+      "observed_ecommerce": {
+        "brand_or_venue_focus_no_cta": 4,
+        "explicit_promo_cta": 6,
+        "organic_or_general_review": 3,
+        "unclear_or_noisy_text": 3
+      },
+      "unlabeled_unknown": {
+        "brand_or_venue_focus_no_cta": 2,
+        "explicit_promo_cta": 2,
+        "organic_or_general_review": 10,
+        "unclear_or_noisy_text": 7
+      }
+    },
+    "k_vs_llm_draft_agreement_65": 0.6769,
+    "k_vs_llm_disagreement_count": 21,
+    "k_vs_llm_disagreements": [
+      {
+        "item_id": "m4_2_006",
+        "video_id": "7451205108349635847",
+        "full_transcript_len": 605,
+        "truncated_at_600": true,
+        "K_label": "organic_or_general_review",
+        "llm_draft_label": "brand_or_venue_focus_no_cta",
+        "K_note": "Instant-noodle and generic Russian-style beef tendon sausage mukbang with no brand name, venue, or shop CTA."
+      },
+      {
+        "item_id": "m4_2_010",
+        "video_id": "7453691168967183624",
+        "full_transcript_len": 3155,
+        "truncated_at_600": true,
+        "K_label": "explicit_promo_cta",
+        "llm_draft_label": "brand_or_venue_focus_no_cta",
+        "K_note": "Full 3,155-char live-style pitch combining restaurant delivery (71 Tân Triều, 140k/dish), out-of-domain 140k puffer jacket TikTok Shop CTA ('ấn vào giỏ hàng', 'free ship'), and paid cooking lessons."
+      },
+      {
+        "item_id": "m4_2_013",
+        "video_id": "7375018693614521601",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "unclear_or_noisy_text",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "Missing transcript and 6-word caption ('Lòng Hoa Bằng ngày mát dời') provide insufficient text to verify specific venue branding or promotional cues."
+      },
+      {
+        "item_id": "m4_2_014",
+        "video_id": "7444039157300661511",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "explicit_promo_cta",
+        "llm_draft_label": "brand_or_venue_focus_no_cta",
+        "K_note": "Caption-only TikTok Shop cart reference ('Một giỏ hàng toàn là ớt') paired with #tuongotchinsu brand tag."
+      },
+      {
+        "item_id": "m4_2_015",
+        "video_id": "7363152638331931912",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "brand_or_venue_focus_no_cta",
+        "llm_draft_label": "explicit_promo_cta",
+        "K_note": "Out-of-domain non-F&B neck massager endorsement (#maymassage #bomidivietnam) in creator feed; caption-only brand recommendation without explicit cart/discount CTA."
+      },
+      {
+        "item_id": "m4_2_016",
+        "video_id": "7382437681596239122",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "brand_or_venue_focus_no_cta",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "Caption-only Hanoi vegetarian venue mention (#vegito) with missing transcript and no discount or booking CTA."
+      },
+      {
+        "item_id": "m4_2_020",
+        "video_id": "7433270260972670215",
+        "full_transcript_len": 2842,
+        "truncated_at_600": true,
+        "K_label": "explicit_promo_cta",
+        "llm_draft_label": "brand_or_venue_focus_no_cta",
+        "K_note": "Full 2,842-char transcript (beyond 600-char excerpt) reveals explicit bundle gift ('Mua hai hũ... tặng thêm một chai muối chanh') and TikTok Shop cart CTA ('bấm vào giỏ hàng bên dưới') for #79food dried squid."
+      },
+      {
+        "item_id": "m4_2_021",
+        "video_id": "7320459678461316360",
+        "full_transcript_len": 525,
+        "truncated_at_600": false,
+        "K_label": "unclear_or_noisy_text",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "ASR captured 100% background pop-song lyrics ('Baby chill out...') while caption gives only generic street-BBQ mood without venue name."
+      },
+      {
+        "item_id": "m4_2_022",
+        "video_id": "7338417769177697537",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "organic_or_general_review",
+        "llm_draft_label": "explicit_promo_cta",
+        "K_note": "Caption-only cheap street-food observation ('5ka/ gói xôi đầy ụ ở giữa lòng Phố Cổ', #vtmgr) with no named shop, address, or commercial CTA."
+      },
+      {
+        "item_id": "m4_2_026",
+        "video_id": "7458653379338718472",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "brand_or_venue_focus_no_cta",
+        "llm_draft_label": "explicit_promo_cta",
+        "K_note": "Caption-only recommendation to buy Thai hotpot broth from named restaurant Khrua Baan Thai for Tết, without price/voucher/cart CTA."
+      },
+      {
+        "item_id": "m4_2_027",
+        "video_id": "7356583727629192465",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "unclear_or_noisy_text",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "Missing transcript with 3-word reply caption ('Chải nước mínnn') and #vulaci hashtag; too sparse to classify wording."
+      },
+      {
+        "item_id": "m4_2_030",
+        "video_id": "7321301826706377992",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "unclear_or_noisy_text",
+        "llm_draft_label": "brand_or_venue_focus_no_cta",
+        "K_note": "Missing transcript with 6-word clickbait question ('Nem Tôm làm bằng bìa cát tông?!'); insufficient text to determine brand or review stance."
+      },
+      {
+        "item_id": "m4_2_072",
+        "video_id": "7366249017841437960",
+        "full_transcript_len": 1555,
+        "truncated_at_600": true,
+        "K_label": "brand_or_venue_focus_no_cta",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "Mid-recipe native product placement pitching 'bánh tráng sốt bò nhà Beo' (#banhnhapeo, 'bestseller của shop', 'mới mua một combo') inside an Ô Thum grilled-chicken cooking video, without explicit cart link."
+      },
+      {
+        "item_id": "m4_2_076",
+        "video_id": "7454128748753915144",
+        "full_transcript_len": 1984,
+        "truncated_at_600": true,
+        "K_label": "brand_or_venue_focus_no_cta",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "Full 1,984-char transcript starts as flan-jelly cooking then pivots after char 650 into a branded FMCG kitchen-cleaner pitch for Sunlight Powerfoam (#SunlightLaubep #5giaySachDauMo)."
+      },
+      {
+        "item_id": "m4_2_079",
+        "video_id": "7401826048595299602",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "unclear_or_noisy_text",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "Missing transcript and incomplete teaser caption ('Mình thèm ăn nướng, nó thèm sashimi thì…'); POI is AEON Long Biên but text lacks identifiable venue or wording stance."
+      },
+      {
+        "item_id": "m4_2_082",
+        "video_id": "7436238219647274248",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "organic_or_general_review",
+        "llm_draft_label": "brand_or_venue_focus_no_cta",
+        "K_note": "Caption-only generic budget student-rice review hook with missing transcript and no named venue or CTA."
+      },
+      {
+        "item_id": "m4_2_084",
+        "video_id": "7309757746038017287",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "unclear_or_noisy_text",
+        "llm_draft_label": "brand_or_venue_focus_no_cta",
+        "K_note": "Missing transcript with cryptic 4-word caption ('Lại tới nữa rồi 🤣 #emartphanhuyich')."
+      },
+      {
+        "item_id": "m4_2_085",
+        "video_id": "7480865836769496328",
+        "full_transcript_len": 182,
+        "truncated_at_600": false,
+        "K_label": "unclear_or_noisy_text",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "ASR transcribed romantic background song lyrics ('Dành hết nữa của đời...') while caption provides an organic home-cooking grilled-oyster dipping-sauce recipe."
+      },
+      {
+        "item_id": "m4_2_091",
+        "video_id": "7370195217456041232",
+        "full_transcript_len": 0,
+        "truncated_at_600": false,
+        "K_label": "unclear_or_noisy_text",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "Missing transcript and 5-word generic caption ('Phần 13 | Dẻo dẻo thơm thơm') without identifiable dish or brand."
+      },
+      {
+        "item_id": "m4_2_095",
+        "video_id": "7321289469674425602",
+        "full_transcript_len": 2813,
+        "truncated_at_600": true,
+        "K_label": "brand_or_venue_focus_no_cta",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "Full 2,813-char transcript starts with baguette recipe then devotes >2,000 chars after char 850 to pitching #kochivietnam tabletop dishwasher (>5M VND) without explicit cart link."
+      },
+      {
+        "item_id": "m4_2_097",
+        "video_id": "7425598926637534484",
+        "full_transcript_len": 1490,
+        "truncated_at_600": true,
+        "K_label": "explicit_promo_cta",
+        "llm_draft_label": "organic_or_general_review",
+        "K_note": "Full 1,490-char mukbang of #kashay caramel bread crumbs and coffee cookies ending at char ~1,350 with explicit cart CTA ('Mua thì mình để ở góc trái màn hình ấy')."
+      }
+    ]
+  },
+  "corpus_pu_observable_summary": {
+    "total_rows": 70996,
+    "strata": {
+      "observed_ad": {
+        "row_count": 3321,
+        "author_count": 178,
+        "transcribed_count": 915,
+        "has_cta_rate": 0.2267,
+        "any_promo_lexicon_rate": 0.1533,
+        "category_rates": {
+          "branch_venue_promo": 0.0867,
+          "commerce_cart_cta": 0.0416,
+          "discount_voucher": 0.0467,
+          "explicit_text_disclosure": 0.0042
+        },
+        "top_food_categories": {
+          "Ẩm thực Tổng hợp": 1429,
+          "Lẩu & Nướng": 714,
+          "Món nước & Sợi": 351,
+          "Đồ ngọt, Trà & Cà phê": 293
+        }
+      },
+      "observed_ecommerce": {
+        "row_count": 4340,
+        "author_count": 156,
+        "transcribed_count": 797,
+        "has_cta_rate": 0.1334,
+        "any_promo_lexicon_rate": 0.1173,
+        "category_rates": {
+          "branch_venue_promo": 0.0037,
+          "commerce_cart_cta": 0.1074,
+          "discount_voucher": 0.0101,
+          "explicit_text_disclosure": 0.0032
+        },
+        "top_food_categories": {
+          "Ẩm thực Tổng hợp": 2635,
+          "Món nước & Sợi": 397,
+          "Ăn vặt & Đường phố": 369,
+          "Cơm & Bữa chính": 288
+        }
+      },
+      "observed_ad_and_ecommerce": {
+        "row_count": 1458,
+        "author_count": 122,
+        "transcribed_count": 484,
+        "has_cta_rate": 0.2551,
+        "any_promo_lexicon_rate": 0.1989,
+        "category_rates": {
+          "branch_venue_promo": 0.0062,
+          "commerce_cart_cta": 0.179,
+          "discount_voucher": 0.0254,
+          "explicit_text_disclosure": 0.0041
+        },
+        "top_food_categories": {
+          "Ẩm thực Tổng hợp": 750,
+          "Ăn vặt & Đường phố": 199,
+          "Cơm & Bữa chính": 131,
+          "Món nước & Sợi": 114
+        }
+      },
+      "unlabeled_unknown": {
+        "row_count": 61877,
+        "author_count": 264,
+        "transcribed_count": 19552,
+        "has_cta_rate": 0.1922,
+        "any_promo_lexicon_rate": 0.0799,
+        "category_rates": {
+          "branch_venue_promo": 0.0518,
+          "commerce_cart_cta": 0.0197,
+          "discount_voucher": 0.0159,
+          "explicit_text_disclosure": 0.0026
+        },
+        "top_food_categories": {
+          "Ẩm thực Tổng hợp": 27935,
+          "Món nước & Sợi": 9186,
+          "Lẩu & Nướng": 8494,
+          "Cơm & Bữa chính": 5247
+        }
+      }
+    },
+    "unlabeled_policy_note": "unlabeled_unknown rows carry non-zero promotional lexicon hits and cannot be treated as verified organic/non-sponsored negatives."
+  },
+  "grouped_genuine_target_classifiers": {
+    "all_observed_ad_only_vs_ec_only": {
+      "target_name": "is_ad_only_vs_is_ec_only",
+      "target_validity_note": "Evaluates linguistic and food-category separability between genuinely flagged TikTok Ads (is_ad_only=1) and TikTok Shop commerce videos (is_ec_only=0). Does NOT evaluate unlabeled items as negatives and does NOT predict undisclosed sponsorship.",
+      "declared_input_features": [
+        "caption",
+        "transcript",
+        "hashtags",
+        "food_category"
+      ],
+      "prosody_features_joined": false,
+      "exclude_platform_campaign_tags": false,
+      "flag_leakage_excluded": [
+        "ad",
+        "ads",
+        "paid_partnership",
+        "paidpartnership",
+        "qc",
+        "quangcao",
+        "quảng_cáo",
+        "quảngcáo",
+        "sponsored",
+        "taitro",
+        "tài_trợ",
+        "tàitrợ"
+      ],
+      "unlabeled_excluded_count": 61877,
+      "both_flags_excluded_count": 1458,
+      "train_rows": 5564,
+      "test_rows": 2097,
+      "train_authors": 157,
+      "test_authors": 68,
+      "author_overlap_count": 0,
+      "test_positive_prevalence": 0.4478,
+      "bootstrap_mode": "author_cluster_resample",
+      "metrics": {
+        "pr_auc": 0.8915,
+        "brier_score": 0.1322,
+        "ece_10bin": 0.0883,
+        "bootstrap_95_ci": {
+          "pr_auc": {
+            "point": 0.8915,
+            "ci95_low": 0.7845,
+            "ci95_high": 0.9502
+          },
+          "brier_score": {
+            "point": 0.1322,
+            "ci95_low": 0.0989,
+            "ci95_high": 0.1723
+          }
+        },
+        "bootstrap_95_ci_row_iid_reference": {
+          "pr_auc": {
+            "point": 0.8915,
+            "ci95_low": 0.8739,
+            "ci95_high": 0.909
+          },
+          "brier_score": {
+            "point": 0.1322,
+            "ci95_low": 0.1247,
+            "ci95_high": 0.1393
+          }
+        }
+      },
+      "top_ad_associated_features": [
+        {
+          "feature": "vtmgr",
+          "weight": 3.7205
+        },
+        {
+          "feature": "tag_vtmgr",
+          "weight": 3.7205
+        },
+        {
+          "feature": "tag_reviewanngon",
+          "weight": 2.7766
+        },
+        {
+          "feature": "reviewanngon",
+          "weight": 2.7541
+        },
+        {
+          "feature": "ancungtiktok_reviewanngon",
+          "weight": 2.6957
+        },
+        {
+          "feature": "quán",
+          "weight": 2.6165
+        },
+        {
+          "feature": "lẩu",
+          "weight": 2.5023
+        },
+        {
+          "feature": "langthangsaigon",
+          "weight": 2.0586
+        }
+      ],
+      "top_ec_associated_features": [
+        {
+          "feature": "tag_monngonmoingay",
+          "weight": -2.2546
+        },
+        {
+          "feature": "reviewfood_ancungtiktok",
+          "weight": -2.182
+        },
+        {
+          "feature": "mua",
+          "weight": -1.977
+        },
+        {
+          "feature": "homnaycochutranh",
+          "weight": -1.9078
+        },
+        {
+          "feature": "tag_homnaycochutranh",
+          "weight": -1.9078
+        },
+        {
+          "feature": "monngonmoingay",
+          "weight": -1.8685
+        },
+        {
+          "feature": "muataitiktok",
+          "weight": -1.8486
+        },
+        {
+          "feature": "tag_muataitiktok",
+          "weight": -1.8486
+        }
+      ]
+    },
+    "all_observed_ad_only_vs_ec_only_ablate_platform_campaign_tags": {
+      "target_name": "is_ad_only_vs_is_ec_only",
+      "target_validity_note": "Evaluates linguistic and food-category separability between genuinely flagged TikTok Ads (is_ad_only=1) and TikTok Shop commerce videos (is_ec_only=0). Does NOT evaluate unlabeled items as negatives and does NOT predict undisclosed sponsorship.",
+      "declared_input_features": [
+        "caption",
+        "transcript",
+        "hashtags",
+        "food_category"
+      ],
+      "prosody_features_joined": false,
+      "exclude_platform_campaign_tags": true,
+      "flag_leakage_excluded": [
+        "ad",
+        "ads",
+        "dcgr",
+        "muataitiktok",
+        "paid_partnership",
+        "paidpartnership",
+        "qc",
+        "quangcao",
+        "quảng_cáo",
+        "quảngcáo",
+        "sponsored",
+        "taitro",
+        "tiktokshop",
+        "tài_trợ",
+        "tàitrợ",
+        "vtmgr"
+      ],
+      "unlabeled_excluded_count": 61877,
+      "both_flags_excluded_count": 1458,
+      "train_rows": 5564,
+      "test_rows": 2097,
+      "train_authors": 157,
+      "test_authors": 68,
+      "author_overlap_count": 0,
+      "test_positive_prevalence": 0.4478,
+      "bootstrap_mode": "author_cluster_resample",
+      "metrics": {
+        "pr_auc": 0.8728,
+        "brier_score": 0.1392,
+        "ece_10bin": 0.0775,
+        "bootstrap_95_ci": {
+          "pr_auc": {
+            "point": 0.8728,
+            "ci95_low": 0.7635,
+            "ci95_high": 0.9419
+          },
+          "brier_score": {
+            "point": 0.1392,
+            "ci95_low": 0.1074,
+            "ci95_high": 0.1767
+          }
+        },
+        "bootstrap_95_ci_row_iid_reference": {
+          "pr_auc": {
+            "point": 0.8728,
+            "ci95_low": 0.8542,
+            "ci95_high": 0.8915
+          },
+          "brier_score": {
+            "point": 0.1392,
+            "ci95_low": 0.1323,
+            "ci95_high": 0.146
+          }
+        }
+      },
+      "top_ad_associated_features": [
+        {
+          "feature": "tag_reviewanngon",
+          "weight": 2.8597
+        },
+        {
+          "feature": "reviewanngon",
+          "weight": 2.8356
+        },
+        {
+          "feature": "ancungtiktok_reviewanngon",
+          "weight": 2.7835
+        },
+        {
+          "feature": "quán",
+          "weight": 2.676
+        },
+        {
+          "feature": "muoidian",
+          "weight": 2.6168
+        },
+        {
+          "feature": "tag_muoidian",
+          "weight": 2.6143
+        },
+        {
+          "feature": "lẩu",
+          "weight": 2.5591
+        },
+        {
+          "feature": "fly",
+          "weight": 2.5524
+        }
+      ],
+      "top_ec_associated_features": [
+        {
+          "feature": "tag_monngonmoingay",
+          "weight": -2.3319
+        },
+        {
+          "feature": "reviewfood_ancungtiktok",
+          "weight": -2.1627
+        },
+        {
+          "feature": "mua",
+          "weight": -2.0048
+        },
+        {
+          "feature": "tag_homnaycochutranh",
+          "weight": -1.9808
+        },
+        {
+          "feature": "homnaycochutranh",
+          "weight": -1.9808
+        },
+        {
+          "feature": "tiktokfood",
+          "weight": -1.9623
+        },
+        {
+          "feature": "tag_tiktokfood",
+          "weight": -1.9576
+        },
+        {
+          "feature": "monngonmoingay",
+          "weight": -1.9452
+        }
+      ]
+    },
+    "transcribed_observed_ad_only_vs_ec_only": {
+      "target_name": "is_ad_only_vs_is_ec_only",
+      "target_validity_note": "Evaluates linguistic and food-category separability between genuinely flagged TikTok Ads (is_ad_only=1) and TikTok Shop commerce videos (is_ec_only=0). Does NOT evaluate unlabeled items as negatives and does NOT predict undisclosed sponsorship.",
+      "declared_input_features": [
+        "caption",
+        "transcript",
+        "hashtags",
+        "food_category"
+      ],
+      "prosody_features_joined": false,
+      "exclude_platform_campaign_tags": false,
+      "flag_leakage_excluded": [
+        "ad",
+        "ads",
+        "paid_partnership",
+        "paidpartnership",
+        "qc",
+        "quangcao",
+        "quảng_cáo",
+        "quảngcáo",
+        "sponsored",
+        "taitro",
+        "tài_trợ",
+        "tàitrợ"
+      ],
+      "unlabeled_excluded_count": 19552,
+      "both_flags_excluded_count": 484,
+      "train_rows": 1111,
+      "test_rows": 601,
+      "train_authors": 111,
+      "test_authors": 48,
+      "author_overlap_count": 0,
+      "test_positive_prevalence": 0.4859,
+      "bootstrap_mode": "author_cluster_resample",
+      "metrics": {
+        "pr_auc": 0.918,
+        "brier_score": 0.1666,
+        "ece_10bin": 0.1919,
+        "bootstrap_95_ci": {
+          "pr_auc": {
+            "point": 0.918,
+            "ci95_low": 0.818,
+            "ci95_high": 0.9727
+          },
+          "brier_score": {
+            "point": 0.1666,
+            "ci95_low": 0.1336,
+            "ci95_high": 0.1973
+          }
+        },
+        "bootstrap_95_ci_row_iid_reference": {
+          "pr_auc": {
+            "point": 0.918,
+            "ci95_low": 0.896,
+            "ci95_high": 0.9378
+          },
+          "brier_score": {
+            "point": 0.1666,
+            "ci95_low": 0.1579,
+            "ci95_high": 0.1754
+          }
+        }
+      },
+      "top_ad_associated_features": [
+        {
+          "feature": "quán",
+          "weight": 1.3171
+        },
+        {
+          "feature": "reviewanngon",
+          "weight": 0.9681
+        },
+        {
+          "feature": "kem",
+          "weight": 0.9636
+        },
+        {
+          "feature": "tag_reviewanngon",
+          "weight": 0.9634
+        },
+        {
+          "feature": "món",
+          "weight": 0.9561
+        },
+        {
+          "feature": "tới",
+          "weight": 0.9162
+        },
+        {
+          "feature": "vì",
+          "weight": 0.9104
+        },
+        {
+          "feature": "tại",
+          "weight": 0.8707
+        }
+      ],
+      "top_ec_associated_features": [
+        {
+          "feature": "nấuăncùngn",
+          "weight": -1.5599
+        },
+        {
+          "feature": "tag_nauancungn",
+          "weight": -1.5524
+        },
+        {
+          "feature": "nhá",
+          "weight": -1.4444
+        },
+        {
+          "feature": "mua",
+          "weight": -1.4265
+        },
+        {
+          "feature": "bà",
+          "weight": -1.4008
+        },
+        {
+          "feature": "mấy_bà",
+          "weight": -1.3875
+        },
+        {
+          "feature": "này_á",
+          "weight": -1.2096
+        },
+        {
+          "feature": "như_này",
+          "weight": -1.1479
+        }
+      ]
+    },
+    "transcribed_observed_ad_only_vs_ec_only_ablate_platform_campaign_tags": {
+      "target_name": "is_ad_only_vs_is_ec_only",
+      "target_validity_note": "Evaluates linguistic and food-category separability between genuinely flagged TikTok Ads (is_ad_only=1) and TikTok Shop commerce videos (is_ec_only=0). Does NOT evaluate unlabeled items as negatives and does NOT predict undisclosed sponsorship.",
+      "declared_input_features": [
+        "caption",
+        "transcript",
+        "hashtags",
+        "food_category"
+      ],
+      "prosody_features_joined": false,
+      "exclude_platform_campaign_tags": true,
+      "flag_leakage_excluded": [
+        "ad",
+        "ads",
+        "dcgr",
+        "muataitiktok",
+        "paid_partnership",
+        "paidpartnership",
+        "qc",
+        "quangcao",
+        "quảng_cáo",
+        "quảngcáo",
+        "sponsored",
+        "taitro",
+        "tiktokshop",
+        "tài_trợ",
+        "tàitrợ",
+        "vtmgr"
+      ],
+      "unlabeled_excluded_count": 19552,
+      "both_flags_excluded_count": 484,
+      "train_rows": 1111,
+      "test_rows": 601,
+      "train_authors": 111,
+      "test_authors": 48,
+      "author_overlap_count": 0,
+      "test_positive_prevalence": 0.4859,
+      "bootstrap_mode": "author_cluster_resample",
+      "metrics": {
+        "pr_auc": 0.9183,
+        "brier_score": 0.1668,
+        "ece_10bin": 0.1923,
+        "bootstrap_95_ci": {
+          "pr_auc": {
+            "point": 0.9183,
+            "ci95_low": 0.8192,
+            "ci95_high": 0.9729
+          },
+          "brier_score": {
+            "point": 0.1668,
+            "ci95_low": 0.134,
+            "ci95_high": 0.1972
+          }
+        },
+        "bootstrap_95_ci_row_iid_reference": {
+          "pr_auc": {
+            "point": 0.9183,
+            "ci95_low": 0.8962,
+            "ci95_high": 0.938
+          },
+          "brier_score": {
+            "point": 0.1668,
+            "ci95_low": 0.1581,
+            "ci95_high": 0.1756
+          }
+        }
+      },
+      "top_ad_associated_features": [
+        {
+          "feature": "quán",
+          "weight": 1.3229
+        },
+        {
+          "feature": "reviewanngon",
+          "weight": 0.9688
+        },
+        {
+          "feature": "kem",
+          "weight": 0.9663
+        },
+        {
+          "feature": "tag_reviewanngon",
+          "weight": 0.9641
+        },
+        {
+          "feature": "món",
+          "weight": 0.9543
+        },
+        {
+          "feature": "tới",
+          "weight": 0.9179
+        },
+        {
+          "feature": "vì",
+          "weight": 0.9117
+        },
+        {
+          "feature": "tại",
+          "weight": 0.8727
+        }
+      ],
+      "top_ec_associated_features": [
+        {
+          "feature": "nấuăncùngn",
+          "weight": -1.5617
+        },
+        {
+          "feature": "tag_nauancungn",
+          "weight": -1.5541
+        },
+        {
+          "feature": "nhá",
+          "weight": -1.4433
+        },
+        {
+          "feature": "mua",
+          "weight": -1.4273
+        },
+        {
+          "feature": "bà",
+          "weight": -1.4046
+        },
+        {
+          "feature": "mấy_bà",
+          "weight": -1.39
+        },
+        {
+          "feature": "này_á",
+          "weight": -1.2131
+        },
+        {
+          "feature": "như_này",
+          "weight": -1.1479
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "corpus_manifest_sha256": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
+    "prior_v1_study_sha256": "6aefad8a5b303444488b459708e21bddbdd683850679db3e15cbecc2736a4f9a",
+    "code_files_sha256": {
+      "packages/absa/disclosure.py": "21818f140dab8a37b04a127a10fe64b6ed328d8a4739d1a5bb2ea1d36e7e6553",
+      "packages/absa/disclosure_eval.py": "a03ecb08cb3b1259c14508c1a2eaa38f8a83701d4f01ca8acbe85f88ec6d8f91",
+      "packages/absa/analyzer.py": "a2e11193a979de5b117484385704990c89ef01f2de8fd843db56006d6764d191",
+      "packages/data_contracts/multimodal.py": "574dc98cf50014695269619aab9fd9d68bf719fc54c331d4842128c82ee18a62",
+      "apps/demo/presentation.py": "d6e09cc93e4a8915e207b590b4bdae01bcd4b970f2271f17cbe5d3344da76ea4",
+      "apps/demo/ui.py": "1ed2979c4a6abb5108221322c0b084a0d2331b7f280fdab3c2644fa514bc1362",
+      "pipelines/audit_m4_2_disclosure/run_study.py": "ef65fd17a8c063a6ce7afeb8b9329b522364c7f92f396a9d195ce87937d52e69",
+      "pipelines/audit_m4_2_disclosure/llm_draft_annotate.py": "2d4387a6c16ff9869f89c1fa49964d383e789630c31d7f94eb11ce490b4cb9e0"
+    }
+  }
+}

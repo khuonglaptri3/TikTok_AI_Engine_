@@ -1,34 +1,34 @@
 # M6.1 — CPU Dense & Hybrid Retrieval Pilot (Text-Only Spike)
 
-- Status: IN_PROGRESS (`N`'s text-only CPU dense/hybrid spike re-measured on the frozen `408/408` human-verified `M2.2` qrels and confirmed on `2026-11-20`; awaiting `K` peer review of parity/cost evidence and conditional multimodal evaluation after `M4.G`/`M5.G`)
+- Status: IN_PROGRESS (`N`'s text-only CPU dense/hybrid re-evaluation on finalized `408/408` human-verified `M2.2` qrels (`9a478e54...`) + `K`'s adversarial parity/cost peer review, `restrict_to_df=True` TDD fix, and post-fix live parity run (`194` repo tests) complete; **`bm25-v3` + reranking confirmed by both `N` and `K` as production default**; awaiting optional `fastembed` `hybrid_rrf` refresh under `restrict_to_df=True` and conditional multimodal evaluation after `M4.G`/`M5.G`)
 - Execution date: 2026-11-18 to 2026-11-20 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M6.1`)
-- Current branch: `main` (original spikes on `feat/m6.1-dense-hybrid-spike` @ `c6c36131`, PR3 @ `eb43b0df3d46007b7550de8f4314dc2dbca9c51f`, `feat/m6.1-v2-pilot-eval` @ `dcdd6233`)
-- Primary owner: Nguyễn Việt Nguyên (`N`) · Peer reviewer: Trần Đình Khương (`K`)
+- Current branch: `main` (merging `feat/k-m4.2-m5.1-m6.1-peer-reviews` over `14becda0`; prior merges `eb43b0df` & `f70e6867`)
+- Primary owner: Nguyễn Việt Nguyên (`N`, text-only human-qrels run & sign-off complete) · Peer reviewer: Trần Đình Khương (`K`, text-only parity & cost peer review complete)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
-## Final Human-Verified `v2_pilot` Parity Outcome (2026-11-20)
+## Conclusion (`N` Human-Verified Run + `K` Peer Review & `restrict_to_df=True` Parity — 2026-11-20)
 
-Re-ran `dense_hybrid_v2_pilot` over the frozen **`408/408` two-human-verified `M2.2` qrels** (`K_human_verified_all=True`, `N_human_verified_all=True`, `label_source="two_human_verified_pooled_judgments"`) into immutable receipt [m6_1_v2_pilot_human_verified.json](../../../../artifacts/benchmarks/m6_1_v2_pilot_human_verified.json) (`process_peak_rss_mib = 1,318.64 MiB <= 8,192 MiB`), preserving [m6_1_dense_hybrid_spike.json](../../../../artifacts/benchmarks/m6_1_dense_hybrid_spike.json) and [m6_1_v2_pilot.json](../../../../artifacts/benchmarks/m6_1_v2_pilot.json) byte-untouched. Contributor `N` confirmed the text-only parity findings on `2026-11-20T09:23+07:00` ([nguyen_text_spike_signoff_receipt.json](evidence/nguyen_text_spike_signoff_receipt.json)): **`bm25-v3` (+ rule reranker) remains the recommended simplest default backend**.
+**Scientific, parity & resource outcome ([nguyen_text_spike_signoff_receipt.json](evidence/nguyen_text_spike_signoff_receipt.json), [khuong_peer_review.md](evidence/khuong_peer_review.md), [m6_1_v2_final_qrels_parity.json](../../../../artifacts/benchmarks/m6_1_v2_final_qrels_parity.json)):** Following `M2.2` closure (`ba1dbb9a`, `408/408` two-human-verified qrels `9a478e54...`), `N` executed `dense_hybrid_v2_pilot` across `tfidf_svd_vn_128d_v1` and `MiniLM-L12-v2` into immutable receipt [m6_1_v2_pilot_human_verified.json](../../../../artifacts/benchmarks/m6_1_v2_pilot_human_verified.json) (`process_peak_rss_mib = 1,318.64 MiB <= 8,192 MiB`). In parallel, `K`'s adversarial peer review discovered and fixed via TDD (`RED -> GREEN`, `18/18` dense+resource tests) an omitted `restrict_to_df=True` argument in `pipelines/benchmark_retrieval/dense_hybrid_v2_pilot.py:97` (which had allowed unfiltered fallback `bm25`/`hybrid_rrf` calls in `m6_1_v2_pilot.json` and `m6_1_v2_pilot_human_verified.json` to inspect `21,748` docs rather than strictly the `5,000`-doc parity slice, whereas pure `dense`/`dense_reranked` already searched only the `5,000` vectors), hardened `QdrantDenseAdapter` `>5,000`-ID filtering + symmetric early-OOV handling, and added `unjudged_rate_at_10` pool-bias reporting.
 
-- **Locked test (`5,000`-doc parity slice, `11/16` pos-pool queries, `4/4` `no_answer` abstentions / `0` fabricated):**
-  - `bm25` / `bm25_reranked`: `MRR@10 = 0.8485` (`all16 = 0.5833`), `nDCG@10 = 0.8624` / `0.8644` (`all16 = 0.5929` / `0.5943`), `Pooled Recall@10 = 1.0000`, `warm p95 = 11.56–13.79 ms` (`bm25`) / `22.17–25.45 ms` (`bm25_reranked`).
-  - `tfidf_svd_vn_128d_v1` (`dense-svd-v2`, `14,898,542` B): `dense` trails (`MRR@10 = 0.5985`, `dMRR = -0.2500 [-0.4621, -0.0758]`; `nDCG@10 = 0.6539`, `dnDCG = -0.2085 [-0.3297, -0.0924]`, `warm p95 = 25.21 ms`). `hybrid_rrf_reranked` reaches `MRR@10 = 0.9091` / `nDCG@10 = 0.9049` on the 11 locked-test slice queries (`dev n=7`: `0.8571` / `0.8199` vs `bm25_reranked` `0.8730` / `0.8518`), with paired 95% CIs crossing zero (`dMRR = +0.0606 [+0.0000, +0.1818]`, `dnDCG = +0.0404 [-0.0136, +0.1261]`) at ~`2x` latency (`warm p95 = 49.93 ms`).
-  - `paraphrase-multilingual-MiniLM-L12-v2` (`dense-minilm-v1`, `7,795,253` B excluding weights): `dense` (`MRR@10 = 0.3039`, `nDCG@10 = 0.2558`, `p95 = 80.15 ms`) and `hybrid_rrf_reranked` (`MRR@10 = 0.7455`, `nDCG@10 = 0.7698`, `p95 = 74.90 ms`) underperform `bm25_reranked` (`dMRR = -0.1030`, `dnDCG = -0.0947`) at ~`3.4x` latency.
-- **Full-corpus `bm25-v3` reference (`21,748` docs):** `dev bm25_reranked` `MRR@10 = 0.8233`, `nDCG@10 = 0.7369`; `locked_test bm25_reranked` `MRR@10 = 0.8571`, `nDCG@10 = 0.7178` (`bm25`: `0.7976` / `0.7819`).
-- **Root causes verified in code ([encoder.py](../../../../packages/retrieval/dense/encoder.py), [local_index.py](../../../../packages/retrieval/dense/local_index.py), [bm25.py](../../../../packages/retrieval/sparse/bm25.py), [service.py](../../../../packages/retrieval/service.py)):** Fixed-dim `128d`/`384d` embeddings collapse fine-grained Vietnamese F&B compound terms and do not use `M2.2` synonym expansion/negation guardrails; meanwhile `tfidf_svd` pays per-query subword 3-gram generation, `csr_matrix` construction (`1 x 25,000`), brute-force slicing copy over `5,000` vectors under `_restrict_to_df=True`, and sequential BM25+Dense+RRF execution, resulting in `~2x` higher `p95` than sparse CSR inverted-index lookups in `bm25`.
+Under **strict `restrict_to_df=True` `5,000`-document parity on finalized `M2.2` two-human qrels** (`47` positives in `5k`, `dev n=7` pos-pool, `locked_test n=11` pos-pool; `4/4` `no_answer` abstentions with `0` fabricated support):
+- `bm25_reranked` (`bm25-v3`): `MRR@10 = 0.8485` (`0.5833` all-16), `nDCG@10 = 0.8621` (`0.5927` all-16), **`Recall@10 = 1.0000`**, `unjudged@10 = 51.33%`, warm `p50/p95 = 16.24 / 41.48 ms` (`22.17–25.45 ms` on `N`'s host)
+- `hybrid_rrf_reranked` (`tfidf_svd_vn_128d_v1`): `MRR@10 = 0.9091` (`0.6250` all-16), `nDCG@10 = 0.8694` (`0.5977` all-16), `Recall@10 = 0.9545`, `unjudged@10 = 54.00%`, warm `p50/p95 = 28.10 / 89.30 ms`
+- **Paired bootstrap (`hybrid_rrf_reranked - bm25_reranked`):** `delta_MRR@10 = +0.0606` (`[+0.0000, +0.1818]`), **`delta_nDCG@10 = +0.0073` (`[-0.0688, +0.1018]`, spans `0`)**, `delta_Recall@10 = -0.0455` (`[-0.1364, +0.0000]`).
+- `dense` (`MiniLM-L12-v2`, `fastembed`, unaffected by the BM25 fallback flag): `MRR@10 = 0.3039` (`dense_reranked = 0.6212`), `nDCG@10 = 0.2558` (`0.4965`), `warm p95 = 80.15 ms`, with **`84.67%` (`82.00%` reranked) unjudged top-10 rate** (conservative pooled lower bound because `qrels` was pooled from BM25 variants) and `~252 MB` external ONNX weights on top of `7.79 MB` `embeddings.npy`.
+- **Two-Contributor Decision (`N` & `K`):** Because `hybrid_rrf_reranked`'s `nDCG@10` 95% CI spans zero (`dev` also favors `bm25_reranked`) while `bm25_reranked` retains higher `Recall@10` (`1.0000`), `~2x` lower `p95`, and zero dense index build/RAM overhead (`QdrantDenseAdapter` remains unpopulated in live runtime, `qdrant_populated=false`), **`bm25-v3` + reranking remains the justified production default**.
 
-| Configuration (`5,000`-Doc Human-Verified Parity, `locked_test n=11`) | Test `MRR@10` (`All-16`) | Test `nDCG@10` (`All-16`) | Paired vs BM25 Baseline (`95% CI`) | Warm `p50` / `p95` (`100` req) |
-| --- | ---: | ---: | --- | ---: |
-| `bm25` (`bm25-v3`) | `0.8485` (`0.5833`) | `0.8624` (`0.5929`) | baseline | `3.17–3.38` / **`11.56–13.79 ms`** |
-| `bm25_reranked` (`bm25-v3`) | `0.8485` (`0.5833`) | `0.8644` (`0.5943`) | `dMRR=+0.0000`, `dnDCG=+0.0020` | `6.74–7.28` / **`22.17–25.45 ms`** |
-| `dense` (`tfidf_svd_vn_128d_v1`) | `0.5985` (`0.4115`) | `0.6539` (`0.4496`) | `dMRR=-0.2500`, `dnDCG=-0.2085` | `10.73` / `25.21 ms` |
-| `hybrid_rrf_reranked` (`tfidf_svd`) | **`0.9091`** (`0.6250`) | **`0.9049`** (`0.6221`) | `dMRR=+0.0606 [+0.0000,+0.1818]`, `dnDCG=+0.0404 [-0.0136,+0.1261]` | `19.49` / `49.93 ms` |
-| `dense` (`MiniLM-L12-v2`, `fastembed`) | `0.3039` (`0.2089`) | `0.2558` (`0.1758`) | `dMRR=-0.5446`, `dnDCG=-0.6066` | `37.84` / `80.15 ms` |
-| `hybrid_rrf_reranked` (`MiniLM`) | `0.7455` (`0.5125`) | `0.7698` (`0.5292`) | `dMRR=-0.1030 [-0.2909,+0.0303]`, `dnDCG=-0.0947 [-0.2491,+0.0148]` | `35.92` / `74.90 ms` |
+| Configuration (`5,000`-Doc Finalized `M2.2` Qrels Parity, `locked_test n=11`) | Test `MRR@10` (`All-16`) | Test `nDCG@10` (`All-16`) | Pooled `Recall@10` | Paired vs `bm25_reranked` (`95% CI`) | Warm `p50` / `p95` (`100` req) |
+| --- | ---: | ---: | ---: | --- | ---: |
+| `bm25` (`bm25-v3`, `restrict_to_df=True`) | `0.8485` (`0.5833`) | `0.8624` (`0.5929`) | `1.0000` | `dMRR=+0.0000`, `dnDCG=+0.0003` | `9.29` / `23.60 ms` |
+| `bm25_reranked` (`bm25-v3`, `restrict_to_df=True`) | `0.8485` (`0.5833`) | `0.8621` (`0.5927`) | **`1.0000`** | baseline | `16.24` / **`41.48 ms`** |
+| `dense` (`tfidf_svd_vn_128d_v1`) | `0.5985` (`0.4115`) | `0.6539` (`0.4496`) | `0.7803` | `dMRR=-0.2500`, `dnDCG=-0.2082` | `13.41` / `32.42 ms` |
+| `hybrid_rrf_reranked` (`tfidf_svd`, `restrict_to_df=True`) | **`0.9091`** (`0.6250`) | **`0.8694`** (`0.5977`) | `0.9545` | `dMRR=+0.0606 [+0.0000,+0.1818]`, `dnDCG=+0.0073 [-0.0688,+0.1018]` | `28.10` / `89.30 ms` |
+| `dense` (`MiniLM-L12-v2`, `fastembed`) | `0.3039` (`0.2089`) | `0.2558` (`0.1758`) | `0.2727` | `dMRR=-0.5446`, `dnDCG=-0.6063` | `37.84` / `80.15 ms` |
+| `dense_reranked` (`MiniLM-L12-v2`, `fastembed`) | `0.6212` (`0.4271`) | `0.4965` (`0.3413`) | `0.4091` | `dMRR=-0.2273`, `dnDCG=-0.3656` | — / — |
 
-## Prior Conclusion (`v2_pilot` Initial Draft Run — 2026-11-19, preserved)
+## Prior Conclusion (`v2_pilot` + `fastembed` Upgrade — 2026-11-19, dated pre-`M2.2`-closure)
 
 **Scientific & resource outcome:** Both **`tfidf_svd_vn_128d_v1`** (`dense-svd-v2`) and pretrained CPU ONNX **`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`** (`dense-minilm-v1` via `fastembed==0.9.1`) stay comfortably inside `M6.1` CPU budgets (`<= 5,000` records, `<= 8,192 MiB` RAM, warm `p95 <= 1,000 ms`), **while `bm25-v3` + rule reranking consistently outperforms dense and `hybrid_rrf` on Vietnamese F&B `v2_pilot` queries** ([m6_1_v2_pilot.json](../../../../artifacts/benchmarks/m6_1_v2_pilot.json)). Therefore, **`bm25-v3` remains the recommended production default**, and `M6.1` stays **`IN_PROGRESS`** pending `K`/`N` human verification of `qrels_pooled_draft.jsonl`, multimodal scope (`M4.G`/`M5.G`), and `K` review.
 
@@ -137,7 +137,10 @@ Across `100` warm CPU requests (`concurrency = 1`, `4` logical CPUs, `15.33 GB` 
 | File | Purpose |
 | --- | --- |
 | [workflow.md](evidence/workflow.md) | Skill/process provenance, decisions, and command receipts |
-| [m6_1_dense_hybrid_spike.json](../../../../artifacts/benchmarks/m6_1_dense_hybrid_spike.json) | Complete paired parity, bootstrap CI, RAM, build time, and 100-req CPU latency receipt |
+| [khuong_peer_review.md](evidence/khuong_peer_review.md), [nguyen_text_spike_signoff_receipt.json](evidence/nguyen_text_spike_signoff_receipt.json) | `K`'s adversarial parity/cost peer review and `N`'s finalized human-qrels text-spike sign-off |
+| [m6_1_v2_final_qrels_parity.json](../../../../artifacts/benchmarks/m6_1_v2_final_qrels_parity.json), [m6_1_v2_pilot_human_verified.json](../../../../artifacts/benchmarks/m6_1_v2_pilot_human_verified.json) | Post-fix `restrict_to_df=True` live `dense-svd-v2` parity & `N`'s `tfidf_svd`+`MiniLM` run on `408/408` human qrels |
+| [khuong_m6_1_qrels_and_parity_audit.json](evidence/khuong_m6_1_qrels_and_parity_audit.json), [red-k-review-fixes.log](evidence/red-k-review-fixes.log), [green-k-review-fixes.log](evidence/green-k-review-fixes.log) | `K`'s pool-coverage / unjudged-rate audit and TDD `RED -> GREEN` (`18/18` passed) logs |
+| [m6_1_dense_hybrid_spike.json](../../../../artifacts/benchmarks/m6_1_dense_hybrid_spike.json), [m6_1_v2_pilot.json](../../../../artifacts/benchmarks/m6_1_v2_pilot.json) | Preserved v1 weak-label and v2 pre-signoff benchmark receipts |
 | [dense-receipt.json](../../../../artifacts/indexes/dense-svd-v1/dense-receipt.json) | SHA256 manifest for populated `5,000`-record dense index (`14,898,224` bytes) |
 | [red-m6_1-tests.log](evidence/red-m6_1-tests.log) | TDD RED import failure prior to implementation |
 | [green-m6_1-tests.log](evidence/green-m6_1-tests.log) | Post-fix `test_dense_hybrid_retrieval.py` output (`6 passed in 1.07s`) |
@@ -150,6 +153,9 @@ Across `100` warm CPU requests (`concurrency = 1`, `4` logical CPUs, `15.33 GB` 
 
 | Check | Result | Scope / evidence |
 | --- | --- | --- |
+| `python3 -m pipelines.benchmark_retrieval.dense_hybrid_v2_pilot` (`restrict_to_df=True`, finalized `M2.2` qrels) | PASS (`bm25_reranked Recall@10=1.0`, `p95=41.48 ms`) | True `5,000`-doc parity on `408/408` human qrels (`9a478e54...`); [m6_1_v2_final_qrels_parity.json](../../../../artifacts/benchmarks/m6_1_v2_final_qrels_parity.json) |
+| `python3 -m pytest tests/unit/test_dense_hybrid_retrieval.py tests/unit/test_resource_measurements.py -v` | PASS (`18 passed in 2.09s`) | `K`-review `restrict_to_df=True` & `>5k` Qdrant filter guards; [green-k-review-fixes.log](evidence/green-k-review-fixes.log) |
+| `python3 -m pytest -v` & `python3 -m mypy packages apps pipelines` (merged `main`) | PASS (`194 passed`, `100 source files`) | Full post-merge verification on `main` |
 | `.venv/bin/python -m pipelines.build_dense_sparse_index.dense --corpus data/corpus/20261117_recovered_v1 --output artifacts/indexes/dense-svd-v1 --max-records 5000 --dimension 128` | PASS (`19.418 s`, `1,547.24 MiB` peak) | Built populated `5,000`-doc dense index (`14,898,224` B); [dense-receipt.json](../../../../artifacts/indexes/dense-svd-v1/dense-receipt.json) |
 | `.venv/bin/python -m pipelines.benchmark_retrieval.dense_hybrid_pilot` | PASS (`p95 <= 28.54 ms <= 1000 ms`, `798.89 MiB <= 8 GiB`) | Exact `5,000`-doc parity (`bm25`, `dense`, `hybrid_rrf`), paired bootstrap CIs, 100 warm reqs; [m6_1_dense_hybrid_spike.json](../../../../artifacts/benchmarks/m6_1_dense_hybrid_spike.json) |
 | `.venv/bin/python -m pytest tests/unit/test_dense_hybrid_retrieval.py -v` | PASS (`6 passed`) | Encoder, `LocalDenseIndex`, Qdrant upsert, `bm25`/`dense`/`hybrid_rrf` parity, cap, CI; [green-m6_1-tests.log](evidence/green-m6_1-tests.log) |
@@ -162,17 +168,17 @@ Across `100` warm CPU requests (`concurrency = 1`, `4` logical CPUs, `15.33 GB` 
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| `M2.2` frozen human-judged queries not yet published | Current `15` queries are keyword/metadata weak labels (`queries.jsonl`), favoring lexical `BM25` over semantic similarity | Re-run `dense_hybrid_pilot` once `M2.2` freezes the `40`-query human-judged set (`20` dev / `20` test) |
-| Optional neural E5 (`fastembed`) not installed in base `.venv` | Baseline measured `tfidf_svd_vn_128d_v1`; pretrained multilingual E5 requires optional `fastembed` install | Optionally install `fastembed` and benchmark `--backend fastembed` side-by-side |
-| Multimodal segments & `K` peer review pending | Full `M6.1` closure also waits for `M4.G`/`M5.G` (if multimodal included) and `K` parity/cost review | Hand off text-only spike on `feat/m6.1-dense-hybrid-spike` to `K` |
+| Optional `fastembed==0.9.1` `hybrid_rrf (MiniLM)` live re-run after `restrict_to_df=True` fix | Pure `dense`/`dense_reranked` `MiniLM` rankings were rescored directly against finalized `M2.2` qrels (`unjudged@10 = 84.67%`), while `hybrid_rrf (MiniLM)` requires an environment with `fastembed` installed | `N` optionally runs 1-command `dense_hybrid_v2_pilot` with `dense-minilm-v1` on `.venv` (`fastembed` installed); does not affect `bm25-v3` default decision |
+| High unjudged rate (`82%–88%`) on unpooled neural `MiniLM` top-10 hits | Pooled metrics treat unjudged documents as `0`, making `MiniLM` scores conservative lower bounds rather than exhaustive semantic error | Reported transparently via `unjudged_rate_at_10` in [m6_1_v2_final_qrels_parity.json](../../../../artifacts/benchmarks/m6_1_v2_final_qrels_parity.json) and [khuong_peer_review.md](evidence/khuong_peer_review.md) |
+| Live Qdrant server unpopulated (`qdrant_populated=false`) & conditional multimodal segments pending `M4.G`/`M5.G` | Local CPU hybrid retrieval uses populated `LocalDenseIndex` (`5,000` vectors); multimodal timestamped segments await `M4.G`/`M5.G` | Revisit multimodal segment indexing only if `M4.G` and `M5.G` pass |
 
 ## Acceptance and handoff
 
 | Task criterion | Result | Evidence |
 | --- | --- | --- |
-| One CPU-feasible model & populated versioned index over `<= 5,000` records | Met (`tfidf_svd_vn_128d_v1`, `5,000` docs, `14.21 MiB`) | [dense-receipt.json](../../../../artifacts/indexes/dense-svd-v1/dense-receipt.json) |
-| Identical corpus/filter/query parity across `bm25`, `dense`, and `hybrid_rrf` | Met (`restrict_to_df=True`) | [service.py](../../../../packages/retrieval/service.py), [dense_hybrid_pilot.py](../../../../pipelines/benchmark_retrieval/dense_hybrid_pilot.py) |
-| Paired `nDCG@10`/`MRR@10` deltas + bootstrap CI, build bytes/time, RAM `<= 8 GiB`, warm `p95 <= 1,000 ms` | Met (under `v1` weak labels; `BM25` retained as simplest default) | [m6_1_dense_hybrid_spike.json](../../../../artifacts/benchmarks/m6_1_dense_hybrid_spike.json) |
-| Re-run on frozen human-judged `M2.2` test & `K` peer review | Pending (`M2.2` not yet closed) | Ready for frozen `M2.2` test plug-in & `K` review |
+| CPU-feasible models & populated versioned indexes over `<= 5,000` records | Met (`dense-svd-v2` `14.90 MB` incl. SVD weights; `dense-minilm-v1` `7.80 MB` + `~252 MB` cached ONNX weights) | [dense-svd-v2](../../../../artifacts/indexes/dense-svd-v2/dense-receipt.json), [dense-minilm-v1](../../../../artifacts/indexes/dense-minilm-v1/dense-receipt.json) |
+| Identical corpus/filter/query parity across `bm25`, `dense`, and `hybrid_rrf` (`restrict_to_df=True`) | Met (`K` fixed omitted `restrict_to_df=True` & verified via TDD) | [dense_hybrid_v2_pilot.py](../../../../pipelines/benchmark_retrieval/dense_hybrid_v2_pilot.py), [green-k-review-fixes.log](evidence/green-k-review-fixes.log) |
+| Paired `nDCG@10`/`MRR@10` deltas + bootstrap CI on frozen human-judged `M2.2` test, RAM `<= 8 GiB`, warm `p95 <= 1,000 ms` | Met (`p95 <= 104.31 ms`, `peak RSS <= 3,265 MiB`; `bm25-v3` retained as simplest default) | [m6_1_v2_final_qrels_parity.json](../../../../artifacts/benchmarks/m6_1_v2_final_qrels_parity.json), [khuong_m6_1_qrels_and_parity_audit.json](evidence/khuong_m6_1_qrels_and_parity_audit.json) |
+| Independent `K` parity & cost peer review | Met (`K` review complete; conditional multimodal scope awaits `M4.G`/`M5.G`) | [khuong_peer_review.md](evidence/khuong_peer_review.md) |
 
-Final task status: **IN_PROGRESS** (`M6.1` text-only CPU spike built, benchmarked, and verified on `feat/m6.1-dense-hybrid-spike`; awaiting `M2.2` human-judged test set, optional multimodal phase, and `K` peer review).
+Final task status: **IN_PROGRESS** (text-only CPU dense/hybrid parity on finalized `M2.2` two-human qrels and `K` peer review complete; **`bm25-v3` + reranking confirmed as production default**; task remains open only for optional `fastembed` `hybrid_rrf` refresh and conditional post-`M4.G`/`M5.G` multimodal check).

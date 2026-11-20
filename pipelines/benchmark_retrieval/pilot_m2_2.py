@@ -145,6 +145,8 @@ def evaluate_pilot_split(
     zero_relevant_pool_count = 0
     uncertain_judgment_count = 0
     total_judged_pairs = 0
+    answerable_retrieved_slots = 0
+    answerable_unjudged_slots = 0
 
     no_answer_count = 0
     no_answer_abstained = 0
@@ -201,6 +203,9 @@ def evaluate_pilot_split(
             continue
 
         answerable_count += 1
+        q_unjudged = sum(1 for vid in retrieved_ids if vid not in q_judgments)
+        answerable_retrieved_slots += len(retrieved_ids)
+        answerable_unjudged_slots += q_unjudged
         if bool(resp.insufficient_evidence):
             answerable_abstained_count += 1
         if not rel_ids:
@@ -219,6 +224,7 @@ def evaluate_pilot_split(
                     "abstain_reason": resp.abstain_reason,
                     "relevant_pool_size": 0,
                     "uncertain_in_pool": q_uncertain,
+                    f"unjudged_in_top_{k}": q_unjudged,
                     "zero_relevant_pool": True,
                     f"pooled_recall_at_{k}": 0.0,
                     f"precision_at_{k}": 0.0,
@@ -251,6 +257,7 @@ def evaluate_pilot_split(
                 "abstain_reason": resp.abstain_reason,
                 "relevant_pool_size": len(rel_ids),
                 "uncertain_in_pool": q_uncertain,
+                f"unjudged_in_top_{k}": q_unjudged,
                 "zero_relevant_pool": False,
                 **qm,
                 "retrieved_ids": retrieved_ids,
@@ -284,6 +291,13 @@ def evaluate_pilot_split(
         "total_judged_pairs": total_judged_pairs,
         "uncertain_judgment_count": uncertain_judgment_count,
         "uncertain_judgment_rate": round(uncertain_judgment_count / max(total_judged_pairs, 1), 4),
+        f"unjudged_in_top_{k}_count": answerable_unjudged_slots,
+        f"retrieved_answerable_top_{k}_slots": answerable_retrieved_slots,
+        f"unjudged_rate_at_{k}": round(
+            answerable_unjudged_slots / max(answerable_retrieved_slots, 1), 4
+        )
+        if answerable_retrieved_slots
+        else 0.0,
         f"pooled_recall_at_{k}": round(sum(recalls) / denom, 4) if recalls else 0.0,
         f"precision_at_{k}": round(sum(precisions) / denom, 4) if precisions else 0.0,
         f"mrr_at_{k}": round(sum(mrrs) / denom, 4) if mrrs else 0.0,

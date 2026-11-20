@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 18 items
+
+tests/unit/test_dense_hybrid_retrieval.py ..........                     [ 55%]
+tests/unit/test_resource_measurements.py ........                        [100%]
+
+============================== 18 passed in 2.09s ==============================

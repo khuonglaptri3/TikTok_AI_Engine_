@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 8 items
+
+tests/unit/test_m5_1_comment_indicators.py ...FFFFF                      [100%]
+
+=================================== FAILURES ===================================
+___ test_k_review_five_to_seven_syllable_vietnamese_organic_inquiries_exempt ___
+AssertionError: q1 falsely flagged: comment_id='q1' text='Cho mình xin địa chỉ' observable_label='observable_duplicate'
+
+_ test_k_review_spam_isolation_template_visibility_transitive_clusters_and_19digit_id _
+AssertionError: assert 'observable_duplicate' == 'no_indicator_observed'
+
+_ test_k_review_held_out_third_gate_reachable_strict_labels_and_recall_support _
+TypeError: evaluate_comment_indicator_metrics() got an unexpected keyword argument 'total_annotated_pool_count'
+
+___ test_k_review_blinded_video_grouped_pool_and_gold_parquet_reconstruction ___
+ImportError: cannot import name 'reconstruct_observable_predictions' from 'packages.seeding.evaluation'
+
+____ test_k_review_empty_after_filter_abstention_and_demo_bare_url_parsing _____
+ImportError: cannot import name 'parse_demo_comment_lines' from 'apps.demo.presentation'
+
+========================= 5 failed, 3 passed in 5.75s ==========================

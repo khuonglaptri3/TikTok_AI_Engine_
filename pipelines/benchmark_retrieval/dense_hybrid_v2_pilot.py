@@ -98,6 +98,7 @@ def benchmark_dense_backend(
         df_videos=df_parity,
         bm25_dir=bm25_dir,
         dense_dir=dense_dir,
+        restrict_to_df=True,
     )
 
     splits_out: dict[str, Any] = {}

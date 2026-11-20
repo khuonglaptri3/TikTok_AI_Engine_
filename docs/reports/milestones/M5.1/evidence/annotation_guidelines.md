@@ -10,8 +10,8 @@
 2. `noise_or_empty`
    - Zero lexical content words (emoji-only, punctuation-only, whitespace, or unintelligible character repetition).
 3. `observable_duplicate`
-   - Near-identical multi-word comment (`>= 5` words) repeated across distinct `author_handle` accounts within the same video thread or batch (`Jaccard >= 0.72` or clear copy-paste template).
-   - **Organic-duplicate exclusion:** Short ordinary diner expressions (`< 5` words, e.g., `"ngon quá"`, `"xin địa chỉ"`, `"quán ở đâu"`, `"nhìn hấp dẫn quá"`) repeated by different users MUST be labeled `no_indicator_observed`, **not** `observable_duplicate`, unless paired with suspicious external contact links.
+   - Near-identical multi-word comment (`>= 5` tokens) repeated across distinct `author_handle` accounts **strictly within the same video thread** (`Jaccard >= 0.72` or clear copy-paste duplicate).
+   - **Organic-duplicate exclusion:** Short ordinary diner expressions (`< 5` tokens, e.g., `"ngon quá"`, `"xin địa chỉ"`, `"quán ở đâu"`, `"nhìn hấp dẫn quá"`) and ordinary 5–8 syllable Vietnamese venue/price inquiries (`"cho mình xin địa chỉ"`, `"quán này ở đâu vậy"`, `"cho mình xin địa chỉ quán với/ạ"`) repeated by different users MUST be labeled `no_indicator_observed`, **not** `observable_duplicate`, unless paired with suspicious external contact links.
 4. `template_phrase_match`
    - Recognizable verbatim promotional canned template wording shared without personal menu/visit detail.
 5. `no_indicator_observed`

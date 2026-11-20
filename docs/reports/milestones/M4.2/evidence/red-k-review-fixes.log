@@ -1,0 +1,62 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 11 items
+
+tests/unit/test_m4_2_disclosure.py .......FFFF                           [100%]
+
+=================================== FAILURES ===================================
+____ test_k_review_inline_caption_hashtag_bigram_and_prompt_leakage_blocked ____
+
+    def test_k_review_inline_caption_hashtag_bigram_and_prompt_leakage_blocked() -> None:
+        from packages.absa.disclosure_eval import _tokenize_for_study
+        from pipelines.audit_m4_2_disclosure.llm_draft_annotate import build_blinded_disclosure_prompt
+    
+        toks = _tokenize_for_study(
+            "Review lẩu ngon ưu đãi #ad #quảngcáo #sponsored #tàitrợ quán mới",
+            ["monngon", "ad", "quảngcáo", "sponsored"],
+        )
+        forbidden_fragments = {"ad", "ads", "quangcao", "quảngcáo", "qc", "sponsored", "taitro", "tàitrợ"}
+        for tok in toks:
+            parts = set(tok.removeprefix("tag_").split("_"))
+>           assert parts.isdisjoint(forbidden_fragments), f"Leaked forbidden disclosure token/bigram: {tok}"
+E           AssertionError: Leaked forbidden disclosure token/bigram: ad
+E           assert False
+
+tests/unit/test_m4_2_disclosure.py:291: AssertionError
+_________ test_k_review_negation_word_boundary_and_disclosure_hashtags _________
+
+    def test_k_review_negation_word_boundary_and_disclosure_hashtags() -> None:
+        english_sub = analyze_disclosure_and_promo(
+            caption="Ideal spot for morning pho in Hanoi",
+            transcript="Nước dùng phở thanh ngọt tự nhiên",
+        )
+>       assert english_sub.matched_indicators == []
+E       AssertionError: assert ['discount_voucher:deal'] == []
+
+tests/unit/test_m4_2_disclosure.py:323: AssertionError
+_______ test_k_review_author_cluster_bootstrap_and_hashseed_determinism ________
+
+    def test_k_review_author_cluster_bootstrap_and_hashseed_determinism() -> None:
+        ci_row = _bootstrap_metric_ci(y_true, y_prob, n_boot=300, seed=42)
+>       ci_cluster = _bootstrap_metric_ci(y_true, y_prob, groups=authors, n_boot=300, seed=42)
+E       TypeError: _bootstrap_metric_ci() got an unexpected keyword argument 'groups'
+
+tests/unit/test_m4_2_disclosure.py:350: TypeError
+_____ test_k_review_full_transcript_workbook_and_trust_api_hashtags_flags ______
+
+        sampled = sample_historical_review_100(pd.DataFrame(rows), seed=42)
+        assert len(sampled[0]["transcript_excerpt"]) == 600
+        assert closing_cta not in sampled[0]["transcript_excerpt"]
+>       assert closing_cta in sampled[0]["transcript_full"]
+E       KeyError: 'transcript_full'
+
+tests/unit/test_m4_2_disclosure.py:386: KeyError
+=========================== short test summary info ============================
+FAILED tests/unit/test_m4_2_disclosure.py::test_k_review_inline_caption_hashtag_bigram_and_prompt_leakage_blocked
+FAILED tests/unit/test_m4_2_disclosure.py::test_k_review_negation_word_boundary_and_disclosure_hashtags
+FAILED tests/unit/test_m4_2_disclosure.py::test_k_review_author_cluster_bootstrap_and_hashseed_determinism
+FAILED tests/unit/test_m4_2_disclosure.py::test_k_review_full_transcript_workbook_and_trust_api_hashtags_flags
+========================= 4 failed, 7 passed in 26.74s =========================

@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+rootdir: /home/intern-tdkhuong/Desktop/TikTok_AI_Engine_
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 11 items
+
+tests/unit/test_m5_1_comment_indicators.py ........                      [ 72%]
+tests/unit/test_incremental_absa_seeding.py ...                          [100%]
+
+============================== 11 passed in 9.80s ==============================

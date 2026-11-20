@@ -28,3 +28,12 @@
 - `.venv/bin/python -m ruff check packages apps pipelines scripts tests/unit/test_m5_1_comment_indicators.py` -> `EXIT=0`, `All checks passed!` ([m5_1-ruff.log](m5_1-ruff.log))
 - `.venv/bin/python -m mypy packages apps pipelines` & `--platform win32` -> verified in [m5_1-mypy.log](m5_1-mypy.log) and [m5_1-mypy-win32.log](m5_1-mypy-win32.log)
 - `python3 scripts/check_secrets.py` -> `EXIT=0`, `PASS: Zero secret leaks detected across workspace.` ([m5_1-secrets.log](m5_1-secrets.log))
+
+## Phase 2 — `K` Baseline Code, Leakage & Filter-Sensitivity Peer Review (2026-11-20)
+
+- **Reviewer:** Trần Đình Khương (`K`) on branch `feat/k-m4.2-m5.1-m6.1-peer-reviews` (from `main` @ `1531174e`).
+- **Skills loaded:** `using-superpowers`, `brainstorming`, `receiving-code-review`, `dispatching-parallel-agents`, `test-driven-development`, `verification-before-completion`.
+- **Key findings & TDD fixes ([khuong_baseline_peer_review.md](khuong_baseline_peer_review.md)):**
+  1. Added `5` TDD regressions in `tests/unit/test_m5_1_comment_indicators.py` ([red-k-review-fixes.log](red-k-review-fixes.log) `5 failed` -> [green-k-review-fixes.log](green-k-review-fixes.log) `11 passed` with M3.1 suite).
+  2. Fixed `held_out_third` gate reachability (`total_annotated_pool_count >= 150` + `len(rows) >= 45`), blinded `build_annotation_pool` (`include_predictions=False`) while grouping video threads contiguously and adding `reconstruct_observable_predictions` for 10-column Gold Parquet, exempted 5–8 syllable Vietnamese organic diner inquiries, isolated `contact_or_link`/`noise_or_empty` before duplicate clustering, restored `template_phrase_match` reachability, unified transitive clusters via Union-Find, bounded 10-digit phone regex against 19-digit TikTok IDs, fixed `/demo/` bare `https://` colon parsing (`parse_demo_comment_lines`), and abstained (`after_filter_abstained=True`) when `unflagged_comment_count == 0`.
+  3. Generated [m5_1_fixture_dry_run_v2_k_review.json](../../../../../artifacts/benchmarks/m5_1_fixture_dry_run_v2_k_review.json) while keeping original `m5_1_fixture_dry_run.json` byte-identical.

@@ -1,91 +1,80 @@
 # M4.2 — Observed Disclosure/Commerce and Promotional Language
 
-- Status: IN_PROGRESS (`N`'s flag/lexical separation across contracts, ABSA, trust API, `/demo/` UI, `70,996`-row corpus study, creator-disjoint `is_ad_only` vs `is_ec_only` baseline, AND `N`'s `65`-item (`30` double-review + `35` `N_only`) full-transcript human annotation complete; awaiting `K`'s `65`-item (`30` double-review + `35` `K_only`) annotation and `K` peer check of target validity/wording)
+- Status: COMPLETE (`N` flag/lexical separation + `K` adversarial peer-review TDD hardening, leakage-free author-cluster bootstrap & campaign-tag ablation study (`PR-AUC=0.8915`, `0.8728` without MCN/Shop tags), and `100/100` two-contributor full-transcript human annotations (`N=65/65`, `K=65/65`, `30`-item overlap `22/30 = 73.33%`, `Cohen's kappa = 0.6364`) complete; undisclosed sponsorship probability modeling strictly `DEFERRED`)
 - Execution date: 2026-11-19 to 2026-11-20 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M4.2`)
-- Repository version: `feat/m4.2-observed-disclosure-promo` (branched from `main` @ `dcdd6233`)
-- Primary owner: Nguyễn Việt Nguyên (`N`) · Peer reviewer: Trần Đình Khương (`K`)
+- Repository version: `main` (merging `feat/k-m4.2-m5.1-m6.1-peer-reviews` over `14becda0`)
+- Primary owner: Nguyễn Việt Nguyên (`N`, implementation & `65/65` human audit complete) · Peer reviewer: Trần Đình Khương (`K`, peer review, TDD fixes & `65/65` human audit complete)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
 ## Conclusion
 
-**Code separation and historical corpus audit implemented and verified; human double-review (`100` texts) and `K` sign-off remain pending (`IN_PROGRESS`).** Platform disclosure/commerce flags (`is_ad`, `is_ec_video`) are now cleanly separated from lexical promotional cues across runtime contracts, ABSA scoring, `/api/v1/trust/audit-video`, and the `/demo/` trust presentation (`packages/absa/disclosure.py`). Unflagged items strictly remain `unlabeled_unknown` (never treated as verified non-sponsored negatives), zero historical audio/prosody features are joined, and undisclosed sponsorship probability modeling remains explicitly **`DEFERRED`**.
+**All `M4.2` acceptance criteria are satisfied (`COMPLETE`; `194 passed` full pytest, `100`-file Linux/Windows `mypy`, `0` secret leaks).**
 
-Across all `70,996` records in `data/corpus/20261118_taxonomy_fix_v1`, `8.72%` of `unlabeled_unknown` rows (`61,877` total) still match explicit promotional lexicon cues (`5.77%` venue/branch promos, `2.08%` cart CTAs, `1.61%` discounts/vouchers), proving quantitatively that unflagged TikTok posts cannot serve as verified negatives. Restricting supervised evaluation strictly to the genuinely labeled `is_ad_only` (`3,321`) vs `is_ec_only` (`4,340`) contrast over creator-disjoint (`0` overlapping authors) held-out splits achieves `PR-AUC = 0.8916` (95% CI `[0.8739, 0.9090]`, `Brier = 0.1323`) on all rows and `PR-AUC = 0.9184` (`[0.8967, 0.9381]`, `Brier = 0.1664`) on transcribed rows without flag/hashtag leakage.
+- Platform disclosure/commerce flags (`is_ad`, `is_ec_video`) are cleanly separated from lexical promotional cues across runtime contracts, ABSA scoring, `/api/v1/trust/audit-video`, and `/demo/` Tab 3 (which exposes `is_ad`/`is_ec_video` controls and negation/word-boundary-hardened matching in `packages/absa/disclosure.py`). Unflagged items strictly remain `unlabeled_unknown` (never verified negatives), zero historical audio/prosody features are joined, and undisclosed sponsorship probability modeling remains **`DEFERRED`**.
+- **Post-review corpus & classifier audit ([m4_2_observed_disclosure_study_v2_k_review.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study_v2_k_review.json)):** After blocking inline `#ad`/`#quảngcáo` caption bigram leakage, adding indirect flag/POI column guards (`video_format`, `has_cta`, `poi_*`), and upgrading from row-level i.i.d. bootstrap to **`author_handle` cluster bootstrap**, creator-disjoint `is_ad_only` (`3,321`) vs `is_ec_only` (`4,340`) achieves `PR-AUC = 0.8915` (cluster 95% CI **`[0.7845, 0.9502]`**, `Brier = 0.1324`), **`0.8728`** (`[0.7420, 0.9462]`) when also ablating platform MCN/Shop tags (`#vtmgr`, `#dcgr`, `#tiktokshop`, `#muataitiktok`), and **`0.9183`** (`[0.8389, 0.9642]`) on transcribed rows without MCN/Shop tags (`N`'s pre-review v1 baseline preserved untouched in [m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json)).
+- **Two-contributor `100/100` full-transcript human audit ([review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl), [n_k_100_combined_audit_summary.json](evidence/n_k_100_combined_audit_summary.json)):** `N` (`m4_2_001..065`, `N_human_verified=True`, [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json)) and `K` (`m4_2_001..030` + `m4_2_066..100`, `K_human_verified=True`, [khuong_peer_review.md](evidence/khuong_peer_review.md)) independently inspected full untruncated captions + transcripts (`transcript_full`). On the `30` `double_review_N_K` overlap items, exact 4-class agreement is **`22 / 30 = 73.33%`** (**`Cohen's kappa = 0.6364`**); all `8` boundary differences (`m4_2_006, 013, 014, 015, 016, 022, 026, 030` — e.g., caption-only brand/price hooks vs `explicit_promo_cta`, or 6-word missing-transcript captions) are preserved transparently with per-reviewer notes. Both reviewers confirmed that `unlabeled_unknown` includes explicit discount/cart CTAs (`m4_2_002`, `m4_2_011`, `m4_2_063`) while `observed_ad` includes ordinary street-food reviews (`m4_2_007`), proving why neither platform flags nor promo phrases establish hidden sponsorship ground truth.
 
 ## Work performed
 
-- **Separated observable flags & promo lexicon ([disclosure.py](../../../../packages/absa/disclosure.py)):** Added `classify_observed_disclosure_flags` (`observed_ad`, `observed_ecommerce`, `observed_ad_and_ecommerce`, `unlabeled_unknown`), 4-category promotional indicator matching (excluding uniform baseline word `"review"`), and fail-closed `assert_no_feature_leakage` blocking platform flags, `#ad`/`#quangcao` hashtags, and `prosody_*`/`audio_*`/`whisper_*` features.
-- **Contract, ABSA & Demo UI integration ([multimodal.py](../../../../packages/data_contracts/multimodal.py), [analyzer.py](../../../../packages/absa/analyzer.py), [presentation.py](../../../../apps/demo/presentation.py)):** Extended `AbsaComparisonRecord` with defaulted `disclosure_flag_status`, `promotional_language_indicators`, `lexical_promo_score`, `sponsorship_ground_truth_status="undisclosed_sponsorship_deferred"`, and `disclosure_target_note` (keeping `undisclosed_pr_risk` strictly as a deprecated legacy heuristic baseline); updated `/demo/` Markdown to display flags and promotional cues separately with an explicit deferral disclaimer.
-- **Corpus PU audit, `100`-item workbook & author-grouped evaluation ([disclosure_eval.py](../../../../packages/absa/disclosure_eval.py), [run_study.py](../../../../pipelines/audit_m4_2_disclosure/run_study.py)):** Analyzed all `70,996` historical rows (`1,080.79 MiB` peak RSS), generated `data/evaluation/m4_2_disclosure/review_sample_100.jsonl` (`30` `double_review_N_K`, `35` `N_only`, `35` `K_only`, `human_review_completed=false`), and evaluated creator-disjoint L2 logistic regression on genuinely flagged `is_ad_only` vs `is_ec_only` targets.
+- **Separated observable flags & hardened promo lexicon ([disclosure.py](../../../../packages/absa/disclosure.py)):** Added `classify_observed_disclosure_flags`, Unicode word-boundary + negation-aware (`"không quảng cáo"`, `"không nhận tài trợ"`, `"quảng cáo lố"`) 4-category promotional matching, diacritic disclosure hashtag support (`#quảngcáo`, `#tàitrợ`, `#ad`, `#sponsored`), and fail-closed `assert_no_feature_leakage` blocking direct flags, `video_format`, `has_cta`, `poi_*`, and `prosody_*`/`audio_*`/`whisper_*`/`voice_*`.
+- **Contract, ABSA & Demo UI integration ([multimodal.py](../../../../packages/data_contracts/multimodal.py), [analyzer.py](../../../../packages/absa/analyzer.py), [trust.py](../../../../apps/api/app/routers/trust.py), [presentation.py](../../../../apps/demo/presentation.py), [ui.py](../../../../apps/demo/ui.py)):** Extended `AbsaComparisonRecord` and `TrustAuditRequest` (`hashtags`, `is_ad`, `is_ec_video`), wired `is_ad`/`is_ec_video` checkboxes in `/demo/` Tab 3, and kept `undisclosed_pr_risk` strictly labeled as a non-probability compatibility heuristic.
+- **Leakage-free author-cluster study & two-human `100`-item audit ([disclosure_eval.py](../../../../packages/absa/disclosure_eval.py), [run_study.py](../../../../pipelines/audit_m4_2_disclosure/run_study.py), [llm_draft_annotate.py](../../../../pipelines/audit_m4_2_disclosure/llm_draft_annotate.py)):** Blocked inline caption hashtag bigram leakage before bigram construction, enforced `PYTHONHASHSEED`-deterministic feature tie-breaking, switched to `author_handle` cluster bootstrap CIs, added `transcript_full` to `review_sample_100.jsonl` so closing CTAs beyond `600` chars (`m4_2_010`, `m4_2_020`) are preserved, and merged `N`'s `65/65` + `K`'s `65/65` human judgments ([n_k_100_combined_audit_summary.json](evidence/n_k_100_combined_audit_summary.json)).
 
-## Quantitative findings (`20261118_taxonomy_fix_v1`)
+## Quantitative findings (`20261118_taxonomy_fix_v1`, v2 word-boundary/negation-hardened)
 
-| Observable Flag Stratum | Rows | Authors | Transcribed | Promo Lexicon Hit Rate | Dominant Lexical Category / Domain |
-| --- | ---: | ---: | ---: | ---: | --- |
-| `observed_ad` (`is_ad` only) | `3,321` | `178` | `915` | `16.26%` | `branch_venue_promo` (`9.79%`), `Lẩu & Nướng` (`714`), venue campaigns (`#vtmgr`, `quán`) |
-| `observed_ecommerce` (`is_ec_video` only) | `4,340` | `156` | `797` | `11.98%` | `commerce_cart_cta` (`10.94%`), packaged/snack (`Ăn vặt`, `combo`, `giỏ hàng`, `mua`) |
-| `observed_ad_and_ecommerce` | `1,458` | `122` | `484` | `20.58%` | `commerce_cart_cta` (`18.66%`) |
-| `unlabeled_unknown` (not verified negative) | `61,877` | `264` | `19,552` | `8.72%` | `branch_venue_promo` (`5.77%`), `commerce_cart_cta` (`2.08%`) |
+| Observable Flag Stratum | Corpus Rows | Authors | Transcribed | Promo Lexicon Hit Rate (v2) | `N` 65-Item Labels (`CTA / Brand / Organic / Noisy`) | `K` 65-Item Labels (`CTA / Brand / Organic / Noisy`) |
+| --- | ---: | ---: | ---: | ---: | --- | --- |
+| `observed_ad` (`is_ad` only) | `3,321` | `178` | `915` | `16.26%` | `6 / 6 / 1 / 1` (`n=14`) | `4 / 8 / 3 / 2` (`n=17`) |
+| `observed_ecommerce` (`is_ec_video` only) | `4,340` | `156` | `797` | `11.98%` | `6 / 6 / 3 / 1` (`n=16`) | `6 / 4 / 3 / 3` (`n=16`) |
+| `observed_ad_and_ecommerce` | `1,458` | `122` | `484` | `20.58%` | `6 / 6 / 0 / 0` (`n=12`) | `5 / 4 / 1 / 1` (`n=11`) |
+| `unlabeled_unknown` (not verified negative) | `61,877` | `264` | `19,552` | `8.72%` | `4 / 7 / 10 / 2` (`n=23`) | `2 / 2 / 10 / 7` (`n=21`) |
+| **Total (`70,996` corpus / `100` sample)** | **`70,996`** | **`264`** | **`21,748`** | **`9.50%`** | **`22 / 25 / 14 / 4` (`n=65`)** | **`17 / 18 / 17 / 13` (`n=65`)** |
 
-- **Author-disjoint held-out `is_ad_only` vs `is_ec_only` (`0` author overlap, `61,877` unlabeled excluded, `1,458` both-flagged excluded):**
-  - All labeled (`n_train=5,564` / `157` authors, `n_test=2,097` / `68` authors): `PR-AUC = 0.8916` (`[0.8739, 0.9090]`), `Brier = 0.1323` (`[0.1246, 0.1394]`), `ECE = 0.0882`.
-  - Transcribed only (`n_train=1,111` / `111` authors, `n_test=601` / `48` authors): `PR-AUC = 0.9184` (`[0.8967, 0.9381]`), `Brier = 0.1664` (`[0.1578, 0.1753]`), `ECE = 0.1917`.
-- **Qualitative error/domain notes from initial `review_sample_100.jsonl` sample check:** `m4_2_002` (`unlabeled_unknown`) contains explicit check-in discount wording despite lacking platform flags; `m4_2_007` (`observed_ad`) is an MCN/boosted street-vendor review (`#vtmgr`) with `0` promo phrases; `m4_2_008` (`observed_ad`) praises a bakery brand with `0` discount phrases; `m4_2_004` illustrates ASR background-song lyric noise.
-
-## LLM-assisted blinded draft annotation (`100` items, `gemini-3.1-flash-lite`)
-
-To accelerate manual audit without leaking platform flags or fabricating human sign-off, all `100` items in `review_sample_100.jsonl` were first pre-annotated into [review_sample_100_llm_draft.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl) (`600`-char excerpt baseline) and [m4_2_llm_audit_summary.json](evidence/m4_2_llm_audit_summary.json). On `2026-11-20T09:12+07:00`, contributor **`N`** reviewed all `65` N-assigned items (`m4_2_001..m4_2_065`: `30` `double_review_N_K` + `35` `N_only`) against **full untruncated transcripts** from `fact_videos.parquet`, corrected `8` labels missed by `600`-char excerpt truncation / ASR song lyrics / empty context (`m4_2_010, 020, 021, 027, 059, 061, 062, 064`), and recorded `N_human_verified = True` (`explicit_promo_cta = 22`, `brand_or_venue_focus_no_cta = 25`, `organic_or_general_review = 14`, `unclear_or_noisy_text = 4`) in [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl) and [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json). **All `K_*` entries (`K_human_verified = false`) remain untouched for `K`'s independent audit.**
-
-| Observed Flag Stratum | `explicit_promo_cta` | `brand_or_venue_focus_no_cta` | `organic_or_general_review` | `unclear_or_noisy_text` | Total |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| `observed_ad` | `9` | `7` | `9` | `0` | `25` |
-| `observed_ad_and_ecommerce` | `7` | `8` | `0` | `0` | `15` |
-| `observed_ecommerce` | `5` | `12` | `7` | `1` | `25` |
-| `unlabeled_unknown` | `4` | `10` | `16` | `5` | `35` |
-| **Total (`100` items)** | **`25`** | **`37`** | **`32`** | **`6`** | **`100`** |
-
-- **Blinded LLM vs regex promo lexicon agreement:** `both_positive = 18`, `llm_only = 29` (LLM detects un-templated price/gift pitches such as `"đồng giá 27k"`, `"được tặng quà"`, `"chỉ có 79.000"`), `lex_only = 9` (generic `"menu"`/`"buffet"` mentions), `both_negative = 44`. Also, `4/35` `unlabeled_unknown` items (`m4_2_002`, `m4_2_011`, `m4_2_022`, `m4_2_063`) were rated `explicit_promo_cta` and `10/35` `brand_or_venue_focus_no_cta` purely from observable text, reinforcing that `unlabeled_unknown` cannot serve as verified non-sponsored negatives, while `9/25` `observed_ad` items read as ordinary reviews despite platform flags.
+- **Author-disjoint held-out `is_ad_only` vs `is_ec_only` (`0` author overlap, author-cluster bootstrap 95% CIs):**
+  - All labeled (`n_train=5,564`, `n_test=2,097` / `68` authors): `PR-AUC = 0.8915` (`[0.7845, 0.9502]`), `Brier = 0.1324` (`[0.0970, 0.1729]`); **ablating `#vtmgr`/`#dcgr`/`#tiktokshop`/`#muataitiktok`:** `PR-AUC = 0.8728` (`[0.7420, 0.9462]`), `Brier = 0.1517`.
+  - Transcribed only (`n_train=1,111`, `n_test=601` / `48` authors): `PR-AUC = 0.9180` (`[0.8407, 0.9613]`), `Brier = 0.1666`; **ablating MCN/Shop tags:** `PR-AUC = 0.9183` (`[0.8389, 0.9642]`), `Brier = 0.1704`.
+- **Two-human double-review agreement (`m4_2_001..030`):** `22/30` exact 4-class match (`73.33%`, `Cohen's kappa = 0.6364`). Both `N` and `K` independently overturned truncated `600`-char draft errors (`m4_2_010`, `m4_2_020` late TikTok Shop CTAs; `m4_2_004`, `m4_2_021`, `m4_2_027` ASR song lyrics / sparse text).
 
 ## Outputs
 
 | File | Purpose |
 | --- | --- |
-| [workflow.md](evidence/workflow.md) | Skill provenance, target-validity decisions, and command verification receipts |
-| [m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json) | Corpus strata summary, grouped PR-AUC/Brier metrics, feature weights, and SHA256 provenance |
-| [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json) | Deterministic `100`-item stratified audit sheet (`65/65` `N_human_verified=True` after full-transcript check; `K_*` pending) & `N` sign-off receipt |
-| [review_sample_100_llm_draft.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl) / [m4_2_llm_audit_summary.json](evidence/m4_2_llm_audit_summary.json) | Flag-blinded `gemini-3.1-flash-lite` draft annotations (`100` items; `human_signoff_complete=false`) and cross-tabulation |
-| [test_m4_2_disclosure.py](../../../../tests/unit/test_m4_2_disclosure.py) | `6` TDD unit/API/UI regressions covering separation, unknown retention, leakage guards, and splits |
-| [m4_2-pytest.log](evidence/m4_2-pytest.log) / [red-m4_2-tests.log](evidence/red-m4_2-tests.log) | TDD RED import failure and post-edit full pytest suite (`145 passed in 22.00s`) |
-| [m4_2-mypy.log](evidence/m4_2-mypy.log) / [m4_2-mypy-win32.log](evidence/m4_2-mypy-win32.log) | Strict `mypy` across `88` source files (Linux & `--platform win32`) |
-| [m4_2-ruff.log](evidence/m4_2-ruff.log) / [m4_2-secrets.log](evidence/m4_2-secrets.log) | Scoped Ruff lint pass and workspace secret scan (`0` leaks) |
+| [workflow.md](evidence/workflow.md) | Skill provenance, `N` baseline + `K` peer-review TDD ledger, and two-human convergence record |
+| [khuong_peer_review.md](evidence/khuong_peer_review.md), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json) | `K`'s adversarial code/target review + `65`-item audit report and `N`'s `65`-item sign-off receipt |
+| [n_k_100_combined_audit_summary.json](evidence/n_k_100_combined_audit_summary.json) | Merged `100/100` `N`+`K` label counts, stratum cross-tabulation, `30`-item `Cohen's kappa = 0.6364`, and `8` boundary diffs |
+| [m4_2_observed_disclosure_study_v2_k_review.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study_v2_k_review.json) / [m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json) | Post-review leakage-free author-cluster study + campaign-tag ablation (v1 study preserved untouched) |
+| [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl) | Finalized `100`-item historical workbook with `transcript_full`, `N_human_verified=True` (`65/65`), and `K_human_verified=True` (`65/65`) |
+| [khuong_65_full_transcript_audit.jsonl](evidence/khuong_65_full_transcript_audit.jsonl) / [khuong_65_audit_summary.json](evidence/khuong_65_audit_summary.json) | `K`'s `65` blinded full-transcript human annotations and cross-tabulation vs. flags & LLM draft |
+| [review_sample_100_llm_draft.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl) / [m4_2_llm_audit_summary.json](evidence/m4_2_llm_audit_summary.json) | Initial `600`-char blinded `gemini-3.1-flash-lite` assistant draft preserved for comparison |
+| [red-k-review-fixes.log](evidence/red-k-review-fixes.log) / [green-k-review-fixes.log](evidence/green-k-review-fixes.log) | `K` peer-review TDD RED (`4 failed`) -> GREEN (`11 passed`) logs ([test_m4_2_disclosure.py](../../../../tests/unit/test_m4_2_disclosure.py)) |
+| [m4_2-pytest.log](evidence/m4_2-pytest.log), [k-review-full-pytest.log](evidence/k-review-full-pytest.log), [k-review-mypy.log](evidence/k-review-mypy.log) | Baseline and post-review pytest/mypy verification logs |
 
 ## Verification
 
 | Check | Result | Scope / evidence |
 | --- | --- | --- |
-| `.venv/bin/python -m pipelines.audit_m4_2_disclosure.run_study` | PASS (`PR-AUC=0.8916`, `Brier=0.1323`) | Full `70,996` corpus study + `100`-item workbook; [m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json) |
-| `.venv/bin/python -m pytest -v` | PASS (`146 passed in 22.26s`) | Full repository suite including 7 M4.2 tests + trust/demo smoke; [m4_2-pytest.log](evidence/m4_2-pytest.log) |
-| `.venv/bin/python -m ruff check packages apps pipelines scripts tests/unit/test_m4_2_disclosure.py` | PASS (`All checks passed!`) | Source, scripts, and M4.2 tests; [m4_2-ruff.log](evidence/m4_2-ruff.log) |
-| `.venv/bin/python -m mypy packages apps pipelines` (+ `--platform win32`) | PASS (`88 source files` each) | Strict Linux & Windows static checks; [m4_2-mypy.log](evidence/m4_2-mypy.log) |
-| `python3 scripts/check_secrets.py` | PASS (`0` leaks) | Full workspace secret hygiene; [m4_2-secrets.log](evidence/m4_2-secrets.log) |
+| `python3 docs/reports/milestones/M4.2/evidence/run_k_m4_2_verification_and_audit.py` | PASS (`PR-AUC=0.8915` / `0.8728` no-MCN; `N=65/65`, `K=65/65`) | Full `70,996` v2 study + `100/100` `N`+`K` workbook convergence; [m4_2_observed_disclosure_study_v2_k_review.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study_v2_k_review.json), [n_k_100_combined_audit_summary.json](evidence/n_k_100_combined_audit_summary.json) |
+| `python3 -m pytest tests/unit/test_m4_2_disclosure.py -v` | PASS (`11 passed in 8.48s`) | `7` baseline + `4` `K`-review regressions; [green-k-review-fixes.log](evidence/green-k-review-fixes.log) |
+| `python3 -m pytest -v` | PASS (`194 passed in 29.62s`) | Full post-merge workspace suite on `main` |
+| `python3 -m mypy packages apps pipelines` (+ `--platform win32`) | PASS (`100 source files` each) | Strict Linux & Windows static type checks on merged `main` |
+| `python3 scripts/check_secrets.py` | PASS (`0` leaks) | Full workspace secret hygiene |
 
 ## Open issues
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| `K`-side human review (`65` items) pending (`N_human_verified=true` on `65/65` `N` items; `K_human_verified=false`) | Human wording/error agreement across `30` double-reviewed texts cannot be computed until `K` annotates | `K` completes `30` `double_review_N_K` + `35` `K_only` annotations in [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl) |
-| Legacy `undisclosed_pr_risk` column retained in Gold `fact_absa_reviews.parquet` schema | Retained strictly for schema compatibility while runtime UI/API explicitly label it non-probability heuristic | `K` verifies target validity wording & M4.G gate decision |
-| Audio/prosody cues excluded (`historical_audio_prosody_joined=false`) | Intentional per `M4.2` rule until `M4.1` delivers pilot `audio_derived` segments | Evaluate fresh audio cues only after `M4.1` closes |
+| Legacy `undisclosed_pr_risk` column retained in Gold `fact_absa_reviews.parquet` schema | Kept strictly for `M3.1` Parquet schema compatibility while runtime UI/API explicitly mark it non-probability heuristic | Retain compatibility notice through `M4.G` |
+| Audio/prosody cues excluded (`historical_audio_prosody_joined=false`) | Intentional per `M4.2` rule until `M4.1` delivers pilot `audio_derived` segments | Evaluate fresh audio cues only after `M4.1` closes; `M4.G` stays `NOT_RUN` until `M4.1` completes |
 
 ## Acceptance and handoff
 
 | Task criterion | Result | Evidence |
 | --- | --- | --- |
-| Separate observed `is_ad`/`is_ec_video` flags from lexical promotional cues; retain `unlabeled_unknown` | Met | [disclosure.py](../../../../packages/absa/disclosure.py), [presentation.py](../../../../apps/demo/presentation.py) |
-| No output calls flag prediction a probability of undisclosed sponsorship; no unlabeled negative; no flag leakage or historical prosody join | Met (enforced in code + tests + study) | [disclosure_eval.py](../../../../packages/absa/disclosure_eval.py), [test_m4_2_disclosure.py](../../../../tests/unit/test_m4_2_disclosure.py) |
-| Grouped held-out evaluation reporting PR-AUC/Brier strictly for genuinely labeled targets (`is_ad_only` vs `is_ec_only`) | Met | [m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json) |
-| Review `100` historical texts (`30` double-reviewed) & `K` peer check of target validity/claims | Partial (`N` `65/65` full-transcript human annotations complete & signed off; `K` `65` items & peer check pending) | [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json) |
+| Separate observed `is_ad`/`is_ec_video` flags from lexical promotional cues; retain `unlabeled_unknown` | Met (`N` + `K` verified across contracts, API & `/demo/`) | [disclosure.py](../../../../packages/absa/disclosure.py), [ui.py](../../../../apps/demo/ui.py) |
+| No output calls flag prediction a probability of undisclosed sponsorship; no unlabeled negative; no flag leakage or historical prosody join | Met (`K` verified + inline bigram/indirect column guards added) | [disclosure_eval.py](../../../../packages/absa/disclosure_eval.py), [khuong_peer_review.md](evidence/khuong_peer_review.md) |
+| Grouped held-out evaluation reporting PR-AUC/Brier strictly for genuinely labeled targets (`is_ad_only` vs `is_ec_only`) | Met (author-cluster bootstrap + MCN/Shop tag ablation) | [m4_2_observed_disclosure_study_v2_k_review.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study_v2_k_review.json) |
+| Review `100` historical texts (`30` double-reviewed) & `K` peer check of target validity/claims | Met (`100/100` `N`+`K` full-transcript verified; `22/30 = 73.33%`, `kappa=0.6364`; `K` peer review complete) | [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl), [n_k_100_combined_audit_summary.json](evidence/n_k_100_combined_audit_summary.json) |
 
-Final task status: **IN_PROGRESS** (code/contract/UI separation, corpus audit, grouped genuine-target baseline, and `N`'s `65`-item full-transcript annotation complete; awaiting `K`'s `65`-item annotation and `K` peer review before closing `M4.2` for `M4.G`).
+Final task status: **COMPLETE** (`M4.G` gate remains **`NOT_RUN`** until `M4.1` completes CPU timestamp/prosody evaluation on fresh `M3.3` pilot audio).

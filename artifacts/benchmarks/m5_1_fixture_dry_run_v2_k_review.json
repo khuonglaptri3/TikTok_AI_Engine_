@@ -1,0 +1,252 @@
+{
+  "study_id": "m5_1_fixture_dry_run_v1",
+  "fixture_type": "authored_edge_regression_fixture_NOT_real_pilot",
+  "real_pilot_comments_available": false,
+  "evaluated_at": "2026-11-20T03:16:37.831921+00:00",
+  "environment": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.11.14 | packaged by conda-forge | (main, Oct 13 2025, 14:09:32) [GCC 14.3.0]",
+    "cpu_count": 4,
+    "process_peak_rss_mib": 513.59
+  },
+  "organic_duplicate_ablation": {
+    "legacy_min_words_1_false_positives": 24,
+    "guarded_min_words_5_false_positives": 0
+  },
+  "split_counts": {
+    "dev": 30,
+    "calibration": 32,
+    "held_out_third": 30
+  },
+  "held_out_third_metrics": {
+    "evaluated_comment_count": 30,
+    "total_annotated_pool_count": 92,
+    "unique_video_count": 4,
+    "human_signoff_complete": false,
+    "bootstrap_mode": "video_cluster_resample",
+    "truth_class_counts": {
+      "contact_or_link": 5,
+      "no_indicator_observed": 14,
+      "noise_or_empty": 3,
+      "observable_duplicate": 4,
+      "template_phrase_match": 2,
+      "unknown_ambiguous": 2
+    },
+    "pred_class_counts": {
+      "contact_or_link": 5,
+      "no_indicator_observed": 16,
+      "noise_or_empty": 3,
+      "observable_duplicate": 4,
+      "template_phrase_match": 2
+    },
+    "per_class_metrics": {
+      "observable_duplicate": {
+        "support": 4,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "contact_or_link": {
+        "support": 5,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "noise_or_empty": {
+        "support": 3,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "template_phrase_match": {
+        "support": 2,
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      }
+    },
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "bootstrap_95_ci": {
+      "macro_precision": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_recall": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_f1": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      }
+    },
+    "confusion_matrix": {
+      "no_indicator_observed": {
+        "no_indicator_observed": 14
+      },
+      "contact_or_link": {
+        "contact_or_link": 5
+      },
+      "noise_or_empty": {
+        "noise_or_empty": 3
+      },
+      "observable_duplicate": {
+        "observable_duplicate": 4
+      },
+      "template_phrase_match": {
+        "template_phrase_match": 2
+      },
+      "unknown_ambiguous": {
+        "no_indicator_observed": 2
+      }
+    },
+    "auto_filter_thresholds": {
+      "min_annotated_comments": 150,
+      "min_held_out_comments": 45,
+      "min_macro_precision": 0.85,
+      "min_macro_recall": 0.6
+    },
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "all_fixture_metrics": {
+    "evaluated_comment_count": 92,
+    "total_annotated_pool_count": 92,
+    "unique_video_count": 12,
+    "human_signoff_complete": false,
+    "bootstrap_mode": "video_cluster_resample",
+    "truth_class_counts": {
+      "contact_or_link": 12,
+      "no_indicator_observed": 36,
+      "noise_or_empty": 12,
+      "observable_duplicate": 16,
+      "template_phrase_match": 8,
+      "unknown_ambiguous": 8
+    },
+    "pred_class_counts": {
+      "contact_or_link": 12,
+      "no_indicator_observed": 44,
+      "noise_or_empty": 12,
+      "observable_duplicate": 16,
+      "template_phrase_match": 8
+    },
+    "per_class_metrics": {
+      "observable_duplicate": {
+        "support": 16,
+        "tp": 16,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "contact_or_link": {
+        "support": 12,
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "noise_or_empty": {
+        "support": 12,
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "template_phrase_match": {
+        "support": 8,
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      }
+    },
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "bootstrap_95_ci": {
+      "macro_precision": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_recall": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_f1": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      }
+    },
+    "confusion_matrix": {
+      "no_indicator_observed": {
+        "no_indicator_observed": 36
+      },
+      "contact_or_link": {
+        "contact_or_link": 12
+      },
+      "noise_or_empty": {
+        "noise_or_empty": 12
+      },
+      "observable_duplicate": {
+        "observable_duplicate": 16
+      },
+      "template_phrase_match": {
+        "template_phrase_match": 8
+      },
+      "unknown_ambiguous": {
+        "no_indicator_observed": 8
+      }
+    },
+    "auto_filter_thresholds": {
+      "min_annotated_comments": 150,
+      "min_held_out_comments": 45,
+      "min_macro_precision": 0.85,
+      "min_macro_recall": 0.6
+    },
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "mean_filter_sensitivity": {
+    "videos_checked": 12,
+    "avg_flagged_per_video": 4.0,
+    "max_abs_mean_score_shift": 0.375
+  },
+  "provenance": {
+    "code_files_sha256": {
+      "packages/seeding/detector.py": "8531c734e31144fd089c3eee9466356adada56e0e09802164074a2cde8feb973",
+      "packages/seeding/evaluation.py": "e80e5d0db61af7eae68057fbf11b31c4f1faf44b605b00505921840de2a221d1",
+      "packages/data_contracts/multimodal.py": "574dc98cf50014695269619aab9fd9d68bf719fc54c331d4842128c82ee18a62",
+      "apps/api/app/routers/trust.py": "d2fea6f6e2c5ef45b28424b6f15824552b851dc97edc1c950b7735d2f44a33fb",
+      "apps/demo/presentation.py": "d6e09cc93e4a8915e207b590b4bdae01bcd4b970f2271f17cbe5d3344da76ea4",
+      "pipelines/audit_m5_1_comments/run_baseline_checks.py": "c2a13e6e07378e71acb05971d7be992eb96de6c058d6cbf8a7d1729eb960c0cb"
+    }
+  }
+}
