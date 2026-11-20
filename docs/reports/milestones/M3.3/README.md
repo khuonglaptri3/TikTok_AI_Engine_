@@ -30,6 +30,35 @@ Built, tested, and host-verified the bounded end-to-end `M3.3` orchestrator in [
 | [m3_3_live_preflight_receipt.json](evidence/m3_3_live_preflight_receipt.json) | Honest `live_pilot` preflight receipt (`pilot_status = "BLOCKED"` solely on missing `MS_TOKEN`) |
 | [pytest-full-m3_3.log](evidence/pytest-full-m3_3.log) | Full `183`-test pytest suite verification on `feat/m3.3-pilot-scaffolding` |
 
+## How to set up and run
+
+1. **Checkout branch & provision host runtime (no `sudo` required):**
+
+   ```bash
+   git fetch origin && git checkout feat/m3.3-pilot-scaffolding
+   uv pip install --python .venv/bin/python yt-dlp faster-whisper imageio-ffmpeg
+   ln -sf "$(.venv/bin/python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" .venv/bin/ffmpeg
+   ```
+
+2. **Verify tests & offline pipeline before live network access:**
+
+   ```bash
+   .venv/bin/python -m pytest tests/unit/test_m3_3_pilot_pipeline.py -v
+   ```
+
+3. **Run bounded `live_pilot` (up to `5` `--creator` flags, `<= 50` candidates / `<= 30` videos / `<= 60`m audio; CPU ASR capped at `<= 10` videos / `<= 20`m audio):**
+   - Put `MS_TOKEN=...` in gitignored `.env`, then export `.env` before invoking:
+
+   ```bash
+   set -a && source .env && set +a
+   PYTHONPATH=. .venv/bin/python -m pipelines.pilot_m3_3 \
+     --mode live_pilot --allow-live-network \
+     --creator <handle_1> --creator <handle_2> \
+     --asr-model small
+   ```
+
+   - Outputs: receipt at `docs/reports/milestones/M3.3/evidence/m3_3_pilot_receipt.json`, Gold snapshot at `data/corpus/m3_3_pilot_snapshot_v1`, BM25 index at `artifacts/indexes/bm25-m3_3-pilot`, and 50/50 `K`/`N` inspection sheet at `docs/reports/milestones/M3.3/evidence/sample_inspection_sheet.jsonl`.
+
 ## Verification
 
 | Check | Result | Scope / evidence |
