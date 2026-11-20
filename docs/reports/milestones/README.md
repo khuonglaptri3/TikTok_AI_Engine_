@@ -20,6 +20,7 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M3.3 | Capture->CPU ASR (`<=10` vids/`20`m)->Gold->BM25->search pipeline, host `.venv` `yt-dlp`/`ffmpeg`/`faster-whisper` ASR verified (`RTF=0.1278`), `194` tests, `100`-file mypy (awaiting `MS_TOKEN`) | IN_PROGRESS | [Read results](M3.3/README.md) |
 | M4.2 | Observed `is_ad`/EC flags separated from promo lexicon (`PR-AUC=0.8915` / `0.8728` no-MCN, cluster CI), `100/100` `N`+`K` full-transcript audit (`kappa=0.6364`) & `K` peer review (`194` tests) | COMPLETE | [Read results](M4.2/README.md) |
 | M5.1 | Observable duplicate/contact/noise indicators, `K` baseline code/leakage/sensitivity peer review & TDD fixes (`194` tests); awaiting `M3.3` real pilot comments | IN_PROGRESS | [Read results](M5.1/README.md) |
+| M5.2 | 4-aspect (`taste`/`price`/`hygiene`/`service`) NFC-exact `source_spans`, `absent_unknown` vs `observed neutral`, and `>=3`-comment `sentiment_discrepancy` (`K` Tasks 1–2 complete, `202` tests; Tasks 3–4 & `M3.3` annotation pending) | IN_PROGRESS | [Read results](M5.2/README.md) |
 | M6.1 | `5,000`-doc `restrict_to_df=True` parity on finalized `M2.2` human qrels (`tfidf_svd` & `MiniLM` vs `bm25-v3`) + `N` & `K` sign-off (`bm25-v3` default confirmed; multimodal awaits `M4.G`/`M5.G`) | IN_PROGRESS | [Read results](M6.1/README.md) |
 
 Independent cross-project assessments are listed in [task reports](../tasks/README.md). Their conclusions do not change milestone status or pass a gate.
