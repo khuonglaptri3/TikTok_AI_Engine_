@@ -292,26 +292,41 @@ _IGNORED_ASPECT_COMPOUNDS: tuple[str, ...] = (
     "ngồi lâu",
     "lâu đời",
     "lâu năm",
-    "lâu rồi",
-    "lâu lắm",
     "lâu nay",
     "lâu lâu",
-    "bao lâu",
-    "ăn sạch",
     "húp sạch",
-    "uống sạch",
     "hết sạch",
-    "bán sạch",
-    "giá như",
-    "giá mà",
     "giá đỗ",
     "rau giá",
     "giá sống",
     "giá trụng",
 )
 
+_GUARDED_CONSUMPTION_SACH_PATTERN = (
+    r"(?<!quán\s)(?<!đồ\s)(?<!món\s)(?<!thức\s)(?<!bàn\s)(?<!chỗ\s)"
+    r"(?<!khay\s)(?<!tiệm\s)(?<!hàng\s)(?<!nước\s)(?<!ly\s)(?<!cốc\s)"
+    r"(?<!\w)(?:ăn|uống)\s+sạch(?!\w)(?!\s+(?:sẽ|tinh)(?!\w))"
+)
+
+_GUARDED_BAN_SACH_PATTERN = r"(?<!\w)bán\s+sạch(?!\w)(?!\s+(?:sẽ|tinh)(?!\w))"
+
+_GUARDED_COUNTERFACTUAL_GIA_PATTERN = (
+    r"(?<!mức\s)(?<!bảng\s)(?<!tầm\s)(?<!đơn\s)(?<!báo\s)(?<!hỏi\s)"
+    r"(?<!\w)(?:giá\s+như(?!\s+(?:vậy|thế|này|nào|sao|đó|kia)(?!\w))|giá\s+mà)(?!\w)"
+)
+
 _IGNORED_ASPECT_COMPOUNDS_RE = re.compile(
-    r"(?<!\w)(?:" + _compile_word_phrases(_IGNORED_ASPECT_COMPOUNDS) + r")(?!\w)"
+    r"(?:"
+    + r"(?<!\w)(?:"
+    + _compile_word_phrases(_IGNORED_ASPECT_COMPOUNDS)
+    + r")(?!\w)"
+    + r"|"
+    + _GUARDED_CONSUMPTION_SACH_PATTERN
+    + r"|"
+    + _GUARDED_BAN_SACH_PATTERN
+    + r"|"
+    + _GUARDED_COUNTERFACTUAL_GIA_PATTERN
+    + r")"
 )
 
 _ASPECT_PATTERNS: dict[AspectName, re.Pattern[str]] = {
@@ -551,16 +566,10 @@ _POLARITY_MASK_COMPOUNDS: tuple[str, ...] = (
     "ngồi lâu",
     "lâu đời",
     "lâu năm",
-    "lâu rồi",
-    "lâu lắm",
     "lâu nay",
     "lâu lâu",
-    "bao lâu",
-    "ăn sạch",
     "húp sạch",
-    "uống sạch",
     "hết sạch",
-    "bán sạch",
 )
 
 _NEGATED_NEUTRAL_TARGETS: tuple[str, ...] = (
@@ -579,7 +588,23 @@ _LITOTES_ALT = _compile_word_phrases(_LITOTES_NEG_TARGETS)
 _POLARITY_MASK_ALT = _compile_word_phrases(_POLARITY_MASK_COMPOUNDS)
 _NEGATED_NEUTRAL_ALT = _compile_word_phrases(_NEGATED_NEUTRAL_TARGETS)
 
-_POLARITY_MASK_RE = re.compile(r"(?<!\w)(?:" + _POLARITY_MASK_ALT + r")(?!\w)")
+_POLARITY_MASK_RE = re.compile(
+    r"(?:"
+    + r"(?<!\w)(?:"
+    + _POLARITY_MASK_ALT
+    + r")(?!\w)"
+    + r"|"
+    + _GUARDED_CONSUMPTION_SACH_PATTERN
+    + r"|"
+    + _GUARDED_BAN_SACH_PATTERN
+    + r")"
+)
+
+_CONTEXTUAL_TEMPORAL_LAU_RE = re.compile(r"(?<!\w)(?:lâu\s+lắm|lâu\s+rồi|bao\s+lâu)(?!\w)")
+_SERVICE_WAIT_CONTEXT_RE = re.compile(
+    r"(?<!\w)(?:chờ|đợi|lên\s+món|ra\s+món|gọi\s+món|mang\s+ra|bưng\s+ra|"
+    r"phục\s+vụ|nhân\s+viên|chủ\s+quán|thu\s+ngân|tính\s+tiền)(?!\w)"
+)
 
 _LITOTES_RE = re.compile(
     r"(?<!\w)(?:không|chẳng|chả|chưa)\s+(?:quá\s+|hề\s+|bị\s+|đến\s+nỗi\s+)?(?:"
@@ -745,10 +770,14 @@ def _score_local_polarity(
     pos = 0.0
     neg = 0.0
 
-    # 0. Non-sentiment idioms/temporal compounds ("lâu đời", "ăn sạch", "bán sạch") -> mask 0.0
+    # 0. Non-sentiment idioms/temporal compounds ("lâu đời", guarded "ăn sạch", "bán sạch") -> mask 0.0
     for m in _POLARITY_MASK_RE.finditer(lower_slice):
         if not _overlaps_any(m.start(), m.end(), occupied):
             occupied.append((m.start(), m.end()))
+    if _SERVICE_WAIT_CONTEXT_RE.search(lower_slice) is None:
+        for m in _CONTEXTUAL_TEMPORAL_LAU_RE.finditer(lower_slice):
+            if not _overlaps_any(m.start(), m.end(), occupied):
+                occupied.append((m.start(), m.end()))
 
     # 1. Softened litotes ("không quá đắt", "không tệ") -> neutral 0.0
     for m in _LITOTES_RE.finditer(lower_slice):

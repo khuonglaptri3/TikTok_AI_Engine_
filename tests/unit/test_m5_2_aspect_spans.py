@@ -735,3 +735,121 @@ def test_m5_2_task2_review_regressions() -> None:
         assert spans_nn[0].polarity_score < 0.0
 
 
+def test_m5_2_task2_fix_round2_regressions() -> None:
+    # 1. Noun-head + "sạch"/"sạch sẽ" must NOT be swallowed by consumption "ăn sạch"/"uống sạch"
+    for hygiene_only_text in (
+        "Quán ăn sạch sẽ",
+        "Bàn ăn sạch sẽ",
+    ):
+        spans_h = extract_unit_aspect_spans(
+            TextUnitInput(unit_id="c_r2_h1", source_kind="viewer_comment", text=hygiene_only_text)
+        )
+        assert len(spans_h) == 1, f"Expected 1 hygiene span for {hygiene_only_text!r}"
+        assert spans_h[0].aspect == "hygiene"
+        assert spans_h[0].polarity_label == "positive"
+        assert spans_h[0].polarity_score == 1.0
+
+    for food_hygiene_text in (
+        "Đồ ăn sạch sẽ",
+        "Món ăn sạch sẽ",
+        "Thức ăn sạch sẽ",
+        "Đồ ăn sạch",
+        "Đồ uống sạch sẽ",
+        "Nước uống sạch",
+    ):
+        spans_fh = extract_unit_aspect_spans(
+            TextUnitInput(unit_id="c_r2_h2", source_kind="viewer_comment", text=food_hygiene_text)
+        )
+        by_aspect = {sp.aspect: sp for sp in spans_fh}
+        assert "hygiene" in by_aspect, f"Missing hygiene span for {food_hygiene_text!r}"
+        assert by_aspect["hygiene"].polarity_label == "positive"
+        assert by_aspect["hygiene"].polarity_score == 1.0
+
+    # Consumption "ăn sạch"/"uống sạch" without noun head still produces 0 hygiene spans
+    assert (
+        extract_unit_aspect_spans(
+            TextUnitInput(
+                unit_id="c_r2_cons",
+                source_kind="viewer_comment",
+                text="Đói quá nên ăn sạch cả tô, uống sạch ly trà đá luôn",
+            )
+        )
+        == []
+    )
+
+    # 2. Service-wait complaints with "lâu lắm" / "lâu rồi" must return service = negative
+    for wait_text in (
+        "Phục vụ lâu lắm",
+        "Lên món lâu lắm",
+        "Chờ lâu lắm",
+        "Đợi lâu rồi",
+        "Chờ món lâu lắm",
+    ):
+        spans_w = extract_unit_aspect_spans(
+            TextUnitInput(unit_id="c_r2_w", source_kind="viewer_comment", text=wait_text)
+        )
+        assert len(spans_w) == 1, f"Expected 1 service span for {wait_text!r}"
+        assert spans_w[0].aspect == "service"
+        assert spans_w[0].polarity_label == "negative"
+        assert spans_w[0].polarity_score < 0.0
+
+    # While standalone temporal nostalgia / "lâu đời" still behave accurately
+    assert (
+        extract_unit_aspect_spans(
+            TextUnitInput(
+                unit_id="c_r2_nost",
+                source_kind="viewer_comment",
+                text="Lâu lắm rồi mới ăn lại",
+            )
+        )
+        == []
+    )
+    s_nost_taste = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_r2_nost2",
+            source_kind="viewer_comment",
+            text="Lâu lắm rồi mới ăn lại, nước dùng quán lâu đời ngon",
+        )
+    )
+    assert len(s_nost_taste) == 1
+    assert s_nost_taste[0].aspect == "taste"
+    assert s_nost_taste[0].polarity_label == "positive"
+    assert s_nost_taste[0].polarity_score == 1.0
+
+    # 3. Demonstrative/comparative "giá như vậy" / "mức giá như..." must NOT be swallowed by counterfactual "giá như"
+    s_gia_bt = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_r2_p1",
+            source_kind="viewer_comment",
+            text="Giá như vậy là bình thường",
+        )
+    )
+    assert len(s_gia_bt) == 1
+    assert s_gia_bt[0].aspect == "price"
+    assert s_gia_bt[0].polarity_label == "neutral"
+    assert s_gia_bt[0].polarity_score == 0.0
+
+    s_gia_hl = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_r2_p2",
+            source_kind="viewer_comment",
+            text="Giá như thế này là hợp lý",
+        )
+    )
+    assert len(s_gia_hl) == 1
+    assert s_gia_hl[0].aspect == "price"
+    assert s_gia_hl[0].polarity_label == "positive"
+    assert s_gia_hl[0].polarity_score == 1.0
+
+    s_muc_gia = extract_unit_aspect_spans(
+        TextUnitInput(
+            unit_id="c_r2_p3",
+            source_kind="viewer_comment",
+            text="Mức giá như vậy khá ổn",
+        )
+    )
+    assert len(s_muc_gia) == 1
+    assert s_muc_gia[0].aspect == "price"
+
+
+
