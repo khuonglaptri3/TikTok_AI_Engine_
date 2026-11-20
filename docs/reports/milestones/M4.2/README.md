@@ -1,7 +1,7 @@
 # M4.2 — Observed Disclosure/Commerce and Promotional Language
 
-- Status: IN_PROGRESS (`N`'s flag/lexical separation across contracts, ABSA, trust API, `/demo/` UI, `70,996`-row corpus study, creator-disjoint `is_ad_only` vs `is_ec_only` baseline, and `100`-item review workbook complete; awaiting `N`/`K` human manual annotation of `review_sample_100.jsonl` and `K` peer check of target validity/wording)
-- Execution date: 2026-11-19 (Asia/Ho_Chi_Minh)
+- Status: IN_PROGRESS (`N`'s flag/lexical separation across contracts, ABSA, trust API, `/demo/` UI, `70,996`-row corpus study, creator-disjoint `is_ad_only` vs `is_ec_only` baseline, AND `N`'s `65`-item (`30` double-review + `35` `N_only`) full-transcript human annotation complete; awaiting `K`'s `65`-item (`30` double-review + `35` `K_only`) annotation and `K` peer check of target validity/wording)
+- Execution date: 2026-11-19 to 2026-11-20 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M4.2`)
 - Repository version: `feat/m4.2-observed-disclosure-promo` (branched from `main` @ `dcdd6233`)
 - Primary owner: Nguyễn Việt Nguyên (`N`) · Peer reviewer: Trần Đình Khương (`K`)
@@ -36,7 +36,7 @@ Across all `70,996` records in `data/corpus/20261118_taxonomy_fix_v1`, `8.72%` o
 
 ## LLM-assisted blinded draft annotation (`100` items, `gemini-3.1-flash-lite`)
 
-To accelerate manual audit without leaking platform flags or fabricating human sign-off, all `100` items in `review_sample_100.jsonl` were annotated by Free-Tier `gemini-3.1-flash-lite` (`<= 12 RPM`, blinded to `observed_flag_status` and `#ad`/`#quangcao` hashtags) into [review_sample_100_llm_draft.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl) and [m4_2_llm_audit_summary.json](evidence/m4_2_llm_audit_summary.json). **Both `N_human_verified` and `K_human_verified` remain `false`.**
+To accelerate manual audit without leaking platform flags or fabricating human sign-off, all `100` items in `review_sample_100.jsonl` were first pre-annotated into [review_sample_100_llm_draft.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl) (`600`-char excerpt baseline) and [m4_2_llm_audit_summary.json](evidence/m4_2_llm_audit_summary.json). On `2026-11-20T09:12+07:00`, contributor **`N`** reviewed all `65` N-assigned items (`m4_2_001..m4_2_065`: `30` `double_review_N_K` + `35` `N_only`) against **full untruncated transcripts** from `fact_videos.parquet`, corrected `8` labels missed by `600`-char excerpt truncation / ASR song lyrics / empty context (`m4_2_010, 020, 021, 027, 059, 061, 062, 064`), and recorded `N_human_verified = True` (`explicit_promo_cta = 22`, `brand_or_venue_focus_no_cta = 25`, `organic_or_general_review = 14`, `unclear_or_noisy_text = 4`) in [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl) and [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json). **All `K_*` entries (`K_human_verified = false`) remain untouched for `K`'s independent audit.**
 
 | Observed Flag Stratum | `explicit_promo_cta` | `brand_or_venue_focus_no_cta` | `organic_or_general_review` | `unclear_or_noisy_text` | Total |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -54,7 +54,7 @@ To accelerate manual audit without leaking platform flags or fabricating human s
 | --- | --- |
 | [workflow.md](evidence/workflow.md) | Skill provenance, target-validity decisions, and command verification receipts |
 | [m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json) | Corpus strata summary, grouped PR-AUC/Brier metrics, feature weights, and SHA256 provenance |
-| [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl) | Deterministic `100`-item stratified historical audit sheet (`30` `double_review_N_K`, `35` `N_only`, `35` `K_only`) |
+| [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json) | Deterministic `100`-item stratified audit sheet (`65/65` `N_human_verified=True` after full-transcript check; `K_*` pending) & `N` sign-off receipt |
 | [review_sample_100_llm_draft.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100_llm_draft.jsonl) / [m4_2_llm_audit_summary.json](evidence/m4_2_llm_audit_summary.json) | Flag-blinded `gemini-3.1-flash-lite` draft annotations (`100` items; `human_signoff_complete=false`) and cross-tabulation |
 | [test_m4_2_disclosure.py](../../../../tests/unit/test_m4_2_disclosure.py) | `6` TDD unit/API/UI regressions covering separation, unknown retention, leakage guards, and splits |
 | [m4_2-pytest.log](evidence/m4_2-pytest.log) / [red-m4_2-tests.log](evidence/red-m4_2-tests.log) | TDD RED import failure and post-edit full pytest suite (`145 passed in 22.00s`) |
@@ -75,7 +75,7 @@ To accelerate manual audit without leaking platform flags or fabricating human s
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| `100`-item human review not yet filled (`N_human_verified=false`, `K_human_verified=false`) | Human wording/error agreement across `30` double-reviewed texts is still pending | `N` and `K` complete independent annotations in [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl) |
+| `K`-side human review (`65` items) pending (`N_human_verified=true` on `65/65` `N` items; `K_human_verified=false`) | Human wording/error agreement across `30` double-reviewed texts cannot be computed until `K` annotates | `K` completes `30` `double_review_N_K` + `35` `K_only` annotations in [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl) |
 | Legacy `undisclosed_pr_risk` column retained in Gold `fact_absa_reviews.parquet` schema | Retained strictly for schema compatibility while runtime UI/API explicitly label it non-probability heuristic | `K` verifies target validity wording & M4.G gate decision |
 | Audio/prosody cues excluded (`historical_audio_prosody_joined=false`) | Intentional per `M4.2` rule until `M4.1` delivers pilot `audio_derived` segments | Evaluate fresh audio cues only after `M4.1` closes |
 
@@ -86,6 +86,6 @@ To accelerate manual audit without leaking platform flags or fabricating human s
 | Separate observed `is_ad`/`is_ec_video` flags from lexical promotional cues; retain `unlabeled_unknown` | Met | [disclosure.py](../../../../packages/absa/disclosure.py), [presentation.py](../../../../apps/demo/presentation.py) |
 | No output calls flag prediction a probability of undisclosed sponsorship; no unlabeled negative; no flag leakage or historical prosody join | Met (enforced in code + tests + study) | [disclosure_eval.py](../../../../packages/absa/disclosure_eval.py), [test_m4_2_disclosure.py](../../../../tests/unit/test_m4_2_disclosure.py) |
 | Grouped held-out evaluation reporting PR-AUC/Brier strictly for genuinely labeled targets (`is_ad_only` vs `is_ec_only`) | Met | [m4_2_observed_disclosure_study.json](../../../../artifacts/benchmarks/m4_2_observed_disclosure_study.json) |
-| Review `100` historical texts (`30` double-reviewed) & `K` peer check of target validity/claims | Workbook generated; human annotations & `K` review pending | [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl) |
+| Review `100` historical texts (`30` double-reviewed) & `K` peer check of target validity/claims | Partial (`N` `65/65` full-transcript human annotations complete & signed off; `K` `65` items & peer check pending) | [review_sample_100.jsonl](../../../../data/evaluation/m4_2_disclosure/review_sample_100.jsonl), [nguyen_signoff_receipt.json](evidence/nguyen_signoff_receipt.json) |
 
-Final task status: **IN_PROGRESS** (code/contract/UI separation, corpus audit, grouped genuine-target baseline, and 100-item review workbook complete on `feat/m4.2-observed-disclosure-promo`; awaiting human `N`/`K` double-review of the 100 sampled texts and `K` peer review before `M4.G`).
+Final task status: **IN_PROGRESS** (code/contract/UI separation, corpus audit, grouped genuine-target baseline, and `N`'s `65`-item full-transcript annotation complete; awaiting `K`'s `65`-item annotation and `K` peer review before closing `M4.2` for `M4.G`).

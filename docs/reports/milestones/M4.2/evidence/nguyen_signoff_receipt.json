@@ -1,0 +1,32 @@
+{
+  "task_id": "M4.2",
+  "contributor": "Nguyễn Việt Nguyên (N)",
+  "signed_off_at": "2026-11-20T09:12:26+07:00",
+  "review_scope": {
+    "assigned_items_total": 65,
+    "double_review_N_K": 30,
+    "N_only": 35,
+    "K_only_untouched": 35
+  },
+  "N_human_verified_count": 65,
+  "K_human_verified_count": 0,
+  "full_transcripts_checked": true,
+  "overrides_vs_600c_draft": 8,
+  "overridden_item_ids": [
+    "m4_2_010",
+    "m4_2_020",
+    "m4_2_021",
+    "m4_2_027",
+    "m4_2_059",
+    "m4_2_061",
+    "m4_2_062",
+    "m4_2_064"
+  ],
+  "N_label_distribution": {
+    "brand_or_venue_focus_no_cta": 25,
+    "explicit_promo_cta": 22,
+    "organic_or_general_review": 14,
+    "unclear_or_noisy_text": 4
+  },
+  "notes": "N reviewed all 65 assigned items (m4_2_001..m4_2_065) with full untruncated transcripts from fact_videos.parquet, corrected 8 labels missed by 600-char excerpts/song-lyrics/missing-context, and confirmed N_human_verified=True on 2026-11-20T09:12+07:00. K_only (35 items) and all K_* columns (65 items assigned to K) remain untouched pending K review."
+}
