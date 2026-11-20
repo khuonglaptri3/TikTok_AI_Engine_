@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+import os
+import shutil
+import subprocess
+import sys
 import time
 from pathlib import Path
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
+
+import numpy as np
 
 from packages.common.exceptions import IndexNotReadyError
 from packages.common.resources import get_peak_rss_mib
@@ -31,9 +37,40 @@ class FasterWhisperCpuAsrEngine:
         self.model_id = f"faster-whisper/{model_size}-cpu-int8"
         self._language = language
 
+    @staticmethod
+    def _decode_audio_16k_mono(audio_path: Path) -> np.ndarray | str:
+        """Decode compressed audio via ffmpeg to 16kHz float32 ndarray (avoids PyAV>=19 metadata_errors bug)."""
+        search_path = f"{Path(sys.executable).parent}{os.pathsep}{os.environ.get('PATH', '')}"
+        ffmpeg_bin = shutil.which("ffmpeg", path=search_path)
+        if not ffmpeg_bin:
+            return str(audio_path)
+        res = subprocess.run(
+            [
+                ffmpeg_bin,
+                "-nostdin",
+                "-threads",
+                "0",
+                "-i",
+                str(audio_path),
+                "-f",
+                "s16le",
+                "-ac",
+                "1",
+                "-acodec",
+                "pcm_s16le",
+                "-ar",
+                "16000",
+                "pipe:1",
+            ],
+            capture_output=True,
+            check=True,
+        )
+        return np.frombuffer(res.stdout, dtype=np.int16).astype(np.float32) / 32768.0
+
     def transcribe_file(self, audio_path: Path) -> tuple[str, list[RawWhisperSegment]]:
+        audio_input: Any = self._decode_audio_16k_mono(audio_path)
         segments_iter, _ = self._model.transcribe(
-            str(audio_path),
+            audio_input,
             language=self._language,
             beam_size=1,
             vad_filter=True,

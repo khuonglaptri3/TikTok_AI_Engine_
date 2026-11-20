@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import subprocess
+import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -16,7 +20,7 @@ from packages.data_contracts.corpus import CorpusFileChecksum, CorpusManifest
 from packages.data_contracts.multimodal import RawIncrementalVideoRecord, RawWhisperSegment
 from pipelines.pilot_m3_3.asr import BoundedCpuAsrRunner, FasterWhisperCpuAsrEngine
 from pipelines.pilot_m3_3.models import M33PilotConfig
-from pipelines.pilot_m3_3.runner import run_m3_3_pilot
+from pipelines.pilot_m3_3.runner import _venv_search_path, run_m3_3_pilot
 
 
 class _StubCpuAsrEngine:
@@ -345,7 +349,7 @@ def test_live_pilot_fails_closed_blocked_when_tools_or_token_missing(
     _write_minimal_gold_base(base_corpus, n_rows=2)
 
     monkeypatch.delenv("MS_TOKEN", raising=False)
-    monkeypatch.setattr("shutil.which", lambda _cmd: None)
+    monkeypatch.setattr("shutil.which", lambda *_args, **_kwargs: None)
 
     work_dir = tmp_path / "m3_3_live_blocked"
     cfg = M33PilotConfig(
@@ -366,3 +370,43 @@ def test_live_pilot_fails_closed_blocked_when_tools_or_token_missing(
     assert receipt.blocker_reasons
     assert any("MS_TOKEN" in r or "yt-dlp" in r for r in receipt.blocker_reasons)
     assert cfg.receipt_path.is_file()
+
+
+def test_faster_whisper_decode_audio_16k_mono_uses_ffmpeg_and_falls_back(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    audio_file = tmp_path / "sample.mp3"
+    audio_file.write_bytes(b"fake")
+
+    pcm_bytes = np.array([0, 16384, -32768], dtype=np.int16).tobytes()
+    monkeypatch.setattr("shutil.which", lambda cmd, **_kwargs: "/usr/bin/ffmpeg" if cmd == "ffmpeg" else None)
+    monkeypatch.setattr(
+        "subprocess.run",
+        lambda *_args, **_kwargs: subprocess.CompletedProcess(
+            args=["/usr/bin/ffmpeg"],
+            returncode=0,
+            stdout=pcm_bytes,
+            stderr=b"",
+        ),
+    )
+
+    decoded = FasterWhisperCpuAsrEngine._decode_audio_16k_mono(audio_file)
+    assert isinstance(decoded, np.ndarray)
+    assert decoded.dtype == np.float32
+    assert np.allclose(decoded, np.array([0.0, 0.5, -1.0], dtype=np.float32))
+
+    monkeypatch.setattr("shutil.which", lambda *_args, **_kwargs: None)
+    fallback = FasterWhisperCpuAsrEngine._decode_audio_16k_mono(audio_file)
+    assert fallback == str(audio_file)
+
+
+def test_venv_search_path_prepends_executable_parent(monkeypatch: pytest.MonkeyPatch) -> None:
+    bin_dir = str(Path(sys.executable).parent)
+    monkeypatch.setenv("PATH", "/usr/bin:/bin")
+    joined = _venv_search_path()
+    assert joined.split(os.pathsep)[0] == bin_dir
+    assert "/usr/bin" in joined
+
+    monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}/usr/bin")
+    assert _venv_search_path() == f"{bin_dir}{os.pathsep}/usr/bin"

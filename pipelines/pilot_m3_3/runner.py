@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -103,12 +104,22 @@ def _write_inspection_sheet(
     return k_cnt, n_cnt
 
 
+def _venv_search_path() -> str:
+    bin_dir = str(Path(sys.executable).parent)
+    current = os.environ.get("PATH", "")
+    parts = [p for p in current.split(os.pathsep) if p]
+    if bin_dir not in parts:
+        return f"{bin_dir}{os.pathsep}{current}" if current else bin_dir
+    return current
+
+
 def _check_live_prerequisites(
     config: M33PilotConfig,
     protected_ids: set[str],
     has_injected_asr: bool,
 ) -> list[str]:
     blockers: list[str] = []
+    search_path = _venv_search_path()
     if not config.allow_live_network:
         blockers.append("--allow-live-network is required for live_pilot mode")
     if not protected_ids:
@@ -117,9 +128,9 @@ def _check_live_prerequisites(
         blockers.append("At least 1 creator handle (--creator) is required for live_pilot mode")
     if not os.environ.get("MS_TOKEN", "").strip():
         blockers.append("MS_TOKEN environment credential is missing")
-    if shutil.which("yt-dlp") is None:
+    if shutil.which("yt-dlp", path=search_path) is None:
         blockers.append("yt-dlp binary is missing from PATH")
-    if shutil.which("ffmpeg") is None:
+    if shutil.which("ffmpeg", path=search_path) is None:
         blockers.append("ffmpeg binary is missing from PATH")
     if not has_injected_asr:
         try:
@@ -188,6 +199,7 @@ def run_m3_3_pilot(
             model_size=config.asr_model_size
         )
     else:
+        os.environ["PATH"] = _venv_search_path()
         ms_token = os.environ.get("MS_TOKEN", "").strip()
         active_asr = asr_engine or FasterWhisperCpuAsrEngine(model_size=config.asr_model_size)
         collector = BoundedIncrementalCollector(
