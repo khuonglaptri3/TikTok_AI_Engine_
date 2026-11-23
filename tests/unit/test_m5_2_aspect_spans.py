@@ -1293,6 +1293,190 @@ def test_m5_2_evaluator_edge_cases_and_real_pool_cli(tmp_path: Path) -> None:
         )
 
 
+def test_m5_2_task4_fix_round1_multimodal_scoping_and_span_backing(tmp_path: Path) -> None:
+    from packages.absa.evaluation import (
+        audit_source_span_validity,
+        build_m5_2_annotation_pool,
+        evaluate_m5_2_aspect_sentiment,
+    )
+    from pipelines.audit_m5_2_absa.run_baseline_checks import run_real_pool_export
+
+    # 1. Critical: 1,200 historical caption-only videos + 10 multimodal M3.3 pilot videos
+    pilot_vids = {f"pilot_{i:02d}" for i in range(10)}
+    videos_rows = [
+        {"video_id": f"hist_{i:04d}", "caption": f"Quán phở lịch sử {i} ngon đậm đà"}
+        for i in range(1200)
+    ] + [
+        {"video_id": f"pilot_{i:02d}", "caption": f"Review quán bún bò số {i} giá 45k bình thường"}
+        for i in range(10)
+    ]
+    voice_rows = [
+        {
+            "video_id": f"pilot_{i:02d}",
+            "segment_id": f"s_{s}",
+            "text": "Nước dùng đậm đà ngon xuất sắc",
+        }
+        for i in range(10)
+        for s in range(2)
+    ]
+    comment_rows = [
+        {
+            "video_id": f"pilot_{i:02d}",
+            "comment_id": f"c_{c}",
+            "text": "Bàn ghế hơi bẩn, phục vụ quá chậm",
+            "original_text": "  Bàn ghế hơi bẩn, phục vụ quá chậm ",
+        }
+        for i in range(10)
+        for c in range(2)
+    ]
+
+    dual_sink_dir = tmp_path / "dual_sink_gold"
+    dual_sink_dir.mkdir()
+    pd.DataFrame(videos_rows).to_parquet(dual_sink_dir / "fact_videos.parquet", index=False)
+    pd.DataFrame(voice_rows).to_parquet(dual_sink_dir / "fact_voice_segments.parquet", index=False)
+    pd.DataFrame(comment_rows).to_parquet(dual_sink_dir / "fact_comments.parquet", index=False)
+
+    out_pool = tmp_path / "r1_pool.jsonl"
+    out_preds = tmp_path / "r1_preds.jsonl"
+    sampled = run_real_pool_export(
+        corpus_dir=dual_sink_dir,
+        output_pool=out_pool,
+        output_locked_predictions=out_preds,
+        max_units=180,
+        double_overlap=20,
+        seed=42,
+    )
+    # Only the 10 multimodal videos (20 utterances + 20 comments + 10 pilot captions = 50 units) are eligible
+    assert len(sampled) == 50
+    assert {r["video_id"] for r in sampled} == pilot_vids
+    assert {r["source_kind"] for r in sampled} == {
+        "creator_utterance",
+        "viewer_comment",
+        "creator_caption",
+    }
+
+    # Caption-only fallback still works when voice_df and comments_df have zero multimodal videos
+    cap_fallback = build_m5_2_annotation_pool(
+        pd.DataFrame(videos_rows[:5]),
+        pd.DataFrame(columns=["video_id", "segment_id", "text"]),
+        None,
+        max_units=5,
+    )
+    assert len(cap_fallback) == 5
+
+    # 2. Important: empty spans fail closed, dict spans validate aspect & trimmed span_text
+    empty_audit = audit_source_span_validity({"u1": "Nước dùng đậm đà"}, [])
+    assert empty_audit["total_spans"] == 0
+    assert empty_audit["validity_rate"] == 0.0
+    assert empty_audit["meets_95pct_gate"] is False
+
+    dict_invariants = audit_source_span_validity(
+        {"u1": "  Nước dùng đậm đà  "},
+        [
+            {
+                "unit_id": "u1",
+                "aspect": "ambiance",
+                "start_char": 2,
+                "end_char": 18,
+                "span_text": "Nước dùng đậm đà",
+            },
+            {
+                "unit_id": "u1",
+                "aspect": "taste",
+                "start_char": 0,
+                "end_char": 18,
+                "span_text": "  Nước dùng đậm đà",
+            },
+        ],
+    )
+    assert dict_invariants["valid_spans"] == 0
+    assert [ex["reason"] for ex in dict_invariants["invalid_examples"]] == [
+        "invalid_aspect",
+        "untrimmed_span_text",
+    ]
+
+    # 3. Important: evaluate_m5_2_aspect_sentiment requires every predicted observed (unit_id, aspect) to have >=1 valid span
+    rows_40 = [
+        {
+            "video_id": f"vid_{i % 10}",
+            "unit_id": f"u_{i}",
+            "text": "Nước dùng đậm đà",
+            "pred_aspects": {
+                "taste": "positive" if i < 30 else "absent_unknown",
+                "price": "absent_unknown",
+                "hygiene": "absent_unknown",
+                "service": "absent_unknown",
+            },
+            "adjudicated_aspects": {
+                "taste": "positive" if i < 30 else "absent_unknown",
+                "price": "absent_unknown",
+                "hygiene": "absent_unknown",
+                "service": "absent_unknown",
+            },
+        }
+        for i in range(40)
+    ]
+
+    res_empty_spans = evaluate_m5_2_aspect_sentiment(
+        rows_40,
+        spans=[],
+        is_real_pilot_data=True,
+        human_signoff_complete=True,
+        total_annotated_units=150,
+        total_unique_videos=10,
+        n_boot=20,
+    )
+    assert res_empty_spans["m5_2_pilot_gate_eligible"] is False
+
+    # Passing 1 valid span for 30 predicted observed (unit_id, aspect) pairs gives validity_rate=1.0 but fails span backing!
+    res_partial_backing = evaluate_m5_2_aspect_sentiment(
+        rows_40,
+        spans=[
+            {
+                "unit_id": "u_0",
+                "aspect": "taste",
+                "start_char": 0,
+                "end_char": 16,
+                "span_text": "Nước dùng đậm đà",
+            }
+        ],
+        is_real_pilot_data=True,
+        human_signoff_complete=True,
+        total_annotated_units=150,
+        total_unique_videos=10,
+        n_boot=20,
+    )
+    assert res_partial_backing["span_audit"]["validity_rate"] == 1.0
+    assert res_partial_backing["all_predicted_aspects_span_backed"] is False
+    assert res_partial_backing["unbacked_predicted_observed_pair_count"] == 29
+    assert res_partial_backing["m5_2_pilot_gate_eligible"] is False
+
+    # Backing all 30 predicted observed (unit_id, aspect) pairs satisfies the gate
+    full_backing_spans = [
+        {
+            "unit_id": f"u_{i}",
+            "aspect": "taste",
+            "start_char": 0,
+            "end_char": 16,
+            "span_text": "Nước dùng đậm đà",
+        }
+        for i in range(30)
+    ]
+    res_full_backing = evaluate_m5_2_aspect_sentiment(
+        rows_40,
+        spans=full_backing_spans,
+        is_real_pilot_data=True,
+        human_signoff_complete=True,
+        total_annotated_units=150,
+        total_unique_videos=10,
+        n_boot=20,
+    )
+    assert res_full_backing["all_predicted_aspects_span_backed"] is True
+    assert res_full_backing["unbacked_predicted_observed_pair_count"] == 0
+    assert res_full_backing["m5_2_pilot_gate_eligible"] is True
+
+
+
 
 
 

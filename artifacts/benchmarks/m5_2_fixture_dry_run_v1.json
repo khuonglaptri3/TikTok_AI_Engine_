@@ -2,12 +2,12 @@
   "study_id": "m5_2_fixture_dry_run_v1",
   "fixture_type": "authored_edge_regression_fixture_NOT_real_pilot",
   "real_pilot_data_available": false,
-  "evaluated_at": "2026-11-23T02:12:30.963737+00:00",
+  "evaluated_at": "2026-11-23T02:46:38.063781+00:00",
   "environment": {
     "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
     "python": "3.11.14 | packaged by conda-forge | (main, Oct 13 2025, 14:09:32) [GCC 14.3.0]",
     "cpu_count": 4,
-    "process_peak_rss_mib": 617.52
+    "process_peak_rss_mib": 624.43
   },
   "split_counts": {
     "dev_units": 36,
@@ -176,6 +176,10 @@
       "meets_95pct_gate": true,
       "invalid_examples": []
     },
+    "predicted_observed_pair_count": 58,
+    "backed_predicted_observed_pair_count": 58,
+    "unbacked_predicted_observed_pair_count": 0,
+    "all_predicted_aspects_span_backed": true,
     "m5_2_pilot_gate_eligible": false
   },
   "held_out_metrics": {
@@ -339,6 +343,10 @@
       "meets_95pct_gate": true,
       "invalid_examples": []
     },
+    "predicted_observed_pair_count": 54,
+    "backed_predicted_observed_pair_count": 54,
+    "unbacked_predicted_observed_pair_count": 0,
+    "all_predicted_aspects_span_backed": true,
     "m5_2_pilot_gate_eligible": false
   },
   "all_fixture_metrics": {
@@ -502,6 +510,10 @@
       "meets_95pct_gate": true,
       "invalid_examples": []
     },
+    "predicted_observed_pair_count": 112,
+    "backed_predicted_observed_pair_count": 112,
+    "unbacked_predicted_observed_pair_count": 0,
+    "all_predicted_aspects_span_backed": true,
     "m5_2_pilot_gate_eligible": false
   },
   "before_after_filter_summary": {
@@ -582,7 +594,7 @@
       "packages/data_contracts/multimodal.py": "74870b32792b9fd49d1c927ca9a2b15ddfda76ec9d421ebd05f22e4c1e38ddf5",
       "packages/absa/spans.py": "92e857b97cfac58084039cd52729bc2f538e924298845de8a07e05d45b64ecc9",
       "packages/absa/analyzer.py": "5f499d1f177d979328c9fccf7417013d14e808aac29626acabdcb4ec11f2dbbc",
-      "packages/absa/evaluation.py": "08b8995a9edeac6ec4361e19b8835af6fa633fb887533716e6f2e42d85b73247",
+      "packages/absa/evaluation.py": "8e879148c84de32141abfd8abefdae9db8e3f4b0a7111053943d57edd8f15ac0",
       "packages/seeding/evaluation.py": "fa2fcdec07b089fbb12f0f5066eb30b8e22cfd3eaed76505aa422360bee5373a",
       "apps/api/app/routers/trust.py": "2b603c467ce817c7cdbeba4be8121a481a04de9d9b40b94d6078392ad9421da9",
       "apps/demo/presentation.py": "794492161ff232223a6e47da28dbd3587425edb80b6fce524920b77fb029ea5b",

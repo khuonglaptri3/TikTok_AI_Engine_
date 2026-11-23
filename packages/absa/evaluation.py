@@ -115,11 +115,10 @@ def split_units_by_video(
     return {"dev": dev_rows, "held_out": held_rows}
 
 
-def audit_source_span_validity(
+def _audit_source_spans_internal(
     units_by_id: dict[str, str],
     spans: Sequence[AspectSpanEvidence | dict[str, Any]],
-) -> dict[str, Any]:
-    """Verify every extracted or annotated span aligns 1-to-1 with NFC-normalized unit text."""
+) -> tuple[dict[str, Any], set[tuple[str, str]]]:
     nfc_map: dict[str, str] = {}
     for uid, text in units_by_id.items():
         if isinstance(uid, str) and isinstance(text, str):
@@ -132,6 +131,8 @@ def audit_source_span_validity(
     total = len(spans)
     valid = 0
     invalid_examples: list[dict[str, Any]] = []
+    valid_span_pairs: set[tuple[str, str]] = set()
+    valid_aspect_names: frozenset[str] = frozenset(ASPECT_NAMES)
 
     for sp in spans:
         if isinstance(sp, AspectSpanEvidence):
@@ -153,10 +154,14 @@ def audit_source_span_validity(
         reason: str | None = None
         if not isinstance(unit_id, str) or unit_id not in nfc_map:
             reason = "missing_unit_id"
+        elif not isinstance(aspect, str) or aspect not in valid_aspect_names:
+            reason = "invalid_aspect"
         elif type(start_char) is not int or type(end_char) is not int:
             reason = "non_int_offsets"
         elif not isinstance(span_text, str) or not bool(span_text.strip()):
             reason = "blank_or_non_str_span_text"
+        elif span_text != span_text.strip():
+            reason = "untrimmed_span_text"
         else:
             target_nfc = nfc_map[unit_id]
             if not (0 <= start_char < end_char <= len(target_nfc)):
@@ -166,6 +171,8 @@ def audit_source_span_validity(
 
         if reason is None:
             valid += 1
+            if isinstance(unit_id, str) and isinstance(aspect, str):
+                valid_span_pairs.add((unit_id.strip(), aspect))
         else:
             invalid_examples.append(
                 {
@@ -178,14 +185,24 @@ def audit_source_span_validity(
                 }
             )
 
-    return {
+    summary = {
         "total_spans": total,
         "valid_spans": valid,
         "invalid_spans": total - valid,
-        "validity_rate": round(valid / total, 4) if total > 0 else 1.0,
-        "meets_95pct_gate": (valid / total >= 0.95) if total > 0 else True,
+        "validity_rate": round(valid / total, 4) if total > 0 else 0.0,
+        "meets_95pct_gate": (valid / total >= 0.95) if total > 0 else False,
         "invalid_examples": invalid_examples[:10],
     }
+    return summary, valid_span_pairs
+
+
+def audit_source_span_validity(
+    units_by_id: dict[str, str],
+    spans: Sequence[AspectSpanEvidence | dict[str, Any]],
+) -> dict[str, Any]:
+    """Verify every extracted or annotated span aligns 1-to-1 with NFC-normalized unit text."""
+    summary, _ = _audit_source_spans_internal(units_by_id, spans)
+    return summary
 
 
 def _agreement_and_kappa(y_a: list[str], y_b: list[str]) -> tuple[float, float]:
@@ -427,6 +444,7 @@ def evaluate_m5_2_aspect_sentiment(
     validated_pairs: list[tuple[dict[AspectName, str], dict[AspectName, str]]] = []
     pairs_by_video: dict[str, list[tuple[dict[AspectName, str], dict[AspectName, str]]]] = {}
     inferred_units_map: dict[str, str] = {}
+    row_uid_and_preds: list[tuple[str | None, dict[AspectName, str]]] = []
 
     for row in rows:
         raw_vid = row.get("video_id")
@@ -443,10 +461,27 @@ def evaluate_m5_2_aspect_sentiment(
         raw_uid = row.get("unit_id")
         if isinstance(raw_uid, str) and raw_uid.strip():
             inferred_units_map[raw_uid] = str(row.get("text") or "")
+            row_uid_and_preds.append((raw_uid.strip(), pred_map))
+        else:
+            row_uid_and_preds.append((None, pred_map))
 
     units_map = dict(units_by_id) if units_by_id is not None else inferred_units_map
-    span_audit = audit_source_span_validity(units_map, spans)
+    span_audit, valid_span_pairs = _audit_source_spans_internal(units_map, spans)
     core = _compute_core_absa_metrics(validated_pairs)
+
+    predicted_observed_pair_count = 0
+    backed_predicted_observed_pair_count = 0
+    for uid_for_row, pred_map in row_uid_and_preds:
+        if uid_for_row is not None:
+            for aspect in ASPECT_NAMES:
+                if pred_map[aspect] != "absent_unknown":
+                    predicted_observed_pair_count += 1
+                    if (uid_for_row, aspect) in valid_span_pairs:
+                        backed_predicted_observed_pair_count += 1
+    unbacked_predicted_observed_pair_count = (
+        predicted_observed_pair_count - backed_predicted_observed_pair_count
+    )
+    all_predicted_aspects_span_backed = unbacked_predicted_observed_pair_count == 0
 
     unique_vids = sorted(pairs_by_video.keys())
     det_f1_point = float(core["aspect_detection_macro_f1"])
@@ -486,6 +521,7 @@ def evaluate_m5_2_aspect_sentiment(
         and (det_f1_point >= 0.65)
         and (sent_f1_point >= 0.60)
         and bool(span_audit["meets_95pct_gate"])
+        and all_predicted_aspects_span_backed
     )
 
     return {
@@ -499,6 +535,10 @@ def evaluate_m5_2_aspect_sentiment(
         "aspect_detection_macro_f1_ci95": det_ci95,
         "observed_sentiment_macro_f1_ci95": sent_ci95,
         "span_audit": span_audit,
+        "predicted_observed_pair_count": predicted_observed_pair_count,
+        "backed_predicted_observed_pair_count": backed_predicted_observed_pair_count,
+        "unbacked_predicted_observed_pair_count": unbacked_predicted_observed_pair_count,
+        "all_predicted_aspects_span_backed": all_predicted_aspects_span_backed,
         "m5_2_pilot_gate_eligible": gate_eligible,
     }
 
@@ -530,23 +570,7 @@ def build_m5_2_annotation_pool(
     utts_by_vid: dict[str, list[tuple[str, TextUnitSourceKind, str]]] = {}
     cmts_by_vid: dict[str, list[tuple[str, TextUnitSourceKind, str]]] = {}
     caps_by_vid: dict[str, list[tuple[str, TextUnitSourceKind, str]]] = {}
-    all_vids_set: set[str] = set()
-
-    if not videos_df.empty and "video_id" in videos_df.columns:
-        for row in videos_df.to_dict("records"):
-            vid_raw = _non_blank_nfc(row.get("video_id"))
-            if vid_raw is None:
-                continue
-            vid = vid_raw.strip()
-            all_vids_set.add(vid)
-            cap_txt = _non_blank_nfc(row.get("caption"))
-            if cap_txt is None:
-                cap_txt = _non_blank_nfc(row.get("description"))
-            if cap_txt is not None:
-                uid = f"{vid}::cap"
-                if uid not in seen_unit_ids:
-                    seen_unit_ids.add(uid)
-                    caps_by_vid.setdefault(vid, []).append((uid, "creator_caption", cap_txt))
+    multimodal_vids: set[str] = set()
 
     if voice_df is not None and not voice_df.empty and "video_id" in voice_df.columns:
         for idx, row in enumerate(voice_df.to_dict("records")):
@@ -554,7 +578,7 @@ def build_m5_2_annotation_pool(
             if vid_raw is None:
                 continue
             vid = vid_raw.strip()
-            all_vids_set.add(vid)
+            multimodal_vids.add(vid)
             seg_raw = _non_blank_nfc(row.get("segment_id"))
             seg_id = seg_raw.strip() if seg_raw is not None else f"{idx:03d}"
             txt = _non_blank_nfc(row.get("text"))
@@ -571,7 +595,7 @@ def build_m5_2_annotation_pool(
             if vid_raw is None:
                 continue
             vid = vid_raw.strip()
-            all_vids_set.add(vid)
+            multimodal_vids.add(vid)
             cmt_raw = _non_blank_nfc(row.get("comment_id"))
             cmt_id = cmt_raw.strip() if cmt_raw is not None else f"{idx:03d}"
             # Prefer unstripped original_text when non-blank so NFC char offsets match stored comment bytes
@@ -584,6 +608,29 @@ def build_m5_2_annotation_pool(
             if uid not in seen_unit_ids:
                 seen_unit_ids.add(uid)
                 cmts_by_vid.setdefault(vid, []).append((uid, "viewer_comment", txt))
+
+    # When incremental multimodal tables carry pilot video_ids, restrict fact_videos captions to those
+    # multimodal videos so Dual-Sink snapshots do not dilute the pool with 70,996 historical rows.
+    all_vids_set: set[str] = set(multimodal_vids)
+    restrict_to_multimodal = len(multimodal_vids) > 0
+
+    if not videos_df.empty and "video_id" in videos_df.columns:
+        for row in videos_df.to_dict("records"):
+            vid_raw = _non_blank_nfc(row.get("video_id"))
+            if vid_raw is None:
+                continue
+            vid = vid_raw.strip()
+            if restrict_to_multimodal and vid not in multimodal_vids:
+                continue
+            all_vids_set.add(vid)
+            cap_txt = _non_blank_nfc(row.get("caption"))
+            if cap_txt is None:
+                cap_txt = _non_blank_nfc(row.get("description"))
+            if cap_txt is not None:
+                uid = f"{vid}::cap"
+                if uid not in seen_unit_ids:
+                    seen_unit_ids.add(uid)
+                    caps_by_vid.setdefault(vid, []).append((uid, "creator_caption", cap_txt))
 
     unique_vids = sorted(all_vids_set)
     rng = np.random.default_rng(seed)
