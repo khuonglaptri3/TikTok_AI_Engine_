@@ -410,3 +410,180 @@ def test_venv_search_path_prepends_executable_parent(monkeypatch: pytest.MonkeyP
 
     monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}/usr/bin")
     assert _venv_search_path() == f"{bin_dir}{os.pathsep}/usr/bin"
+
+
+def test_m3_3_preflight_auto_creators_dotenv_and_resume_forwarding(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from pipelines.pilot_m3_3.models import M33PilotConfig
+    from pipelines.pilot_m3_3.runner import run_m3_3_pilot, run_m3_3_preflight
+
+    base_dir = tmp_path / "gold_base"
+    _write_minimal_gold_base(base_dir, n_rows=4)
+    filt_file = tmp_path / "author_unique_ids.txt"
+    filt_file.write_text("hist_creator\n", encoding="utf-8")
+
+    dotenv_path = tmp_path / ".env"
+    dotenv_path.write_text("ms_token=home_cookie_token_abc\n", encoding="utf-8")
+    monkeypatch.delenv("MS_TOKEN", raising=False)
+    monkeypatch.delenv("ms_token", raising=False)
+    monkeypatch.setattr("shutil.which", lambda name, path=None: f"/usr/bin/{name}")
+
+    cfg = M33PilotConfig(
+        mode="live_pilot",
+        allow_live_network=True,
+        backend="auto",
+        base_corpus_dir=base_dir,
+        batch_dir=tmp_path / "batch",
+        output_gold_dir=tmp_path / "gold_out",
+        output_bm25_dir=tmp_path / "bm25_out",
+        receipt_path=tmp_path / "receipt.json",
+        inspection_sheet_path=tmp_path / "inspect.jsonl",
+        auto_creators=3,
+        resume=True,
+    )
+    preflight = run_m3_3_preflight(
+        cfg,
+        dotenv_path=dotenv_path,
+        creator_filter_file=filt_file,
+        has_injected_asr=True,
+    )
+    assert preflight.ready_for_live_pilot is True
+    assert preflight.ms_token_present is True
+    assert preflight.selected_creators == ["hist_creator"]
+    assert preflight.historical_protected_count == 4
+    assert preflight.resolved_backend in {"tiktokapi_with_ytdlp_fallback", "ytdlp_only"}
+
+    # Verify dry_run_fixture forwards resume=True so pre-existing checkpoint records are retained
+    as_of = datetime(2026, 11, 23, 12, 0, 0, tzinfo=UTC)
+    fx1 = tmp_path / "fx1.jsonl"
+    fx2 = tmp_path / "fx2.jsonl"
+    rec1 = {
+        "video_id": "fresh_r1",
+        "author_id": "a1",
+        "author_handle": "c1",
+        "create_time": (as_of - timedelta(days=4)).isoformat(),
+        "caption": "Phở bò tái lăn Hà Nội",
+        "duration_sec": 30,
+        "audio_fixture_payload": "FAKE-MP3-1",
+        "comments": [],
+    }
+    rec2 = {
+        "video_id": "fresh_r2",
+        "author_id": "a2",
+        "author_handle": "c2",
+        "create_time": (as_of - timedelta(days=2)).isoformat(),
+        "caption": "Bún chả nướng than hoa",
+        "duration_sec": 30,
+        "audio_fixture_payload": "FAKE-MP3-2",
+        "comments": [],
+    }
+    fx1.write_text(json.dumps(rec1, ensure_ascii=False) + "\n", encoding="utf-8")
+    fx2.write_text(
+        "\n".join(json.dumps(r, ensure_ascii=False) for r in (rec1, rec2)) + "\n",
+        encoding="utf-8",
+    )
+
+    stub_asr = _StubCpuAsrEngine()
+    run1_cfg = M33PilotConfig(
+        mode="dry_run_fixture",
+        base_corpus_dir=base_dir,
+        batch_dir=tmp_path / "resume_batch",
+        output_gold_dir=tmp_path / "gold_r1",
+        output_bm25_dir=tmp_path / "bm25_r1",
+        receipt_path=tmp_path / "rec_r1.json",
+        inspection_sheet_path=tmp_path / "ins_r1.jsonl",
+        fixture_path=fx1,
+        as_of_utc=as_of,
+        resume=False,
+    )
+    r1 = run_m3_3_pilot(run1_cfg, asr_engine=stub_asr)
+    assert r1.collection.succeeded_count == 1
+
+    run2_cfg = run1_cfg.model_copy(
+        update={
+            "fixture_path": fx2,
+            "output_gold_dir": tmp_path / "gold_r2",
+            "output_bm25_dir": tmp_path / "bm25_r2",
+            "receipt_path": tmp_path / "rec_r2.json",
+            "inspection_sheet_path": tmp_path / "ins_r2.jsonl",
+            "resume": True,
+        }
+    )
+    r2 = run_m3_3_pilot(run2_cfg, asr_engine=stub_asr)
+    assert r2.collection.skipped_count == 1  # fresh_r1 skipped from checkpoint!
+    assert r2.collection.succeeded_count == 1  # only fresh_r2 newly fetched!
+    assert (r2.inspection_k_count + r2.inspection_n_count) == 2  # both retained in merged batch!
+
+
+def test_fix_m3_3_same_config_resume_avoids_gold_snapshot_collision(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from pipelines.pilot_m3_3.models import M33PilotConfig
+    from pipelines.pilot_m3_3.runner import run_m3_3_pilot, run_m3_3_preflight
+
+    base_dir = tmp_path / "gold_base_same"
+    _write_minimal_gold_base(base_dir, n_rows=4)
+    as_of = datetime(2026, 11, 23, 12, 0, 0, tzinfo=UTC)
+
+    fx_part1 = tmp_path / "part1.jsonl"
+    fx_part2 = tmp_path / "part2.jsonl"
+    rows = [
+        {
+            "video_id": f"same_cfg_v{i}",
+            "author_id": f"a{i}",
+            "author_handle": f"c{i}",
+            "create_time": (as_of - timedelta(days=i + 1)).isoformat(),
+            "caption": f"Bánh mì chảo đặc biệt Sài Gòn số {i}",
+            "duration_sec": 30,
+            "audio_fixture_payload": f"MP3-{i}",
+            "comments": [],
+        }
+        for i in range(6)
+    ]
+    fx_part1.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows[:2]) + "\n", encoding="utf-8")
+    fx_part2.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
+
+    shared_gold_out = tmp_path / "m3_3_pilot_snapshot_v1"
+    stub_asr = _StubCpuAsrEngine()
+    cfg_initial = M33PilotConfig(
+        mode="dry_run_fixture",
+        base_corpus_dir=base_dir,
+        batch_dir=tmp_path / "same_batch",
+        output_gold_dir=shared_gold_out,
+        output_bm25_dir=tmp_path / "bm25_same",
+        receipt_path=tmp_path / "receipt_same.json",
+        inspection_sheet_path=tmp_path / "inspect_same.jsonl",
+        fixture_path=fx_part1,
+        as_of_utc=as_of,
+        resume=False,
+    )
+    r_first = run_m3_3_pilot(cfg_initial, asr_engine=stub_asr)
+    assert r_first.collection.succeeded_count == 2
+    assert shared_gold_out.is_dir()
+
+    # Non-resume preflight on an already-existing output_gold_dir warns/blocks upfront before crawling
+    monkeypatch.setenv("MS_TOKEN", "tok_test")
+    monkeypatch.setattr("shutil.which", lambda name, path=None: f"/usr/bin/{name}")
+    pf_collide = run_m3_3_preflight(
+        cfg_initial.model_copy(update={"mode": "live_pilot", "allow_live_network": True, "creators": ["hist_creator"], "resume": False}),
+        has_injected_asr=True,
+    )
+    assert pf_collide.ready_for_live_pilot is False
+    assert any("output" in b.lower() or "snapshot" in b.lower() or "resume" in b.lower() for b in pf_collide.blocker_reasons)
+
+    # Exact same output_gold_dir WITH resume=True MUST NOT crash with FileExistsError; auto-versions cleanly!
+    pf_resume_ok = run_m3_3_preflight(
+        cfg_initial.model_copy(update={"mode": "live_pilot", "allow_live_network": True, "creators": ["hist_creator"], "resume": True}),
+        has_injected_asr=True,
+    )
+    assert pf_resume_ok.ready_for_live_pilot is True
+
+    r_resumed = run_m3_3_pilot(
+        cfg_initial.model_copy(update={"fixture_path": fx_part2, "resume": True}),
+        asr_engine=stub_asr,
+    )
+    assert r_resumed.collection.skipped_count == 2
+    assert r_resumed.collection.succeeded_count == 4
+    assert r_resumed.output_gold_snapshot_id is not None
+    assert r_resumed.output_gold_snapshot_id != r_first.output_gold_snapshot_id
