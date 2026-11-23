@@ -1,0 +1,97 @@
+{
+  "task_id": "M3.G",
+  "gate_result": "NOT_RUN",
+  "status": "IN_PROGRESS",
+  "prepared_at_utc": "2026-11-23T08:38:55.421995+00:00",
+  "prepared_by": "N",
+  "gate_owner": "K",
+  "base_corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "base_corpus_bytes_preserved_sha256": true,
+  "pilot_snapshot_id": "m3_3_pilot_snapshot_v1",
+  "pilot_snapshot_bytes_preserved_sha256": true,
+  "m3_1_repeated_ingest_replays": {
+    "skip_replay_update_existing_false": {
+      "wall_ms": 5635.45,
+      "total_videos": 71026,
+      "unique_video_ids": 71026,
+      "total_creators": 264,
+      "transcribed_videos": 21758,
+      "voice_segment_rows": 436,
+      "unique_segment_ids": 436,
+      "comment_rows": 0,
+      "absa_review_rows": 30,
+      "zero_duplicate_keys": true,
+      "manifest_checksums_verified": true
+    },
+    "enrichment_coalesce_update_existing_true": {
+      "wall_ms": 6140.35,
+      "total_videos": 71026,
+      "unique_video_ids": 71026,
+      "total_creators": 264,
+      "transcribed_videos": 21758,
+      "voice_segment_rows": 436,
+      "unique_segment_ids": 436,
+      "comment_rows": 0,
+      "absa_review_rows": 30,
+      "zero_duplicate_keys": true,
+      "manifest_checksums_verified": true
+    }
+  },
+  "m3_3_observed_metrics": {
+    "requested_candidates": 50,
+    "succeeded_videos": 30,
+    "capture_yield_rate": 0.6,
+    "failure_rate": 0.0,
+    "comment_coverage_rate": 0.0,
+    "converted_mp3_count": 29,
+    "all_29_mp3_duration_seconds": 2801,
+    "all_29_mp3_duration_minutes": 46.683,
+    "all_29_mp3_disk_bytes": 22524055,
+    "mp3_mib_per_audio_minute": 0.4601,
+    "asr_model": "faster-whisper/small-cpu-int8",
+    "asr_transcribed_videos": 10,
+    "asr_audio_minutes": 16.683,
+    "asr_wall_seconds": 197.269,
+    "asr_real_time_factor": 0.1971,
+    "asr_peak_rss_mib": 1009.46,
+    "pilot_total_wall_seconds": 744.154,
+    "pilot_peak_rss_mib": 3214.92,
+    "pilot_total_disk_bytes": 125741108,
+    "searchable_fresh_videos": 10,
+    "inspection_status": {
+      "K": {
+        "assigned": 15,
+        "verified": 0
+      },
+      "N": {
+        "assigned": 15,
+        "verified": 15
+      }
+    },
+    "annotation_time_minutes": {
+      "N_minutes": 15.0,
+      "N_timing_basis": "contributor_reported_estimate_for_15_videos (~1.0 min/video)",
+      "K_minutes": "PENDING_MEASUREMENT"
+    }
+  },
+  "capacity_estimates_from_observed_throughput": {
+    "basis_note": "Derived strictly from measured M3.3 small CPU RTF=0.1971, capture_yield=0.6, 0.4601 MiB/audio-min across 29 64kbps mp3 files, M3.1 replay timing, and N's reported ~15.0 min estimate across 15 videos (~1.0 min/video; K timing remains PENDING_MEASUREMENT).",
+    "remaining_19_m3_3_untranscribed_audio_minutes": 30.0,
+    "projected_all_29_mp3_asr_wall_seconds": 552.08,
+    "projected_50_succeeded_videos_batch_if_approved": {
+      "estimated_candidates_needed_at_60pct_yield": 84,
+      "estimated_total_wall_minutes_at_observed_pilot_rate": 20.67,
+      "estimated_asr_minutes_if_all_50_transcribed": 15.86,
+      "estimated_batch_audio_disk_mib": 37.04,
+      "estimated_human_inspection_minutes_at_N_rate_1min_per_video": 50.0,
+      "human_review_time_note": "Projected at N's reported ~1.0 min/video (~15.0 min for 15 videos); awaits K 15/15 completion and K measured inspection minutes."
+    },
+    "policy_guardrail": "Do not expand beyond M3.3 bounds without an approved new bounded budget; headless comment collection returned AntiBotChallengeError (EmptyResponseException) and requires GUI desktop --no-tiktok-headless if attempted."
+  },
+  "process_peak_rss_mib": 1322.89,
+  "blocking_open_items": [
+    "K must complete 15/15 manual inspection in M3.3 sample_inspection_sheet.jsonl",
+    "Record actual human annotation/inspection time for K and N",
+    "Jointly record G3 ruling on comment_coverage_rate = 0.0 (GUI desktop comment run vs deferring M5 automated trust claims)"
+  ]
+}
