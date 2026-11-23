@@ -24,11 +24,14 @@ async def audit_video_trust(payload: TrustAuditRequest) -> TrustAuditResponse:
             is_ad=payload.is_ad,
             is_ec_video=payload.is_ec_video,
             hashtags=payload.hashtags,
+            utterances=payload.utterances,
         )
         sensitivity = compute_comment_filter_sensitivity(
             caption=payload.caption,
             transcript=payload.transcript,
             comments=cleansed,
+            utterances=payload.utterances,
+            video_id=payload.video_id,
         )
     return TrustAuditResponse(
         comparison=comparison,
