@@ -1,16 +1,72 @@
-# M3.3 — Specification: Capped Capture-to-Transcript-to-Search Pilot
+# M3.3 — Specification: Capped Capture-to-Transcript-to-Search Pilot & Hybrid Legacy-Grounded Collector Upgrade
 
 - **Task ID:** `M3.3`
 - **Primary Owners:** Nguyễn Việt Nguyên (`N`) & Trần Đình Khương (`K`) (shared integration & 50/50 sample inspection)
 - **Prerequisite Gates / Tasks:** `G2 = PASS` (`M2.G`), `M3.1 = COMPLETE`, `M3.2 = COMPLETE`
-- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.3`, lines 56, 99)
+- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.3`, lines 56, 99)
+- **Upstream Crawler Grounding (`TrggTin/21KHDL-TikTok-Analytics` @ `f142e5656a220f94f8024de168b0832754b3bd9e`):**
+  - Full line-by-line inspection completed across `src/crawler/crawler.py` (`156` lines), `src/crawler/run_crawler.py` (`87` lines), `src/crawler/crawler_readme.md`, `src/crawler/TikTokApi/tiktok.py`, `src/crawler/TikTokApi/api/{user.py, video.py, comment.py}`, `src/crawler/TikTokApi/exceptions.py`, `docs/TikTok_data_fields.md`, `reports/chapter03-data_collection/data_collection.tex`, `notebooks/02_DEP_03-Filter_users.ipynb`, and preserved `data/filters/author_unique_ids.txt`.
+- **Revision History:**
+  - `2026-11-20` (Phase 1): Bounded `M3.3` capture -> CPU ASR -> Dual-Sink Gold -> BM25 -> searchability orchestrator & host `.venv` `faster-whisper` verification.
+  - `2026-11-23` (Phase 2, authored by `K`): Deep-grounded hybrid `TikTokApi` + `yt-dlp` collector upgrade adapting the exact `21KHDL-TikTok-Analytics` crawler mechanics (`isPinnedItem` chronological loop, zero-extra-HTTP `video.as_dict` caching, `TIKTOK_BROWSER`/headless session controls, UTF-8 Windows/Linux subprocess safety, Chapter 3 + `author_unique_ids.txt` F&B creator selection, `collectTime` + raw payload archiving, and authenticated `64 kbps` `.mp3` extraction).
 
-## Scope & Hard Ceilings
-Prepare and execute (when live network tools and `MS_TOKEN` are available) the bounded end-to-end fresh-data pilot:
-1. **Collection Bounds (`M3.2` worker):** Maximum `5` creators, `50` candidate fresh videos (`<= 120` days, excluding all `70,996` historical IDs), `30` successful videos, `60.0` audio minutes, `1,000` comments, and `1` bounded session (`<= 7,200` seconds / `2` hours).
+---
+
+## 1. Scope & Hard Ceilings (Preserved Baseline)
+
+Prepare and execute (when live network tools and `MS_TOKEN` are available) the bounded end-to-end fresh-data pilot under a strict `USD 0` local CPU budget:
+
+1. **Collection Bounds (`M3.2` worker):** Maximum `5` creators, `50` candidate fresh videos (`<= 120` days, excluding all `70,996` historical IDs), `30` successful videos, `60.0` audio minutes, `1,000` comments (`<= 50` comments per video), and `1` bounded session (`<= 7,200` seconds / `2` hours).
 2. **Measured CPU ASR Pilot Cap:** Transcribe **at most `10` videos** and **at most `20.0` audio minutes** before searchability verification. Enforce `0.0 <= start_sec < end_sec` on `RawWhisperSegment` outputs and leave un-transcribed or audio-missing records untouched (`transcript=""`, `whisper_segments=[]`).
 3. **Dual-Sink Gold Ingest (`M3.1`) & Searchability Probe:** Ingest the pilot batch atop `data/corpus/20261118_taxonomy_fix_v1` into a new versioned output snapshot (never mutating historical bytes), build a versioned BM25 index (`BM25Index.build`), and verify that freshly transcribed videos are retrievable via `HybridRetrievalService` with exact source `video_id` matching (`>= 5` real non-synthetic transcribed fresh videos required for pilot `PASS`).
 4. **Honest Mode Separation & Fail-Closed Status:**
    - `--mode dry_run_fixture`: verifies wiring, caps, metrics, disk/RAM/RTF measurement, and 50/50 `K`/`N` inspection sheet generation using synthetic fixtures (`is_synthetic_fixture=True`, `pilot_status="FIXTURE_DRY_RUN_ONLY"`). Never counts as live `M3.3` acceptance.
-   - `--mode live_pilot`: requires `--allow-live-network`, `MS_TOKEN`, `yt-dlp`, `ffmpeg`, and `faster-whisper`. If host tools, credentials, or TikTok network yield fail (`< 5` real fresh searchable transcribed videos), emit `pilot_status="BLOCKED"` honestly without fake replacement data.
+   - `--mode live_pilot`: requires `--allow-live-network`, `MS_TOKEN` (or legacy `ms_token`), `yt-dlp`, `ffmpeg`, and `faster-whisper`. If host tools, credentials, anti-bot challenges, or TikTok network yield fail (`< 5` real fresh searchable transcribed videos), emit `pilot_status="BLOCKED"` honestly without fake replacement data.
 5. **Equal Sample Inspection (`50% K / 50% N`):** Export `sample_inspection_sheet.jsonl` assigning half of succeeded videos to `K` and half to `N` with `human_verified=false` placeholders.
+
+---
+
+## 2. Phase 2 Architectural Upgrade (`2026-11-23`) — Grounded in `21KHDL-TikTok-Analytics` Source Inspection
+
+### 2.1 Direct Mechanics Adapted from `21KHDL-TikTok-Analytics` (and Legacy Defects Avoided)
+
+| Upstream File & Lines | Upstream Mechanism Found | How `TikTok_AI_Engine_` Adapts / Improves It |
+| --- | --- | --- |
+| `src/crawler/crawler.py:97-118` | Iterates `async for video in user.videos(...)`, checks `is_within_range(video_data["createTime"], ...)`, skips old pinned posts via `elif video_data.get("isPinnedItem"): continue`, and stops paging old history via `else: break`. | Preserve exact **`isPinnedItem` skip + unpinned reverse-chronological early `break`** against `cutoff_utc` (`120` days) so pinned 2023/2024 profile videos never prematurely abort discovery of 2026 posts and old history is never over-paged. |
+| `src/crawler/crawler.py:98` & `TikTokApi/api/video.py:76-80` | `user.videos()` (`/api/post/item_list/`, `min(35, count-found)` per page) already populates full `video.as_dict` (`itemStruct`), whereas `video.info()` warns *"Note: This is slow since it requires an HTTP request, avoid using this if possible"*. | Cache `video.as_dict` inside `TikTokApiCollectorProvider` during `discover_candidates` so `fetch_video_detail` performs **zero redundant per-video HTML scraping requests**, calling `video.info()` only if a candidate was not cached. |
+| `src/crawler/crawler.py:10,84` & `TikTokApi/tiktok.py:220-279,490` | Reads `ms_token` env var and calls `create_sessions(headless=False, ms_tokens=[ms_token], num_sessions=1, sleep_after=3, browser=os.getenv("TIKTOK_BROWSER", "chromium"))`. | Support both `MS_TOKEN` and legacy `ms_token` env keys, `TIKTOK_BROWSER` (`chromium` \| `webkit` \| `firefox`), and configurable `tiktok_headless: bool` (`--tiktok-headless` / `--no-tiktok-headless`, default `True` for CLI servers and toggleable to `False` on home desktop PCs). Do **not** vendor frozen `stealth/js` scripts or auto-bypass CAPTCHAs. |
+| `TikTokApi/api/video.py:239-284` & `comment.py:43-63` | `video.comments(count=...)` paginates `/api/comment/list/` yielding `as_dict` (`cid`, `text`, `digg_count`, `reply_comment_total`, `user.{uid, unique_id, sec_uid}`), whereas `Comment.replies()` (`comment.py:61`) had an upstream bug passing `item_id=self.author.user_id`. | Consume top-level `video.comments(count=max_comments)` `as_dict` directly, mapping `reply_comment_total -> reply_count` without calling the broken `Comment.replies()` endpoint, and preserving unstripped `text` for exact `M5.2` `NFC` span offsets. |
+| `src/crawler/run_crawler.py:16-31` & `crawler.py:54-65` | Enforces `PYTHONIOENCODING="utf-8"` and `PYTHONUTF8="1"` on `win32` subprocesses; `extract_video_contents` downloaded full `.mp4` files via `yt_dlp` without `ms_token`. | Enforce `encoding="utf-8", errors="replace"` plus `PYTHONIOENCODING="utf-8"` / `PYTHONUTF8="1"` on all `yt-dlp` subprocesses (preventing Windows `cp1252` crashes on Vietnamese text), keep lightweight `64 kbps` `.mp3` only (no `.mp4`), and pass `Cookie: msToken=...` + optional `--cookies` to `.mp3` extraction. |
+| `data/filters/author_unique_ids.txt`, `02_DEP_03-Filter_users.ipynb`, & `data_collection.tex:14-33` | Curated 6 flagship Vietnamese F&B handles (`spicykim9386`, `haidangrevieww`, `khaikhampha`, `putaangi`, `trangtam2607`, `huynhanhtuan_dienvien`) and Chapter 3 thresholds (`total_views > 100k`, `avg_views > 40k`, `ER > 0.03`). | `--auto-creators <k>` prioritizes preserved `data/filters/author_unique_ids.txt` handles verified in `dim_creators.parquet`, then ranks remaining `dim_creators.parquet` creators meeting `median_play_count >= 40,000` and `median_engagement_rate >= 0.03` by `(-avg_videos_per_week, -sample_video_count, -follower_count, unique_id)`. |
+| `src/crawler/crawler.py:106-127` & `docs/TikTok_data_fields.md` | Appends `collectTime` Unix timestamp and writes raw `videos_info.json` preserving audio/quality metadata (`video.VQScore`, `video.volumeInfo`, `video.claInfo.hasOriginalAudio`, `diversificationLabels`, `poi.*`, `isAd`, `isECVideo`). | Record `collect_time_unix` / `collected_at_utc` and append sanitized raw provider payloads (`raw_provider_payloads.jsonl`) alongside canonical `videos_4m.jsonl` inside `batch_dir` so rich `M4.1`/`M4.2` fields are preserved without bloating the canonical contract. |
+
+---
+
+### 2.2 Unified `itemStruct` & `yt-dlp` Schema Mapper (`pipelines/crawl_incremental/mappers.py`)
+
+- **`map_tiktok_item_struct_to_detail(raw, *, fallback_vid="", fallback_handle="", collected_at_utc=None) -> dict[str, Any]`:**
+  - Maps `id -> video_id`, `createTime -> create_time` (ISO-8601 UTC), `desc -> caption`, `author.{id, uniqueId, nickname}`, `authorStats.followerCount` (fallback `author.followerCount`), `video.duration -> duration_sec`, `statsV2.{playCount, diggCount, commentCount, shareCount, collectCount}` (fallback `stats.*`), and deduplicated hashtags from `challenges[*].title`, `contents[*].textExtra[*].hashtagName`, and `textExtra[*].hashtagName`.
+  - Maps `isAd -> is_ad`, `isECVideo -> is_ec_video`, `playlistId -> playlist_id`, `isPinnedItem -> is_pinned_item`, and `poi.{id, name, address, city, ttTypeNameTiny} -> poi_{id, name, address, city, category_tiny}` (normalizing empty/`"others"`/`"null"`/`"nan"` strings to `None`).
+- **`map_tiktok_comment_to_input(raw, *, canonical_vid, idx) -> dict[str, Any] | None`:**
+  - Normalizes `TikTokApi` (`cid`, `user.{unique_id, uniqueId}`, `text`, `digg_count`, `reply_comment_total`) and `yt-dlp` (`id`, `author`, `text`, `like_count`, `reply_count`) comments, rejecting whitespace-only comments while **preserving raw unstripped `text`** so `CommentRecord.original_text` and `M5.2` `NFC` offsets match 1-to-1.
+- **`map_ytdlp_json_to_detail(raw, *, candidate, collected_at_utc=None) -> tuple[dict[str, Any], list[dict[str, Any]]]`:**
+  - Extracts `collect_count` (`collect_count` / `save_count`), `share_count` (`repost_count` / `share_count`), comment `reply_count` (including counting child replies via `parent` IDs when `yt-dlp` emits flat comment lists), `is_pinned` (`is_pinned` / `pinned`), and any `is_ad`, `is_ec_video`, `playlist_id`, or `poi` fields exposed by `yt-dlp`.
+
+### 2.3 Pluggable `CollectorBackend` (`auto` | `tiktokapi` | `ytdlp`) & Fail-Closed Anti-Bot Gate (`providers.py`, `worker.py`)
+
+- **`CollectorBackend = Literal["auto", "tiktokapi", "ytdlp"]` (default `"auto"`):**
+  1. **`TikTokApiCollectorProvider` (`backend="tiktokapi"`):** Lazily imports the official `TikTokApi` package. Runs bounded async operations (`num_sessions=1`, `ms_tokens=[ms_token]`, `browser=tiktok_browser`, `headless=tiktok_headless`, `sleep_after=2`, `timeout=timeout_sec * 1000`). During `discover_candidates(creators, max_per_creator)`, applies the `crawler.py:97-118` loop (`isPinnedItem` skip + early `break` when an unpinned item has `cutoff_utc` > `createTime`) and caches `video.as_dict` by `video_id` so `fetch_video_detail` requires zero extra HTTP calls.
+  2. **`LiveTikTokCollectorProvider` (`backend="ytdlp"`):** Runs `yt-dlp` with UTF-8 subprocess environment (`encoding="utf-8", errors="replace"`, `PYTHONIOENCODING="utf-8"`, `PYTHONUTF8="1"`), `--add-header "Cookie: msToken=<ms_token>"`, and optional `--cookies <cookies_file>`.
+  3. **`AutoHybridTikTokCollectorProvider` (`backend="auto"`):** Uses `TikTokApiCollectorProvider` first when `TikTokApi` is importable on the host, falling back automatically per operation to `LiveTikTokCollectorProvider` (`ytdlp`) on `TransientCollectorError` or Playwright browser-launch unavailability; if primary detail/comments return `0` comments for a video reporting `comment_count > 0`, attempts secondary `fetch_comments` once. Routes directly to `ytdlp` when `TikTokApi` is not installed. Records `backends_used: list[str]`.
+- **Strict Fail-Closed Anti-Bot / CAPTCHA Boundary (`AntiBotChallengeError`):**
+  - Any `CaptchaException`, `EmptyResponseException` bot-detection block (`tiktok.py:490`), or `yt-dlp` CAPTCHA/human-verification gate raises `AntiBotChallengeError` (distinct from `TransientCollectorError`).
+  - Neither `AutoHybridTikTokCollectorProvider` nor `BoundedIncrementalCollector` retries or switches backends to evade `AntiBotChallengeError`. `BoundedIncrementalCollector` records `status="failed"`, `attempts=1`, sanitized `reason="anti_bot_challenge_blocked: ..."`, and halts live collection (`stopped_reason="anti_bot_challenge_blocked"`).
+
+### 2.4 Authenticated `64 kbps` Audio Extraction, Curated Auto-Creators & Home CLI Controls
+
+- **Authenticated `64 kbps` `.mp3`:** `download_audio_mp3_64k(tiktok_url, output_mp3, *, ms_token="", cookies_file=None, timeout_sec=45)` and `YtDlpAudioConverter64k(allow_live_network=False, ms_token="", cookies_file=None)` forward `Cookie: msToken=<ms_token>`, optional `--cookies <cookies_file>`, and UTF-8 subprocess settings to `yt-dlp`. `_sanitize_reason` redacts `ms_token`, `msToken`, `sessionid`, `Cookie`, and `--cookies <path>` values.
+- **`.env` Auto-Loader (`load_dotenv_if_present`):** Populates unset `MS_TOKEN` (accepting `MS_TOKEN` or legacy `ms_token` from `.env`), `TIKTOK_COOKIES_FILE`, `TIKTOK_BROWSER`, and `TIKTOK_HEADLESS` without overwriting existing environment variables or logging secret values.
+- **Curated Creator Selection (`select_curated_fnb_creators`):** Uses `data/filters/author_unique_ids.txt` + Chapter 3 thresholds (`median_play_count >= 40,000`, `median_engagement_rate >= 0.03`) over `dim_creators.parquet` when `--auto-creators <k>` (`1..5`) is passed.
+- **CLI & Orchestrator Controls (`pipelines.crawl_incremental` & `pipelines.pilot_m3_3`):**
+  - `--backend {auto,tiktokapi,ytdlp}` (default `auto`), `--cookies-file <path>`, `--tiktok-browser {chromium,webkit,firefox}`, `--tiktok-headless` / `--no-tiktok-headless`, `--auto-creators <k>`, `--resume` (forwarded into `BoundedIncrementalCollector.run`), and `--preflight-only` (0 network calls; outputs JSON readiness check covering `MS_TOKEN`, `yt-dlp`, `ffmpeg`, `faster-whisper`, optional `TikTokApi`/Playwright, `70,996` protected IDs, and resolved creators).
+  - Additive defaulted provenance fields `collector_backend_requested: str = "auto"` and `collector_backends_used: list[str] = Field(default_factory=list)` on `CrawlManifest` and `CollectionSummaryReceipt`.

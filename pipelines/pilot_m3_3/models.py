@@ -6,6 +6,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from pipelines.crawl_incremental.models import CollectorBackend
+
 PilotMode = Literal["dry_run_fixture", "live_pilot"]
 PilotStatus = Literal["PASS", "BLOCKED", "FIXTURE_DRY_RUN_ONLY"]
 
@@ -17,6 +19,10 @@ class M33PilotConfig(BaseModel):
 
     mode: PilotMode = "dry_run_fixture"
     allow_live_network: bool = False
+    backend: CollectorBackend = "auto"
+    cookies_file: Path | None = None
+    tiktok_browser: str = "chromium"
+    tiktok_headless: bool = True
     base_corpus_dir: Path = Path("data/corpus/20261118_taxonomy_fix_v1")
     batch_dir: Path = Path("data/raw_incremental/m3_3_pilot_batch")
     output_gold_dir: Path = Path("data/corpus/m3_3_pilot_snapshot_v1")
@@ -27,6 +33,8 @@ class M33PilotConfig(BaseModel):
     )
     fixture_path: Path | None = None
     creators: list[str] = Field(default_factory=list)
+    auto_creators: int = Field(default=0, ge=0, le=5)
+    resume: bool = False
     as_of_utc: datetime | None = None
 
     window_days: int = Field(default=120, ge=1, le=365)
@@ -48,6 +56,8 @@ class CollectionSummaryReceipt(BaseModel):
 
     model_config = ConfigDict(frozen=True, allow_inf_nan=False)
 
+    collector_backend_requested: str = "auto"
+    collector_backends_used: list[str] = Field(default_factory=list)
     requested_count: int = 0
     succeeded_count: int = 0
     failed_count: int = 0
@@ -58,6 +68,24 @@ class CollectionSummaryReceipt(BaseModel):
     capture_yield_rate: float = 0.0
     failure_rate: float = 0.0
     comment_coverage_rate: float = 0.0
+
+
+class M33PreflightReport(BaseModel):
+    """Offline preflight readiness report for live_pilot home execution (0 network calls)."""
+
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
+
+    ready_for_live_pilot: bool
+    ms_token_present: bool
+    cookies_file_present: bool = False
+    ytdlp_found: bool
+    ffmpeg_found: bool
+    faster_whisper_found: bool
+    tiktokapi_installed: bool
+    resolved_backend: str
+    historical_protected_count: int = 0
+    selected_creators: list[str] = Field(default_factory=list)
+    blocker_reasons: list[str] = Field(default_factory=list)
 
 
 class AsrPilotReceipt(BaseModel):

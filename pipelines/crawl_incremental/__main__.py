@@ -5,6 +5,7 @@ import json
 import os
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 
@@ -13,14 +14,24 @@ from packages.data_contracts.multimodal import (
     RawIncrementalVideoRecord,
     RawWhisperSegment,
 )
-from pipelines.crawl_incremental.crawler_service import compute_cutoff_utc, write_incremental_batch
-from pipelines.crawl_incremental.models import CollectorBounds, CollectorItemReceipt, CrawlManifest
+from pipelines.crawl_incremental.crawler_service import (
+    compute_cutoff_utc,
+    load_dotenv_if_present,
+    select_curated_fnb_creators,
+    write_incremental_batch,
+)
+from pipelines.crawl_incremental.models import (
+    CollectorBackend,
+    CollectorBounds,
+    CollectorItemReceipt,
+    CrawlManifest,
+)
 from pipelines.crawl_incremental.providers import (
     LiveNetworkDisabledError,
-    LiveTikTokCollectorProvider,
     OfflineFixtureAudioConverter,
     OfflineFixtureCollectorProvider,
     YtDlpAudioConverter64k,
+    build_live_collector_provider,
 )
 from pipelines.crawl_incremental.worker import BoundedIncrementalCollector, _atomic_write_json
 
@@ -115,6 +126,30 @@ def _load_protected_corpus_ids(base_corpus_dir: Path) -> tuple[set[str], str]:
     return ids, snapshot_id
 
 
+def _merge_creators(
+    explicit_creators: list[str] | None,
+    auto_creators: int,
+    base_corpus_dir: Path,
+    max_creators: int,
+) -> list[str] | None:
+    merged: list[str] = []
+    seen: set[str] = set()
+    for raw_c in explicit_creators or []:
+        c = raw_c.lstrip("@").strip()
+        if c and c.lower() not in seen:
+            seen.add(c.lower())
+            merged.append(c)
+    if auto_creators > 0:
+        target_total = min(len(merged) + auto_creators, max_creators)
+        for auto_c in select_curated_fnb_creators(base_corpus_dir, top_k=max(auto_creators, max_creators)):
+            if auto_c.lower() not in seen:
+                seen.add(auto_c.lower())
+                merged.append(auto_c)
+                if len(merged) >= target_total:
+                    break
+    return merged[:max_creators] if merged else None
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Bounded 120-day incremental collector worker (never re-crawls historical Gold corpus)."
@@ -137,9 +172,34 @@ def main() -> None:
         default=None,
         help="Explicit acquisition source: offline_fixture (synthetic/0 network) or live_provider.",
     )
+    parser.add_argument(
+        "--backend",
+        choices=("auto", "tiktokapi", "ytdlp"),
+        default="auto",
+        help="Live provider backend when --source live_provider: auto (TikTokApi -> ytdlp fallback), tiktokapi, or ytdlp.",
+    )
+    parser.add_argument("--cookies-file", type=Path, default=None, help="Optional Netscape cookies.txt file for yt-dlp.")
+    parser.add_argument(
+        "--tiktok-browser",
+        choices=("chromium", "webkit", "firefox"),
+        default=None,
+        help="Playwright browser engine when TikTokApi is active (default: TIKTOK_BROWSER env or chromium).",
+    )
+    parser.add_argument(
+        "--tiktok-headless",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Run Playwright headless (default True; pass --no-tiktok-headless on desktop PCs if needed).",
+    )
     parser.add_argument("--fixture-path", type=Path, default=None, help="JSON/JSONL fixture file for --source offline_fixture.")
     parser.add_argument("--as-of", type=str, default=None, help="ISO-8601 reference timestamp for 120-day cutoff.")
     parser.add_argument("--creator", action="append", default=None, help="Creator handle(s) to discover (repeatable).")
+    parser.add_argument(
+        "--auto-creators",
+        type=int,
+        default=0,
+        help="Auto-select up to K curated F&B creators from author_unique_ids.txt + dim_creators.parquet.",
+    )
     parser.add_argument("--resume", action="store_true", help="Resume from collector_checkpoint.json in --output-dir.")
     parser.add_argument(
         "--allow-live-network",
@@ -158,6 +218,8 @@ def main() -> None:
         help="Write a deterministic 4-month synthetic sample batch for offline verification.",
     )
     args = parser.parse_args()
+
+    load_dotenv_if_present()
 
     as_of_utc = (
         datetime.fromisoformat(args.as_of.replace("Z", "+00:00"))
@@ -179,6 +241,12 @@ def main() -> None:
         max_comments_total=args.max_comments_total,
         max_retries=args.max_retries,
     )
+    resolved_creators = _merge_creators(
+        args.creator,
+        args.auto_creators,
+        args.base_corpus,
+        bounds.max_creators,
+    )
 
     if args.seed_demo_batch:
         seed_all = _build_seed_demo_records(as_of_utc)
@@ -199,6 +267,8 @@ def main() -> None:
         seed_manifest = CrawlManifest(
             source_mode="offline_fixture",
             is_synthetic_fixture=True,
+            collector_backend_requested="offline_fixture",
+            collector_backends_used=["offline_fixture"],
             as_of_utc=as_of_utc.isoformat(),
             cutoff_utc=cutoff.isoformat(),
             base_corpus_snapshot_id=snapshot_id,
@@ -244,7 +314,7 @@ def main() -> None:
             as_of_utc=as_of_utc,
             historical_video_ids=existing_ids,
             base_corpus_snapshot_id=snapshot_id,
-            creators=args.creator,
+            creators=resolved_creators,
             resume=args.resume,
         )
         print(json.dumps(manifest.model_dump(), ensure_ascii=False, indent=2))
@@ -256,11 +326,28 @@ def main() -> None:
                 f"Refusing live_provider execution without a populated historical --base-corpus protection set at {args.base_corpus}."
             )
         ms_tok = os.environ.get("MS_TOKEN", "")
-        live_provider = LiveTikTokCollectorProvider(
+        env_cookies = os.environ.get("TIKTOK_COOKIES_FILE", "").strip()
+        cookies_path = args.cookies_file or (Path(env_cookies) if env_cookies else None)
+        browser = args.tiktok_browser or os.environ.get("TIKTOK_BROWSER", "chromium").strip() or "chromium"
+        if args.tiktok_headless is not None:
+            headless = bool(args.tiktok_headless)
+        else:
+            headless = os.environ.get("TIKTOK_HEADLESS", "true").strip().lower() not in {"false", "0", "no"}
+
+        live_provider = build_live_collector_provider(
+            backend=cast(CollectorBackend, args.backend),
             allow_live_network=args.allow_live_network,
             ms_token=ms_tok,
+            cookies_file=cookies_path,
+            browser=browser,
+            headless=headless,
+            cutoff_utc=cutoff,
         )
-        live_audio = YtDlpAudioConverter64k(allow_live_network=args.allow_live_network)
+        live_audio = YtDlpAudioConverter64k(
+            allow_live_network=args.allow_live_network,
+            ms_token=ms_tok,
+            cookies_file=cookies_path,
+        )
         collector = BoundedIncrementalCollector(
             provider=live_provider,
             audio_converter=live_audio,
@@ -271,7 +358,7 @@ def main() -> None:
             as_of_utc=as_of_utc,
             historical_video_ids=existing_ids,
             base_corpus_snapshot_id=snapshot_id,
-            creators=args.creator,
+            creators=resolved_creators,
             resume=args.resume,
         )
         print(json.dumps(manifest.model_dump(), ensure_ascii=False, indent=2))
