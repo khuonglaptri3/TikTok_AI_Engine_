@@ -16,13 +16,19 @@ from packages.data_contracts.query import RetrievalRequest
 from packages.retrieval import HybridRetrievalService
 from packages.retrieval.sparse.bm25 import BM25Index
 from pipelines.crawl_incremental.__main__ import _load_protected_corpus_ids
-from pipelines.crawl_incremental.crawler_service import write_incremental_batch
+from pipelines.crawl_incremental.crawler_service import (
+    compute_cutoff_utc,
+    load_dotenv_if_present,
+    select_curated_fnb_creators,
+    write_incremental_batch,
+)
 from pipelines.crawl_incremental.models import CollectorBounds
 from pipelines.crawl_incremental.providers import (
-    LiveTikTokCollectorProvider,
     OfflineFixtureAudioConverter,
     OfflineFixtureCollectorProvider,
     YtDlpAudioConverter64k,
+    build_live_collector_provider,
+    is_tiktokapi_available,
 )
 from pipelines.crawl_incremental.worker import BoundedIncrementalCollector, _atomic_write_json
 from pipelines.ingest_incremental_to_gold import ingest_incremental_batch_to_gold
@@ -31,6 +37,7 @@ from pipelines.pilot_m3_3.models import (
     CollectionSummaryReceipt,
     M33PilotConfig,
     M33PilotReceipt,
+    M33PreflightReport,
     PilotStatus,
     ResourceReceipt,
     SearchabilityReceipt,
@@ -113,61 +120,155 @@ def _venv_search_path() -> str:
     return current
 
 
-def _check_live_prerequisites(
+def _resolve_pilot_creators(
     config: M33PilotConfig,
-    protected_ids: set[str],
-    has_injected_asr: bool,
+    creator_filter_file: Path = Path("data/filters/author_unique_ids.txt"),
 ) -> list[str]:
-    blockers: list[str] = []
+    merged: list[str] = []
+    seen: set[str] = set()
+    for raw_c in config.creators:
+        c = raw_c.lstrip("@").strip()
+        if c and c.lower() not in seen:
+            seen.add(c.lower())
+            merged.append(c)
+            if len(merged) >= config.max_creators:
+                return merged
+    if config.auto_creators > 0:
+        auto_list = select_curated_fnb_creators(
+            config.base_corpus_dir,
+            top_k=max(config.auto_creators, config.max_creators),
+            filter_file=creator_filter_file,
+        )
+        for auto_c in auto_list:
+            if auto_c.lower() not in seen:
+                seen.add(auto_c.lower())
+                merged.append(auto_c)
+                if len(merged) >= min(len(config.creators) + config.auto_creators, config.max_creators):
+                    break
+    return merged[: config.max_creators]
+
+
+def _resolve_env_view(dotenv_path: Path | None) -> dict[str, str]:
+    target = dict(os.environ)
+    if dotenv_path is not None:
+        return load_dotenv_if_present(dotenv_path, target_env=target)
+    return load_dotenv_if_present(Path("__nonexistent_dotenv__"), target_env=target)
+
+
+def run_m3_3_preflight(
+    config: M33PilotConfig,
+    *,
+    dotenv_path: Path | None = None,
+    creator_filter_file: Path = Path("data/filters/author_unique_ids.txt"),
+    has_injected_asr: bool = False,
+) -> M33PreflightReport:
+    """Inspect local M3.3 live_pilot readiness (0 network calls, zero secret values echoed)."""
+    env_view = _resolve_env_view(dotenv_path)
+    protected_ids, _ = _load_protected_corpus_ids(config.base_corpus_dir)
+    selected_creators = _resolve_pilot_creators(config, creator_filter_file=creator_filter_file)
     search_path = _venv_search_path()
+
+    ms_token_present = bool(str(env_view.get("MS_TOKEN", "")).strip())
+    env_cookies = str(env_view.get("TIKTOK_COOKIES_FILE", "")).strip()
+    cookies_path = config.cookies_file or (Path(env_cookies) if env_cookies else None)
+    cookies_file_present = bool(cookies_path is not None and cookies_path.is_file())
+
+    ytdlp_found = shutil.which("yt-dlp", path=search_path) is not None
+    ffmpeg_found = shutil.which("ffmpeg", path=search_path) is not None
+    tiktokapi_installed = is_tiktokapi_available()
+
+    if has_injected_asr:
+        faster_whisper_found = True
+    else:
+        try:
+            import importlib.util
+
+            faster_whisper_found = importlib.util.find_spec("faster_whisper") is not None
+        except Exception:
+            faster_whisper_found = False
+
+    if config.backend == "tiktokapi":
+        resolved_backend = "tiktokapi_only" if tiktokapi_installed else "tiktokapi_missing"
+    elif config.backend == "ytdlp":
+        resolved_backend = "ytdlp_only"
+    else:
+        resolved_backend = "tiktokapi_with_ytdlp_fallback" if tiktokapi_installed else "ytdlp_only"
+
+    blockers: list[str] = []
     if not config.allow_live_network:
         blockers.append("--allow-live-network is required for live_pilot mode")
     if not protected_ids:
         blockers.append(f"Protected historical video IDs missing at {config.base_corpus_dir}")
-    if not config.creators:
-        blockers.append("At least 1 creator handle (--creator) is required for live_pilot mode")
-    if not os.environ.get("MS_TOKEN", "").strip():
+    if not selected_creators:
+        blockers.append(
+            "At least 1 creator handle (--creator or --auto-creators) is required for live_pilot mode"
+        )
+    if not ms_token_present:
         blockers.append("MS_TOKEN environment credential is missing")
-    if shutil.which("yt-dlp", path=search_path) is None:
+    if cookies_path is not None and not cookies_file_present:
+        blockers.append("Configured cookies_file was not found on disk")
+    if config.backend == "tiktokapi" and not tiktokapi_installed:
+        blockers.append(
+            "TikTokApi package is not installed (--backend tiktokapi requested; install TikTokApi + playwright or use --backend auto)"
+        )
+    if resolved_backend in {"ytdlp_only", "tiktokapi_with_ytdlp_fallback"} and not ytdlp_found:
         blockers.append("yt-dlp binary is missing from PATH")
-    if shutil.which("ffmpeg", path=search_path) is None:
+    elif not ytdlp_found:
+        # Even tiktokapi_only uses yt-dlp for 64 kbps .mp3 extraction
+        blockers.append("yt-dlp binary is missing from PATH")
+    if not ffmpeg_found:
         blockers.append("ffmpeg binary is missing from PATH")
-    if not has_injected_asr:
-        try:
-            import importlib.util
+    if not faster_whisper_found:
+        blockers.append("faster-whisper Python package is not installed")
 
-            if importlib.util.find_spec("faster_whisper") is None:
-                blockers.append("faster-whisper Python package is not installed")
-        except Exception:
-            blockers.append("faster-whisper availability check failed")
-    return blockers
+    return M33PreflightReport(
+        ready_for_live_pilot=not blockers,
+        ms_token_present=ms_token_present,
+        cookies_file_present=cookies_file_present,
+        ytdlp_found=ytdlp_found,
+        ffmpeg_found=ffmpeg_found,
+        faster_whisper_found=faster_whisper_found,
+        tiktokapi_installed=tiktokapi_installed,
+        resolved_backend=resolved_backend,
+        historical_protected_count=len(protected_ids),
+        selected_creators=selected_creators,
+        blocker_reasons=blockers,
+    )
 
 
 def run_m3_3_pilot(
     config: M33PilotConfig,
     *,
     asr_engine: CpuAsrEngine | None = None,
+    dotenv_path: Path | None = None,
+    creator_filter_file: Path = Path("data/filters/author_unique_ids.txt"),
 ) -> M33PilotReceipt:
     """Execute bounded M3.3 capture -> CPU ASR -> M3.1 Gold -> BM25 -> searchability slice."""
     t0 = time.perf_counter()
     now_iso = datetime.now(UTC).isoformat()
+    env_view = _resolve_env_view(dotenv_path)
     protected_ids, base_snapshot_id = _load_protected_corpus_ids(config.base_corpus_dir)
+    selected_creators = _resolve_pilot_creators(config, creator_filter_file=creator_filter_file)
 
     if config.mode == "live_pilot":
-        blockers = _check_live_prerequisites(
+        preflight = run_m3_3_preflight(
             config,
-            protected_ids,
+            dotenv_path=dotenv_path,
+            creator_filter_file=creator_filter_file,
             has_injected_asr=(asr_engine is not None),
         )
-        if blockers:
+        if preflight.blocker_reasons:
             receipt = M33PilotReceipt(
                 mode=config.mode,
                 pilot_status="BLOCKED",
                 is_synthetic_fixture=False,
                 executed_at_utc=now_iso,
-                blocker_reasons=blockers,
+                blocker_reasons=preflight.blocker_reasons,
                 base_corpus_snapshot_id=base_snapshot_id,
-                collection=CollectionSummaryReceipt(historical_protected_count=len(protected_ids)),
+                collection=CollectionSummaryReceipt(
+                    collector_backend_requested=config.backend,
+                    historical_protected_count=len(protected_ids),
+                ),
                 resources=ResourceReceipt(
                     wall_seconds=round(time.perf_counter() - t0, 3),
                     peak_rss_mib=round(float(get_peak_rss_mib()), 2),
@@ -185,6 +286,10 @@ def run_m3_3_pilot(
         max_comments_total=config.max_comments_total,
         session_deadline_seconds=config.session_deadline_seconds,
     )
+    effective_as_of = config.as_of_utc or datetime.now(UTC)
+    if effective_as_of.tzinfo is None:
+        effective_as_of = effective_as_of.replace(tzinfo=UTC)
+    cutoff_utc = compute_cutoff_utc(reference_now=effective_as_of, window_days=config.window_days)
 
     if config.mode == "dry_run_fixture":
         if config.fixture_path is None:
@@ -200,24 +305,36 @@ def run_m3_3_pilot(
         )
     else:
         os.environ["PATH"] = _venv_search_path()
-        ms_token = os.environ.get("MS_TOKEN", "").strip()
+        ms_token = str(env_view.get("MS_TOKEN", "")).strip()
+        env_cookies = str(env_view.get("TIKTOK_COOKIES_FILE", "")).strip()
+        cookies_path = config.cookies_file or (Path(env_cookies) if env_cookies else None)
         active_asr = asr_engine or FasterWhisperCpuAsrEngine(model_size=config.asr_model_size)
+        live_provider = build_live_collector_provider(
+            backend=config.backend,
+            allow_live_network=config.allow_live_network,
+            ms_token=ms_token,
+            cookies_file=cookies_path,
+            browser=config.tiktok_browser,
+            headless=config.tiktok_headless,
+            cutoff_utc=cutoff_utc,
+        )
         collector = BoundedIncrementalCollector(
-            provider=LiveTikTokCollectorProvider(
+            provider=live_provider,
+            audio_converter=YtDlpAudioConverter64k(
                 allow_live_network=config.allow_live_network,
                 ms_token=ms_token,
+                cookies_file=cookies_path,
             ),
-            audio_converter=YtDlpAudioConverter64k(allow_live_network=config.allow_live_network),
             bounds=bounds,
         )
 
     manifest = collector.run(
         output_dir=config.batch_dir,
-        as_of_utc=config.as_of_utc,
+        as_of_utc=effective_as_of,
         historical_video_ids=protected_ids,
         base_corpus_snapshot_id=base_snapshot_id,
-        creators=config.creators or None,
-        resume=False,
+        creators=selected_creators or None,
+        resume=config.resume,
     )
 
     jsonl_path = config.batch_dir / manifest.output_jsonl
@@ -244,6 +361,8 @@ def run_m3_3_pilot(
     fail_cnt = manifest.failed_count
     with_comments = sum(1 for r in enriched_records if r.comments)
     collection_summary = CollectionSummaryReceipt(
+        collector_backend_requested=manifest.collector_backend_requested,
+        collector_backends_used=manifest.collector_backends_used,
         requested_count=req_cnt,
         succeeded_count=succ_cnt,
         failed_count=fail_cnt,
@@ -262,6 +381,13 @@ def run_m3_3_pilot(
 
     transcribed_fresh = [r for r in enriched_records if r.transcript.strip()]
     blockers_after: list[str] = []
+    if manifest.stopped_reason == "anti_bot_challenge_blocked":
+        blockers_after.append(
+            "Anti-bot/CAPTCHA challenge encountered; collector halted fail-closed without bypass"
+        )
+    elif manifest.stopped_reason == "discovery_failed":
+        blockers_after.append("Candidate discovery failed across active collector backend(s)")
+
     if not enriched_records:
         blockers_after.append("No fresh records succeeded within 120-day window")
         receipt = M33PilotReceipt(
@@ -330,6 +456,8 @@ def run_m3_3_pilot(
     status: PilotStatus
     if config.mode == "dry_run_fixture":
         status = "FIXTURE_DRY_RUN_ONLY"
+    elif manifest.stopped_reason == "anti_bot_challenge_blocked":
+        status = "BLOCKED"
     elif len(matched_ids) >= config.min_searchable_fresh_videos:
         status = "PASS"
     else:
