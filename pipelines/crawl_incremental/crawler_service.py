@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import subprocess
@@ -56,14 +57,20 @@ def filter_fresh_candidates(
     return accepted
 
 
+def yt_dlp_impersonate_args() -> list[str]:
+    """Use Chrome TLS impersonation when curl_cffi is available for TikTok APIs."""
+    return ["--impersonate", "chrome"] if importlib.util.find_spec("curl_cffi") is not None else []
+
+
 def download_audio_mp3_64k(tiktok_url: str, output_mp3: Path) -> bool:
     """Download lightweight 64kbps .mp3 (~500KB) via yt-dlp when installed."""
     output_mp3.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
         "yt-dlp",
+        *yt_dlp_impersonate_args(),
         "--force-overwrites",
         "-f",
-        "bestaudio/best",
+        "best[vcodec=h264]/best[vcodec!=none]/best",
         "--extract-audio",
         "--audio-format",
         "mp3",
@@ -75,7 +82,7 @@ def download_audio_mp3_64k(tiktok_url: str, output_mp3: Path) -> bool:
         tiktok_url,
     ]
     try:
-        res = subprocess.run(cmd, capture_output=True, text=True, timeout=45, check=False)
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=60, check=False)
         return res.returncode == 0 and output_mp3.is_file()
     except FileNotFoundError:
         return False

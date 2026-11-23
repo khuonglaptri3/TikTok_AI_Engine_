@@ -410,3 +410,35 @@ def test_venv_search_path_prepends_executable_parent(monkeypatch: pytest.MonkeyP
 
     monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}/usr/bin")
     assert _venv_search_path() == f"{bin_dir}{os.pathsep}/usr/bin"
+
+
+def test_download_audio_and_live_provider_use_h264_and_impersonate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from pipelines.crawl_incremental.crawler_service import (
+        download_audio_mp3_64k,
+        yt_dlp_impersonate_args,
+    )
+    from pipelines.crawl_incremental.providers import LiveTikTokCollectorProvider
+
+    monkeypatch.setattr("importlib.util.find_spec", lambda name: object() if name == "curl_cffi" else None)
+    assert yt_dlp_impersonate_args() == ["--impersonate", "chrome"]
+
+    seen_cmds: list[list[str]] = []
+
+    def _fake_run(cmd: list[str], **_kwargs: Any) -> subprocess.CompletedProcess[str]:
+        seen_cmds.append(cmd)
+        if "-o" in cmd:
+            Path(cmd[cmd.index("-o") + 1]).write_bytes(b"mp3")
+        return subprocess.CompletedProcess(args=cmd, returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("subprocess.run", _fake_run)
+    out_mp3 = tmp_path / "audio.mp3"
+    assert download_audio_mp3_64k("https://www.tiktok.com/@ansapsaigon/video/123", out_mp3) is True
+    assert seen_cmds[0][:3] == ["yt-dlp", "--impersonate", "chrome"]
+    assert "best[vcodec=h264]/best[vcodec!=none]/best" in seen_cmds[0]
+
+    provider = LiveTikTokCollectorProvider(allow_live_network=True, ms_token="tok_test")
+    assert provider.discover_candidates(["ansapsaigon"], max_per_creator=1) == []
+    assert seen_cmds[1][:3] == ["yt-dlp", "--impersonate", "chrome"]

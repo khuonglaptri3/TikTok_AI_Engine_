@@ -4,26 +4,26 @@ rootdir: /home/intern-nvnguyen1/Project/TikTok_AI_Engine_
 configfile: pyproject.toml
 testpaths: tests
 plugins: anyio-4.16.0
-collected 183 items
+collected 195 items
 
 tests/contract/test_data_contracts.py ..........                         [  5%]
-tests/eval/test_retrieval_benchmark.py ...                               [  7%]
+tests/eval/test_retrieval_benchmark.py ...                               [  6%]
 tests/smoke/test_api_and_demo.py .                                       [  7%]
-tests/unit/test_analytics_and_retrieval.py .....                         [ 10%]
-tests/unit/test_bounded_collector_worker.py ............                 [ 16%]
-tests/unit/test_dense_hybrid_retrieval.py ........                       [ 21%]
+tests/unit/test_analytics_and_retrieval.py .....                         [  9%]
+tests/unit/test_bounded_collector_worker.py ............                 [ 15%]
+tests/unit/test_dense_hybrid_retrieval.py ..........                     [ 21%]
 tests/unit/test_incremental_absa_seeding.py ...                          [ 22%]
-tests/unit/test_llm_call_budget.py .........................             [ 36%]
-tests/unit/test_m3_3_pilot_pipeline.py ......                            [ 39%]
-tests/unit/test_m4_2_disclosure.py .......                               [ 43%]
-tests/unit/test_m5_1_comment_indicators.py ...                           [ 45%]
-tests/unit/test_offline_draft.py ....................                    [ 56%]
-tests/unit/test_query_intent_and_abstention.py ..............            [ 63%]
-tests/unit/test_resource_measurements.py ........                        [ 68%]
-tests/unit/test_retrieval_metrics.py ..........                          [ 73%]
-tests/unit/test_script_guardrails.py .............                       [ 80%]
-tests/unit/test_secret_hygiene.py ..                                     [ 81%]
+tests/unit/test_llm_call_budget.py .........................             [ 35%]
+tests/unit/test_m3_3_pilot_pipeline.py .......                           [ 38%]
+tests/unit/test_m4_2_disclosure.py ...........                           [ 44%]
+tests/unit/test_m5_1_comment_indicators.py ........                      [ 48%]
+tests/unit/test_offline_draft.py ....................                    [ 58%]
+tests/unit/test_query_intent_and_abstention.py ..............            [ 66%]
+tests/unit/test_resource_measurements.py ........                        [ 70%]
+tests/unit/test_retrieval_metrics.py ..........                          [ 75%]
+tests/unit/test_script_guardrails.py .............                       [ 82%]
+tests/unit/test_secret_hygiene.py ..                                     [ 83%]
 tests/unit/test_snapshot_continuity.py ..........................        [ 96%]
 tests/unit/test_taxonomy_and_corpus.py .......                           [100%]
 
-============================= 183 passed in 28.39s =============================
+============================= 195 passed in 43.03s =============================

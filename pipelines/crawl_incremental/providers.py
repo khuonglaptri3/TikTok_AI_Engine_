@@ -6,7 +6,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
 
-from pipelines.crawl_incremental.crawler_service import download_audio_mp3_64k
+from pipelines.crawl_incremental.crawler_service import (
+    download_audio_mp3_64k,
+    yt_dlp_impersonate_args,
+)
 from pipelines.crawl_incremental.models import SourceMode
 
 
@@ -171,19 +174,21 @@ class LiveTikTokCollectorProvider:
     ) -> list[dict[str, Any]]:
         if not creators:
             return []
+        handles = [h.lstrip("@").strip() for h in creators if h.lstrip("@").strip()]
+        if not handles:
+            return []
         cap = max(1, int(max_per_creator))
-        discovered: list[dict[str, Any]] = []
-        for raw_handle in creators:
-            handle = raw_handle.lstrip("@").strip()
-            if not handle:
-                continue
+        per_creator_cap = max(1, (cap + len(handles) - 1) // len(handles))
+        per_creator_items: list[list[dict[str, Any]]] = []
+        for handle in handles:
             profile_url = f"https://www.tiktok.com/@{handle}"
             cmd = [
                 "yt-dlp",
+                *yt_dlp_impersonate_args(),
                 "--flat-playlist",
                 "--dump-json",
                 "--playlist-end",
-                str(cap),
+                str(per_creator_cap),
                 *self._cookie_header_arg(),
                 profile_url,
             ]
@@ -201,6 +206,7 @@ class LiveTikTokCollectorProvider:
                 raise TransientCollectorError(f"discovery subprocess os error: {exc.errno}") from None
             if res.returncode != 0:
                 raise TransientCollectorError(f"discovery exited with code {res.returncode}")
+            creator_rows: list[dict[str, Any]] = []
             for line in res.stdout.splitlines():
                 if not line.strip():
                     continue
@@ -216,7 +222,7 @@ class LiveTikTokCollectorProvider:
                 )
                 vid = str(obj.get("id") or "").strip()
                 if vid:
-                    discovered.append(
+                    creator_rows.append(
                         {
                             "video_id": vid,
                             "author_handle": handle,
@@ -225,6 +231,15 @@ class LiveTikTokCollectorProvider:
                             or f"https://www.tiktok.com/@{handle}/video/{vid}",
                         }
                     )
+            per_creator_items.append(creator_rows)
+
+        # Interleave round-robin so bounded downstream collection/ASR samples every creator
+        discovered: list[dict[str, Any]] = []
+        max_rows = max((len(items) for items in per_creator_items), default=0)
+        for idx in range(max_rows):
+            for items in per_creator_items:
+                if idx < len(items):
+                    discovered.append(items[idx])
         return discovered
 
     def fetch_video_detail(self, candidate: dict[str, Any]) -> dict[str, Any]:
@@ -235,6 +250,7 @@ class LiveTikTokCollectorProvider:
         )
         cmd = [
             "yt-dlp",
+            *yt_dlp_impersonate_args(),
             "--dump-single-json",
             "--no-playlist",
             "--write-comments",
