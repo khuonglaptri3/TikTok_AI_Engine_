@@ -504,6 +504,7 @@ def run_real_pool_export(
     max_units: int = 180,
     double_overlap: int = 50,
     seed: int = 42,
+    require_comments: bool = True,
 ) -> list[dict[str, Any]]:
     """Export blinded 120-200 real pilot units + separate locked predictions JSONL from a Gold snapshot."""
     pred_path = (
@@ -525,6 +526,10 @@ def run_real_pool_export(
     videos_df = pd.read_parquet(videos_pq)
     voice_df = pd.read_parquet(voice_pq) if voice_pq.is_file() else None
     comments_df = pd.read_parquet(comments_pq) if comments_pq.is_file() else None
+    if require_comments and (comments_df is None or comments_df.empty):
+        raise ValueError(
+            "fact_comments.parquet must contain non-empty viewer comments for official M5.2 real_pool export"
+        )
 
     pool = build_m5_2_annotation_pool(
         videos_df,

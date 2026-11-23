@@ -3,7 +3,7 @@
 - **Date:** 2026-11-20 to 2026-11-23 (Asia/Ho_Chi_Minh)
 - **Task ID:** `M5.2` (Four-aspect sentiment with source spans; existing lexicon baseline upgrade)
 - **Primary Owner:** Trần Đình Khương (`K`)
-- **Peer Reviewer:** Nguyễn Việt Nguyên (`N`, pending peer review & real-pilot double-annotation)
+- **Peer Reviewer:** Nguyễn Việt Nguyên (`N`, Phase 1 baseline & real-snapshot probe signed off `2026-11-23`; Phase 2 double-annotation awaiting `M3.3` comments)
 - **Branch:** `feat/k-m5.2-aspect-spans-baseline` (branched from `main` @ `60b80147`)
 - **Spec & Plan:** [spec.md](../superpowers/spec.md), [plan.md](../superpowers/plan.md)
 
@@ -45,3 +45,12 @@
    - `python3 -m mypy --platform win32 packages apps pipelines` -> `Success: no issues found in 104 source files`.
    - `python3 scripts/check_secrets.py` -> `0` secret leaks.
    - Verified `M5.2/` top-level directory layout (`README.md`, `evidence/`, `superpowers/{spec.md, plan.md}`), zero machine-specific paths, and zero broken relative links.
+
+## Phase 5 — Contributor `N` Phase 1 Peer Review & Real-Pilot Edge TDD Fixes (`2026-11-23`)
+
+1. **Skills applied:** `test-driven-development` and `verification-before-completion`.
+2. **Real-pilot snapshot probe & contract verification:** Probed all `466` creator text units (`30` captions + `436` Whisper `small` CPU utterances) from `M3.3` `m3_3_pilot_snapshot_v1`, confirming `115/115` (`1.0`) `NFC` span validity, explicit `absent_unknown` vs `observed neutral` separation, and `>= 3` viewer comment abstention on video `7710799156024986887`, while surfacing 4 real-data issues documented in [nguyen_baseline_peer_review.md](nguyen_baseline_peer_review.md).
+3. **TDD Regression Pass (`RED -> GREEN`):**
+   - Authored failing test `test_m5_2_nguyen_peer_review_real_pilot_edge_fixes` in `tests/unit/test_m5_2_aspect_spans.py` (`RED`: `"tại sao lại 190.000 vnd trả lời tôi"` produced truncated `"000 vnd trả lời tôi"`).
+   - Updated `_SENTENCE_DELIMITER_RE`, `_GUARDED_BAN_SACH_PATTERN`, `_ASPECT_PATTERNS["price"]`, `_IGNORED_ASPECT_COMPOUNDS`, and `_POLARITY_MASK_COMPOUNDS` in `packages/absa/spans.py`, plus fail-closed `require_comments: bool = True` in `pipelines/audit_m5_2_absa/run_baseline_checks.py` (`run_real_pool_export`).
+   - Verified `GREEN`: `.venv/bin/python -m pytest tests/unit/test_m5_2_aspect_spans.py -v` (`13 passed in 6.77s`), dry-run parity (`/tmp/m5_2_post_fix_dry_run.json`: `held_out_aspect_f1=1.0`, `held_out_sentiment_f1=0.9267`, `span_validity=1.0`, `pilot_gate_eligible=False`), post-fix probe on `m3_3_pilot_snapshot_v1` (`466` creator units -> `113/113` valid `NFC` spans across `taste: 79, price: 31, hygiene: 0, service: 3`, and expected `ValueError` on `run_real_pool_export`), full `.venv/bin/python -m pytest -v` after rebasing onto `11e01476` (`219 passed in 36.62s`), `ruff` on all `M5.2` modules, `mypy` Linux (`106 source files`), and `mypy --platform win32` (`105 source files`).

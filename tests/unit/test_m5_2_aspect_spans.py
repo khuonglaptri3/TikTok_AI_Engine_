@@ -1489,3 +1489,97 @@ def test_m5_2_task4_fix_round1_multimodal_scoping_and_span_backing(tmp_path: Pat
     assert res_missing_uid["unbacked_predicted_observed_pair_count"] == 30
     assert res_missing_uid["m5_2_pilot_gate_eligible"] is False
 
+
+def test_m5_2_nguyen_peer_review_real_pilot_edge_fixes(tmp_path: Path) -> None:
+    """Guard thousand-separated VND amounts, depletion/relief idioms, and comment-required real_pool export."""
+    import pandas as pd
+
+    from packages.absa.evaluation import audit_source_span_validity, predict_unit_aspects
+    from packages.absa.spans import TextUnitInput
+    from pipelines.audit_m5_2_absa.run_baseline_checks import run_real_pool_export
+
+    # 1. Thousand separators inside VND numbers must not split sentences mid-price
+    price_unit = TextUnitInput(
+        unit_id="u_vnd_190",
+        source_kind="creator_utterance",
+        text="tại sao lại 190.000 vnd trả lời tôi",
+    )
+    price_pred, price_spans = predict_unit_aspects(price_unit)
+    assert price_pred["price"] == "neutral"
+    assert len(price_spans) == 1
+    assert "190.000 vnd" in price_spans[0].span_text
+
+    multi_dot_unit = TextUnitInput(
+        unit_id="u_vnd_million",
+        source_kind="creator_utterance",
+        text="Hết 1.250.000đ. Quán hơi đắt",
+    )
+    multi_pred, multi_spans = predict_unit_aspects(multi_dot_unit)
+    assert any("1.250.000đ" in sp.span_text for sp in multi_spans)
+    assert multi_pred["price"] == "negative"
+
+    # 2. Depletion verb "lấy sạch" is not hygiene praise; genuine hygiene still works
+    deplete_unit = TextUnitInput(
+        unit_id="u_deplete",
+        source_kind="creator_utterance",
+        text="cô lấy sạch ra hết luôn",
+    )
+    deplete_pred, deplete_spans = predict_unit_aspects(deplete_unit)
+    assert deplete_pred["hygiene"] == "absent_unknown"
+    assert deplete_spans == []
+
+    clean_unit = TextUnitInput(
+        unit_id="u_clean",
+        source_kind="viewer_comment",
+        text="Bàn ghế lấy đồ xong vẫn sạch sẽ",
+    )
+    clean_pred, _ = predict_unit_aspects(clean_unit)
+    assert clean_pred["hygiene"] == "positive"
+
+    # 3. Relief idioms ("đỡ ngán") and lifting verb ("dở lên") must not trigger negative taste
+    relief_unit = TextUnitInput(
+        unit_id="u_relief",
+        source_kind="creator_utterance",
+        text="quẩy chiên thì được nhét chạm tơm ăn cho đỡ ngán với vị ngọt nhẹ",
+    )
+    relief_pred, _ = predict_unit_aspects(relief_unit)
+    assert relief_pred["taste"] == "neutral"
+
+    lift_unit = TextUnitInput(
+        unit_id="u_lift",
+        source_kind="creator_utterance",
+        text="Dở lên má ơi, bên dưới có thay 1 món yêu thích của tôi",
+    )
+    lift_pred, _ = predict_unit_aspects(lift_unit)
+    assert lift_pred["taste"] == "absent_unknown"
+
+    bad_taste_unit = TextUnitInput(
+        unit_id="u_bad_taste",
+        source_kind="viewer_comment",
+        text="Món này dở quá luôn",
+    )
+    bad_pred, _ = predict_unit_aspects(bad_taste_unit)
+    assert bad_pred["taste"] == "negative"
+
+    # All extracted spans remain 1-to-1 NFC aligned
+    unit_map = {u.unit_id: u.text for u in (price_unit, multi_dot_unit, clean_unit, bad_taste_unit)}
+    all_spans = [*price_spans, *multi_spans]
+    assert audit_source_span_validity(unit_map, all_spans)["validity_rate"] == 1.0
+
+    # 4. Official run_real_pool_export fails closed when fact_comments.parquet is empty/missing
+    no_cmt_dir = tmp_path / "no_comments_gold"
+    no_cmt_dir.mkdir()
+    pd.DataFrame([{"video_id": "v1", "caption": "Bún bò 35k"}]).to_parquet(
+        no_cmt_dir / "fact_videos.parquet", index=False
+    )
+    pd.DataFrame([{"video_id": "v1", "segment_id": "s0", "text": "Nước dùng ngon"}]).to_parquet(
+        no_cmt_dir / "fact_voice_segments.parquet", index=False
+    )
+    with pytest.raises(ValueError, match="fact_comments.parquet"):
+        run_real_pool_export(
+            corpus_dir=no_cmt_dir,
+            output_pool=tmp_path / "pool_fail.jsonl",
+            output_locked_predictions=tmp_path / "preds_fail.jsonl",
+        )
+
+

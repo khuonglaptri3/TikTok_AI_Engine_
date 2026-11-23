@@ -53,7 +53,7 @@ def _compile_word_phrases(phrases: tuple[str, ...]) -> str:
     return "|".join(escaped)
 
 
-_SENTENCE_DELIMITER_RE = re.compile(r"[.!?…\n;]+")
+_SENTENCE_DELIMITER_RE = re.compile(r"(?:(?!(?<=\d)\.(?=\d))[.!?…\n;])+")
 
 _CONTRASTIVE_DELIMITER_RE = re.compile(
     r"(?:(?:,\s*|\s+)(?:"
@@ -296,6 +296,9 @@ _IGNORED_ASPECT_COMPOUNDS: tuple[str, ...] = (
     "lâu lâu",
     "húp sạch",
     "hết sạch",
+    "dở lên",
+    "dở ra",
+    "dở nắp",
     "giá đỗ",
     "rau giá",
     "giá sống",
@@ -308,7 +311,7 @@ _GUARDED_CONSUMPTION_SACH_PATTERN = (
     r"(?<!\w)(?:ăn|uống)\s+sạch(?!\w)(?!\s+(?:sẽ|tinh)(?!\w))"
 )
 
-_GUARDED_BAN_SACH_PATTERN = r"(?<!\w)bán\s+sạch(?!\w)(?!\s+(?:sẽ|tinh)(?!\w))"
+_GUARDED_BAN_SACH_PATTERN = r"(?<!\w)(?:bán|lấy|vét)\s+sạch(?!\w)(?!\s+(?:sẽ|tinh)(?!\w))"
 
 _GUARDED_COUNTERFACTUAL_GIA_PATTERN = (
     r"(?<!mức\s)(?<!bảng\s)(?<!tầm\s)(?<!đơn\s)(?<!báo\s)(?<!hỏi\s)"
@@ -342,7 +345,7 @@ _ASPECT_PATTERNS: dict[AspectName, re.Pattern[str]] = {
         + r"|giá"
         + r"|\d{1,4}\s*(?:k|ka|cành|nghìn|ngàn|đồng|vnđ|vnd)"
         r"(?!\s*(?:views?|lượt\s*xem|fl|follows?|followers?|tim|likes?|subs?|subscribers?|km|kg|ml|kcal|calo)\b)"
-        + r"|\d{2,3}[.,]\d{3}\s*(?:đ|đồng|vnđ|vnd)"
+        + r"|\d{1,3}(?:[.,]\d{3})+\s*(?:đ|đồng|vnđ|vnd)"
         + r")(?!\w)"
     ),
     "hygiene": re.compile(r"(?<!\w)(?:" + _compile_word_phrases(_HYGIENE_PHRASES) + r")(?!\w)"),
@@ -570,6 +573,16 @@ _POLARITY_MASK_COMPOUNDS: tuple[str, ...] = (
     "lâu lâu",
     "húp sạch",
     "hết sạch",
+    "dở lên",
+    "dở ra",
+    "dở nắp",
+    "đỡ ngán",
+    "đỡ ngấy",
+    "bớt ngán",
+    "bớt ngấy",
+    "chống ngán",
+    "giải ngán",
+    "giảm ngán",
 )
 
 _NEGATED_NEUTRAL_TARGETS: tuple[str, ...] = (
