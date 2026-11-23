@@ -22,3 +22,5 @@
 5. **Annotation Timing Update (`2026-11-23`):** Recorded contributor `N`'s self-reported inspection duration (`~15.0` min across `15` videos = `~1.0` min/video) and projected `~50.0` human review min for a `50`-video batch in [g3_capacity_and_replay_receipt.json](g3_capacity_and_replay_receipt.json), keeping `K`'s inspection timing explicitly `PENDING_MEASUREMENT`.
 6. **Pre-Handoff Verification (`2026-11-23`):**
    - Executed `tests/unit/test_snapshot_continuity.py tests/unit/test_incremental_absa_seeding.py tests/unit/test_m3_3_pilot_pipeline.py`, `python3 scripts/check_secrets.py`, and relative markdown link / layout checks (results recorded in [../README.md](../README.md)).
+7. **Post-PR #9 Sync (`2026-11-23`):**
+   - Merged `PR #9` (`d0ced5c0`, `K`'s `15/15` inspection completing `M3.3 -> COMPLETE` with `30/30` verified), resolved the `docs/reports/milestones/README.md` index conflict, updated `K` inspection counts in [g3_capacity_and_replay_receipt.json](g3_capacity_and_replay_receipt.json) and [../README.md](../README.md) (`30/30` verified), and re-verified full `pytest`, secrets, and relative links on merged `main`.

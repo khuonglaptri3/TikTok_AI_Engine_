@@ -61,7 +61,7 @@
     "inspection_status": {
       "K": {
         "assigned": 15,
-        "verified": 0
+        "verified": 15
       },
       "N": {
         "assigned": 15,
@@ -90,8 +90,7 @@
   },
   "process_peak_rss_mib": 1322.89,
   "blocking_open_items": [
-    "K must complete 15/15 manual inspection in M3.3 sample_inspection_sheet.jsonl",
-    "Record actual human annotation/inspection time for K and N",
-    "Jointly record G3 ruling on comment_coverage_rate = 0.0 (GUI desktop comment run vs deferring M5 automated trust claims)"
+    "Record K's actual human annotation/inspection time in annotation_time_minutes (N reported 15.0 min)",
+    "Jointly record G3 ruling on comment_coverage_rate = 0.0 (GUI desktop comment run vs deferring M5 automated trust claims) and sign off Gate G3"
   ]
 }
