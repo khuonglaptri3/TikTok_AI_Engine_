@@ -47,9 +47,9 @@ Executed the deterministic Gate `G3` (`M3.G`) verification probe ([run_g3_checks
 
 | Check | Result | Scope / evidence |
 | --- | --- | --- |
-| `python3 docs/reports/milestones/M3.G/evidence/run_g3_checks.py` | PASS (`8.742 s`, `0` byte mutations) | `G0/G1/G2` + `M3.1–M3.3` SHA-256 lineage, `29` `.mp3` digests, `10/10` BM25 searchability, `30/30` inspection, `M3.1` `update_existing=True` preservation; [g3_verification_receipt.json](evidence/g3_verification_receipt.json) |
-| `python3 -m pytest tests/unit/test_m3_g_gate_checks.py -v` | PASS (`5 passed`) | Tamper detection (`.mp3` & Parquet), `15 K / 15 N` split enforcement, readiness matrix transitions, capacity & enrichment probe |
-| `python3 -m pytest -q` | PASS (`223 passed`) | Full workspace unit, contract, smoke, and evaluation regression suite |
+| `python3 docs/reports/milestones/M3.G/evidence/run_g3_checks.py` | PASS (`8.567 s`, `0` byte mutations) | `G0/G1/G2` + `M3.1–M3.3` SHA-256 lineage, `29` `.mp3` digests, `10/10` BM25 searchability, `30/30` inspection, `M3.1` `update_existing=True` dedup/preservation; [g3_verification_receipt.json](evidence/g3_verification_receipt.json) |
+| `python3 -m pytest tests/unit/test_m3_g_gate_checks.py -v` | PASS (`6 passed`) | Tamper/orphan detection (`.mp3` & Parquet), fail-closed `G0`/`M3.x` receipts, `15 K / 15 N` completeness & ID parity, `>=150` comments & `>=10` videos readiness transitions, dynamic capacity & dedup enrichment probe |
+| `python3 -m pytest -q` | PASS (`224 passed`) | Full workspace unit, contract, smoke, and evaluation regression suite |
 | `python3 -m mypy packages apps pipelines .../run_g3_checks.py .../test_m3_g_gate_checks.py` & `--platform win32` | PASS (`0` issues on Linux & `win32`) | Static typing across repository packages, pipelines, and `M3.G` probe/tests |
 | `python3 scripts/check_secrets.py` | PASS (`0` secret leaks) | Full repository secret hygiene check |
 

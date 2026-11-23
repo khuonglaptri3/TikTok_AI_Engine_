@@ -23,10 +23,10 @@
      - Executed `python3 docs/reports/milestones/M3.G/evidence/run_g3_checks.py` -> `PASS in 8.742s` (`0` byte mutations, `29/29` `.mp3` SHA-256 verified, `10/10` fresh BM25 searchable, `30/30` human verified, `436` voice segments preserved under `update_existing=True` comment-backfill probe).
      - Authored `g3_verification_receipt.json`, `g3-gate-decision-receipt.json` (`n_peer_approval = "PENDING_N_REVIEW"`), `M3.G/README.md`, and updated `docs/reports/milestones/README.md`.
 4. `requesting-code-review` & `verification-before-completion`:
-   - Whole-branch independent subagent review followed by full-suite `pytest -q`, Linux/`win32` `mypy`, path hygiene check, and `python3 scripts/check_secrets.py`.
+   - Dispatched independent whole-branch subagent reviewer (`d0ced5c0..9fef95a3`), executed a single `RED -> GREEN` fix pass across all 6 review findings (`M5.1` `>= 10` videos threshold, `expected_total = 30` & `video_id` parity enforcement, fail-closed `G0`/`M3.1`–`M3.3` receipt verification, dynamic telemetry wiring, duplicate-`comment_id` deduplication check in `update_existing=True` probe, strict non-converted `.mp3` status/orphan check, and corrected relative link in `spec.md`), followed by full-suite `pytest -q` (`224 passed`), `mypy`, path hygiene check, and `python3 scripts/check_secrets.py`.
 
 ## 2. Key Verification Receipts
 
-- `g3_verification_receipt.json` SHA-256: `f4c78c041d520f5e668f6e7238a287055082d77bc4b304f97fa926c6187bbeb6`
+- `g3_verification_receipt.json` SHA-256: `9a073527744735b1050219ea7a3ededbac90b423cef907846c30937227e3d8bc`
 - `m3_3_pilot_receipt.json` SHA-256: `3a67062ed46c73052397f42f7a247f6b6594c24186d925a1b2508a2dae591d8a`
 - `sample_inspection_sheet.jsonl` SHA-256: `a1c1747f92a9fd517912bad5936d0b4fd35b0326bb04acc17494f41dbcc119bf`

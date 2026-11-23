@@ -4,7 +4,7 @@
 - **Created:** `2026-11-23` (`Asia/Ho_Chi_Minh`)
 - **Primary Owner:** Trần Đình Khương (`K`, `2` effort points)
 - **Peer Reviewer & Co-Approver:** Nguyễn Việt Nguyên (`N`, `2` effort points)
-- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.G`, lines 57, 100, 127)
+- **Requirement Source:** [TikTok_AI_Engine_Milestone.md](../../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.G`, lines 57, 100, 127)
 - **Cost & Access Constraint:** Strictly `USD 0` spend, local CPU execution, zero CAPTCHA/anti-bot bypass, and zero historical TikTok re-crawling.
 
 ## 1. Purpose & Governance Model

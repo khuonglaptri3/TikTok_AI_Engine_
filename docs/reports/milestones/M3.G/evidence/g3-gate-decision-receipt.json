@@ -5,7 +5,7 @@
   "peer_reviewer": "Nguyễn Việt Nguyên (N)",
   "decided_by_primary_owner_at": "2026-11-23T17:00:30+07:00",
   "evaluated_branch": "feat/k-m3.g-gate-decision",
-  "evaluated_head": "4479dd24ddf58cdecd62d6b00f35fbee3226e882",
+  "evaluated_head": "9fef95a3c3d1dc6ac7522c4d9d1665fdded8beda",
   "primary_owner_recommendation": "CONDITIONAL_PASS_UNBLOCK_M4_1_AND_BOUNDED_COMMENT_BACKFILL",
   "n_peer_approval": "PENDING_N_REVIEW",
   "gate_status_until_two_person_signoff": "IN_PROGRESS_PENDING_N_REVIEW",
@@ -38,7 +38,7 @@
     }
   },
   "referenced_evidence_sha256": {
-    "docs/reports/milestones/M3.G/evidence/g3_verification_receipt.json": "f4c78c041d520f5e668f6e7238a287055082d77bc4b304f97fa926c6187bbeb6",
+    "docs/reports/milestones/M3.G/evidence/g3_verification_receipt.json": "9a073527744735b1050219ea7a3ededbac90b423cef907846c30937227e3d8bc",
     "docs/reports/milestones/M3.3/evidence/m3_3_pilot_receipt.json": "3a67062ed46c73052397f42f7a247f6b6594c24186d925a1b2508a2dae591d8a",
     "docs/reports/milestones/M3.3/evidence/sample_inspection_sheet.jsonl": "a1c1747f92a9fd517912bad5936d0b4fd35b0326bb04acc17494f41dbcc119bf"
   }

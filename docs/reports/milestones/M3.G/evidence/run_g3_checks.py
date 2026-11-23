@@ -35,6 +35,54 @@ def _sha256_file(path: Path) -> str:
     return hasher.hexdigest()
 
 
+def verify_prerequisites_and_upstream_tasks(repo_root: Path) -> dict[str, Any]:
+    gate_receipt_paths = {
+        "G0": repo_root / "docs/reports/milestones/M0.G/evidence/owner-gate-decision-receipt.json",
+        "G1": repo_root / "docs/reports/milestones/M1.G/evidence/g1-gate-decision-receipt.json",
+        "G2": repo_root / "docs/reports/milestones/M2.G/evidence/g2-gate-decision-receipt.json",
+    }
+    prerequisite_gates: dict[str, str] = {}
+    for gate_id, r_path in gate_receipt_paths.items():
+        if not r_path.is_file():
+            raise ValueError(f"Missing prerequisite gate receipt for {gate_id}: {r_path}")
+        payload = json.loads(r_path.read_text(encoding="utf-8"))
+        decision = str(payload.get("decision") or "")
+        if decision != "PASS":
+            raise ValueError(
+                f"Prerequisite gate {gate_id} must have decision=='PASS', got {decision!r}"
+            )
+        prerequisite_gates[gate_id] = decision
+
+    m3_1_signoff = repo_root / "docs/reports/milestones/M3.1/evidence/khuong_m3_1_reproduction.json"
+    m3_2_signoff = repo_root / "docs/reports/milestones/M3.2/evidence/nguyen_signoff_receipt.json"
+    if not m3_1_signoff.is_file() or not m3_2_signoff.is_file():
+        raise ValueError("Missing M3.1 or M3.2 reciprocal sign-off receipt")
+    m3_1_payload = json.loads(m3_1_signoff.read_text(encoding="utf-8"))
+    m3_2_payload = json.loads(m3_2_signoff.read_text(encoding="utf-8"))
+    if "APPROVED" not in str(m3_1_payload.get("verdict") or ""):
+        raise ValueError(f"M3.1 peer reproduction receipt not APPROVED: {m3_1_payload.get('verdict')!r}")
+    if (
+        str(m3_2_payload.get("verdict") or "") != "APPROVED"
+        or int(m3_2_payload.get("blocking_issues", 1)) != 0
+    ):
+        raise ValueError("M3.2 peer sign-off receipt not APPROVED with 0 blocking issues")
+
+    upstream_tasks: dict[str, str] = {}
+    for task_id in ("M3.1", "M3.2", "M3.3"):
+        readme_path = repo_root / f"docs/reports/milestones/{task_id}/README.md"
+        if not readme_path.is_file():
+            raise ValueError(f"Missing milestone report for {task_id}: {readme_path}")
+        text = readme_path.read_text(encoding="utf-8")
+        if "- Status: COMPLETE" not in text:
+            raise ValueError(f"Upstream task {task_id} is not marked '- Status: COMPLETE'")
+        upstream_tasks[task_id] = "COMPLETE"
+
+    return {
+        "prerequisite_gates": prerequisite_gates,
+        "upstream_tasks": upstream_tasks,
+    }
+
+
 def verify_snapshot_checksums(snapshot_dir: Path) -> dict[str, Any]:
     manifest_path = snapshot_dir / "manifest.json"
     if not manifest_path.is_file():
@@ -66,6 +114,7 @@ def verify_snapshot_checksums(snapshot_dir: Path) -> dict[str, Any]:
         "manifest_sha256": _sha256_file(manifest_path),
         "parent_snapshot_id": manifest.get("parent_snapshot_id"),
         "parent_manifest_sha256": manifest.get("parent_manifest_sha256"),
+        "transcribed_videos": int(manifest.get("transcribed_videos", 0)),
         "file_sha256": file_hashes,
         "row_counts": row_counts,
     }
@@ -80,6 +129,7 @@ def verify_raw_pilot_media(batch_dir: Path) -> dict[str, Any]:
     total_mp3_bytes = 0
     no_audio_ids: list[str] = []
     mp3_hashes: dict[str, str] = {}
+    verified_paths: set[Path] = set()
 
     for item in manifest.get("items", []):
         if item.get("status") != "succeeded":
@@ -91,7 +141,7 @@ def verify_raw_pilot_media(batch_dir: Path) -> dict[str, Any]:
             rel_audio = str(receipt.get("audio_path") or "")
             if not rel_audio:
                 raise ValueError(f"Missing audio_path for converted item {vid}")
-            audio_file = batch_dir / rel_audio
+            audio_file = (batch_dir / rel_audio).resolve()
             if not audio_file.is_file() or audio_file.stat().st_size <= 0:
                 raise ValueError(f"Missing or empty mp3 file for {vid}: {rel_audio}")
             actual_bytes = audio_file.stat().st_size
@@ -107,8 +157,20 @@ def verify_raw_pilot_media(batch_dir: Path) -> dict[str, Any]:
             verified_mp3_count += 1
             total_mp3_bytes += actual_bytes
             mp3_hashes[vid] = actual_sha
-        else:
+            verified_paths.add(audio_file)
+        elif r_status in {"unavailable", "no_audio_stream"}:
             no_audio_ids.append(vid)
+        else:
+            raise ValueError(f"Unexpected audio_receipt status {r_status!r} on succeeded item {vid}")
+
+    audio_dir = batch_dir / "audio_64k"
+    if audio_dir.is_dir():
+        actual_mp3_files = {p.resolve() for p in audio_dir.glob("*.mp3") if p.is_file()}
+        untracked = actual_mp3_files - verified_paths
+        if untracked:
+            raise ValueError(
+                f"Untracked mp3 files in audio_64k: {sorted(p.name for p in untracked)}"
+            )
 
     if verified_mp3_count != int(manifest.get("converted_audio_count", 0)):
         raise ValueError(
@@ -128,6 +190,8 @@ def evaluate_inspection_and_domain_yield(
     sheet_path: Path,
     *,
     requested_candidates: int,
+    expected_total: int | None = None,
+    expected_video_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     if not sheet_path.is_file():
         raise ValueError(f"Missing sample inspection sheet: {sheet_path}")
@@ -175,9 +239,17 @@ def evaluate_inspection_and_domain_yield(
             pure_fnb_audio += 1
 
     total = len(lines)
+    if expected_total is not None and total != expected_total:
+        raise ValueError(
+            f"Incomplete inspection sheet: got {total} rows, expected {expected_total}"
+        )
     if k_verified != n_verified:
         raise ValueError(
             f"Imbalanced two-contributor verification split: K={k_verified}, N={n_verified}"
+        )
+    if expected_video_ids is not None and seen_ids != expected_video_ids:
+        raise ValueError(
+            "Inspection sheet video_ids mismatch crawl_manifest succeeded IDs"
         )
     capture_yield = round(total / requested_candidates, 4) if requested_candidates > 0 else 0.0
     audio_rate = round(audio_bearing / total, 4)
@@ -213,24 +285,25 @@ def build_modality_readiness_matrix(
     collected_comments_count: int,
     commented_videos_count: int,
 ) -> dict[str, dict[str, Any]]:
+    rounded_min = round(total_audio_minutes, 3)
     m4_1_ready = (
         audio_count >= 10
         and 0.0 < total_audio_minutes <= 60.0
         and pure_fnb_audio_count >= 10
         and human_verified_count == total_videos
     )
-    m5_1_ready = collected_comments_count >= 150 and commented_videos_count >= 5
+    m5_1_ready = collected_comments_count >= 150 and commented_videos_count >= 10
     m5_2_ready = collected_comments_count >= 150 and commented_videos_count >= 10
     return {
         "M4.1": {
             "status": "READY_UNBLOCKED" if m4_1_ready else "BLOCKED",
             "available_audio_files": audio_count,
             "available_pure_fnb_audio_files": pure_fnb_audio_count,
-            "total_audio_minutes": round(total_audio_minutes, 3),
+            "total_audio_minutes": rounded_min,
             "reason": (
-                "29 verified 64kbps mp3 files (46.683 min <= 60.0 cap; 27 pure F&B) satisfy M4.1 audio & 2-person utterance slice requirements."
+                f"{audio_count} verified 64kbps mp3 files ({rounded_min} min <= 60.0 cap; {pure_fnb_audio_count} pure F&B) satisfy M4.1 audio & 2-person utterance slice requirements."
                 if m4_1_ready
-                else "Insufficient verified pilot audio for M4.1."
+                else f"Insufficient verified pilot audio ({audio_count} files, {rounded_min} min) for M4.1."
             ),
         },
         "M4.2_audio_join": {
@@ -240,22 +313,25 @@ def build_modality_readiness_matrix(
         "M5.1": {
             "status": "READY_UNBLOCKED" if m5_1_ready else "BLOCKED_PENDING_COMMENT_BACKFILL",
             "collected_comments_count": collected_comments_count,
+            "commented_videos_count": commented_videos_count,
             "min_required_comments": 150,
+            "min_required_videos": 10,
             "reason": (
-                "Real comment pool meets >=150 minimum threshold for double-annotation."
+                f"Real comment pool ({collected_comments_count} comments across {commented_videos_count} videos) meets >=150 comments & >=10 videos thresholds for video-disjoint evaluation."
                 if m5_1_ready
-                else "yt-dlp pilot yielded 0 comments; requires authorized TikTokApi comment-only backfill (update_existing=True) >= 150 real comments."
+                else f"Observed {collected_comments_count} comments across {commented_videos_count} videos; requires authorized TikTokApi comment-only backfill (update_existing=True) >= 150 real comments across >= 10 videos."
             ),
         },
         "M5.2": {
             "status": "READY_UNBLOCKED" if m5_2_ready else "BLOCKED_PENDING_COMMENT_BACKFILL",
             "collected_comments_count": collected_comments_count,
             "commented_videos_count": commented_videos_count,
+            "min_required_comments": 150,
             "min_required_videos": 10,
             "reason": (
-                "Real viewer comments span >=10 videos for KOC-vs-viewer overlap evaluation."
+                f"Real viewer comments ({collected_comments_count} rows across {commented_videos_count} videos) satisfy >=10-video KOC-vs-viewer overlap evaluation."
                 if m5_2_ready
-                else "Viewer fact_comments has 0 rows; requires authorized comment-only backfill across >=10 pilot videos."
+                else f"Observed {collected_comments_count} viewer comments across {commented_videos_count} videos; requires authorized comment-only backfill (>=150 comments across >=10 pilot videos)."
             ),
         },
     }
@@ -265,31 +341,43 @@ def compute_capacity_and_budget_projections(
     *,
     pilot_receipt: dict[str, Any],
     domain_yield: dict[str, Any],
+    verified_mp3_count: int | None = None,
+    total_audio_minutes: float | None = None,
 ) -> dict[str, Any]:
     total_wall = float(pilot_receipt["resources"]["wall_seconds"])
     asr_wall = float(pilot_receipt["asr"]["wall_seconds"])
     asr_min = float(pilot_receipt["asr"]["accumulated_audio_minutes"])
     rtf = float(pilot_receipt["asr"]["real_time_factor"])
     succeeded = int(pilot_receipt["collection"]["succeeded_count"])
+    target_mp3_files = (
+        int(verified_mp3_count)
+        if verified_mp3_count is not None
+        else int(pilot_receipt["collection"]["converted_audio_count"])
+    )
+    full_pilot_audio_min = (
+        round(float(total_audio_minutes), 3)
+        if total_audio_minutes is not None
+        else round(asr_min, 3)
+    )
 
     ingest_index_sec = 7.0
     capture_io_sec = max(0.0, total_wall - asr_wall - ingest_index_sec)
     sec_per_video_capture = capture_io_sec / max(1, succeeded)
     asr_sec_per_audio_min = asr_wall / max(1e-6, asr_min)
 
-    full_pilot_audio_min = 46.683
-    remaining_audio_min = round(full_pilot_audio_min - asr_min, 3)
+    remaining_audio_min = round(max(0.0, full_pilot_audio_min - asr_min), 3)
     full_m4_1_asr_sec = round(full_pilot_audio_min * 60.0 * rtf, 2)
     incremental_m4_1_asr_sec = round(remaining_audio_min * 60.0 * rtf, 2)
 
-    comment_backfill_base_sec = 30 * 12.0
+    comment_backfill_base_sec = succeeded * 12.0
     comment_backfill_retry_buffered_sec = round(comment_backfill_base_sec * 1.4 + ingest_index_sec, 1)
 
-    second_batch_capture_sec = round(30 * sec_per_video_capture * 1.25, 1)
+    second_batch_capture_sec = round(succeeded * sec_per_video_capture * 1.25, 1)
     second_batch_asr_sec = full_m4_1_asr_sec
     second_batch_total_sec = round(
         second_batch_capture_sec + second_batch_asr_sec + ingest_index_sec, 1
     )
+    pure_fnb_count = int(domain_yield["pure_fnb_audio_count"])
 
     return {
         "observed_rates": {
@@ -310,8 +398,8 @@ def compute_capacity_and_budget_projections(
             ],
         },
         "m4_1_full_pilot_audio_projection": {
-            "target_mp3_files": 29,
-            "pure_fnb_mp3_files": int(domain_yield["pure_fnb_audio_count"]),
+            "target_mp3_files": target_mp3_files,
+            "pure_fnb_mp3_files": pure_fnb_count,
             "total_audio_minutes": full_pilot_audio_min,
             "remaining_untranscribed_minutes": remaining_audio_min,
             "projected_total_asr_wall_seconds": full_m4_1_asr_sec,
@@ -331,7 +419,7 @@ def compute_capacity_and_budget_projections(
             "option_1_authorized_comment_only_backfill": {
                 "selected": True,
                 "new_videos_authorized": 0,
-                "target_existing_video_ids": 30,
+                "target_existing_video_ids": succeeded,
                 "max_comments_per_video": 50,
                 "max_comments_total": 1000,
                 "max_audio_minutes": 0.0,
@@ -342,12 +430,17 @@ def compute_capacity_and_budget_projections(
             },
             "option_2_rejected_second_30_video_crawl_batch": {
                 "selected": False,
-                "new_candidates_required_for_27_fnb_audio": 50,
+                "new_candidates_required_for_27_fnb_audio": int(
+                    pilot_receipt["collection"]["requested_count"]
+                ),
                 "projected_wall_seconds_with_full_asr": second_batch_total_sec,
                 "projected_extra_disk_mib": round(
                     float(pilot_receipt["resources"]["total_disk_bytes"]) / (1024.0 * 1024.0), 2
                 ),
-                "rejection_reason": "Redundant media crawl & anti-bot exposure: existing 29 mp3s (46.683 min, 27 pure F&B) already satisfy M4.1.",
+                "rejection_reason": (
+                    f"Redundant media crawl & anti-bot exposure: existing {target_mp3_files} mp3s "
+                    f"({full_pilot_audio_min} min, {pure_fnb_count} pure F&B) already satisfy M4.1."
+                ),
             },
             "option_3_contingency_if_comments_anti_bot_blocked": {
                 "selected": False,
@@ -368,6 +461,29 @@ def verify_comment_backfill_enrichment_probe(
         ln for ln in batch_jsonl_path.read_text(encoding="utf-8").splitlines() if ln.strip()
     )
     seed_rec = RawIncrementalVideoRecord.model_validate_json(first_line)
+    submitted_comments = [
+        RawCommentInput(
+            comment_id="g3_probe_c1",
+            author_handle="viewer_one",
+            text="Khoai tây trứng muối ngon nha giá hơi cao xíu",
+            like_count=3,
+            reply_count=0,
+        ),
+        RawCommentInput(
+            comment_id="g3_probe_c2",
+            author_handle="viewer_two",
+            text="Đóng gói sạch sẽ nhân viên dễ thương",
+            like_count=1,
+            reply_count=0,
+        ),
+        RawCommentInput(
+            comment_id="g3_probe_c1",
+            author_handle="viewer_one",
+            text="Khoai tây trứng muối ngon nha giá hơi cao xíu",
+            like_count=5,
+            reply_count=0,
+        ),
+    ]
     sparse_comment_only = RawIncrementalVideoRecord(
         video_id=seed_rec.video_id,
         author_id=seed_rec.author_id,
@@ -375,22 +491,7 @@ def verify_comment_backfill_enrichment_probe(
         create_time=seed_rec.create_time,
         transcript="",
         whisper_segments=[],
-        comments=[
-            RawCommentInput(
-                comment_id="g3_probe_c1",
-                author_handle="viewer_one",
-                text="Khoai tây trứng muối ngon nha giá hơi cao xíu",
-                like_count=3,
-                reply_count=0,
-            ),
-            RawCommentInput(
-                comment_id="g3_probe_c2",
-                author_handle="viewer_two",
-                text="Đóng gói sạch sẽ nhân viên dễ thương",
-                like_count=1,
-                reply_count=0,
-            ),
-        ],
+        comments=submitted_comments,
     )
 
     with tempfile.TemporaryDirectory(prefix="m3_g_enrichment_probe_") as tmp:
@@ -415,6 +516,7 @@ def verify_comment_backfill_enrichment_probe(
             "total_videos": manifest.total_videos,
             "preserved_transcribed_videos": manifest.transcribed_videos,
             "preserved_voice_segments_rows": int(voice_rows),
+            "submitted_comments_rows": len(submitted_comments),
             "enriched_comments_rows": int(comment_rows),
             "absa_reviews_rows": int(absa_rows),
         }
@@ -432,38 +534,30 @@ def run_all_g3_checks(
     pilot_receipt_path = repo_root / "docs/reports/milestones/M3.3/evidence/m3_3_pilot_receipt.json"
     inspection_path = repo_root / "docs/reports/milestones/M3.3/evidence/sample_inspection_sheet.jsonl"
 
+    prereqs = verify_prerequisites_and_upstream_tasks(repo_root)
+
     base_before = verify_snapshot_checksums(base_dir)
     pilot_before = verify_snapshot_checksums(pilot_dir)
     if pilot_before["parent_manifest_sha256"] != base_before["manifest_sha256"]:
         raise ValueError("m3_3_pilot_snapshot_v1 parent_manifest_sha256 does not match base snapshot")
-
-    g0_receipt = json.loads(
-        (repo_root / "docs/reports/milestones/M0.G/evidence/g0_verification_receipt.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    g1_decision = json.loads(
-        (repo_root / "docs/reports/milestones/M1.G/evidence/g1-gate-decision-receipt.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    g2_decision = json.loads(
-        (repo_root / "docs/reports/milestones/M2.G/evidence/g2-gate-decision-receipt.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    if g1_decision.get("decision") != "PASS" or g2_decision.get("decision") != "PASS":
-        raise ValueError("Prerequisite gates G1 and G2 must be PASS before G3")
 
     pilot_receipt = json.loads(pilot_receipt_path.read_text(encoding="utf-8"))
     if pilot_receipt.get("pilot_status") != "PASS" or pilot_receipt.get("is_synthetic_fixture"):
         raise ValueError("M3.3 live_pilot receipt must be real non-synthetic PASS")
 
     raw_media = verify_raw_pilot_media(batch_dir)
+    expected_succeeded_count = int(pilot_receipt["collection"]["succeeded_count"])
+    expected_succeeded_ids = set(raw_media["mp3_sha256_by_video_id"]) | set(
+        raw_media["no_audio_item_ids"]
+    )
     domain_yield = evaluate_inspection_and_domain_yield(
         inspection_path,
         requested_candidates=int(pilot_receipt["collection"]["requested_count"]),
+        expected_total=expected_succeeded_count,
+        expected_video_ids=expected_succeeded_ids,
     )
+    if sorted(domain_yield["no_audio_ids"]) != sorted(raw_media["no_audio_item_ids"]):
+        raise ValueError("Inspection sheet no_audio_ids disagree with crawl_manifest.json")
 
     _, _, df_videos = load_verified_corpus(pilot_dir)
     retrieval_service = HybridRetrievalService.from_dirs(
@@ -486,24 +580,42 @@ def run_all_g3_checks(
         pilot_dir,
         batch_dir / "videos_4m.jsonl",
     )
+    expected_voice_rows = int(pilot_before["row_counts"]["fact_voice_segments.parquet"])
+    expected_transcribed = int(pilot_before["transcribed_videos"])
     if (
-        enrichment_probe["preserved_voice_segments_rows"] != 436
-        or enrichment_probe["preserved_transcribed_videos"] != 21758
+        enrichment_probe["preserved_voice_segments_rows"] != expected_voice_rows
+        or enrichment_probe["preserved_transcribed_videos"] != expected_transcribed
+        or enrichment_probe["enriched_comments_rows"] != 2
     ):
-        raise ValueError("Comment backfill probe failed to preserve existing transcripts/segments")
+        raise ValueError("Comment backfill probe failed preservation or deduplication invariants")
+
+    comments_table = pq.read_table(pilot_dir / "fact_comments.parquet", columns=["video_id"])
+    snapshot_comment_rows = int(comments_table.num_rows)
+    commented_videos_count = len({str(v) for v in comments_table.column("video_id").to_pylist() if v})
+    effective_comment_count = max(
+        int(pilot_receipt["collection"]["collected_comments_count"]),
+        snapshot_comment_rows,
+    )
 
     readiness_matrix = build_modality_readiness_matrix(
         audio_count=raw_media["verified_mp3_count"],
         total_audio_minutes=raw_media["accumulated_audio_minutes"],
         pure_fnb_audio_count=domain_yield["pure_fnb_audio_count"],
         human_verified_count=domain_yield["total_inspected"],
-        total_videos=int(pilot_receipt["collection"]["succeeded_count"]),
-        collected_comments_count=int(pilot_receipt["collection"]["collected_comments_count"]),
-        commented_videos_count=0,
+        total_videos=expected_succeeded_count,
+        collected_comments_count=effective_comment_count,
+        commented_videos_count=commented_videos_count,
     )
+    if readiness_matrix["M4.1"]["status"] != "READY_UNBLOCKED":
+        raise ValueError(
+            f"G3 requires M4.1 to be READY_UNBLOCKED, got {readiness_matrix['M4.1']}"
+        )
+
     capacity_model = compute_capacity_and_budget_projections(
         pilot_receipt=pilot_receipt,
         domain_yield=domain_yield,
+        verified_mp3_count=raw_media["verified_mp3_count"],
+        total_audio_minutes=raw_media["accumulated_audio_minutes"],
     )
 
     base_after = verify_snapshot_checksums(base_dir)
@@ -522,11 +634,8 @@ def run_all_g3_checks(
             "platform": platform.platform(),
         },
         "verification_wall_seconds": round(time.perf_counter() - t0, 3),
-        "prerequisite_gates": {
-            "G0": g0_receipt.get("overall_status", "PASS"),
-            "G1": g1_decision["decision"],
-            "G2": g2_decision["decision"],
-        },
+        "prerequisite_gates": prereqs["prerequisite_gates"],
+        "upstream_tasks": prereqs["upstream_tasks"],
         "immutability_verification": {
             "zero_byte_mutations": True,
             "base_snapshot": base_after,

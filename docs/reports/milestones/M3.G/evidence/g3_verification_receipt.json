@@ -1,16 +1,21 @@
 {
   "gate_id": "G3",
   "task_id": "M3.G",
-  "executed_at_utc": "2026-11-23T09:59:58.602269+00:00",
+  "executed_at_utc": "2026-11-23T10:22:21.746542+00:00",
   "runtime_environment": {
     "python_version": "3.11.14",
     "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39"
   },
-  "verification_wall_seconds": 8.742,
+  "verification_wall_seconds": 8.567,
   "prerequisite_gates": {
     "G0": "PASS",
     "G1": "PASS",
     "G2": "PASS"
+  },
+  "upstream_tasks": {
+    "M3.1": "COMPLETE",
+    "M3.2": "COMPLETE",
+    "M3.3": "COMPLETE"
   },
   "immutability_verification": {
     "zero_byte_mutations": true,
@@ -19,6 +24,7 @@
       "manifest_sha256": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
       "parent_snapshot_id": "20261117_recovered_v1",
       "parent_manifest_sha256": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+      "transcribed_videos": 21748,
       "file_sha256": {
         "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
         "fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3"
@@ -33,6 +39,7 @@
       "manifest_sha256": "06c24e14a1dfce0f786b50c2adae140751029e0731de149f8517421d7369f676",
       "parent_snapshot_id": "20261118_taxonomy_fix_v1",
       "parent_manifest_sha256": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
+      "transcribed_videos": 21758,
       "file_sha256": {
         "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
         "fact_videos.parquet": "8aec43c79b7eb235a303c59da8da016df6e1e292891aeda6966c269dd5bcdbee",
@@ -102,6 +109,7 @@
     "total_videos": 71026,
     "preserved_transcribed_videos": 21758,
     "preserved_voice_segments_rows": 436,
+    "submitted_comments_rows": 3,
     "enriched_comments_rows": 2,
     "absa_reviews_rows": 30
   },
@@ -120,15 +128,18 @@
     "M5.1": {
       "status": "BLOCKED_PENDING_COMMENT_BACKFILL",
       "collected_comments_count": 0,
+      "commented_videos_count": 0,
       "min_required_comments": 150,
-      "reason": "yt-dlp pilot yielded 0 comments; requires authorized TikTokApi comment-only backfill (update_existing=True) >= 150 real comments."
+      "min_required_videos": 10,
+      "reason": "Observed 0 comments across 0 videos; requires authorized TikTokApi comment-only backfill (update_existing=True) >= 150 real comments across >= 10 videos."
     },
     "M5.2": {
       "status": "BLOCKED_PENDING_COMMENT_BACKFILL",
       "collected_comments_count": 0,
       "commented_videos_count": 0,
+      "min_required_comments": 150,
       "min_required_videos": 10,
-      "reason": "Viewer fact_comments has 0 rows; requires authorized comment-only backfill across >=10 pilot videos."
+      "reason": "Observed 0 viewer comments across 0 videos; requires authorized comment-only backfill (>=150 comments across >=10 pilot videos)."
     }
   },
   "capacity_and_budget_model": {
