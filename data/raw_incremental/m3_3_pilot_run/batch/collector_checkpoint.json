@@ -1,0 +1,302 @@
+{
+  "source_mode": "live_provider",
+  "as_of_utc": "2026-11-23T03:05:26.123510+00:00",
+  "cutoff_utc": "2026-07-26T03:05:26.123510+00:00",
+  "succeeded_ids": [
+    "7710799156024986887",
+    "7711004930638630152",
+    "7710598047721458945",
+    "7710150153201536262",
+    "7710502428428356871",
+    "7709793907894193415",
+    "7710927418533399815",
+    "7710450847070653716",
+    "7710143263436508417",
+    "7710191968239848711",
+    "7709738723730066706",
+    "7710634206874946824",
+    "7710262606010846484",
+    "7709711126140849426",
+    "7708970028552457480",
+    "7709416664755866887",
+    "7710562414172966151",
+    "7710067177193377045",
+    "7709372899198602514",
+    "7708688614837832978",
+    "7709388788732087570",
+    "7710492265776549128",
+    "7709423559424167188",
+    "7709031604986940679",
+    "7707187736549117192",
+    "7709375359300537601",
+    "7710293148903230728",
+    "7709080401645473044",
+    "7707183296874106119",
+    "7706832341804633352"
+  ],
+  "skipped_reasons": {
+    "7708713355699031297": "max_succeeded_ceiling",
+    "7710147092957678855": "max_succeeded_ceiling",
+    "7708698925552667924": "max_succeeded_ceiling",
+    "7706768764917812487": "max_succeeded_ceiling",
+    "7705017702598888712": "max_succeeded_ceiling",
+    "7708382866916281607": "max_succeeded_ceiling",
+    "7709733267477466386": "max_succeeded_ceiling",
+    "7708564001600310548": "max_succeeded_ceiling",
+    "7707196319953112321": "max_succeeded_ceiling",
+    "7704892100038462738": "max_succeeded_ceiling",
+    "7707936524070964498": "max_succeeded_ceiling",
+    "7709511050030288129": "max_succeeded_ceiling",
+    "7708270681527438600": "max_succeeded_ceiling",
+    "7706766124687379730": "max_succeeded_ceiling",
+    "7704214468691102984": "max_succeeded_ceiling",
+    "7707588221743418642": "max_succeeded_ceiling",
+    "7709349041145974024": "max_succeeded_ceiling",
+    "7707842549968293140": "max_succeeded_ceiling",
+    "7703803006717857030": "max_succeeded_ceiling",
+    "7703874599691341064": "max_succeeded_ceiling"
+  },
+  "failed_reasons": {},
+  "audio_receipts": {
+    "7710799156024986887": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710799156024986887.mp3",
+      "audio_bytes": 762445,
+      "audio_sha256": "c41fad9d68c865e55d3ec21c0e8c22664c66abfc81242323b122ca458527e0d0",
+      "reason": null
+    },
+    "7711004930638630152": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7711004930638630152.mp3",
+      "audio_bytes": 748026,
+      "audio_sha256": "8fe4b745aabf1e46dc4a18ad9e1edeacbd09f261b2505610821c781d9529b481",
+      "reason": null
+    },
+    "7710598047721458945": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710598047721458945.mp3",
+      "audio_bytes": 618458,
+      "audio_sha256": "5e755fbc93699dacf47c319c78703de2858604c4a2ff1d2bd22496b362523267",
+      "reason": null
+    },
+    "7710150153201536262": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710150153201536262.mp3",
+      "audio_bytes": 1761116,
+      "audio_sha256": "33772f993ecf9eb380c84ffe26ecb438ea873bd99d4adb95ea640f803bbd7823",
+      "reason": null
+    },
+    "7710502428428356871": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710502428428356871.mp3",
+      "audio_bytes": 462977,
+      "audio_sha256": "b93e9333476292944ad5b0e9780ea54fcd1aab252676a2a70ffd9b1f93eed1b2",
+      "reason": null
+    },
+    "7709793907894193415": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7709793907894193415.mp3",
+      "audio_bytes": 711872,
+      "audio_sha256": "a38a13c3d9c1e12028c1adda565f9057512fe30e019d53fc76d23c13d7162496",
+      "reason": null
+    },
+    "7710927418533399815": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710927418533399815.mp3",
+      "audio_bytes": 485547,
+      "audio_sha256": "f732de22fd5cbc03fb0681962f894bfbe02dac86695726221937f9515437c0e9",
+      "reason": null
+    },
+    "7710450847070653716": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710450847070653716.mp3",
+      "audio_bytes": 656701,
+      "audio_sha256": "c5c057b1fb70fb9d7e5f80c0875c7d06f08d9937173902af7ffa55ae26e35e9b",
+      "reason": null
+    },
+    "7710143263436508417": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710143263436508417.mp3",
+      "audio_bytes": 1379519,
+      "audio_sha256": "bdee619ba89197d234c0117ce2972de86d73b657101fe3bff5b50cb3b4d34669",
+      "reason": null
+    },
+    "7710191968239848711": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710191968239848711.mp3",
+      "audio_bytes": 462559,
+      "audio_sha256": "471ea572956e0cfc20850ae3100467e0aecd4b6208b257d7ace786cb5c3b1d7f",
+      "reason": null
+    },
+    "7709738723730066706": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7709738723730066706.mp3",
+      "audio_bytes": 698288,
+      "audio_sha256": "e5217ff5be1ba3ddf39e7311a32678b353a639aa849887e1d6db9f05bc94f5cb",
+      "reason": null
+    },
+    "7710634206874946824": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710634206874946824.mp3",
+      "audio_bytes": 541763,
+      "audio_sha256": "2e08684e36af45c994b645001a804077a85db2f8edc0382bc2a12024ae3bf5ab",
+      "reason": null
+    },
+    "7710262606010846484": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710262606010846484.mp3",
+      "audio_bytes": 706230,
+      "audio_sha256": "f26b6c6476105c0389328f81b20ba5302d2201fb9484e21e7f3c5b3660a473c3",
+      "reason": null
+    },
+    "7709711126140849426": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7709711126140849426.mp3",
+      "audio_bytes": 936900,
+      "audio_sha256": "adf206af9003919d1693222d52a08f069f38ad35d8fb87d7052899abbc26ab21",
+      "reason": null
+    },
+    "7708970028552457480": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7708970028552457480.mp3",
+      "audio_bytes": 511670,
+      "audio_sha256": "d7f537ecf2289a382e993b29134a18bcab92459faa88c41b4306a6468daec610",
+      "reason": null
+    },
+    "7709416664755866887": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7709416664755866887.mp3",
+      "audio_bytes": 669449,
+      "audio_sha256": "b080da336281fbe2d0dab15eaa8182d2572de0207dbaa00a23ec54d6bd69715f",
+      "reason": null
+    },
+    "7710562414172966151": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710562414172966151.mp3",
+      "audio_bytes": 866517,
+      "audio_sha256": "88751675cfe4185d3281a244807f2b7fe52f450decc8a70652c6a5491ed1f8ee",
+      "reason": null
+    },
+    "7710067177193377045": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710067177193377045.mp3",
+      "audio_bytes": 646252,
+      "audio_sha256": "3f8b528fab8b410973231efa289792153d7649ce2c2ab7712d0c0382e2d2bb2a",
+      "reason": null
+    },
+    "7709372899198602514": {
+      "status": "unavailable",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "audio_source_or_extractor_unavailable"
+    },
+    "7708688614837832978": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7708688614837832978.mp3",
+      "audio_bytes": 457126,
+      "audio_sha256": "e4d99737c10bc598bbfa5275a658ed351e00ac3a4b4b0a96686ccdbc6f11180f",
+      "reason": null
+    },
+    "7709388788732087570": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7709388788732087570.mp3",
+      "audio_bytes": 495996,
+      "audio_sha256": "20185ef855a87752f4ceea7bfca36b47f9f7bb4e4ae38e11e1a016792c1037c4",
+      "reason": null
+    },
+    "7710492265776549128": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710492265776549128.mp3",
+      "audio_bytes": 741338,
+      "audio_sha256": "08cf91eb1e736d5a478ee4b4b3c23ec15654c970ecb8bd6e65bf5ed12a5d9da1",
+      "reason": null
+    },
+    "7709423559424167188": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7709423559424167188.mp3",
+      "audio_bytes": 652940,
+      "audio_sha256": "a7f68ec2fdf9982edd4f86c40c73f5ea27fb5ee255356ca28150a83e1f63b10f",
+      "reason": null
+    },
+    "7709031604986940679": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7709031604986940679.mp3",
+      "audio_bytes": 1752965,
+      "audio_sha256": "446357de45c6c606346bf32fd34d5251224498313ada50c773b29e18aef1d3a0",
+      "reason": null
+    },
+    "7707187736549117192": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7707187736549117192.mp3",
+      "audio_bytes": 488682,
+      "audio_sha256": "d7566d657599445d46c129141e108ad0bf2a00b31546cad95b5a4cd8706b297b",
+      "reason": null
+    },
+    "7709375359300537601": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7709375359300537601.mp3",
+      "audio_bytes": 941123,
+      "audio_sha256": "dbc9b6f4d4a64b1538b3197a7e11dd4b9277519e5ec73c69a6826c95d4e0f9fd",
+      "reason": null
+    },
+    "7710293148903230728": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7710293148903230728.mp3",
+      "audio_bytes": 594217,
+      "audio_sha256": "9c60cad2b9db3a94eb2d1e887b674b94d092cffb9651cc999765b0a8b1f44344",
+      "reason": null
+    },
+    "7709080401645473044": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7709080401645473044.mp3",
+      "audio_bytes": 685750,
+      "audio_sha256": "6a96a686e0941d19c9ed9925fe45ef5c6e7647442988257b102076da5250b391",
+      "reason": null
+    },
+    "7707183296874106119": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7707183296874106119.mp3",
+      "audio_bytes": 1603754,
+      "audio_sha256": "e8971552f565db697eec7ac679890cd35dcd7cfaa21ead391637458680dac7ce",
+      "reason": null
+    },
+    "7706832341804633352": {
+      "status": "converted_64k_mp3",
+      "target_bitrate_kbps": 64,
+      "audio_path": "audio_64k/7706832341804633352.mp3",
+      "audio_bytes": 483875,
+      "audio_sha256": "ac8b11af1e756c2073126e25e7547fdaf5981f679ba5c52daa84fe76ec7fc3e8",
+      "reason": null
+    }
+  }
+}

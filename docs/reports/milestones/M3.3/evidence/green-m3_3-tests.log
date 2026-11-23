@@ -3,8 +3,8 @@ platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
 rootdir: /home/intern-nvnguyen1/Project/TikTok_AI_Engine_
 configfile: pyproject.toml
 plugins: anyio-4.16.0
-collected 6 items
+collected 7 items
 
-tests/unit/test_m3_3_pilot_pipeline.py ......                            [100%]
+tests/unit/test_m3_3_pilot_pipeline.py .......                           [100%]
 
-============================== 6 passed in 1.31s ===============================
+============================== 7 passed in 1.69s ===============================

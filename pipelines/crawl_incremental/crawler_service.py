@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import math
 import os
@@ -210,16 +211,21 @@ def filter_fresh_candidates(
     return accepted
 
 
+def yt_dlp_impersonate_args() -> list[str]:
+    """Use Chrome TLS impersonation when curl_cffi is available for TikTok APIs."""
+    return ["--impersonate", "chrome"] if importlib.util.find_spec("curl_cffi") is not None else []
+
+
 def download_audio_mp3_64k(
     tiktok_url: str,
     output_mp3: Path,
     *,
     ms_token: str = "",
     cookies_file: Path | None = None,
-    timeout_sec: int = 45,
+    timeout_sec: int = 60,
     on_stderr_error: Callable[[str], None] | None = None,
 ) -> bool:
-    """Download lightweight 64kbps .mp3 (~500KB) via yt-dlp with msToken/cookies auth and UTF-8 safety."""
+    """Download lightweight 64kbps .mp3 (~500KB) via yt-dlp with msToken/cookies auth, TLS impersonation, and UTF-8 safety."""
     output_mp3.parent.mkdir(parents=True, exist_ok=True)
     auth_args: list[str] = []
     if ms_token.strip():
@@ -229,9 +235,10 @@ def download_audio_mp3_64k(
 
     cmd = [
         "yt-dlp",
+        *yt_dlp_impersonate_args(),
         "--force-overwrites",
         "-f",
-        "bestaudio/best",
+        "best[vcodec=h264]/best[vcodec!=none]/best",
         "--extract-audio",
         "--audio-format",
         "mp3",
