@@ -5,7 +5,33 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from packages.data_contracts._validators import require_non_blank, validate_timings_ms
+from packages.data_contracts._validators import (
+    normalize_optional_non_blank,
+    require_non_blank,
+    validate_timings_ms,
+)
+
+AspectName = Literal["taste", "price", "hygiene", "service"]
+ASPECT_NAMES: tuple[AspectName, ...] = ("taste", "price", "hygiene", "service")
+AspectPresenceStatus = Literal["observed", "absent_unknown"]
+ObservedAspectPolarity = Literal["positive", "neutral", "negative"]
+AspectPolaritySummaryLabel = Literal["positive", "neutral", "negative", "unknown"]
+TextUnitSourceKind = Literal[
+    "creator_caption",
+    "creator_transcript",
+    "creator_utterance",
+    "viewer_comment",
+]
+AspectComparisonStatus = Literal[
+    "compared_supported_overlap",
+    "abstained_creator_absent",
+    "abstained_viewer_absent",
+    "abstained_viewer_low_support",
+]
+DEFAULT_DISCREPANCY_INTERPRETATION_NOTE = (
+    "Observed creator-speech vs viewer-comment sentiment discrepancy on supported overlapping "
+    "aspects (>=3 viewer comments); not proof of deception, hygiene truth, or verified diner consensus."
+)
 
 
 class RawWhisperSegment(BaseModel):
@@ -153,6 +179,121 @@ class AspectSentimentScores(BaseModel):
     service: float = Field(ge=-1.0, le=1.0)
 
 
+class AspectSpanEvidence(BaseModel):
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
+
+    unit_id: str
+    source_kind: TextUnitSourceKind
+    aspect: AspectName
+    polarity_label: ObservedAspectPolarity
+    polarity_score: float = Field(ge=-1.0, le=1.0)
+    start_char: int = Field(ge=0)
+    end_char: int = Field(gt=0)
+    span_text: str
+
+    @field_validator("unit_id")
+    @classmethod
+    def _validate_unit_id(cls, val: str) -> str:
+        return require_non_blank(val)
+
+    @field_validator("span_text")
+    @classmethod
+    def _validate_span_text(cls, val: str) -> str:
+        if not val.strip():
+            raise ValueError("AspectSpanEvidence span_text must contain non-whitespace characters")
+        return val
+
+    @model_validator(mode="after")
+    def _validate_span_offsets(self) -> AspectSpanEvidence:
+        if self.end_char <= self.start_char:
+            raise ValueError("AspectSpanEvidence end_char must be > start_char")
+        if len(self.span_text) != self.end_char - self.start_char:
+            raise ValueError(
+                "AspectSpanEvidence span_text length must equal end_char - start_char"
+            )
+        return self
+
+
+class AspectAggregateSummary(BaseModel):
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
+
+    aspect: AspectName
+    presence_status: AspectPresenceStatus
+    polarity_label: AspectPolaritySummaryLabel
+    mean_score: float | None = Field(default=None, ge=-1.0, le=1.0)
+    mention_unit_count: int = Field(ge=0)
+    span_count: int = Field(ge=0)
+    sufficient_support: bool
+
+    @model_validator(mode="after")
+    def _validate_presence_invariants(self) -> AspectAggregateSummary:
+        if self.presence_status == "absent_unknown":
+            if self.polarity_label != "unknown":
+                raise ValueError(
+                    "absent_unknown summary requires polarity_label == 'unknown'"
+                )
+            if self.mean_score is not None:
+                raise ValueError("absent_unknown summary requires mean_score is None")
+            if self.mention_unit_count != 0:
+                raise ValueError("absent_unknown summary requires mention_unit_count == 0")
+            if self.span_count != 0:
+                raise ValueError("absent_unknown summary requires span_count == 0")
+            if self.sufficient_support is not False:
+                raise ValueError("absent_unknown summary requires sufficient_support is False")
+        else:
+            if self.polarity_label not in {"positive", "neutral", "negative"}:
+                raise ValueError(
+                    "observed summary requires polarity_label in {'positive', 'neutral', 'negative'}"
+                )
+            if self.mean_score is None or not (-1.0 <= self.mean_score <= 1.0):
+                raise ValueError("observed summary requires finite mean_score in [-1.0, 1.0]")
+            if self.mention_unit_count < 1:
+                raise ValueError("observed summary requires mention_unit_count >= 1")
+            if self.span_count < self.mention_unit_count:
+                raise ValueError("observed summary requires span_count >= mention_unit_count")
+        return self
+
+
+class AspectDiscrepancyDetail(BaseModel):
+    model_config = ConfigDict(frozen=True, allow_inf_nan=False)
+
+    aspect: AspectName
+    comparison_status: AspectComparisonStatus
+    creator_mean_score: float | None = Field(default=None, ge=-1.0, le=1.0)
+    viewer_mean_score: float | None = Field(default=None, ge=-1.0, le=1.0)
+    viewer_support_count: int = Field(ge=0)
+    min_viewer_support_required: int = Field(default=3, ge=1)
+    sentiment_discrepancy: float | None = Field(default=None, ge=-2.0, le=2.0)
+
+    @model_validator(mode="after")
+    def _validate_discrepancy_invariants(self) -> AspectDiscrepancyDetail:
+        if self.comparison_status == "compared_supported_overlap":
+            if self.creator_mean_score is None:
+                raise ValueError(
+                    "compared_supported_overlap requires creator_mean_score is not None"
+                )
+            if self.viewer_mean_score is None:
+                raise ValueError(
+                    "compared_supported_overlap requires viewer_mean_score is not None"
+                )
+            if self.viewer_support_count < self.min_viewer_support_required:
+                raise ValueError(
+                    "compared_supported_overlap requires viewer_support_count >= min_viewer_support_required"
+                )
+            if self.sentiment_discrepancy is None or not (
+                -2.0 <= self.sentiment_discrepancy <= 2.0
+            ):
+                raise ValueError(
+                    "compared_supported_overlap requires finite sentiment_discrepancy in [-2.0, 2.0]"
+                )
+        else:
+            if self.sentiment_discrepancy is not None:
+                raise ValueError(
+                    f"{self.comparison_status} requires sentiment_discrepancy is None"
+                )
+        return self
+
+
 class AbsaComparisonRecord(BaseModel):
     model_config = ConfigDict(frozen=True, allow_inf_nan=False)
 
@@ -180,11 +321,43 @@ class AbsaComparisonRecord(BaseModel):
     viewer_pain_points: list[str]
     clean_comment_count: int = Field(ge=0)
     seeding_comment_count: int = Field(ge=0)
+    koc_aspect_summaries: dict[AspectName, AspectAggregateSummary] = Field(default_factory=dict)
+    viewer_aspect_summaries: dict[AspectName, AspectAggregateSummary] = Field(default_factory=dict)
+    aspect_discrepancies: dict[AspectName, AspectDiscrepancyDetail] = Field(default_factory=dict)
+    supported_overlapping_aspects: list[AspectName] = Field(default_factory=list)
+    supported_sentiment_discrepancy: float | None = Field(default=None, ge=-2.0, le=2.0)
+    discrepancy_abstention_reason: str | None = None
+    discrepancy_interpretation_note: str = DEFAULT_DISCREPANCY_INTERPRETATION_NOTE
+    source_spans: list[AspectSpanEvidence] = Field(default_factory=list)
 
-    @field_validator("video_id")
+    @field_validator("video_id", "discrepancy_interpretation_note")
     @classmethod
     def _validate_video_id(cls, val: str) -> str:
         return require_non_blank(val)
+
+    @field_validator("discrepancy_abstention_reason")
+    @classmethod
+    def _validate_abstention_reason(cls, val: str | None) -> str | None:
+        return normalize_optional_non_blank(val)
+
+    @model_validator(mode="after")
+    def _validate_aspect_map_keys(self) -> AbsaComparisonRecord:
+        for aspect, summary in self.koc_aspect_summaries.items():
+            if summary.aspect != aspect:
+                raise ValueError(
+                    f"koc_aspect_summaries key {aspect!r} does not match summary.aspect {summary.aspect!r}"
+                )
+        for aspect, summary in self.viewer_aspect_summaries.items():
+            if summary.aspect != aspect:
+                raise ValueError(
+                    f"viewer_aspect_summaries key {aspect!r} does not match summary.aspect {summary.aspect!r}"
+                )
+        for aspect, detail in self.aspect_discrepancies.items():
+            if detail.aspect != aspect:
+                raise ValueError(
+                    f"aspect_discrepancies key {aspect!r} does not match detail.aspect {detail.aspect!r}"
+                )
+        return self
 
 
 class TrustAuditRequest(BaseModel):
@@ -193,6 +366,7 @@ class TrustAuditRequest(BaseModel):
     video_id: str = "live_audit"
     caption: str = ""
     transcript: str = Field(min_length=5, max_length=10000)
+    utterances: list[RawWhisperSegment] = Field(default_factory=list)
     hashtags: list[str] = Field(default_factory=list)
     is_ad: bool = False
     is_ec_video: bool = False

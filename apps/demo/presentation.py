@@ -169,7 +169,18 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = False
     filter_policy = str(data.get("comment_filter_policy") or "diagnostic_only_unvalidated")
     sens = data.get("filter_sensitivity") or {}
 
+    koc_summaries = comp.get("koc_aspect_summaries") or {}
+    viewer_summaries = comp.get("viewer_aspect_summaries") or {}
+    aspect_discrepancies = comp.get("aspect_discrepancies") or {}
+    supported_aspects = comp.get("supported_overlapping_aspects") or []
+    supported_disc = comp.get("supported_sentiment_discrepancy")
+    abstention_reason = comp.get("discrepancy_abstention_reason")
+    source_spans = comp.get("source_spans") or []
+    has_m52 = bool(koc_summaries or viewer_summaries or aspect_discrepancies)
+
     sens_line = ""
+    m52_filter_line = ""
+    threshold_line = ""
     if sens:
         b_mean = sens.get("before_filter_viewer_mean")
         b_str = f"`{float(b_mean):+.4f}`" if b_mean is not None else "`N/A`"
@@ -187,6 +198,71 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = False
                 f"(chênh `{float(sens.get('mean_score_shift') or 0.0):+.4f}`)"
             )
 
+        if (
+            "before_filter_supported_discrepancy" in sens
+            or "after_filter_supported_discrepancy" in sens
+        ):
+            b_sup_disc = sens.get("before_filter_supported_discrepancy")
+            a_sup_disc = sens.get("after_filter_supported_discrepancy")
+            sup_shift = sens.get("supported_discrepancy_shift")
+            b_sup_str = (
+                f"`{float(b_sup_disc):+.4f}`"
+                if b_sup_disc is not None
+                else "`tạm dừng (<3 bình luận)`"
+            )
+            a_sup_str = (
+                f"`{float(a_sup_disc):+.4f}`"
+                if a_sup_disc is not None
+                else "`tạm dừng (<3 bình luận)`"
+            )
+            shift_str = f" (chênh `{float(sup_shift):+.4f}`)" if sup_shift is not None else ""
+            m52_filter_line = (
+                f"- **Độ nhạy độ lệch giao thoa M5.2 (Supported Discrepancy Shift):** "
+                f"Trước lọc {b_sup_str} → Sau lọc {a_sup_str}{shift_str}"
+            )
+
+        grid = sens.get("threshold_sensitivity")
+        if isinstance(grid, list) and grid:
+            valid_discs = [
+                float(cell["supported_sentiment_discrepancy"])
+                for cell in grid
+                if cell.get("supported_sentiment_discrepancy") is not None
+            ]
+            aspect_counts = [int(cell.get("supported_aspect_count") or 0) for cell in grid]
+            if valid_discs:
+                threshold_line = (
+                    f"- **Độ nhạy ngưỡng M5.2 (`polarity_tau` × `min_viewer_comments`):** "
+                    f"`{len(valid_discs)}/{len(grid)}` cấu hình đủ hỗ trợ; độ lệch từ "
+                    f"`{min(valid_discs):+.4f}` đến `{max(valid_discs):+.4f}` "
+                    f"(số khía cạnh giao thoa `{min(aspect_counts)}..{max(aspect_counts)}`)"
+                )
+            else:
+                threshold_line = (
+                    f"- **Độ nhạy ngưỡng M5.2 (`polarity_tau` × `min_viewer_comments`):** "
+                    f"`0/{len(grid)}` cấu hình đủ hỗ trợ (`tạm dừng` trên toàn lưới; số khía cạnh giao thoa `0`)"
+                )
+
+    m52_disc_line = ""
+    if has_m52 or supported_disc is not None or abstention_reason:
+        if supported_disc is not None and supported_aspects:
+            aspect_tags = ", ".join(f"`{a}`" for a in supported_aspects)
+            m52_disc_line = (
+                f"- **Độ lệch cảm xúc quan sát được (Sentiment Discrepancy):** "
+                f"`{float(supported_disc):+.2f}` trên khía cạnh giao thoa đủ hỗ trợ (`>=3` bình luận): "
+                f"{aspect_tags} _(chỉ phản ánh chênh lệch lời thoại vs bình luận quan sát được; "
+                "không khẳng định lừa dối, sự thật vệ sinh hay đồng thuận thực khách)_"
+            )
+        else:
+            reason_str = str(
+                abstention_reason or "insufficient_overlapping_aspect_support_min_3_comments"
+            )
+            m52_disc_line = (
+                f"- **Độ lệch cảm xúc quan sát được (Sentiment Discrepancy):** "
+                f"`tạm dừng ({reason_str})` — số bình luận người xem chưa gắn cờ trên khía cạnh "
+                "giao thoa `< 3` (cần `>= 3` để so sánh) _(không suy diễn điểm `0.0`, không khẳng định "
+                "lừa dối, sự thật vệ sinh hay đồng thuận thực khách)_"
+            )
+
     cues_preview = ", ".join(f"`{c}`" for c in lex_cues[:5]) if lex_cues else "_Không ghi nhận từ khóa quảng bá_"
     lines = [
         "### Chẩn Đoán ABSA Và Chỉ Dấu Bình Luận (Baseline Chẩn Đoán)",
@@ -195,10 +271,13 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = False
         f"- **Chỉ dấu ngôn ngữ quảng bá (Lexical Promo):** `{lex_score:.2f}` • {cues_preview}",
         f"- **Chính sách lọc M5.1:** `{filter_policy}` (không tự động ẩn cho tới khi đạt chuẩn xác thực `>=150` bình luận thật)",
         f"- **Chênh lệch điểm cảm xúc heuristic:** `{gap:+.2f}` • **Heuristic tổng hợp cũ:** `{risk:.2f}` _(không phải xác suất tài trợ ngầm; nghiên cứu tài trợ ẩn đang hoãn)_",
+        *( [m52_disc_line] if m52_disc_line else [] ),
         f"- **Bình luận không có chỉ dấu:** `{comp.get('clean_comment_count', 0)}` • **Bình luận có chỉ dấu quan sát:** `{comp.get('seeding_comment_count', 0)}`",
         *( [sens_line] if sens_line else [] ),
+        *( [m52_filter_line] if m52_filter_line else [] ),
+        *( [threshold_line] if threshold_line else [] ),
         "",
-        "| Khía cạnh (Aspect) | Điểm lời thoại | Điểm bình luận chưa gắn cờ | Chênh lệch |",
+        "| Khía cạnh (Aspect) | Điểm lời thoại | Điểm bình luận chưa gắn cờ | Độ lệch quan sát (Sentiment Discrepancy) |",
         "| :--- | :---: | :---: | :--- |",
     ]
     for key, label in (
@@ -207,14 +286,64 @@ def format_trust_audit_markdown(data: dict[str, Any], hide_seeding: bool = False
         ("hygiene", "Vệ sinh & Không gian (Hygiene)"),
         ("service", "Phục vụ (Service)"),
     ):
-        ks = float(koc.get(key) or 0.0)
-        vs = float(viewer.get(key) or 0.0)
-        note = f"{ks - vs:+.2f}; cần kiểm tra nguồn và độ phủ khía cạnh"
-        lines.append(f"| **{label}** | `{ks:+.2f}` | `{vs:+.2f}` | {note} |")
+        if has_m52:
+            k_sum = koc_summaries.get(key) or {}
+            k_pres = str(k_sum.get("presence_status") or "absent_unknown")
+            k_pol = str(k_sum.get("polarity_label") or "unknown")
+            k_mean = k_sum.get("mean_score")
+            k_cnt = int(k_sum.get("mention_unit_count") or 0)
+            if k_pres == "observed" and k_mean is not None:
+                k_cell = f"`observed` • `{k_pol}` (`{float(k_mean):+.2f}`, `n={k_cnt}`)"
+            else:
+                k_cell = "`absent_unknown` (`unknown`, `N/A`, `n=0`)"
+
+            v_sum = viewer_summaries.get(key) or {}
+            v_pres = str(v_sum.get("presence_status") or "absent_unknown")
+            v_pol = str(v_sum.get("polarity_label") or "unknown")
+            v_mean = v_sum.get("mean_score")
+            v_cnt = int(v_sum.get("mention_unit_count") or 0)
+            if v_pres == "observed" and v_mean is not None:
+                v_cell = f"`observed` • `{v_pol}` (`{float(v_mean):+.2f}`, `n={v_cnt}`)"
+            else:
+                v_cell = f"`absent_unknown` (`unknown`, `N/A`, `n={v_cnt}`)"
+
+            d_det = aspect_discrepancies.get(key) or {}
+            c_status = str(d_det.get("comparison_status") or "abstained_creator_absent")
+            s_disc = d_det.get("sentiment_discrepancy")
+            v_sup = int(
+                d_det["viewer_support_count"]
+                if d_det.get("viewer_support_count") is not None
+                else v_cnt
+            )
+            min_req = int(d_det.get("min_viewer_support_required") or 3)
+            if c_status == "compared_supported_overlap" and s_disc is not None:
+                d_cell = f"`{float(s_disc):+.2f}` (`{c_status}`, `n={v_sup}>={min_req}`)"
+            else:
+                d_cell = f"`tạm dừng` (`{c_status}`, `n={v_sup}/{min_req}`)"
+            lines.append(f"| **{label}** | {k_cell} | {v_cell} | {d_cell} |")
+        else:
+            ks = float(koc.get(key) or 0.0)
+            vs = float(viewer.get(key) or 0.0)
+            note = f"{ks - vs:+.2f}; cần kiểm tra nguồn và độ phủ khía cạnh"
+            lines.append(f"| **{label}** | `{ks:+.2f}` | `{vs:+.2f}` | {note} |")
 
     if pains:
         lines.append("\n#### Điểm Phàn Nàn Thực Tế Từ Người Xem (Pain Points)")
         lines.extend(f"- {p}" for p in pains)
+
+    if source_spans:
+        lines.append("\n#### Bằng Chứng Trích Dẫn Gốc (Source Spans)")
+        for sp in source_spans:
+            unit_id = str(sp.get("unit_id") or "unit")
+            start_c = int(sp.get("start_char") or 0)
+            end_c = int(sp.get("end_char") or 0)
+            aspect = str(sp.get("aspect") or "")
+            pol_lbl = str(sp.get("polarity_label") or "neutral")
+            pol_score = float(sp.get("polarity_score") or 0.0)
+            span_txt = " ".join(str(sp.get("span_text") or "").splitlines())
+            lines.append(
+                f'- `[{unit_id} @ {start_c}:{end_c}]` (`{aspect}`, `{pol_lbl}`, `{pol_score:+.2f}`): "{span_txt}"'
+            )
 
     shown = [c for c in comments if (not hide_seeding or not c.get("is_seeding"))]
     lines.append(
