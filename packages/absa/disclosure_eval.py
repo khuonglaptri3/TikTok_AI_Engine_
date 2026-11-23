@@ -407,7 +407,11 @@ def compute_pu_observable_summary(df: pd.DataFrame) -> dict[str, Any]:
         for row_idx in idx:
             i = int(row_idx)
             ht = raw_hashtags[i]
-            tags = ht.tolist() if hasattr(ht, "tolist") else (list(ht) if isinstance(ht, (list, tuple)) else None)
+            tags = (
+                ht.tolist()
+                if ht is not None and hasattr(ht, "tolist")
+                else (list(ht) if isinstance(ht, (list, tuple)) else None)
+            )
             _, matched_cats, _ = extract_promotional_indicators(
                 caption=captions[i],
                 transcript=transcripts[i],

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import httpx
@@ -22,7 +22,7 @@ from pipelines.ingest_incremental_to_gold import ingest_incremental_batch_to_gol
 
 
 def test_rolling_4_month_cutoff_skips_old_and_existing_videos() -> None:
-    now = datetime(2026, 11, 16, tzinfo=timezone.utc)
+    now = datetime(2026, 11, 16, tzinfo=UTC)
     cutoff = compute_cutoff_utc(reference_now=now, window_days=120)
 
     candidates = [

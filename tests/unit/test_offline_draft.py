@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from packages.common.settings import AppSettings
 from packages.data_contracts.analytics import NicheBenchmarkSummary
 from packages.data_contracts.query import (
     NicheQueryFilter,
@@ -10,7 +11,6 @@ from packages.data_contracts.query import (
 )
 from packages.data_contracts.retrieval import EvidenceCard, RetrievalResponse, VideoCitation
 from packages.llm import BoundedGeminiClient, recalculate_timeline_and_verify
-from packages.common.settings import AppSettings
 from packages.script_engine.service import GroundedScriptEngine
 
 

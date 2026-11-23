@@ -339,6 +339,7 @@ def test_k_review_negation_word_boundary_and_disclosure_hashtags() -> None:
 
 def test_k_review_author_cluster_bootstrap_and_hashseed_determinism() -> None:
     import numpy as np
+
     from packages.absa.disclosure_eval import _bootstrap_metric_ci, _fit_tfidf_logreg
 
     # 4 authors x 50 identical predictions = 200 rows; author-cluster CI must be much wider than row i.i.d.

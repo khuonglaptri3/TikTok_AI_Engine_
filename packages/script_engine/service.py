@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from itertools import product
 import re
+from itertools import product
 from typing import Any
 
 from packages.analytics import NicheAnalyticsEngine
@@ -30,7 +30,6 @@ from packages.taxonomy import (
     map_food_category,
     resolve_location,
 )
-
 
 _DISH_ORIGIN_CITY_PHRASES: re.Pattern[str] = re.compile(
     r"(?i)\b(?:"
