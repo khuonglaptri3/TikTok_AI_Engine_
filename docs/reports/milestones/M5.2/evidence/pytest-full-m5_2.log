@@ -1,0 +1,29 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-7.4.0, pluggy-1.0.0
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collected 205 items
+
+tests/contract/test_data_contracts.py ..........                         [  4%]
+tests/eval/test_retrieval_benchmark.py ...                               [  6%]
+tests/smoke/test_api_and_demo.py .                                       [  6%]
+tests/unit/test_analytics_and_retrieval.py .....                         [  9%]
+tests/unit/test_bounded_collector_worker.py ............                 [ 15%]
+tests/unit/test_dense_hybrid_retrieval.py ..........                     [ 20%]
+tests/unit/test_incremental_absa_seeding.py ...                          [ 21%]
+tests/unit/test_llm_call_budget.py .........................             [ 33%]
+tests/unit/test_m3_3_pilot_pipeline.py ......                            [ 36%]
+tests/unit/test_m4_2_disclosure.py ...........                           [ 41%]
+tests/unit/test_m5_1_comment_indicators.py ........                      [ 45%]
+tests/unit/test_m5_2_aspect_spans.py ...........                         [ 51%]
+tests/unit/test_offline_draft.py ....................                    [ 60%]
+tests/unit/test_query_intent_and_abstention.py ..............            [ 67%]
+tests/unit/test_resource_measurements.py ........                        [ 71%]
+tests/unit/test_retrieval_metrics.py ..........                          [ 76%]
+tests/unit/test_script_guardrails.py .............                       [ 82%]
+tests/unit/test_secret_hygiene.py ..                                     [ 83%]
+tests/unit/test_snapshot_continuity.py ..........................        [ 96%]
+tests/unit/test_taxonomy_and_corpus.py .......                           [100%]
+
+============================= 205 passed in 37.12s =============================

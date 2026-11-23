@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import math
 import unicodedata
+from pathlib import Path
 from typing import Any, get_args
 
 import httpx
+import pandas as pd
 import pytest
 from pydantic import ValidationError
 
@@ -997,6 +1000,298 @@ def test_m5_2_trust_api_filter_and_threshold_sensitivity_and_demo_markdown() -> 
     assert "+0.50" in md_legacy
     assert "-0.20" in md_legacy
     assert "Bằng Chứng Trích Dẫn Gốc (Source Spans)" not in md_legacy
+
+
+def test_m5_2_evaluator_span_auditor_blinded_pool_and_fixture_cli(tmp_path: Path) -> None:
+    from packages.absa.evaluation import (
+        VALID_ASPECT_STATES,
+        audit_source_span_validity,
+        build_m5_2_annotation_pool,
+        compute_m5_2_annotator_agreement,
+        evaluate_m5_2_aspect_sentiment,
+        predict_unit_aspects,
+        split_units_by_video,
+    )
+    from pipelines.audit_m5_2_absa.run_baseline_checks import run_fixture_dry_run
+
+    for sym in (
+        "VALID_ASPECT_STATES",
+        "audit_source_span_validity",
+        "build_m5_2_annotation_pool",
+        "compute_m5_2_annotator_agreement",
+        "evaluate_m5_2_aspect_sentiment",
+        "predict_unit_aspects",
+        "split_units_by_video",
+    ):
+        assert hasattr(absa_pkg, sym), f"Missing re-export {sym} on packages.absa"
+    assert VALID_ASPECT_STATES == ("absent_unknown", "negative", "neutral", "positive")
+
+    # 1. Span validity auditor catches tampered slice and passes exact NFC slice
+    units_map = {"u1": unicodedata.normalize("NFD", "Nước dùng đậm đà, phục vụ quá chậm")}
+    audit_res = audit_source_span_validity(
+        units_map,
+        [
+            {
+                "unit_id": "u1",
+                "aspect": "taste",
+                "start_char": 0,
+                "end_char": 16,
+                "span_text": "Nước dùng đậm đà",
+            },
+            {
+                "unit_id": "u1",
+                "aspect": "service",
+                "start_char": 0,
+                "end_char": 5,
+                "span_text": "DRIFT",
+            },
+        ],
+    )
+    assert audit_res["total_spans"] == 2
+    assert audit_res["valid_spans"] == 1
+    assert audit_res["invalid_spans"] == 1
+    assert audit_res["validity_rate"] == 0.5
+    assert audit_res["meets_95pct_gate"] is False
+
+    # 2. Collision-free blinded pool across voice segments + comments (same raw ID '1')
+    v_df = pd.DataFrame([{"video_id": f"vid_{i:02d}", "caption": f"Quán số {i}"} for i in range(10)])
+    voice_df = pd.DataFrame(
+        [{"video_id": f"vid_{i:02d}", "segment_id": "1", "text": "Nước dùng đậm đà ngon lắm"} for i in range(10)]
+    )
+    cmt_df = pd.DataFrame(
+        [
+            {
+                "video_id": f"vid_{i:02d}",
+                "comment_id": "1",
+                "text": "Giá 45k bình thường, phục vụ nhanh",
+                "original_text": "  Giá 45k bình thường, phục vụ nhanh  ",
+            }
+            for i in range(10)
+        ]
+    )
+    pool = build_m5_2_annotation_pool(
+        v_df,
+        voice_df,
+        cmt_df,
+        max_units=20,
+        double_overlap=6,
+        include_predictions=False,
+    )
+    assert len(pool) == 20
+    assert len({r["unit_id"] for r in pool}) == 20  # zero cross-table ID collision
+    assert len({r["video_id"] for r in pool}) == 10  # balanced across all 10 videos
+    assert all("pred_aspects" not in r and "pred_spans" not in r for r in pool)
+    cmt_units = [r for r in pool if r["source_kind"] == "viewer_comment"]
+    assert cmt_units and all(r["text"].startswith("  ") for r in cmt_units)
+
+    # 3. Video-disjoint split + agreement + fixture dry-run fail-closed gate
+    out_json = tmp_path / "m5_2_dry_run.json"
+    receipt = run_fixture_dry_run(output=out_json)
+    assert out_json.exists()
+    assert receipt["real_pilot_data_available"] is False
+    assert receipt["fixture_type"] == "authored_edge_regression_fixture_NOT_real_pilot"
+    assert receipt["held_out_metrics"]["m5_2_pilot_gate_eligible"] is False
+    assert receipt["held_out_metrics"]["span_audit"]["validity_rate"] == 1.0
+    assert receipt["held_out_metrics"]["aspect_detection_macro_f1"] >= 0.65
+    assert receipt["held_out_metrics"]["observed_sentiment_macro_f1"] >= 0.60
+
+    splits = split_units_by_video(
+        [{"video_id": f"v{i}", "unit_id": f"u{i}"} for i in range(10)],
+        dev_ratio=0.5,
+        seed=42,
+    )
+    dev_vids = {r["video_id"] for r in splits["dev"]}
+    held_vids = {r["video_id"] for r in splits["held_out"]}
+    assert dev_vids.isdisjoint(held_vids)
+
+    iaa = compute_m5_2_annotator_agreement(
+        [
+            {
+                "review_assignment": "double_review_N_K",
+                "K_human_verified": True,
+                "N_human_verified": True,
+                "K_aspects": {"taste": "positive", "price": "neutral", "hygiene": "absent_unknown", "service": "negative"},
+                "N_aspects": {"taste": "positive", "price": "neutral", "hygiene": "absent_unknown", "service": "negative"},
+            }
+        ]
+    )
+    assert iaa["double_verified_unit_count"] == 1
+    assert iaa["raw_agreement_4state"] == 1.0
+    assert iaa["cohens_kappa_4state"] == 1.0
+    assert evaluate_m5_2_aspect_sentiment is not None
+
+
+def test_m5_2_evaluator_edge_cases_and_real_pool_cli(tmp_path: Path) -> None:
+    from packages.absa.evaluation import (
+        audit_source_span_validity,
+        build_m5_2_annotation_pool,
+        compute_m5_2_annotator_agreement,
+        evaluate_m5_2_aspect_sentiment,
+        split_units_by_video,
+    )
+    from pipelines.audit_m5_2_absa.run_baseline_checks import (
+        run_fixture_dry_run,
+        run_real_pool_export,
+    )
+
+    # 1. Enforce 1 <= max_units <= 200 on build_m5_2_annotation_pool
+    v_df = pd.DataFrame([{"video_id": f"v{i}", "caption": "Nước dùng ngon"} for i in range(3)])
+    for invalid_max in (0, -5, 201, 500):
+        with pytest.raises(ValueError, match="max_units"):
+            build_m5_2_annotation_pool(v_df, None, None, max_units=invalid_max)
+
+    # 2. Enforce split_units_by_video invariants
+    with pytest.raises(ValueError):
+        split_units_by_video([{"video_id": "only_one", "unit_id": "u1"}], dev_ratio=0.5)
+    with pytest.raises(ValueError):
+        split_units_by_video(
+            [{"video_id": "v1", "unit_id": "u1"}, {"video_id": "v2", "unit_id": "u2"}],
+            dev_ratio=1.0,
+        )
+
+    # 3. Span auditor rejects bool start_char/end_char, missing unit_id, and blank span_text
+    bad_audit = audit_source_span_validity(
+        {"u1": "  Nước dùng ngon"},
+        [
+            {"unit_id": "u1", "aspect": "taste", "start_char": True, "end_char": 5, "span_text": " Nước"},
+            {"unit_id": "u1", "aspect": "taste", "start_char": 0, "end_char": 2, "span_text": "  "},
+            {"unit_id": "missing", "aspect": "taste", "start_char": 0, "end_char": 4, "span_text": "Nước"},
+        ],
+    )
+    assert bad_audit["valid_spans"] == 0
+    assert bad_audit["invalid_spans"] == 3
+
+    # 4. 3-class sentiment recall penalizes pred == "absent_unknown" on gold-observed aspects
+    eval_rows = [
+        {
+            "video_id": f"vid_{i % 10}",
+            "unit_id": f"u_{i}",
+            "text": "Nước dùng đậm đà",
+            "pred_aspects": {
+                "taste": "positive" if i % 2 == 0 else "absent_unknown",
+                "price": "absent_unknown",
+                "hygiene": "absent_unknown",
+                "service": "absent_unknown",
+            },
+            "adjudicated_aspects": {
+                "taste": "positive",
+                "price": "absent_unknown",
+                "hygiene": "absent_unknown",
+                "service": "absent_unknown",
+            },
+        }
+        for i in range(40)
+    ]
+    spans_ok = [
+        {
+            "unit_id": f"u_{i}",
+            "aspect": "taste",
+            "start_char": 0,
+            "end_char": 16,
+            "span_text": "Nước dùng đậm đà",
+        }
+        for i in range(0, 40, 2)
+    ]
+    res_missed = evaluate_m5_2_aspect_sentiment(
+        eval_rows,
+        spans=spans_ok,
+        is_real_pilot_data=True,
+        human_signoff_complete=True,
+        total_annotated_units=150,
+        total_unique_videos=10,
+        n_boot=50,
+        seed=42,
+    )
+    # Gold taste is positive on all 40 units; pred is positive on 20 and absent_unknown on 20:
+    # observed sentiment positive precision = 1.0, recall = 20/40 = 0.5, F1 = 2/3 = 0.6667
+    assert res_missed["observed_sentiment_macro_precision"] == 1.0
+    assert res_missed["observed_sentiment_macro_recall"] == 0.5
+    assert res_missed["observed_sentiment_macro_f1"] == round(2.0 / 3.0, 4)
+    assert res_missed["aspect_detection_macro_f1"] == round(2.0 / 3.0, 4)
+    assert res_missed["m5_2_pilot_gate_eligible"] is True
+
+    # Gate fails closed if real pilot flag is False or total_annotated_units > 200
+    res_not_real = evaluate_m5_2_aspect_sentiment(
+        eval_rows,
+        spans=spans_ok,
+        is_real_pilot_data=False,
+        human_signoff_complete=True,
+        total_annotated_units=150,
+        total_unique_videos=10,
+        n_boot=20,
+    )
+    assert res_not_real["m5_2_pilot_gate_eligible"] is False
+
+    # Empty IAA returns 0.0 cleanly; invalid aspect state raises ValueError
+    empty_iaa = compute_m5_2_annotator_agreement([])
+    assert empty_iaa["double_verified_unit_count"] == 0
+    assert empty_iaa["cohens_kappa_4state"] == 0.0
+    with pytest.raises(ValueError):
+        compute_m5_2_annotator_agreement(
+            [
+                {
+                    "review_assignment": "double_review_N_K",
+                    "K_human_verified": True,
+                    "N_human_verified": True,
+                    "K_aspects": {"taste": "invalid_label", "price": "neutral", "hygiene": "absent_unknown", "service": "negative"},
+                    "N_aspects": {"taste": "positive", "price": "neutral", "hygiene": "absent_unknown", "service": "negative"},
+                }
+            ]
+        )
+
+    # 5. Fail-closed FileExistsError on both fixture_dry_run and real_pool export
+    dry_path = tmp_path / "exists_dry.json"
+    dry_path.write_text("{}", encoding="utf-8")
+    with pytest.raises(FileExistsError):
+        run_fixture_dry_run(output=dry_path)
+
+    corpus_dir = tmp_path / "corpus"
+    corpus_dir.mkdir()
+    pd.DataFrame([{"video_id": f"v{i:02d}", "caption": "Giá 40k bình thường"} for i in range(10)]).to_parquet(
+        corpus_dir / "fact_videos.parquet", index=False
+    )
+    pd.DataFrame(
+        [{"video_id": f"v{i:02d}", "segment_id": "s1", "text": "Nước dùng đậm đà"} for i in range(10)]
+    ).to_parquet(corpus_dir / "fact_voice_segments.parquet", index=False)
+    pd.DataFrame(
+        [
+            {
+                "video_id": f"v{i:02d}",
+                "comment_id": "c1",
+                "text": "Phục vụ quá chậm",
+                "original_text": "  Phục vụ quá chậm ",
+            }
+            for i in range(10)
+        ]
+    ).to_parquet(corpus_dir / "fact_comments.parquet", index=False)
+
+    out_pool = tmp_path / "m5_2_pool.jsonl"
+    out_preds = tmp_path / "m5_2_locked_preds.jsonl"
+    exported = run_real_pool_export(
+        corpus_dir=corpus_dir,
+        output_pool=out_pool,
+        output_locked_predictions=out_preds,
+        max_units=25,
+        double_overlap=10,
+        seed=42,
+    )
+    assert len(exported) == 25
+    assert out_pool.is_file() and out_preds.is_file()
+    pool_lines = [json.loads(line) for line in out_pool.read_text(encoding="utf-8").splitlines()]
+    pred_lines = [json.loads(line) for line in out_preds.read_text(encoding="utf-8").splitlines()]
+    assert all("pred_aspects" not in r and "pred_spans" not in r for r in pool_lines)
+    assert len(pred_lines) == 25
+    pred_spans_flat = [sp for r in pred_lines for sp in r["pred_spans"]]
+    span_check = audit_source_span_validity({r["unit_id"]: r["text"] for r in pool_lines}, pred_spans_flat)
+    assert span_check["validity_rate"] == 1.0
+
+    with pytest.raises(FileExistsError):
+        run_real_pool_export(
+            corpus_dir=corpus_dir,
+            output_pool=out_pool,
+            output_locked_predictions=tmp_path / "other.jsonl",
+        )
+
 
 
 
