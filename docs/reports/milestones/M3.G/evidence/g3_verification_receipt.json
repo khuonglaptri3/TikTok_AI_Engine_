@@ -1,0 +1,189 @@
+{
+  "gate_id": "G3",
+  "task_id": "M3.G",
+  "executed_at_utc": "2026-11-23T09:59:58.602269+00:00",
+  "runtime_environment": {
+    "python_version": "3.11.14",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39"
+  },
+  "verification_wall_seconds": 8.742,
+  "prerequisite_gates": {
+    "G0": "PASS",
+    "G1": "PASS",
+    "G2": "PASS"
+  },
+  "immutability_verification": {
+    "zero_byte_mutations": true,
+    "base_snapshot": {
+      "snapshot_id": "20261118_taxonomy_fix_v1",
+      "manifest_sha256": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
+      "parent_snapshot_id": "20261117_recovered_v1",
+      "parent_manifest_sha256": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+      "file_sha256": {
+        "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+        "fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3"
+      },
+      "row_counts": {
+        "dim_creators.parquet": 264,
+        "fact_videos.parquet": 70996
+      }
+    },
+    "pilot_snapshot": {
+      "snapshot_id": "m3_3_pilot_snapshot_v1",
+      "manifest_sha256": "06c24e14a1dfce0f786b50c2adae140751029e0731de149f8517421d7369f676",
+      "parent_snapshot_id": "20261118_taxonomy_fix_v1",
+      "parent_manifest_sha256": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
+      "file_sha256": {
+        "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+        "fact_videos.parquet": "8aec43c79b7eb235a303c59da8da016df6e1e292891aeda6966c269dd5bcdbee",
+        "fact_voice_segments.parquet": "8da7888c323a231046bf98c5d80551c178a38f33a0e857bfbfee7a12b771a62a",
+        "fact_comments.parquet": "860edb82dd29951a5ab27943a189156ec14836452187a8176daf89c3efa23d86",
+        "fact_absa_reviews.parquet": "0980c03a73e54a6ad632f709a5074fae0944923656853014e2e976a9df8a2253"
+      },
+      "row_counts": {
+        "dim_creators.parquet": 264,
+        "fact_videos.parquet": 71026,
+        "fact_voice_segments.parquet": 436,
+        "fact_comments.parquet": 0,
+        "fact_absa_reviews.parquet": 30
+      }
+    },
+    "raw_pilot_media": {
+      "crawl_manifest_sha256": "e5111242ad8d420787e060a891f04d269d090910377d0b08c909eeb8ae25b997",
+      "verified_mp3_count": 29,
+      "total_mp3_bytes": 22524055,
+      "no_audio_item_ids": [
+        "7709372899198602514"
+      ],
+      "accumulated_audio_minutes": 46.683
+    }
+  },
+  "searchability_recheck": {
+    "bm25_receipt_sha256": "a2e9e9d7218139a87006bf19078e1e2953dcea998d7252e89dfbb164399de0cc",
+    "probed_count": 10,
+    "matched_count": 10,
+    "matched_video_ids": [
+      "7710799156024986887",
+      "7711004930638630152",
+      "7710598047721458945",
+      "7710150153201536262",
+      "7710502428428356871",
+      "7709793907894193415",
+      "7710927418533399815",
+      "7710450847070653716",
+      "7710143263436508417",
+      "7710191968239848711"
+    ]
+  },
+  "inspection_and_domain_yield": {
+    "inspection_sheet_sha256": "a1c1747f92a9fd517912bad5936d0b4fd35b0326bb04acc17494f41dbcc119bf",
+    "total_inspected": 30,
+    "k_verified_count": 15,
+    "n_verified_count": 15,
+    "audio_bearing_count": 29,
+    "pure_fnb_audio_count": 27,
+    "mixed_domain_ids": [
+      "7710262606010846484"
+    ],
+    "no_audio_ids": [
+      "7709372899198602514"
+    ],
+    "out_of_domain_ids": [
+      "7709375359300537601"
+    ],
+    "capture_yield_rate": 0.6,
+    "audio_availability_rate": 0.9667,
+    "pure_fnb_audio_rate_of_succeeded": 0.9,
+    "pure_fnb_rate_of_audio_bearing": 0.931,
+    "effective_usable_fnb_audio_yield_per_candidate": 0.54
+  },
+  "m3_1_comment_enrichment_preservation_probe": {
+    "probe_snapshot_id": "m3_3_pilot_snapshot_v2_probe",
+    "total_videos": 71026,
+    "preserved_transcribed_videos": 21758,
+    "preserved_voice_segments_rows": 436,
+    "enriched_comments_rows": 2,
+    "absa_reviews_rows": 30
+  },
+  "downstream_modality_readiness_matrix": {
+    "M4.1": {
+      "status": "READY_UNBLOCKED",
+      "available_audio_files": 29,
+      "available_pure_fnb_audio_files": 27,
+      "total_audio_minutes": 46.683,
+      "reason": "29 verified 64kbps mp3 files (46.683 min <= 60.0 cap; 27 pure F&B) satisfy M4.1 audio & 2-person utterance slice requirements."
+    },
+    "M4.2_audio_join": {
+      "status": "GATED_ON_M4_1",
+      "reason": "Lexical/flag study COMPLETE; optional fresh-audio prosody join awaits accepted M4.1 timestamps/prosody."
+    },
+    "M5.1": {
+      "status": "BLOCKED_PENDING_COMMENT_BACKFILL",
+      "collected_comments_count": 0,
+      "min_required_comments": 150,
+      "reason": "yt-dlp pilot yielded 0 comments; requires authorized TikTokApi comment-only backfill (update_existing=True) >= 150 real comments."
+    },
+    "M5.2": {
+      "status": "BLOCKED_PENDING_COMMENT_BACKFILL",
+      "collected_comments_count": 0,
+      "commented_videos_count": 0,
+      "min_required_videos": 10,
+      "reason": "Viewer fact_comments has 0 rows; requires authorized comment-only backfill across >=10 pilot videos."
+    }
+  },
+  "capacity_and_budget_model": {
+    "observed_rates": {
+      "capture_io_seconds_total": 539.885,
+      "capture_io_seconds_per_succeeded_video": 17.996,
+      "asr_real_time_factor": 0.1971,
+      "asr_wall_seconds_per_audio_minute": 11.825,
+      "fixed_dual_sink_and_bm25_seconds": 7.0,
+      "batch_raw_bytes_per_video": 754894.1,
+      "snapshot_plus_bm25_bytes_per_publish": 103094284,
+      "effective_usable_fnb_audio_yield_per_candidate": 0.54
+    },
+    "m4_1_full_pilot_audio_projection": {
+      "target_mp3_files": 29,
+      "pure_fnb_mp3_files": 27,
+      "total_audio_minutes": 46.683,
+      "remaining_untranscribed_minutes": 30.0,
+      "projected_total_asr_wall_seconds": 552.07,
+      "projected_incremental_asr_wall_seconds": 354.78,
+      "projected_cpu_hours": 0.1534,
+      "m4_1_cpu_hour_ceiling": 4.0,
+      "projected_peak_rss_mib": 3214.92,
+      "m4_1_ram_ceiling_mib": 8192.0
+    },
+    "annotation_effort_estimates_person_minutes": {
+      "m3_3_30_video_inspection_completed": 60,
+      "m4_1_50_utterance_two_person_reference_review": 90,
+      "m5_1_150_to_300_comment_double_annotation_plus_adjudication": 150,
+      "m5_2_120_to_200_unit_aspect_span_double_annotation": 180
+    },
+    "budget_scenarios": {
+      "option_1_authorized_comment_only_backfill": {
+        "selected": true,
+        "new_videos_authorized": 0,
+        "target_existing_video_ids": 30,
+        "max_comments_per_video": 50,
+        "max_comments_total": 1000,
+        "max_audio_minutes": 0.0,
+        "session_deadline_seconds": 3600.0,
+        "projected_wall_seconds_with_retry_buffer": 511.0,
+        "projected_new_snapshot_disk_mib": 56.5,
+        "authorized_cost_usd": 0.0
+      },
+      "option_2_rejected_second_30_video_crawl_batch": {
+        "selected": false,
+        "new_candidates_required_for_27_fnb_audio": 50,
+        "projected_wall_seconds_with_full_asr": 1234.0,
+        "projected_extra_disk_mib": 119.92,
+        "rejection_reason": "Redundant media crawl & anti-bot exposure: existing 29 mp3s (46.683 min, 27 pure F&B) already satisfy M4.1."
+      },
+      "option_3_contingency_if_comments_anti_bot_blocked": {
+        "selected": false,
+        "fallback_policy": "Never bypass CAPTCHA/anti-bot gates; retain G2=PASS historical core + M4.1 audio evaluation, record M5 live comment capture BLOCKED, and keep comment filtering in diagnostic_only_unvalidated mode."
+      }
+    }
+  }
+}

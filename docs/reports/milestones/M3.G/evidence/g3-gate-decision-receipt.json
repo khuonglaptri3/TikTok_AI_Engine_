@@ -1,0 +1,45 @@
+{
+  "gate_id": "G3",
+  "task_id": "M3.G",
+  "primary_owner": "Trần Đình Khương (K)",
+  "peer_reviewer": "Nguyễn Việt Nguyên (N)",
+  "decided_by_primary_owner_at": "2026-11-23T17:00:30+07:00",
+  "evaluated_branch": "feat/k-m3.g-gate-decision",
+  "evaluated_head": "4479dd24ddf58cdecd62d6b00f35fbee3226e882",
+  "primary_owner_recommendation": "CONDITIONAL_PASS_UNBLOCK_M4_1_AND_BOUNDED_COMMENT_BACKFILL",
+  "n_peer_approval": "PENDING_N_REVIEW",
+  "gate_status_until_two_person_signoff": "IN_PROGRESS_PENDING_N_REVIEW",
+  "decision_scope": "M3.1-M3.3 vertical capture-to-ASR-to-Gold-to-BM25 slice verified on real TikTok data (30/30 N+K verified, 29 64kbps mp3s = 46.683 min, 27 pure F&B audio, 10/10 fresh ASR searchable at RTF=0.1971, 0 byte mutations). Unblocks M4.1 immediately on existing 29 mp3s with 0 new video crawl; authorizes strictly 1 bounded TikTokApi comment-only backfill pass on the 30 pilot video_ids (<=50/video, <=1000 total, USD 0) via M3.1 update_existing=True before M5.1/M5.2 real-comment evaluation.",
+  "prerequisite_gates": {
+    "G0": "PASS",
+    "G1": "PASS (local-only; public redistribution BLOCKED)",
+    "G2": "PASS (historical local CPU core)"
+  },
+  "upstream_tasks": {
+    "M3.1": "COMPLETE",
+    "M3.2": "COMPLETE",
+    "M3.3": "COMPLETE"
+  },
+  "downstream_authorizations": {
+    "M4.1": "READY_UNBLOCKED (process existing 29 pilot mp3s = 46.683 min; 0 new videos crawled)",
+    "M4.2_audio_join": "GATED_ON_M4_1",
+    "M5.1_and_M5.2_real_evaluation": "BLOCKED_PENDING_COMMENT_BACKFILL (>=150 real comments across >=10 videos required)",
+    "comment_only_backfill_budget": {
+      "authorized_sessions": 1,
+      "new_videos_authorized": 0,
+      "target_existing_video_ids_count": 30,
+      "max_comments_per_video": 50,
+      "max_comments_total": 1000,
+      "max_audio_minutes": 0.0,
+      "session_deadline_seconds": 3600.0,
+      "ingest_mode": "ingest_incremental_batch_to_gold(..., update_existing=True) -> m3_3_pilot_snapshot_v2_comments",
+      "anti_bot_policy": "fail_closed_zero_captcha_bypass",
+      "authorized_spend_usd": 0.0
+    }
+  },
+  "referenced_evidence_sha256": {
+    "docs/reports/milestones/M3.G/evidence/g3_verification_receipt.json": "f4c78c041d520f5e668f6e7238a287055082d77bc4b304f97fa926c6187bbeb6",
+    "docs/reports/milestones/M3.3/evidence/m3_3_pilot_receipt.json": "3a67062ed46c73052397f42f7a247f6b6594c24186d925a1b2508a2dae591d8a",
+    "docs/reports/milestones/M3.3/evidence/sample_inspection_sheet.jsonl": "a1c1747f92a9fd517912bad5936d0b4fd35b0326bb04acc17494f41dbcc119bf"
+  }
+}
