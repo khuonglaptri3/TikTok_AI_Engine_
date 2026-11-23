@@ -7,8 +7,13 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from packages.absa.analyzer import score_text_aspects
-from packages.data_contracts.multimodal import CommentRecord, RawCommentInput
+from packages.absa.analyzer import analyze_koc_vs_viewer_absa, score_text_aspects
+from packages.data_contracts.multimodal import (
+    ASPECT_NAMES,
+    CommentRecord,
+    RawCommentInput,
+    RawWhisperSegment,
+)
 from packages.seeding.detector import detect_seeding_comments
 
 OBSERVABLE_COMMENT_CLASSES: tuple[str, ...] = (
@@ -382,8 +387,10 @@ def compute_comment_filter_sensitivity(
     caption: str,
     transcript: str,
     comments: list[CommentRecord],
+    utterances: list[RawWhisperSegment] | None = None,
+    video_id: str = "sensitivity_audit",
 ) -> dict[str, Any]:
-    """Compare ABSA viewer aspect averages before vs after excluding indicator-flagged comments."""
+    """Compare ABSA viewer aspect averages and M5.2 supported discrepancy before vs after filtering."""
     koc_scores, _ = score_text_aspects([f"{caption}. {transcript}"])
     koc_mean = (koc_scores.taste + koc_scores.price + koc_scores.hygiene + koc_scores.service) / 4.0
 
@@ -423,6 +430,71 @@ def compute_comment_filter_sensitivity(
     before_gap = round(float(koc_mean - before_mean), 4) if before_mean is not None else 0.0
     after_gap = round(float(koc_mean - after_mean), 4) if after_mean is not None else 0.0
 
+    unflagged_all_comments = [c.model_copy(update={"is_seeding": False}) for c in comments]
+    before_comp = analyze_koc_vs_viewer_absa(
+        video_id=video_id,
+        caption=caption,
+        transcript=transcript,
+        comments=unflagged_all_comments,
+        utterances=utterances,
+    )
+    after_comp = analyze_koc_vs_viewer_absa(
+        video_id=video_id,
+        caption=caption,
+        transcript=transcript,
+        comments=comments,
+        utterances=utterances,
+    )
+
+    before_sup_disc = before_comp.supported_sentiment_discrepancy
+    after_sup_disc = after_comp.supported_sentiment_discrepancy
+    supported_discrepancy_shift = (
+        round(float(after_sup_disc - before_sup_disc), 4)
+        if (before_sup_disc is not None and after_sup_disc is not None)
+        else None
+    )
+
+    per_aspect_filter_shift: dict[str, dict[str, Any]] = {}
+    for aspect in ASPECT_NAMES:
+        b_detail = before_comp.aspect_discrepancies[aspect]
+        a_detail = after_comp.aspect_discrepancies[aspect]
+        per_aspect_filter_shift[aspect] = {
+            "before_viewer_support": b_detail.viewer_support_count,
+            "after_viewer_support": a_detail.viewer_support_count,
+            "before_viewer_mean": b_detail.viewer_mean_score,
+            "after_viewer_mean": a_detail.viewer_mean_score,
+            "before_comparison_status": b_detail.comparison_status,
+            "after_comparison_status": a_detail.comparison_status,
+            "before_sentiment_discrepancy": b_detail.sentiment_discrepancy,
+            "after_sentiment_discrepancy": a_detail.sentiment_discrepancy,
+        }
+
+    threshold_sensitivity: list[dict[str, Any]] = []
+    for tau in (0.05, 0.15, 0.25):
+        for min_c in (1, 3, 5):
+            grid_comp = (
+                after_comp
+                if (tau == 0.15 and min_c == 3)
+                else analyze_koc_vs_viewer_absa(
+                    video_id=video_id,
+                    caption=caption,
+                    transcript=transcript,
+                    comments=comments,
+                    utterances=utterances,
+                    min_viewer_comments=min_c,
+                    polarity_tau=tau,
+                )
+            )
+            threshold_sensitivity.append(
+                {
+                    "polarity_tau": tau,
+                    "min_viewer_comments": min_c,
+                    "supported_overlapping_aspects": list(grid_comp.supported_overlapping_aspects),
+                    "supported_aspect_count": len(grid_comp.supported_overlapping_aspects),
+                    "supported_sentiment_discrepancy": grid_comp.supported_sentiment_discrepancy,
+                }
+            )
+
     return {
         "total_comments": len(comments),
         "flagged_indicator_count": len(comments) - len(unflagged_texts),
@@ -435,6 +507,13 @@ def compute_comment_filter_sensitivity(
         "mean_score_shift": mean_shift,
         "before_filter_hype_gap": before_gap,
         "after_filter_hype_gap": after_gap,
+        "before_filter_supported_aspects": list(before_comp.supported_overlapping_aspects),
+        "after_filter_supported_aspects": list(after_comp.supported_overlapping_aspects),
+        "before_filter_supported_discrepancy": before_sup_disc,
+        "after_filter_supported_discrepancy": after_sup_disc,
+        "supported_discrepancy_shift": supported_discrepancy_shift,
+        "per_aspect_filter_shift": per_aspect_filter_shift,
+        "threshold_sensitivity": threshold_sensitivity,
     }
 
 

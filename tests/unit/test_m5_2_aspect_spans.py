@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+import asyncio
 import math
 import unicodedata
-from typing import get_args
+from typing import Any, get_args
 
+import httpx
 import pytest
 from pydantic import ValidationError
 
 import packages.absa as absa_pkg
 import packages.data_contracts as contracts_pkg
+from apps.api.app.main import create_app
+from apps.demo.presentation import format_trust_audit_markdown
 from packages.absa import analyze_koc_vs_viewer_absa
 from packages.absa.spans import (
     TextUnitInput,
@@ -850,6 +854,150 @@ def test_m5_2_task2_fix_round2_regressions() -> None:
     )
     assert len(s_muc_gia) == 1
     assert s_muc_gia[0].aspect == "price"
+
+
+def test_m5_2_trust_api_filter_and_threshold_sensitivity_and_demo_markdown() -> None:
+    from packages.seeding.evaluation import compute_comment_filter_sensitivity
+
+    app = create_app()
+
+    async def _call() -> dict[str, Any]:
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.post(
+                "/api/v1/trust/audit-video",
+                json={
+                    "video_id": "v_api_52",
+                    "caption": "Review phở bò phố cổ giá 45k",
+                    "transcript": "Nước dùng đậm đà ngon xuất sắc, nhân viên nhiệt tình lắm",
+                    "utterances": [
+                        {"start_sec": 0.0, "end_sec": 3.2, "text": "Nước dùng đậm đà ngon xuất sắc"},
+                        {"start_sec": 3.2, "end_sec": 6.0, "text": "nhân viên nhiệt tình lắm"},
+                    ],
+                    "comments": [
+                        {"comment_id": "c1", "author_handle": "u1", "text": "Nước dùng hơi mặn, giá 45k bình thường"},
+                        {"comment_id": "c2", "author_handle": "u2", "text": "Nước lèo nhạt nhẽo, nhân viên phục vụ chậm"},
+                        {"comment_id": "c3", "author_handle": "u3", "text": "Thịt bò khô và vị dở quá"},
+                        {"comment_id": "s1", "author_handle": "sp1", "text": "Nước dùng ở quán này đậm đà ngon xuất sắc luôn mọi người"},
+                        {"comment_id": "s2", "author_handle": "sp2", "text": "Nước dùng ở quán này đậm đà ngon xuất sắc luôn mọi người nha"},
+                    ],
+                },
+            )
+            assert resp.status_code == 200
+            return dict(resp.json())
+
+    payload = asyncio.run(_call())
+    comp = payload["comparison"]
+    assert comp["supported_overlapping_aspects"] == ["taste"]
+    assert comp["aspect_discrepancies"]["service"]["comparison_status"] == "abstained_viewer_low_support"
+    assert comp["koc_aspect_summaries"]["hygiene"]["presence_status"] == "absent_unknown"
+    assert comp["koc_aspect_summaries"]["price"]["presence_status"] == "observed"
+    assert comp["koc_aspect_summaries"]["price"]["polarity_label"] == "neutral"
+    assert comp["koc_aspect_summaries"]["price"]["mean_score"] == 0.0
+    assert len(comp["source_spans"]) >= 5
+    assert any(sp["unit_id"] == "v_api_52_utt_000" for sp in comp["source_spans"])
+    assert not any(sp["unit_id"] == "v_api_52_transcript" for sp in comp["source_spans"])
+
+    sens = payload["filter_sensitivity"]
+    assert "before_filter_supported_aspects" in sens
+    assert "after_filter_supported_aspects" in sens
+    assert "before_filter_supported_discrepancy" in sens
+    assert "after_filter_supported_discrepancy" in sens
+    assert "supported_discrepancy_shift" in sens
+    assert "per_aspect_filter_shift" in sens
+    assert set(sens["per_aspect_filter_shift"].keys()) == set(ASPECT_NAMES)
+    taste_shift = sens["per_aspect_filter_shift"]["taste"]
+    assert taste_shift["before_viewer_support"] == 5
+    assert taste_shift["after_viewer_support"] == 3
+    assert taste_shift["before_comparison_status"] == "compared_supported_overlap"
+    assert taste_shift["after_comparison_status"] == "compared_supported_overlap"
+    assert sens["after_filter_supported_discrepancy"] > sens["before_filter_supported_discrepancy"]
+    assert sens["supported_discrepancy_shift"] > 0.0
+
+    assert "threshold_sensitivity" in sens
+    assert len(sens["threshold_sensitivity"]) == 9  # 3 tau x 3 min_viewer_comments
+    grid_pairs = [
+        (cell["polarity_tau"], cell["min_viewer_comments"])
+        for cell in sens["threshold_sensitivity"]
+    ]
+    assert grid_pairs == [
+        (tau, min_c) for tau in (0.05, 0.15, 0.25) for min_c in (1, 3, 5)
+    ]
+    by_pair = {
+        (cell["polarity_tau"], cell["min_viewer_comments"]): cell
+        for cell in sens["threshold_sensitivity"]
+    }
+    # At min_viewer_comments=1: taste (3), price (1), service (1) all overlap -> 3 supported aspects
+    assert by_pair[(0.15, 1)]["supported_aspect_count"] == 3
+    # At min_viewer_comments=3: only taste (3) meets support -> 1 supported aspect
+    assert by_pair[(0.15, 3)]["supported_overlapping_aspects"] == ["taste"]
+    assert by_pair[(0.15, 3)]["supported_sentiment_discrepancy"] == comp["supported_sentiment_discrepancy"]
+    # At min_viewer_comments=5: clean viewer support max is 3 -> abstains cleanly (None)
+    assert by_pair[(0.15, 5)]["supported_overlapping_aspects"] == []
+    assert by_pair[(0.15, 5)]["supported_aspect_count"] == 0
+    assert by_pair[(0.15, 5)]["supported_sentiment_discrepancy"] is None
+
+    md = format_trust_audit_markdown(payload, hide_seeding=False)
+    assert "Sentiment Discrepancy" in md or "Độ lệch cảm xúc quan sát được" in md
+    assert "absent_unknown" in md
+    assert "neutral" in md
+    assert "n=3" in md
+    assert "Bằng Chứng Trích Dẫn Gốc (Source Spans)" in md
+    assert "[v_api_52_utt_000 @ 0:30]" in md
+    assert "@" in md and ":" in md
+
+    # Edge case 1: Abstained threshold grid (0 clean overlapping aspects across all 9 cells)
+    flagged_only = detect_seeding_comments(
+        "v_abst",
+        [RawCommentInput(comment_id="only_spam", author_handle="sp", text="Inbox zalo 0909123456")],
+    )
+    abst_comp = analyze_koc_vs_viewer_absa(
+        video_id="v_abst",
+        caption="Nước dùng đậm đà",
+        transcript="Thịt bò mềm ngon",
+        comments=flagged_only,
+    )
+    abst_sens = compute_comment_filter_sensitivity(
+        caption="Nước dùng đậm đà",
+        transcript="Thịt bò mềm ngon",
+        comments=flagged_only,
+    )
+    assert abst_sens["before_filter_supported_discrepancy"] is None
+    assert abst_sens["after_filter_supported_discrepancy"] is None
+    assert abst_sens["supported_discrepancy_shift"] is None
+    assert all(
+        cell["supported_sentiment_discrepancy"] is None
+        for cell in abst_sens["threshold_sensitivity"]
+    )
+    md_abst = format_trust_audit_markdown(
+        {
+            "comparison": abst_comp.model_dump(),
+            "comments": [c.model_dump() for c in flagged_only],
+            "filter_sensitivity": abst_sens,
+        }
+    )
+    assert "insufficient_overlapping_aspect_support_min_3_comments" in md_abst
+    assert "0/9" in md_abst
+
+    # Edge case 2: Minimal legacy dict fallback (empty koc_aspect_summaries / aspect_discrepancies)
+    md_legacy = format_trust_audit_markdown(
+        {
+            "comparison": {
+                "koc_scores": {"taste": 0.5, "price": 0.0, "hygiene": 0.0, "service": 0.0},
+                "viewer_clean_scores": {"taste": -0.2, "price": 0.0, "hygiene": 0.0, "service": 0.0},
+                "pr_hype_gap": 0.175,
+                "undisclosed_pr_risk": 0.25,
+                "clean_comment_count": 1,
+                "seeding_comment_count": 0,
+            },
+            "comments": [],
+        }
+    )
+    assert "Hương vị (Taste)" in md_legacy
+    assert "+0.50" in md_legacy
+    assert "-0.20" in md_legacy
+    assert "Bằng Chứng Trích Dẫn Gốc (Source Spans)" not in md_legacy
+
 
 
 
