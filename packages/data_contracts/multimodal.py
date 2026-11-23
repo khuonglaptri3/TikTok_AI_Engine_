@@ -121,7 +121,7 @@ class VoiceSegmentRecord(BaseModel):
     seq_no: int = Field(ge=0)
     start_sec: float = Field(ge=0.0)
     end_sec: float = Field(ge=0.0)
-    timestamp_source: Literal["whisper_exact", "wps_estimated"]
+    timestamp_source: Literal["audio_derived", "whisper_exact", "wps_estimated"]
     text: str
     words_per_sec: float = Field(ge=0.0)
     pitch_std: float | None = None

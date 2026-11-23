@@ -1,0 +1,346 @@
+{
+  "task_id": "M4.1",
+  "status": "IN_PROGRESS",
+  "executed_at_utc": "2026-11-23T09:17:56.475673+00:00",
+  "descriptive_prosody_note": "Descriptive acoustic variation metrics (pitch_std, energy_cv, words_per_sec); never proof of speaker intent, emotion certainty, or undisclosed sponsorship.",
+  "tokenization_spec": "Unicode NFC -> lowercase -> strip non-word punctuation -> WER splits on whitespace word tokens; CER iterates non-whitespace characters.",
+  "timestamp_provenance_labels_observed": [
+    "audio_derived"
+  ],
+  "audio_scope": {
+    "processed_mp3_count": 29,
+    "total_audio_seconds": 2812.51,
+    "total_audio_minutes": 46.875,
+    "max_pilot_audio_minutes_cap": 60.0,
+    "within_60m_cap": true,
+    "audio_disk_bytes": 22524055
+  },
+  "prosody_extraction_summary": {
+    "videos_with_pitch_std": 29,
+    "videos_with_energy_cv": 29,
+    "median_video_pitch_std_hz": 49.8221,
+    "median_video_energy_cv": 0.5052,
+    "utterances_processed": 436,
+    "utterances_with_pitch_std": 436,
+    "utterances_with_energy_cv": 436
+  },
+  "temporal_invariant_audit": {
+    "total_segments": 436,
+    "valid_segments": 436,
+    "invariant_violation_count": 0,
+    "invariant_pass_rate": 1.0,
+    "meets_100pct_invariant_gate": true,
+    "timestamp_source_counts": {
+      "audio_derived": 436,
+      "wps_estimated": 0
+    },
+    "violations_sample": []
+  },
+  "reference_review_pool": {
+    "sheet_path": "docs/reports/milestones/M4.1/evidence/m4_1_utterance_review_sheet.jsonl",
+    "utterance_count": 60,
+    "unique_video_count": 10,
+    "sampled_audio_minutes": 16.752,
+    "within_20m_cap": true,
+    "assignment_counts": {
+      "double_review_N_K": 16,
+      "N_only": 22,
+      "K_only": 22
+    },
+    "human_verified_count": 0
+  },
+  "reference_evaluation_status": {
+    "tokenization_spec": "Unicode NFC -> lowercase -> strip non-word punctuation -> WER splits on whitespace word tokens; CER iterates non-whitespace characters.",
+    "is_real_human_verified": false,
+    "evaluated_utterance_count": 0,
+    "min_utterances_required": 50,
+    "unique_video_count": 0,
+    "total_sampled_audio_minutes": 0.0,
+    "max_sampled_audio_minutes_cap": 20.0,
+    "total_ref_words": 0,
+    "total_ref_chars": 0,
+    "wer": null,
+    "cer": null,
+    "boundary_sample_count": 0,
+    "boundary_median_abs_err_sec": null,
+    "boundary_p95_abs_err_sec": null,
+    "meets_median_1s_gate": false,
+    "meets_p95_3s_gate": false,
+    "meets_100pct_invariant_gate": true,
+    "precise_playback_allowed": false,
+    "abstain_precise_playback": true
+  },
+  "resources": {
+    "prosody_wall_seconds": 25.331,
+    "prosody_real_time_factor": 0.009,
+    "m3_3_asr_engine": "faster-whisper/small-cpu-int8",
+    "m3_3_asr_wall_seconds": 197.269,
+    "m3_3_asr_real_time_factor": 0.1971,
+    "peak_rss_mib": 240.14,
+    "within_4h_cpu_budget": true,
+    "within_8gib_ram_budget": true
+  },
+  "per_video_prosody": [
+    {
+      "video_id": "7706832341804633352",
+      "audio_bytes": 483875,
+      "decoded_duration_sec": 60.3701,
+      "voiced_frame_count": 4705,
+      "active_frame_count": 5191,
+      "pitch_std": 48.3896,
+      "energy_cv": 0.4216
+    },
+    {
+      "video_id": "7707183296874106119",
+      "audio_bytes": 1603754,
+      "decoded_duration_sec": 200.362,
+      "voiced_frame_count": 12616,
+      "active_frame_count": 13275,
+      "pitch_std": 55.2341,
+      "energy_cv": 0.5807
+    },
+    {
+      "video_id": "7707187736549117192",
+      "audio_bytes": 488682,
+      "decoded_duration_sec": 60.974,
+      "voiced_frame_count": 4728,
+      "active_frame_count": 5419,
+      "pitch_std": 49.7701,
+      "energy_cv": 0.4505
+    },
+    {
+      "video_id": "7708688614837832978",
+      "audio_bytes": 457126,
+      "decoded_duration_sec": 57.05,
+      "voiced_frame_count": 4467,
+      "active_frame_count": 5144,
+      "pitch_std": 50.718,
+      "energy_cv": 0.4441
+    },
+    {
+      "video_id": "7708970028552457480",
+      "audio_bytes": 511670,
+      "decoded_duration_sec": 63.853,
+      "voiced_frame_count": 5283,
+      "active_frame_count": 6084,
+      "pitch_std": 53.8537,
+      "energy_cv": 0.5103
+    },
+    {
+      "video_id": "7709031604986940679",
+      "audio_bytes": 1752965,
+      "decoded_duration_sec": 219.029,
+      "voiced_frame_count": 13255,
+      "active_frame_count": 14588,
+      "pitch_std": 40.5543,
+      "energy_cv": 0.59
+    },
+    {
+      "video_id": "7709080401645473044",
+      "audio_bytes": 685750,
+      "decoded_duration_sec": 85.61,
+      "voiced_frame_count": 5847,
+      "active_frame_count": 6977,
+      "pitch_std": 47.3089,
+      "energy_cv": 0.5807
+    },
+    {
+      "video_id": "7709375359300537601",
+      "audio_bytes": 941123,
+      "decoded_duration_sec": 117.538,
+      "voiced_frame_count": 8103,
+      "active_frame_count": 10729,
+      "pitch_std": 39.4843,
+      "energy_cv": 0.4249
+    },
+    {
+      "video_id": "7709388788732087570",
+      "audio_bytes": 495996,
+      "decoded_duration_sec": 61.9029,
+      "voiced_frame_count": 4520,
+      "active_frame_count": 5731,
+      "pitch_std": 32.0167,
+      "energy_cv": 0.4347
+    },
+    {
+      "video_id": "7709416664755866887",
+      "audio_bytes": 669449,
+      "decoded_duration_sec": 83.59,
+      "voiced_frame_count": 6749,
+      "active_frame_count": 7690,
+      "pitch_std": 31.9069,
+      "energy_cv": 0.4778
+    },
+    {
+      "video_id": "7709423559424167188",
+      "audio_bytes": 652940,
+      "decoded_duration_sec": 81.523,
+      "voiced_frame_count": 5754,
+      "active_frame_count": 6761,
+      "pitch_std": 64.9929,
+      "energy_cv": 0.5611
+    },
+    {
+      "video_id": "7709711126140849426",
+      "audio_bytes": 936900,
+      "decoded_duration_sec": 117.0048,
+      "voiced_frame_count": 8694,
+      "active_frame_count": 10626,
+      "pitch_std": 58.685,
+      "energy_cv": 0.4374
+    },
+    {
+      "video_id": "7709738723730066706",
+      "audio_bytes": 698288,
+      "decoded_duration_sec": 87.189,
+      "voiced_frame_count": 6254,
+      "active_frame_count": 7889,
+      "pitch_std": 38.8047,
+      "energy_cv": 0.4237
+    },
+    {
+      "video_id": "7709793907894193415",
+      "audio_bytes": 711872,
+      "decoded_duration_sec": 88.884,
+      "voiced_frame_count": 7702,
+      "active_frame_count": 8779,
+      "pitch_std": 111.9936,
+      "energy_cv": 0.6593
+    },
+    {
+      "video_id": "7710067177193377045",
+      "audio_bytes": 646252,
+      "decoded_duration_sec": 80.6879,
+      "voiced_frame_count": 4261,
+      "active_frame_count": 4539,
+      "pitch_std": 87.569,
+      "energy_cv": 0.5459
+    },
+    {
+      "video_id": "7710143263436508417",
+      "audio_bytes": 1379519,
+      "decoded_duration_sec": 172.337,
+      "voiced_frame_count": 10765,
+      "active_frame_count": 12874,
+      "pitch_std": 54.6446,
+      "energy_cv": 0.5401
+    },
+    {
+      "video_id": "7710150153201536262",
+      "audio_bytes": 1761116,
+      "decoded_duration_sec": 220.032,
+      "voiced_frame_count": 14803,
+      "active_frame_count": 17951,
+      "pitch_std": 48.6448,
+      "energy_cv": 0.583
+    },
+    {
+      "video_id": "7710191968239848711",
+      "audio_bytes": 462559,
+      "decoded_duration_sec": 57.723,
+      "voiced_frame_count": 4507,
+      "active_frame_count": 5283,
+      "pitch_std": 53.6718,
+      "energy_cv": 0.4893
+    },
+    {
+      "video_id": "7710262606010846484",
+      "audio_bytes": 706230,
+      "decoded_duration_sec": 88.1643,
+      "voiced_frame_count": 6071,
+      "active_frame_count": 7244,
+      "pitch_std": 73.6966,
+      "energy_cv": 0.5426
+    },
+    {
+      "video_id": "7710293148903230728",
+      "audio_bytes": 594217,
+      "decoded_duration_sec": 74.163,
+      "voiced_frame_count": 5737,
+      "active_frame_count": 6240,
+      "pitch_std": 76.4481,
+      "energy_cv": 0.6241
+    },
+    {
+      "video_id": "7710450847070653716",
+      "audio_bytes": 656701,
+      "decoded_duration_sec": 81.988,
+      "voiced_frame_count": 5660,
+      "active_frame_count": 6867,
+      "pitch_std": 52.0032,
+      "energy_cv": 0.5431
+    },
+    {
+      "video_id": "7710492265776549128",
+      "audio_bytes": 741338,
+      "decoded_duration_sec": 92.553,
+      "voiced_frame_count": 7510,
+      "active_frame_count": 8181,
+      "pitch_std": 49.8221,
+      "energy_cv": 0.4565
+    },
+    {
+      "video_id": "7710502428428356871",
+      "audio_bytes": 462977,
+      "decoded_duration_sec": 57.769,
+      "voiced_frame_count": 4149,
+      "active_frame_count": 4736,
+      "pitch_std": 49.4038,
+      "energy_cv": 0.4804
+    },
+    {
+      "video_id": "7710562414172966151",
+      "audio_bytes": 866517,
+      "decoded_duration_sec": 108.203,
+      "voiced_frame_count": 7902,
+      "active_frame_count": 9201,
+      "pitch_std": 47.8219,
+      "energy_cv": 0.5052
+    },
+    {
+      "video_id": "7710598047721458945",
+      "audio_bytes": 618458,
+      "decoded_duration_sec": 77.2049,
+      "voiced_frame_count": 5641,
+      "active_frame_count": 7112,
+      "pitch_std": 70.8534,
+      "energy_cv": 0.5413
+    },
+    {
+      "video_id": "7710634206874946824",
+      "audio_bytes": 541763,
+      "decoded_duration_sec": 67.615,
+      "voiced_frame_count": 4774,
+      "active_frame_count": 5350,
+      "pitch_std": 30.7759,
+      "energy_cv": 0.7905
+    },
+    {
+      "video_id": "7710799156024986887",
+      "audio_bytes": 762445,
+      "decoded_duration_sec": 95.2,
+      "voiced_frame_count": 8138,
+      "active_frame_count": 9301,
+      "pitch_std": 104.3801,
+      "energy_cv": 0.496
+    },
+    {
+      "video_id": "7710927418533399815",
+      "audio_bytes": 485547,
+      "decoded_duration_sec": 60.5791,
+      "voiced_frame_count": 5194,
+      "active_frame_count": 5802,
+      "pitch_std": 34.4454,
+      "energy_cv": 0.4725
+    },
+    {
+      "video_id": "7711004930638630152",
+      "audio_bytes": 748026,
+      "decoded_duration_sec": 93.412,
+      "voiced_frame_count": 7504,
+      "active_frame_count": 8421,
+      "pitch_std": 31.0406,
+      "energy_cv": 0.4528
+    }
+  ]
+}
