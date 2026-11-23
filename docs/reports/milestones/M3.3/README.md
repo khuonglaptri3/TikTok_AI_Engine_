@@ -1,9 +1,9 @@
-# M3.3 — Capped Capture-to-Transcript-to-Search Pilot (`live_pilot = PASS`; Awaiting `K`/`N` 50/50 Human Inspection)
+# M3.3 — Capped Capture-to-Transcript-to-Search Pilot (`live_pilot = PASS`, `N` `15/15` Verified; Awaiting `K` `15/15` Inspection & PR #7 Review)
 
-- Status: IN_PROGRESS (`live_pilot` capture -> `faster-whisper/small-cpu-int8` ASR -> `M3.1` Dual-Sink Gold -> `BM25Index` -> searchability **executed and passed** on real TikTok data: `30` fresh videos across `5` creators, `29` 64kbps `.mp3` files, `10` CPU-transcribed videos (`16.683` min, `RTF=0.1971`), **`10/10` searchable**, `195` repo tests + `100`-file `mypy`; awaiting only `K` (`15`) + `N` (`15`) manual verification in `sample_inspection_sheet.jsonl` to mark `COMPLETE`)
+- Status: IN_PROGRESS (`live_pilot` capture -> `faster-whisper/small-cpu-int8` ASR -> `M3.1` Dual-Sink Gold -> `BM25Index` -> searchability **executed and passed** on real TikTok data: `30` fresh videos across `5` creators, `29` 64kbps `.mp3` files, `10` CPU-transcribed videos (`16.683` min, `RTF=0.1971`), **`10/10` searchable**, **`N` completed `15/15` audio + transcript inspection** (`human_verified=true`), `207` repo tests + `104`-file `mypy`; awaiting only `K` (`15/15`) manual verification in `sample_inspection_sheet.jsonl` and PR #7 approval to mark `COMPLETE`)
 - Execution date: 2026-11-20 to 2026-11-23 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.3`)
-- Repository version: `main` (post-`3c325ff9` live pilot commit)
+- Repository version: branch `feat/m3.3-live-pilot-results` (synced with `main` @ `d89f887f`, PR #7)
 - Owners: Nguyễn Việt Nguyên (`N`) & Trần Đình Khương (`K`) (shared integration & 50/50 inspection)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
@@ -77,7 +77,7 @@ Executed the official bounded **`M3.3` `live_pilot`** pipeline ([m3_3_pilot_rece
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| `K` & `N` 50/50 inspection (`15 K / 15 N`) in [sample_inspection_sheet.jsonl](evidence/sample_inspection_sheet.jsonl) pending (`human_verified=false`) | Required to flip `M3.3` -> `COMPLETE` and evaluate Gate `G3` (`M3.G`) | `K` inspects the `15` `K` rows and `N` inspects the `15` `N` rows (audio + transcript sanity) |
+| `K` half (`15/15` `K` rows) in [sample_inspection_sheet.jsonl](evidence/sample_inspection_sheet.jsonl) pending (`N` completed `15/15`, `human_verified=true`) | Required to flip `M3.3` -> `COMPLETE` and evaluate Gate `G3` (`M3.G`) | `K` inspects the `15` `K` rows (note: `N` confirmed `15/15` valid `64 kb/s` `.mp3` streams, `5/5` topic/timestamp alignment with minor loanword/street-name ASR typos, and flagged `#26` `7709375359300537601` as an out-of-domain museum vlog) |
 | `yt-dlp` does not retrieve TikTok comments (`collected_comments_count=0`, `comment_coverage_rate=0.0`) | Audio/transcript/search milestones (`M3.3`, `M3.G`, `M4.1`) are unblocked; `M5.1`/`M5.2` real-comment double-annotation requires separate comment enrichment keyed on these `30` `video_id`s via `M3.1` (`update_existing=True`) | Add dedicated comment collector enrichment step before `M5.1`/`M5.2` real-pool evaluation |
 
 ## Acceptance and handoff
@@ -86,6 +86,6 @@ Executed the official bounded **`M3.3` `live_pilot`** pipeline ([m3_3_pilot_rece
 | --- | --- | --- |
 | Bounded ceilings (`5` creators, `50` cands, `30` videos, `60`m audio, `1,000` comments, `2`h) & CPU ASR (`<= 10` videos / `<= 20`m) | Met (`30` succeeded, `29` `.mp3`, `10` ASR `small` `16.683` min `RTF=0.1971`) | [m3_3_pilot_receipt.json](evidence/m3_3_pilot_receipt.json) |
 | Real non-synthetic receipts, coverage/failure rates, disk/RAM/time, repeatable `M3.1` Gold snapshot, and `>= 5` searchable real fresh videos | Met (`10/10` searchable in `bm25-m3_3-pilot`; `119.92 MiB` total disk; `3.14 GiB` peak RSS) | [m3_3_pilot_receipt.json](evidence/m3_3_pilot_receipt.json), [m3_3_pilot_snapshot_v1](../../../../data/corpus/m3_3_pilot_snapshot_v1/manifest.json) |
-| Both contributors inspect half of the successful sample (`15 K / 15 N`) | Pending (`sample_inspection_sheet.jsonl` exported `15/15`, `human_verified=false`) | [sample_inspection_sheet.jsonl](evidence/sample_inspection_sheet.jsonl) |
+| Both contributors inspect half of the successful sample (`15 K / 15 N`) | **Partial (`N = 15/15 verified`; `K = 0/15 pending`)** | [sample_inspection_sheet.jsonl](evidence/sample_inspection_sheet.jsonl) |
 
-Final task status: **`IN_PROGRESS`** (all technical/capture/ASR/Gold/BM25/searchability acceptance checks **PASSED** on real TikTok data in `m3_3_pilot_receipt.json`; awaiting only `K` + `N` 50/50 human verification of `sample_inspection_sheet.jsonl` to mark `COMPLETE` and proceed to `M3.G` / `G3`).
+Final task status: **`IN_PROGRESS`** (all technical/capture/ASR/Gold/BM25/searchability checks **PASSED** and `N` completed `15/15` inspection; awaiting only `K` `15/15` verification & PR #7 review to mark `COMPLETE` and proceed to `M3.G` / `G3`).
