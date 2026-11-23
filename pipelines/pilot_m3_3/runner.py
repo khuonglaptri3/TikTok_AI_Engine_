@@ -148,6 +148,20 @@ def _resolve_pilot_creators(
     return merged[: config.max_creators]
 
 
+def _resolve_output_gold_dir(output_gold_dir: Path, resume: bool) -> Path:
+    """Preserve immutable Gold snapshots while auto-allocating a clean versioned directory on --resume."""
+    if not output_gold_dir.exists():
+        return output_gold_dir
+    if not resume:
+        return output_gold_dir
+    idx = 1
+    while True:
+        candidate = output_gold_dir.parent / f"{output_gold_dir.name}_resume_{idx}"
+        if not candidate.exists():
+            return candidate
+        idx += 1
+
+
 def _resolve_env_view(dotenv_path: Path | None) -> dict[str, str]:
     target = dict(os.environ)
     if dotenv_path is not None:
@@ -220,6 +234,10 @@ def run_m3_3_preflight(
         blockers.append("ffmpeg binary is missing from PATH")
     if not faster_whisper_found:
         blockers.append("faster-whisper Python package is not installed")
+    if not config.resume and config.output_gold_dir.exists():
+        blockers.append(
+            f"Output Gold snapshot directory already exists ({config.output_gold_dir.name}); pass --resume or choose a new --output-gold path"
+        )
 
     return M33PreflightReport(
         ready_for_live_pilot=not blockers,
@@ -381,15 +399,20 @@ def run_m3_3_pilot(
 
     transcribed_fresh = [r for r in enriched_records if r.transcript.strip()]
     blockers_after: list[str] = []
-    if manifest.stopped_reason == "anti_bot_challenge_blocked":
+    if manifest.discovery_error:
+        blockers_after.append(manifest.discovery_error)
+    elif manifest.stopped_reason == "anti_bot_challenge_blocked":
         blockers_after.append(
             "Anti-bot/CAPTCHA challenge encountered; collector halted fail-closed without bypass"
         )
     elif manifest.stopped_reason == "discovery_failed":
         blockers_after.append("Candidate discovery failed across active collector backend(s)")
 
-    if not enriched_records:
-        blockers_after.append("No fresh records succeeded within 120-day window")
+    if not enriched_records or (
+        config.mode == "live_pilot" and manifest.stopped_reason == "anti_bot_challenge_blocked"
+    ):
+        if not enriched_records:
+            blockers_after.append("No fresh records succeeded within 120-day window")
         receipt = M33PilotReceipt(
             mode=config.mode,
             pilot_status="BLOCKED" if config.mode == "live_pilot" else "FIXTURE_DRY_RUN_ONLY",
@@ -411,14 +434,15 @@ def run_m3_3_pilot(
         _atomic_write_json(config.receipt_path, receipt.model_dump())
         return receipt
 
-    # Dual-sink ingest into new Gold snapshot (never mutates base historical snapshot)
+    # Dual-sink ingest into new Gold snapshot (never mutates base or prior snapshot)
+    target_gold_dir = _resolve_output_gold_dir(config.output_gold_dir, config.resume)
     gold_manifest = ingest_incremental_batch_to_gold(
         base_corpus_dir=config.base_corpus_dir,
         incremental_jsonl=jsonl_path,
-        output_corpus_dir=config.output_gold_dir,
+        output_corpus_dir=target_gold_dir,
     )
 
-    _, _, df_videos = load_verified_corpus(config.output_gold_dir)
+    _, _, df_videos = load_verified_corpus(target_gold_dir)
     sub = df_videos[df_videos["has_transcript"] & (df_videos["rag_document"].str.len() > 0)]
     bm25 = BM25Index.build(
         video_ids=sub["video_id"].astype(str).tolist(),
@@ -467,7 +491,7 @@ def run_m3_3_pilot(
         )
 
     b_bytes = _dir_size_bytes(config.batch_dir)
-    g_bytes = _dir_size_bytes(config.output_gold_dir)
+    g_bytes = _dir_size_bytes(target_gold_dir)
     i_bytes = _dir_size_bytes(config.output_bm25_dir)
     resources = ResourceReceipt(
         wall_seconds=round(time.perf_counter() - t0, 3),

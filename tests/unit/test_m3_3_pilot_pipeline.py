@@ -514,3 +514,76 @@ def test_m3_3_preflight_auto_creators_dotenv_and_resume_forwarding(
     assert r2.collection.skipped_count == 1  # fresh_r1 skipped from checkpoint!
     assert r2.collection.succeeded_count == 1  # only fresh_r2 newly fetched!
     assert (r2.inspection_k_count + r2.inspection_n_count) == 2  # both retained in merged batch!
+
+
+def test_fix_m3_3_same_config_resume_avoids_gold_snapshot_collision(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from pipelines.pilot_m3_3.models import M33PilotConfig
+    from pipelines.pilot_m3_3.runner import run_m3_3_pilot, run_m3_3_preflight
+
+    base_dir = tmp_path / "gold_base_same"
+    _write_minimal_gold_base(base_dir, n_rows=4)
+    as_of = datetime(2026, 11, 23, 12, 0, 0, tzinfo=UTC)
+
+    fx_part1 = tmp_path / "part1.jsonl"
+    fx_part2 = tmp_path / "part2.jsonl"
+    rows = [
+        {
+            "video_id": f"same_cfg_v{i}",
+            "author_id": f"a{i}",
+            "author_handle": f"c{i}",
+            "create_time": (as_of - timedelta(days=i + 1)).isoformat(),
+            "caption": f"Bánh mì chảo đặc biệt Sài Gòn số {i}",
+            "duration_sec": 30,
+            "audio_fixture_payload": f"MP3-{i}",
+            "comments": [],
+        }
+        for i in range(6)
+    ]
+    fx_part1.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows[:2]) + "\n", encoding="utf-8")
+    fx_part2.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
+
+    shared_gold_out = tmp_path / "m3_3_pilot_snapshot_v1"
+    stub_asr = _StubCpuAsrEngine()
+    cfg_initial = M33PilotConfig(
+        mode="dry_run_fixture",
+        base_corpus_dir=base_dir,
+        batch_dir=tmp_path / "same_batch",
+        output_gold_dir=shared_gold_out,
+        output_bm25_dir=tmp_path / "bm25_same",
+        receipt_path=tmp_path / "receipt_same.json",
+        inspection_sheet_path=tmp_path / "inspect_same.jsonl",
+        fixture_path=fx_part1,
+        as_of_utc=as_of,
+        resume=False,
+    )
+    r_first = run_m3_3_pilot(cfg_initial, asr_engine=stub_asr)
+    assert r_first.collection.succeeded_count == 2
+    assert shared_gold_out.is_dir()
+
+    # Non-resume preflight on an already-existing output_gold_dir warns/blocks upfront before crawling
+    monkeypatch.setenv("MS_TOKEN", "tok_test")
+    monkeypatch.setattr("shutil.which", lambda name, path=None: f"/usr/bin/{name}")
+    pf_collide = run_m3_3_preflight(
+        cfg_initial.model_copy(update={"mode": "live_pilot", "allow_live_network": True, "creators": ["hist_creator"], "resume": False}),
+        has_injected_asr=True,
+    )
+    assert pf_collide.ready_for_live_pilot is False
+    assert any("output" in b.lower() or "snapshot" in b.lower() or "resume" in b.lower() for b in pf_collide.blocker_reasons)
+
+    # Exact same output_gold_dir WITH resume=True MUST NOT crash with FileExistsError; auto-versions cleanly!
+    pf_resume_ok = run_m3_3_preflight(
+        cfg_initial.model_copy(update={"mode": "live_pilot", "allow_live_network": True, "creators": ["hist_creator"], "resume": True}),
+        has_injected_asr=True,
+    )
+    assert pf_resume_ok.ready_for_live_pilot is True
+
+    r_resumed = run_m3_3_pilot(
+        cfg_initial.model_copy(update={"fixture_path": fx_part2, "resume": True}),
+        asr_engine=stub_asr,
+    )
+    assert r_resumed.collection.skipped_count == 2
+    assert r_resumed.collection.succeeded_count == 4
+    assert r_resumed.output_gold_snapshot_id is not None
+    assert r_resumed.output_gold_snapshot_id != r_first.output_gold_snapshot_id

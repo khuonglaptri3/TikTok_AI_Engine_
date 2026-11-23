@@ -1,6 +1,6 @@
 # M3.3 — Capped Capture-to-Transcript-to-Search Pilot & Hybrid `21KHDL-TikTok-Analytics` Collector Upgrade
 
-- Status: IN_PROGRESS (Phase 1 end-to-end `pipelines/pilot_m3_3/` capture -> CPU ASR -> Dual-Sink Gold -> BM25 -> searchability orchestrator + host `.venv` `yt-dlp`/`ffmpeg`/`faster-whisper` verification complete; Phase 2 hybrid `TikTokApi -> yt-dlp` `--backend auto` upgrade grounded in `TrggTin/21KHDL-TikTok-Analytics`, authenticated `64 kbps` `.mp3` extraction, `--auto-creators`, `--resume`, and `--preflight-only` verified across `199` pytest tests and `101`-file Linux/`win32` `mypy`; live network run awaits home execution with `MS_TOKEN` and `K`+`N` 50/50 inspection)
+- Status: IN_PROGRESS (Phase 1 end-to-end `pipelines/pilot_m3_3/` capture -> CPU ASR -> Dual-Sink Gold -> BM25 -> searchability orchestrator + host `.venv` `yt-dlp`/`ffmpeg`/`faster-whisper` verification complete; Phase 2 hybrid `TikTokApi -> yt-dlp` `--backend auto` upgrade grounded in `TrggTin/21KHDL-TikTok-Analytics`, authenticated `64 kbps` `.mp3` extraction, `--auto-creators`, `--resume`, and `--preflight-only` verified across `205` pytest tests and `101`-file Linux/`win32` `mypy`; live network run awaits home execution with `MS_TOKEN` and `K`+`N` 50/50 inspection)
 - Execution date: 2026-11-23 (Asia/Ho_Chi_Minh; Phase 1 baseline 2026-11-20)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.3`)
 - Repository version: branch `feat/k-m3.3-hybrid-crawler-upgrade` (forked from `main` @ `60b80147`)
@@ -44,8 +44,10 @@ Built, tested, and host-verified the bounded end-to-end `M3.3` orchestrator in [
    - **Recommended enriched mode (`TikTokApi` + Playwright Chromium for full `itemStruct` POI/EC/Ad/comments, with automatic `yt-dlp` fallback):**
      ```bash
      uv pip install --python .venv/bin/python TikTokApi playwright yt-dlp faster-whisper imageio-ffmpeg
+     ln -sf "$(.venv/bin/python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" .venv/bin/ffmpeg
      .venv/bin/playwright install chromium
      ```
+     *(On Windows PowerShell without system `ffmpeg`: `Copy-Item (.\.venv\Scripts\python.exe -c "import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())") .\.venv\Scripts\ffmpeg.exe` and replace `.venv/bin/python` with `.\.venv\Scripts\python.exe` below.)*
 
 2. **Add `MS_TOKEN` to gitignored `.env` (auto-loaded by CLI — no manual `source .env` needed):**
    - Open `https://www.tiktok.com` in your desktop browser, inspect Cookies in DevTools (`Application -> Cookies`), copy `msToken`, and set in `.env`:
@@ -74,7 +76,7 @@ Built, tested, and host-verified the bounded end-to-end `M3.3` orchestrator in [
      --asr-model small
    ```
    - **Desktop tip (`21KHDL` `tiktok.py:490`):** If headless Chromium triggers `EmptyResponseException`, append `--no-tiktok-headless` so Playwright opens a visible browser window, or pass `--backend ytdlp` to use `yt-dlp` directly.
-   - **Crash / interruption recovery:** Re-run the exact command above with `--resume` appended; already-succeeded videos in `data/raw_incremental/m3_3_pilot_run/batch/collector_checkpoint.json` are skipped without re-downloading.
+   - **Crash / interruption recovery:** Re-run the exact command above with `--resume` appended; already-succeeded videos in `data/raw_incremental/m3_3_pilot_run/batch/collector_checkpoint.json` are skipped without re-downloading, and if `data/corpus/m3_3_pilot_snapshot_v1` already exists from a partial run, `--resume` automatically allocates `m3_3_pilot_snapshot_v1_resume_1` without mutating prior snapshots.
    - **Anti-bot / CAPTCHA policy:** If TikTok presents a CAPTCHA challenge, the collector halts immediately (`stopped_reason="anti_bot_challenge_blocked"`). Wait, refresh `MS_TOKEN` from a normal browser session, and resume later with `--resume`.
 
 5. **Inspect outputs & run secret check before committing results:**
@@ -87,9 +89,9 @@ Built, tested, and host-verified the bounded end-to-end `M3.3` orchestrator in [
 
 | Check | Result | Scope / evidence |
 | --- | --- | --- |
-| `python3 -m pytest tests/unit/test_bounded_collector_worker.py tests/unit/test_m3_3_pilot_pipeline.py -v` | PASS (`23 passed`: `16` collector worker + `7` M3.3 pilot) | `21KHDL` `itemStruct`/comment/`yt-dlp` mappers, `isPinnedItem` chronological loop, `video.as_dict` cache, `--backend auto` fallback, fail-closed `AntiBotChallengeError` + cookie/header redaction, `.env` `ms_token` bridge, `--auto-creators`, `--preflight-only`, and `--resume` forwarding |
+| `python3 -m pytest tests/unit/test_bounded_collector_worker.py tests/unit/test_m3_3_pilot_pipeline.py -v` | PASS (`29 passed`: `21` collector worker + `8` M3.3 pilot) | `21KHDL` `itemStruct`/comment/`yt-dlp` mappers, `isPinnedItem` chronological loop, `video.as_dict` cache, single-session Playwright reuse, `--backend auto` single-call fallback + circuit breaker, multi-creator round-robin balancing, fail-closed `AntiBotChallengeError` across discovery/detail/comments/`.mp3` audio, multi-cookie (`sid_tt`/`sessionid_ss`/`msToken`) & `--cookies` redaction, `.env` `ms_token` + inline `#` comment handling, `--auto-creators`, `--preflight-only`, and non-colliding `--resume` |
 | `python3 -m mypy packages apps pipelines` & `python3 -m mypy --platform win32 packages apps pipelines` | PASS (`101` source files clean on Linux & `win32`) | Static typing across Linux and Windows home environments |
-| `python3 -m pytest -v` & `python3 scripts/check_secrets.py` | PASS (`199 passed`; `0` secret leaks) | Full repository regression suite and secret hygiene |
+| `python3 -m pytest -v` & `python3 scripts/check_secrets.py` | PASS (`205 passed`; `0` secret leaks) | Full repository regression suite and secret hygiene |
 | Host real audio test (`FasterWhisperCpuAsrEngine(model_size="tiny", language="vi")`) | PASS (`failed_count=0`, `RTF=0.1278`) | Verified on temporary 64k `.mp3` copy (`1.0` min, `6` segments, `7.671s` wall, `445.49 MiB` peak RSS; `data/` untouched) |
 
 ## Open issues
@@ -103,7 +105,7 @@ Built, tested, and host-verified the bounded end-to-end `M3.3` orchestrator in [
 
 | Task criterion | Result | Evidence |
 | --- | --- | --- |
-| Bounded ceilings (`5` creators, `50` cands, `30` videos, `60`m audio, `1,000` comments, `2`h), hybrid `21KHDL` `TikTokApi -> yt-dlp` collector, & CPU ASR (`<= 10` videos / `<= 20`m) wired + verified | Met (`23/23` dedicated tests + `199/199` full suite + `101`-file Linux/`win32` `mypy`) | [mappers.py](../../../../pipelines/crawl_incremental/mappers.py), [providers.py](../../../../pipelines/crawl_incremental/providers.py), [worker.py](../../../../pipelines/crawl_incremental/worker.py), [runner.py](../../../../pipelines/pilot_m3_3/runner.py) |
+| Bounded ceilings (`5` creators, `50` cands, `30` videos, `60`m audio, `1,000` comments, `2`h), hybrid `21KHDL` `TikTokApi -> yt-dlp` collector, & CPU ASR (`<= 10` videos / `<= 20`m) wired + verified | Met (`29/29` dedicated tests + `205/205` full suite + `101`-file Linux/`win32` `mypy`) | [mappers.py](../../../../pipelines/crawl_incremental/mappers.py), [providers.py](../../../../pipelines/crawl_incremental/providers.py), [worker.py](../../../../pipelines/crawl_incremental/worker.py), [runner.py](../../../../pipelines/pilot_m3_3/runner.py) |
 | Real non-synthetic receipts, disk/RAM/time, `>= 5` searchable real fresh videos, and 50/50 `K`/`N` inspection | Pending home live capture with `MS_TOKEN` | [m3_3_live_preflight_receipt.json](evidence/m3_3_live_preflight_receipt.json) |
 
 Final task status: **`IN_PROGRESS`** (Phase 1 end-to-end ASR/Gold/BM25 pipeline and Phase 2 `21KHDL-TikTok-Analytics` hybrid `--backend auto` collector upgrade complete and verified; turnkey for contributor `K`'s home crawling session).

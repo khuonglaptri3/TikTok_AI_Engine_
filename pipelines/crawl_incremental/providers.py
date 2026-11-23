@@ -4,8 +4,8 @@ import asyncio
 import importlib.util
 import json
 import subprocess
+import threading
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
@@ -39,10 +39,19 @@ class LiveNetworkDisabledError(PermissionError):
 _ANTI_BOT_MARKERS = (
     "captcha",
     "verify you are human",
+    "not a bot",
     "detecting you're a bot",
     "detecting you are a bot",
     "security verification",
     "sliver_verify",
+)
+
+_BROWSER_UNAVAILABLE_MARKERS = (
+    "executable doesn't exist",
+    "executable does not exist",
+    "browsertype.launch",
+    "playwright install",
+    "failed to launch",
 )
 
 
@@ -50,10 +59,15 @@ def _is_anti_bot_challenge(text_or_exc: Any) -> bool:
     if isinstance(text_or_exc, AntiBotChallengeError):
         return True
     cls_name = type(text_or_exc).__name__.lower()
-    if "captcha" in cls_name:
+    if "captcha" in cls_name or "emptyresponse" in cls_name:
         return True
     msg = str(text_or_exc or "").lower()
     return any(marker in msg for marker in _ANTI_BOT_MARKERS)
+
+
+def _is_browser_launch_unavailable(exc: Exception) -> bool:
+    msg = str(exc or "").lower()
+    return any(marker in msg for marker in _BROWSER_UNAVAILABLE_MARKERS)
 
 
 def is_tiktokapi_available() -> bool:
@@ -64,14 +78,45 @@ def is_tiktokapi_available() -> bool:
         return False
 
 
-def _run_coro_sync(coro: Any) -> Any:
-    """Execute an async coroutine from synchronous collector methods safely."""
-    try:
-        asyncio.get_running_loop()
-    except RuntimeError:
-        return asyncio.run(coro)
-    with ThreadPoolExecutor(max_workers=1) as pool:
-        return pool.submit(asyncio.run, coro).result()
+class _PersistentAsyncLoop:
+    """Dedicated background asyncio loop keeping a single Playwright/TikTokApi session alive across sync calls."""
+
+    def __init__(self) -> None:
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._thread: threading.Thread | None = None
+        self._lock = threading.Lock()
+
+    def run(self, coro: Any) -> Any:
+        with self._lock:
+            if self._loop is None or self._loop.is_closed():
+                loop = asyncio.new_event_loop()
+                ready = threading.Event()
+
+                def _worker() -> None:
+                    asyncio.set_event_loop(loop)
+                    loop.call_soon(ready.set)
+                    loop.run_forever()
+
+                thread = threading.Thread(target=_worker, name="tiktokapi-loop", daemon=True)
+                thread.start()
+                ready.wait(timeout=5.0)
+                self._loop = loop
+                self._thread = thread
+            active_loop = self._loop
+        fut = asyncio.run_coroutine_threadsafe(coro, active_loop)
+        return fut.result()
+
+    def close(self) -> None:
+        with self._lock:
+            loop = self._loop
+            thread = self._thread
+            self._loop = None
+            self._thread = None
+        if loop is not None and not loop.is_closed():
+            loop.call_soon_threadsafe(loop.stop)
+            if thread is not None and thread.is_alive():
+                thread.join(timeout=5.0)
+            loop.close()
 
 
 class CollectorProvider(Protocol):
@@ -205,7 +250,7 @@ def _validate_live_auth(allow_live_network: bool, ms_token: str) -> str:
 
 
 class TikTokApiCollectorProvider:
-    """Official TikTokApi provider adapting 21KHDL-TikTok-Analytics itemStruct & pinned-post mechanics."""
+    """Official TikTokApi provider adapting 21KHDL-TikTok-Analytics itemStruct, pinned-post, & single-session mechanics."""
 
     requested_backend = "tiktokapi"
     backend_name = "tiktokapi"
@@ -236,6 +281,8 @@ class TikTokApiCollectorProvider:
         self._cutoff_utc = cutoff_utc
         self._timeout_sec = max(5, int(timeout_sec))
         self._cached_details: dict[str, dict[str, Any]] = {}
+        self._loop_runner = _PersistentAsyncLoop()
+        self._api_instance: Any | None = None
         self.backends_used: list[str] = []
 
     @property
@@ -257,11 +304,48 @@ class TikTokApiCollectorProvider:
 
         return TikTokApi()
 
+    async def _ensure_session_async(self) -> Any:
+        if self._api_instance is not None:
+            return self._api_instance
+        api = await self._instantiate_api().__aenter__()
+        try:
+            await api.create_sessions(
+                num_sessions=1,
+                ms_tokens=[self._ms_token],
+                headless=self._headless,
+                browser=self._browser,
+                sleep_after=2,
+                timeout=self._timeout_sec * 1000,
+            )
+        except Exception:
+            try:
+                await api.__aexit__(None, None, None)
+            except Exception:
+                pass
+            raise
+        self._api_instance = api
+        return api
+
+    def close(self) -> None:
+        api = self._api_instance
+        self._api_instance = None
+        if api is not None:
+            try:
+                self._loop_runner.run(api.__aexit__(None, None, None))
+            except Exception:
+                pass
+        self._loop_runner.close()
+
     def _classify_exception(self, exc: Exception, stage: str) -> Exception:
         if isinstance(exc, (AntiBotChallengeError, LiveNetworkDisabledError)):
             return exc
         if _is_anti_bot_challenge(exc):
-            return AntiBotChallengeError(f"{stage} blocked by anti-bot/captcha challenge: {exc}")
+            hint = (
+                " (tip: try --no-tiktok-headless on desktop or refresh MS_TOKEN)"
+                if "emptyresponse" in type(exc).__name__.lower()
+                else ""
+            )
+            return AntiBotChallengeError(f"{stage} blocked by anti-bot/captcha challenge{hint}: {exc}")
         return TransientCollectorError(f"{stage} tiktokapi error: {exc}")
 
     def discover_candidates(
@@ -275,61 +359,53 @@ class TikTokApiCollectorProvider:
 
         async def _discover_async() -> list[dict[str, Any]]:
             discovered: list[dict[str, Any]] = []
-            async with self._instantiate_api() as api:
-                await api.create_sessions(
-                    num_sessions=1,
-                    ms_tokens=[self._ms_token],
-                    headless=self._headless,
-                    browser=self._browser,
-                    sleep_after=2,
-                    timeout=self._timeout_sec * 1000,
-                )
-                for raw_handle in creators:
-                    handle = raw_handle.lstrip("@").strip()
-                    if not handle:
+            api = await self._ensure_session_async()
+            for raw_handle in creators:
+                handle = raw_handle.lstrip("@").strip()
+                if not handle:
+                    continue
+                collected_for_user = 0
+                # Allow headroom for up to 5 pinned videos at the top of a creator profile
+                scan_limit = max(cap + 5, 35)
+                user_obj = api.user(username=handle)
+                async for video in user_obj.videos(count=scan_limit):
+                    raw_dict = dict(getattr(video, "as_dict", None) or {})
+                    vid_hint = str(getattr(video, "id", None) or raw_dict.get("id") or "").strip()
+                    detail = map_tiktok_item_struct_to_detail(
+                        raw_dict,
+                        fallback_vid=vid_hint,
+                        fallback_handle=handle,
+                    )
+                    vid = str(detail.get("video_id") or "").strip()
+                    if not vid:
                         continue
-                    collected_for_user = 0
-                    # Allow headroom for up to 5 pinned videos at the top of a creator profile
-                    scan_limit = max(cap + 5, 35)
-                    user_obj = api.user(username=handle)
-                    async for video in user_obj.videos(count=scan_limit):
-                        raw_dict = dict(getattr(video, "as_dict", None) or {})
-                        vid_hint = str(getattr(video, "id", None) or raw_dict.get("id") or "").strip()
-                        detail = map_tiktok_item_struct_to_detail(
-                            raw_dict,
-                            fallback_vid=vid_hint,
-                            fallback_handle=handle,
-                        )
-                        vid = str(detail.get("video_id") or "").strip()
-                        if not vid:
-                            continue
-                        iso_ct = str(detail.get("create_time") or "")
-                        is_pinned = bool(detail.get("is_pinned_item"))
+                    iso_ct = str(detail.get("create_time") or "")
+                    is_pinned = bool(detail.get("is_pinned_item"))
 
-                        # 21KHDL-TikTok-Analytics crawler.py:99-118 chronological + isPinnedItem rule
-                        if self._cutoff_utc is not None and iso_ct:
-                            if not is_within_rolling_window(iso_ct, self._cutoff_utc):
-                                if is_pinned:
-                                    continue
-                                break
-
-                        detail["_provider_backend"] = self.backend_name
-                        self._cached_details[vid] = detail
-                        discovered.append(
-                            {
-                                "video_id": vid,
-                                "author_handle": detail["author_handle"],
-                                "create_time": iso_ct or None,
-                                "tiktok_url": detail["tiktok_url"],
-                            }
-                        )
-                        collected_for_user += 1
-                        if collected_for_user >= cap:
+                    # 21KHDL-TikTok-Analytics crawler.py:99-118 chronological + isPinnedItem rule
+                    if self._cutoff_utc is not None and iso_ct:
+                        if not is_within_rolling_window(iso_ct, self._cutoff_utc):
+                            if is_pinned:
+                                continue
                             break
+
+                    detail["_provider_backend"] = self.backend_name
+                    self._cached_details[vid] = detail
+                    discovered.append(
+                        {
+                            "video_id": vid,
+                            "author_handle": detail["author_handle"],
+                            "create_time": iso_ct or None,
+                            "tiktok_url": detail["tiktok_url"],
+                        }
+                    )
+                    collected_for_user += 1
+                    if collected_for_user >= cap:
+                        break
             return discovered
 
         try:
-            items: list[dict[str, Any]] = _run_coro_sync(_discover_async())
+            items: list[dict[str, Any]] = self._loop_runner.run(_discover_async())
             self._mark_used()
             return items
         except Exception as exc:
@@ -347,28 +423,20 @@ class TikTokApiCollectorProvider:
         )
 
         async def _detail_async() -> dict[str, Any]:
-            async with self._instantiate_api() as api:
-                await api.create_sessions(
-                    num_sessions=1,
-                    ms_tokens=[self._ms_token],
-                    headless=self._headless,
-                    browser=self._browser,
-                    sleep_after=2,
-                    timeout=self._timeout_sec * 1000,
-                )
-                video_obj = api.video(url=url)
-                raw_info = await video_obj.info()
-                raw_dict = dict(raw_info if isinstance(raw_info, dict) else (getattr(video_obj, "as_dict", None) or {}))
-                mapped = map_tiktok_item_struct_to_detail(
-                    raw_dict,
-                    fallback_vid=vid,
-                    fallback_handle=handle,
-                )
-                mapped["_provider_backend"] = self.backend_name
-                return mapped
+            api = await self._ensure_session_async()
+            video_obj = api.video(url=url)
+            raw_info = await video_obj.info()
+            raw_dict = dict(raw_info if isinstance(raw_info, dict) else (getattr(video_obj, "as_dict", None) or {}))
+            mapped = map_tiktok_item_struct_to_detail(
+                raw_dict,
+                fallback_vid=vid,
+                fallback_handle=handle,
+            )
+            mapped["_provider_backend"] = self.backend_name
+            return mapped
 
         try:
-            detail: dict[str, Any] = _run_coro_sync(_detail_async())
+            detail: dict[str, Any] = self._loop_runner.run(_detail_async())
             canonical_vid = str(detail.get("video_id") or vid).strip()
             if canonical_vid:
                 self._cached_details[canonical_vid] = detail
@@ -378,36 +446,33 @@ class TikTokApiCollectorProvider:
             raise self._classify_exception(exc, "detail") from None
 
     def fetch_comments(self, video_id: str, max_comments: int) -> list[dict[str, Any]]:
-        if max_comments <= 0 or not video_id.strip():
+        clean_vid = video_id.strip()
+        if max_comments <= 0 or not clean_vid:
+            return []
+        cached = self._cached_details.get(clean_vid)
+        if cached is not None and int(cached.get("comment_count") or 0) == 0:
+            self._mark_used()
             return []
         cap = int(max_comments)
 
         async def _comments_async() -> list[dict[str, Any]]:
             collected: list[dict[str, Any]] = []
-            async with self._instantiate_api() as api:
-                await api.create_sessions(
-                    num_sessions=1,
-                    ms_tokens=[self._ms_token],
-                    headless=self._headless,
-                    browser=self._browser,
-                    sleep_after=2,
-                    timeout=self._timeout_sec * 1000,
-                )
-                video_obj = api.video(id=video_id.strip())
-                idx = 0
-                async for c_obj in video_obj.comments(count=cap):
-                    raw_c = getattr(c_obj, "as_dict", None)
-                    if isinstance(raw_c, dict):
-                        norm = map_tiktok_comment_to_input(raw_c, canonical_vid=video_id.strip(), idx=idx)
-                        if norm is not None:
-                            collected.append(norm)
-                            if len(collected) >= cap:
-                                break
-                    idx += 1
+            api = await self._ensure_session_async()
+            video_obj = api.video(id=clean_vid)
+            idx = 0
+            async for c_obj in video_obj.comments(count=cap):
+                raw_c = getattr(c_obj, "as_dict", None)
+                if isinstance(raw_c, dict):
+                    norm = map_tiktok_comment_to_input(raw_c, canonical_vid=clean_vid, idx=idx)
+                    if norm is not None:
+                        collected.append(norm)
+                        if len(collected) >= cap:
+                            break
+                idx += 1
             return collected
 
         try:
-            out: list[dict[str, Any]] = _run_coro_sync(_comments_async())
+            out: list[dict[str, Any]] = self._loop_runner.run(_comments_async())
             self._mark_used()
             return out
         except Exception as exc:
@@ -493,7 +558,7 @@ class LiveTikTokCollectorProvider:
             if res.returncode != 0:
                 stderr_txt = (res.stderr or "").strip()
                 if _is_anti_bot_challenge(stderr_txt):
-                    raise AntiBotChallengeError(f"discovery blocked by anti-bot challenge: {stderr_txt[:160]}")
+                    raise AntiBotChallengeError(f"discovery blocked by anti-bot challenge: {stderr_txt}")
                 raise TransientCollectorError(f"discovery exited with code {res.returncode}")
             for line in res.stdout.splitlines():
                 if not line.strip():
@@ -551,7 +616,7 @@ class LiveTikTokCollectorProvider:
         if res.returncode != 0 or not res.stdout.strip():
             stderr_txt = (res.stderr or "").strip()
             if _is_anti_bot_challenge(stderr_txt):
-                raise AntiBotChallengeError(f"detail blocked by anti-bot challenge: {stderr_txt[:160]}")
+                raise AntiBotChallengeError(f"detail blocked by anti-bot challenge: {stderr_txt}")
             raise TransientCollectorError(f"detail fetch failed with code {res.returncode}")
 
         try:
@@ -615,8 +680,9 @@ class AutoHybridTikTokCollectorProvider:
             cookies_file=cookies_file,
             timeout_sec=timeout_sec,
         )
+        self._primary_disabled = False
         self._expected_comment_counts: dict[str, int] = {}
-        self._last_detail_candidates: dict[str, dict[str, Any]] = {}
+        self._unfetched_secondary_candidates: dict[str, dict[str, Any]] = {}
         self.backends_used: list[str] = []
 
     @property
@@ -632,77 +698,90 @@ class AutoHybridTikTokCollectorProvider:
         if name not in self.backends_used:
             self.backends_used.append(name)
 
+    def _handle_primary_transient_failure(self, exc: TransientCollectorError) -> None:
+        if _is_browser_launch_unavailable(exc):
+            self._primary_disabled = True
+            close_fn = getattr(self._primary, "close", None)
+            if callable(close_fn):
+                close_fn()
+
+    def close(self) -> None:
+        for obj in (self._primary, self._secondary):
+            close_fn = getattr(obj, "close", None)
+            if callable(close_fn):
+                close_fn()
+
     def discover_candidates(
         self,
         creators: list[str] | None,
         max_per_creator: int,
     ) -> list[dict[str, Any]]:
-        if self._primary is not None:
+        if self._primary is not None and not self._primary_disabled:
             try:
                 items = self._primary.discover_candidates(creators, max_per_creator)
                 self._record_backend(self._primary)
                 return items
             except AntiBotChallengeError:
                 raise
-            except TransientCollectorError:
-                pass
+            except TransientCollectorError as exc:
+                self._handle_primary_transient_failure(exc)
         items = self._secondary.discover_candidates(creators, max_per_creator)
         self._record_backend(self._secondary)
         return items
 
     def fetch_video_detail(self, candidate: dict[str, Any]) -> dict[str, Any]:
-        if self._primary is not None:
+        if self._primary is not None and not self._primary_disabled:
             try:
                 detail = dict(self._primary.fetch_video_detail(candidate))
                 detail.setdefault("_provider_backend", getattr(self._primary, "backend_name", "tiktokapi"))
                 vid = str(detail.get("video_id") or candidate.get("video_id") or "").strip()
                 if vid:
                     self._expected_comment_counts[vid] = int(detail.get("comment_count") or 0)
-                    self._last_detail_candidates[vid] = dict(candidate)
+                    self._unfetched_secondary_candidates[vid] = dict(candidate)
                 self._record_backend(self._primary)
                 return detail
             except AntiBotChallengeError:
                 raise
-            except TransientCollectorError:
-                pass
+            except TransientCollectorError as exc:
+                self._handle_primary_transient_failure(exc)
 
         detail = dict(self._secondary.fetch_video_detail(candidate))
         detail.setdefault("_provider_backend", getattr(self._secondary, "backend_name", "ytdlp"))
         vid = str(detail.get("video_id") or candidate.get("video_id") or "").strip()
         if vid:
             self._expected_comment_counts[vid] = int(detail.get("comment_count") or 0)
-            self._last_detail_candidates[vid] = dict(candidate)
+            self._unfetched_secondary_candidates.pop(vid, None)
         self._record_backend(self._secondary)
         return detail
 
     def fetch_comments(self, video_id: str, max_comments: int) -> list[dict[str, Any]]:
         if max_comments <= 0:
             return []
-        if self._primary is not None:
+        if self._primary is not None and not self._primary_disabled:
             try:
                 cmts = self._primary.fetch_comments(video_id, max_comments)
                 if cmts:
                     self._record_backend(self._primary)
                     return cmts
-                # If video reported 0 comments, empty list is authoritative; otherwise try secondary once
                 if self._expected_comment_counts.get(video_id, 0) == 0:
                     self._record_backend(self._primary)
                     return []
             except AntiBotChallengeError:
                 raise
-            except TransientCollectorError:
-                pass
+            except TransientCollectorError as exc:
+                self._handle_primary_transient_failure(exc)
 
         sec_cmts = self._secondary.fetch_comments(video_id, max_comments)
-        if not sec_cmts and self._expected_comment_counts.get(video_id, 0) > 0 and video_id in self._last_detail_candidates:
+        unfetched_cand = self._unfetched_secondary_candidates.pop(video_id, None)
+        if not sec_cmts and self._expected_comment_counts.get(video_id, 0) > 0 and unfetched_cand is not None:
             try:
-                self._secondary.fetch_video_detail(self._last_detail_candidates[video_id])
+                self._secondary.fetch_video_detail(unfetched_cand)
                 sec_cmts = self._secondary.fetch_comments(video_id, max_comments)
             except AntiBotChallengeError:
                 raise
             except TransientCollectorError:
                 return []
-        if sec_cmts or self._primary is None:
+        if sec_cmts or self._primary is None or self._primary_disabled:
             self._record_backend(self._secondary)
         return sec_cmts
 
@@ -730,12 +809,20 @@ class YtDlpAudioConverter64k:
         vid = str(detail.get("video_id") or "").strip()
         handle = str(detail.get("author_handle") or "").lstrip("@").strip()
         url = str(detail.get("tiktok_url") or f"https://www.tiktok.com/@{handle}/video/{vid}")
+
+        def _check_stderr(stderr_txt: str) -> None:
+            if _is_anti_bot_challenge(stderr_txt):
+                raise AntiBotChallengeError(
+                    f"audio extraction blocked by anti-bot challenge: {stderr_txt}"
+                )
+
         return download_audio_mp3_64k(
             url,
             output_mp3,
             ms_token=self._ms_token,
             cookies_file=self._cookies_file,
             timeout_sec=self._timeout_sec,
+            on_stderr_error=_check_stderr,
         )
 
 

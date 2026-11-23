@@ -993,6 +993,9 @@ def test_auto_hybrid_fallback_raw_payload_archive_and_fail_closed_anti_bot_gate(
 
     # Fail-closed CAPTCHA check: MUST NOT fallback to secondary and MUST halt at attempts=1 with redacted secrets!
     class _CaptchaPrimary(_FlakyPrimary):
+        def discover_candidates(self, creators: list[str] | None, max_per_creator: int) -> list[dict[str, Any]]:
+            raise TransientCollectorError("temporary discovery timeout")
+
         def fetch_video_detail(self, candidate: dict[str, Any]) -> dict[str, Any]:
             raise AntiBotChallengeError(
                 "TikTok CaptchaException with Cookie: msToken=secret_tok_999 --cookies /priv/cookies.txt"
@@ -1030,3 +1033,363 @@ def test_auto_hybrid_fallback_raw_payload_archive_and_fail_closed_anti_bot_gate(
     assert cap_manifest.items[0].attempts == 1
     assert "secret_tok_999" not in cap_manifest.items[0].reason
     assert "/priv/cookies.txt" not in cap_manifest.items[0].reason
+
+
+def test_fix_multi_cookie_header_and_long_quoted_cookies_path_redaction(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from pipelines.crawl_incremental import providers
+    from pipelines.crawl_incremental.worker import _sanitize_raw_payload, _sanitize_reason
+
+    multi_cookie_err = (
+        "ERROR: [TikTok] captcha challenge on request with "
+        "Cookie: ttwid=1%7Cabc; sid_tt=REAL_SID_SECRET; sessionid_ss=REAL_SESS_SECRET; "
+        "uid_tt=REAL_UID_SECRET; odin_tt=REAL_ODIN_SECRET; msToken=REAL_MS_SECRET "
+        + ("x" * 130)
+        + ' --cookies "/secret home dir/cookies.txt"'
+    )
+    redacted = _sanitize_reason(multi_cookie_err)
+    for leaked in (
+        "REAL_SID_SECRET",
+        "REAL_SESS_SECRET",
+        "REAL_UID_SECRET",
+        "REAL_ODIN_SECRET",
+        "REAL_MS_SECRET",
+        "/secret home dir/cookies.txt",
+    ):
+        assert leaked not in redacted
+
+    san_payload = _sanitize_raw_payload(
+        {
+            "id": "v1",
+            "debug_header": "Cookie: ttwid=1%7Cabc; sid_tt=REAL_SID_SECRET; sessionid_ss=REAL_SESS_SECRET",
+        }
+    )
+    assert "REAL_SID_SECRET" not in json.dumps(san_payload)
+    assert "REAL_SESS_SECRET" not in json.dumps(san_payload)
+
+    # Also verify LiveTikTokCollectorProvider does not slice stderr[:160] before _sanitize_reason runs
+    def _fake_ytdlp_fail(cmd: list[str], **kwargs: Any) -> Any:
+        class _Res:
+            returncode = 1
+            stdout = ""
+            stderr = multi_cookie_err
+
+        return _Res()
+
+    monkeypatch.setattr(providers.subprocess, "run", _fake_ytdlp_fail)
+    live_prov = providers.LiveTikTokCollectorProvider(allow_live_network=True, ms_token="REAL_MS_SECRET")
+    with pytest.raises(providers.AntiBotChallengeError) as exc_info:
+        live_prov.fetch_video_detail({"video_id": "v1", "author_handle": "putaangi"})
+    sanitized_from_prov = _sanitize_reason(str(exc_info.value))
+    assert "/secret home dir/cookies.txt" not in sanitized_from_prov
+    assert "REAL_SID_SECRET" not in sanitized_from_prov
+
+
+def test_fix_mp3_audio_captcha_triggers_fail_closed_anti_bot_gate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from pipelines.crawl_incremental import crawler_service
+    from pipelines.crawl_incremental.providers import YtDlpAudioConverter64k
+
+    as_of = datetime(2026, 11, 23, 12, 0, 0, tzinfo=UTC)
+    c1 = _make_candidate("v_aud_1", as_of - timedelta(days=2), with_audio=True)
+    c2 = _make_candidate("v_aud_2", as_of - timedelta(days=1), with_audio=True)
+    fx = tmp_path / "aud_cap.jsonl"
+    fx.write_text("\n".join(json.dumps(c, ensure_ascii=False) for c in (c1, c2)) + "\n", encoding="utf-8")
+
+    def _fake_audio_captcha(cmd: list[str], **kwargs: Any) -> Any:
+        class _Res:
+            returncode = 1
+            stdout = ""
+            stderr = "ERROR: [TikTok] Confirm you're not a bot / verify you are human Cookie: sid_tt=SEC_AUD_99"
+
+        return _Res()
+
+    monkeypatch.setattr(crawler_service.subprocess, "run", _fake_audio_captcha)
+    collector = BoundedIncrementalCollector(
+        provider=OfflineFixtureCollectorProvider(fx),
+        audio_converter=YtDlpAudioConverter64k(allow_live_network=True, ms_token="SEC_AUD_99"),
+        bounds=CollectorBounds(max_retries=2),
+        sleep_fn=lambda _: None,
+    )
+    manifest = collector.run(output_dir=tmp_path / "aud_out", as_of_utc=as_of, historical_video_ids=set())
+    assert manifest.stopped_reason == "anti_bot_challenge_blocked"
+    assert manifest.failed_count == 1
+    assert manifest.skipped_count == 1
+    assert manifest.items[0].attempts == 1
+    assert "SEC_AUD_99" not in manifest.items[0].reason
+    assert manifest.items[1].status == "skipped"
+    assert manifest.items[1].reason == "anti_bot_challenge_blocked"
+
+
+def test_fix_autohybrid_single_ytdlp_detail_call_and_session_reuse(tmp_path: Path) -> None:
+    from pipelines.crawl_incremental.providers import (
+        AutoHybridTikTokCollectorProvider,
+        OfflineFixtureAudioConverter,
+        TikTokApiCollectorProvider,
+        TransientCollectorError,
+    )
+
+    as_of = datetime(2026, 11, 23, 12, 0, 0, tzinfo=UTC)
+
+    # Part A: Broken Playwright launch circuit-breaks _primary AND _secondary (ytdlp) fetches detail ONLY ONCE per video
+    class _MissingBrowserPrimary:
+        source_mode: Any = "live_provider"
+        is_synthetic_fixture = False
+        backend_name = "tiktokapi"
+        calls = 0
+
+        def discover_candidates(self, creators: list[str] | None, max_per_creator: int) -> list[dict[str, Any]]:
+            self.calls += 1
+            raise TransientCollectorError("discovery tiktokapi error: BrowserType.launch: Executable doesn't exist")
+
+        def fetch_video_detail(self, candidate: dict[str, Any]) -> dict[str, Any]:
+            self.calls += 1
+            raise TransientCollectorError("BrowserType.launch: Executable doesn't exist")
+
+        def fetch_comments(self, video_id: str, max_comments: int) -> list[dict[str, Any]]:
+            self.calls += 1
+            return []
+
+    class _CountingYtDlpSecondary:
+        source_mode: Any = "live_provider"
+        is_synthetic_fixture = False
+        backend_name = "ytdlp"
+        detail_calls = 0
+
+        def discover_candidates(self, creators: list[str] | None, max_per_creator: int) -> list[dict[str, Any]]:
+            return [
+                {"video_id": f"v_yt_{i}", "author_handle": "putaangi", "create_time": (as_of - timedelta(days=i + 1)).isoformat()}
+                for i in range(3)
+            ]
+
+        def fetch_video_detail(self, candidate: dict[str, Any]) -> dict[str, Any]:
+            self.detail_calls += 1
+            vid = candidate["video_id"]
+            return {
+                "video_id": vid,
+                "author_id": "a1",
+                "author_handle": "putaangi",
+                "create_time": candidate["create_time"],
+                "caption": f"Món ngon {vid}",
+                "duration_sec": 25,
+                "comment_count": 18,  # > 0 while yt-dlp comments list is empty!
+            }
+
+        def fetch_comments(self, video_id: str, max_comments: int) -> list[dict[str, Any]]:
+            return []
+
+    prim = _MissingBrowserPrimary()
+    sec = _CountingYtDlpSecondary()
+    hyb = AutoHybridTikTokCollectorProvider(
+        allow_live_network=True,
+        ms_token="tok_ok",
+        primary=prim,
+        secondary=sec,
+    )
+    m = BoundedIncrementalCollector(
+        provider=hyb,
+        audio_converter=OfflineFixtureAudioConverter(),
+        bounds=CollectorBounds(max_retries=1),
+        sleep_fn=lambda _: None,
+    ).run(output_dir=tmp_path / "single_yt", as_of_utc=as_of, historical_video_ids=set(), creators=["putaangi"])
+    assert m.succeeded_count == 3
+    assert prim.calls == 1  # circuit-broken after initial Playwright launch failure!
+    assert sec.detail_calls == 3  # strictly 1 detail fetch per video, NOT 6!
+
+    # Part B: TikTokApiCollectorProvider reuses 1 Playwright session across discovery + comments and closes cleanly
+    session_creations = 0
+    session_closed = False
+
+    class _ReusableApi:
+        async def __aenter__(self) -> _ReusableApi:
+            return self
+
+        async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+            nonlocal session_closed
+            session_closed = True
+
+        async def create_sessions(self, **kwargs: Any) -> None:
+            nonlocal session_creations
+            session_creations += 1
+
+        def user(self, username: str) -> Any:
+            class _U:
+                async def videos(self, count: int = 30):
+                    for idx in (1, 2):
+                        item = {
+                            "id": f"reuse_v{idx}",
+                            "createTime": int((as_of - timedelta(days=idx)).timestamp()),
+                            "isPinnedItem": False,
+                            "desc": f"Clip {idx}",
+                            "author": {"id": "u1", "uniqueId": username},
+                            "statsV2": {"commentCount": 5},
+                            "video": {"duration": 20},
+                        }
+
+                        class _V:
+                            id = item["id"]
+                            as_dict = item
+
+                        yield _V()
+
+            return _U()
+
+        def video(self, id: str | None = None, url: str | None = None) -> Any:
+            class _V:
+                async def comments(self, count: int = 20):
+                    class _C:
+                        as_dict = {"cid": f"{id}_c1", "text": "Ngon", "digg_count": 1, "user": {"unique_id": "u2"}}
+
+                    yield _C()
+
+            return _V()
+
+    tk_prov = TikTokApiCollectorProvider(
+        allow_live_network=True,
+        ms_token="tok_ok",
+        cutoff_utc=as_of - timedelta(days=120),
+        api_factory=_ReusableApi,
+    )
+    m_tk = BoundedIncrementalCollector(
+        provider=tk_prov,
+        audio_converter=OfflineFixtureAudioConverter(),
+        bounds=CollectorBounds(max_retries=0),
+        sleep_fn=lambda _: None,
+    ).run(output_dir=tmp_path / "reuse_tk", as_of_utc=as_of, historical_video_ids=set(), creators=["spicykim9386"])
+    assert m_tk.succeeded_count == 2
+    assert session_creations == 1  # 1 Playwright browser session for the whole crawl, not 3!
+    assert session_closed is True
+
+
+def test_fix_multi_creator_round_robin_interleaving_prevents_first_creator_starvation(tmp_path: Path) -> None:
+    as_of = datetime(2026, 11, 23, 12, 0, 0, tzinfo=UTC)
+    rows: list[dict[str, Any]] = []
+    # creator_a has 25 fresh videos first; creator_b and creator_c have 5 each after creator_a
+    for i in range(25):
+        rows.append({**_make_candidate(f"ca_{i}", as_of - timedelta(days=2)), "author_handle": "creator_a"})
+    for i in range(5):
+        rows.append({**_make_candidate(f"cb_{i}", as_of - timedelta(days=2)), "author_handle": "creator_b"})
+    for i in range(5):
+        rows.append({**_make_candidate(f"cc_{i}", as_of - timedelta(days=2)), "author_handle": "creator_c"})
+
+    fx = tmp_path / "multi_creators.jsonl"
+    fx.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
+
+    manifest = BoundedIncrementalCollector(
+        provider=OfflineFixtureCollectorProvider(fx),
+        audio_converter=OfflineFixtureAudioConverter(),
+        bounds=CollectorBounds(max_creators=3, max_candidate_videos=9, max_succeeded_videos=6),
+        sleep_fn=lambda _: None,
+    ).run(
+        output_dir=tmp_path / "rr_out",
+        as_of_utc=as_of,
+        historical_video_ids=set(),
+        creators=["creator_a", "creator_b", "creator_c"],
+    )
+    succeeded_handles = {it.author_handle for it in manifest.items if it.status == "succeeded"}
+    assert succeeded_handles == {"creator_a", "creator_b", "creator_c"}
+
+
+def test_fix_discovery_anti_bot_recorded_and_dotenv_inline_comment_nan_safe(
+    tmp_path: Path,
+) -> None:
+    import os
+    import sys
+
+    from pipelines.crawl_incremental.__main__ import _merge_creators
+    from pipelines.crawl_incremental.crawler_service import (
+        load_dotenv_if_present,
+        select_curated_fnb_creators,
+        utf8_subprocess_env,
+    )
+    from pipelines.crawl_incremental.providers import (
+        AutoHybridTikTokCollectorProvider,
+        OfflineFixtureAudioConverter,
+        TikTokApiCollectorProvider,
+    )
+
+    as_of = datetime(2026, 11, 23, 12, 0, 0, tzinfo=UTC)
+
+    # 1. EmptyResponseException in TikTokApi discovery classifies as AntiBotChallengeError, does NOT fallback, and records discovery_error
+    class EmptyResponseException(Exception):
+        pass
+
+    class _BotBlockedApi:
+        async def __aenter__(self) -> _BotBlockedApi:
+            return self
+
+        async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+            return None
+
+        async def create_sessions(self, **kwargs: Any) -> None:
+            raise EmptyResponseException("TikTok returned an empty response")
+
+    class _SpySec:
+        source_mode: Any = "live_provider"
+        is_synthetic_fixture = False
+        backend_name = "ytdlp"
+        discover_calls = 0
+
+        def discover_candidates(self, creators: list[str] | None, max_per_creator: int) -> list[dict[str, Any]]:
+            self.discover_calls += 1
+            return []
+
+        def fetch_video_detail(self, candidate: dict[str, Any]) -> dict[str, Any]:
+            return {}
+
+        def fetch_comments(self, video_id: str, max_comments: int) -> list[dict[str, Any]]:
+            return []
+
+    spy_sec = _SpySec()
+    prim_tk = TikTokApiCollectorProvider(
+        allow_live_network=True,
+        ms_token="secret_disc_tok",
+        api_factory=_BotBlockedApi,
+    )
+    hyb = AutoHybridTikTokCollectorProvider(
+        allow_live_network=True,
+        ms_token="secret_disc_tok",
+        primary=prim_tk,
+        secondary=spy_sec,
+    )
+    stale_dir = tmp_path / "disc_block"
+    stale_dir.mkdir(parents=True)
+    (stale_dir / "raw_provider_payloads.jsonl").write_text('{"video_id":"stale"}\n', encoding="utf-8")
+
+    m = BoundedIncrementalCollector(
+        provider=hyb,
+        audio_converter=OfflineFixtureAudioConverter(),
+        bounds=CollectorBounds(),
+        sleep_fn=lambda _: None,
+    ).run(output_dir=stale_dir, as_of_utc=as_of, historical_video_ids=set(), creators=["spicykim9386"], resume=False)
+    assert spy_sec.discover_calls == 0
+    assert m.stopped_reason == "anti_bot_challenge_blocked"
+    assert m.discovery_error is not None
+    assert "anti_bot_challenge_blocked" in m.discovery_error
+    assert not (stale_dir / "raw_provider_payloads.jsonl").exists()  # stale raw archive cleaned on resume=False!
+
+    # 2. utf8_subprocess_env prepends sys.executable parent to PATH
+    sub_env = utf8_subprocess_env({"PATH": "/usr/bin"})
+    assert sub_env["PATH"].split(os.pathsep)[0] == str(Path(sys.executable).parent)
+
+    # 3. dotenv strips unquoted inline # comments & select_curated_fnb_creators handles NaN safely & _merge_creators respects auto_creators
+    env_file = tmp_path / ".env"
+    env_file.write_text("ms_token=tok_clean_abc # pasted from devtools\n", encoding="utf-8")
+    loaded = load_dotenv_if_present(env_file, target_env={})
+    assert loaded["MS_TOKEN"] == "tok_clean_abc"
+
+    nan_corpus = tmp_path / "nan_gold"
+    nan_corpus.mkdir()
+    pd.DataFrame(
+        [
+            {"unique_id": "u_nan_1", "median_play_count": 90000.0, "median_engagement_rate": 0.05, "avg_videos_per_week": float("nan"), "sample_video_count": float("nan"), "follower_count": float("nan")},
+            {"unique_id": "u_ok_2", "median_play_count": 85000.0, "median_engagement_rate": 0.05, "avg_videos_per_week": 3.0, "sample_video_count": 50, "follower_count": 100000},
+            {"unique_id": "u_ok_3", "median_play_count": 80000.0, "median_engagement_rate": 0.05, "avg_videos_per_week": 2.0, "sample_video_count": 40, "follower_count": 90000},
+        ]
+    ).to_parquet(nan_corpus / "dim_creators.parquet", index=False)
+    picked_nan = select_curated_fnb_creators(nan_corpus, top_k=3, filter_file=tmp_path / "none.txt")
+    assert len(picked_nan) == 3
+    merged_two = _merge_creators(None, auto_creators=2, base_corpus_dir=nan_corpus, max_creators=5)
+    assert merged_two is not None and len(merged_two) == 2

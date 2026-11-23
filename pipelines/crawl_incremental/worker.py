@@ -32,7 +32,13 @@ from pipelines.crawl_incremental.providers import (
     TransientCollectorError,
 )
 
-_COLLECTOR_SECRET_NAMES = r"ms[_-]?token|mstoken|cookie|sessionid|csrf[_-]?token"
+_COLLECTOR_SECRET_NAMES = (
+    r"ms[_-]?token|mstoken|cookie|sessionid(?:_ss)?|sid_tt|sid_guard|"
+    r"uid_tt(?:_ss)?|ttwid|odin_tt|passport_csrf_token|csrf[_-]?token"
+)
+_HTTP_COOKIE_HEADER_RE = re.compile(
+    r"(?i)(\bcookie\s*:\s*)(?:[A-Za-z0-9_.-]+=[^\s;\"',]+(?:;\s*)?)+"
+)
 _COLLECTOR_QUOTED_KV_SECRET_RE = re.compile(
     rf"(?i)(['\"]?)\b({_COLLECTOR_SECRET_NAMES})\b\1(\s*[=:]\s*)(['\"]).*?\4"
 )
@@ -63,13 +69,14 @@ class _PostDetailPermanentFail(Exception):
 
 def _sanitize_text_preserve_length(text: str) -> str:
     out = _COOKIES_FILE_ARG_RE.sub(r"\1[REDACTED]", text)
+    out = _HTTP_COOKIE_HEADER_RE.sub(r"\1[REDACTED]", out)
     out = _COLLECTOR_QUOTED_KV_SECRET_RE.sub(r"\1\2\1\3\4[REDACTED]\4", out)
     out = _COLLECTOR_KV_SECRET_RE.sub(r"\1\2\1\3[REDACTED]", out)
     return redact_secrets(out)
 
 
 def _sanitize_reason(text: str) -> str:
-    # Apply collector-specific quoted, unquoted, and --cookies path redaction BEFORE generic redact_secrets
+    # Apply collector-specific quoted, unquoted, multi-cookie, and --cookies path redaction BEFORE generic redact_secrets
     return _sanitize_text_preserve_length(text)[:280]
 
 
@@ -81,6 +88,14 @@ _RAW_PAYLOAD_REDACT_KEYS = frozenset(
         "ms_token",
         "mstoken",
         "sessionid",
+        "sessionid_ss",
+        "sid_tt",
+        "sid_guard",
+        "uid_tt",
+        "uid_tt_ss",
+        "ttwid",
+        "odin_tt",
+        "passport_csrf_token",
         "csrf_token",
         "authorization",
         "cookies_file",
@@ -148,6 +163,30 @@ def _load_existing_raw_payload_archive(path: Path, allowed_ids: set[str]) -> dic
         if vid and vid in allowed_ids:
             out[vid] = obj
     return out
+
+
+def _interleave_candidates_by_creator(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Round-robin interleave candidates across creators so creator #1 never starves creators #2..#5."""
+    if len(candidates) <= 1:
+        return list(candidates)
+    buckets: dict[str, list[dict[str, Any]]] = {}
+    order: list[str] = []
+    for cand in candidates:
+        key = str(cand.get("author_handle") or "").lstrip("@").strip().lower()
+        if key not in buckets:
+            buckets[key] = []
+            order.append(key)
+        buckets[key].append(cand)
+    if len(order) <= 1:
+        return list(candidates)
+    interleaved: list[dict[str, Any]] = []
+    max_len = max(len(b) for b in buckets.values())
+    for idx in range(max_len):
+        for key in order:
+            bucket = buckets[key]
+            if idx < len(bucket):
+                interleaved.append(bucket[idx])
+    return interleaved
 
 
 def _has_non_empty_timestamp_value(raw_ct: Any) -> bool:
@@ -287,6 +326,29 @@ class BoundedIncrementalCollector:
         creators: list[str] | None = None,
         resume: bool = False,
     ) -> CrawlManifest:
+        try:
+            return self._run_inner(
+                output_dir=output_dir,
+                as_of_utc=as_of_utc,
+                historical_video_ids=historical_video_ids,
+                base_corpus_snapshot_id=base_corpus_snapshot_id,
+                creators=creators,
+                resume=resume,
+            )
+        finally:
+            close_fn = getattr(self.provider, "close", None)
+            if callable(close_fn):
+                close_fn()
+
+    def _run_inner(
+        self,
+        output_dir: Path,
+        as_of_utc: datetime | None = None,
+        historical_video_ids: set[str] | None = None,
+        base_corpus_snapshot_id: str = "20261118_taxonomy_fix_v1",
+        creators: list[str] | None = None,
+        resume: bool = False,
+    ) -> CrawlManifest:
         timer = StageTimer()
         session_t0 = time.monotonic()
         effective_as_of = as_of_utc or datetime.now(UTC)
@@ -336,6 +398,10 @@ class BoundedIncrementalCollector:
 
         # Persist clean initial state immediately so resume=False or empty runs never leave stale state
         write_incremental_batch(list(merged_records_by_id.values()), output_dir)
+        if not raw_archive_by_id and raw_archive_path.exists():
+            raw_archive_path.unlink()
+        elif raw_archive_by_id:
+            _write_raw_payload_archive(raw_archive_by_id, output_dir)
         _atomic_write_json(checkpoint_path, checkpoint.model_dump())
 
         bounded_creators = (
@@ -343,24 +409,36 @@ class BoundedIncrementalCollector:
             if creators
             else None
         )
+        per_creator_cap = (
+            min(
+                self.bounds.max_candidate_videos,
+                max(10, math.ceil(self.bounds.max_candidate_videos / len(bounded_creators)) * 2),
+            )
+            if bounded_creators and len(bounded_creators) > 1
+            else self.bounds.max_candidate_videos
+        )
 
         stopped_reason: str | None = None
+        discovery_error: str | None = None
         raw_candidates: list[dict[str, Any]] = []
         with timer.measure("discovery_ms"):
             try:
                 raw_candidates = self.provider.discover_candidates(
                     creators=bounded_creators,
-                    max_per_creator=self.bounds.max_candidate_videos,
+                    max_per_creator=per_creator_cap,
                 )
-            except AntiBotChallengeError:
+            except AntiBotChallengeError as anti_disc:
                 stopped_reason = "anti_bot_challenge_blocked"
-            except TransientCollectorError:
+                discovery_error = _sanitize_reason(f"anti_bot_challenge_blocked: {anti_disc}")
+            except TransientCollectorError as trans_disc:
                 stopped_reason = "discovery_failed"
+                discovery_error = _sanitize_reason(f"discovery_failed: {trans_disc}")
 
+        balanced_candidates = _interleave_candidates_by_creator(raw_candidates)
         unique_candidates: list[dict[str, Any]] = []
         seen_ids: set[str] = set()
         duplicate_ignored = 0
-        for cand in raw_candidates:
+        for cand in balanced_candidates:
             vid = str(cand.get("video_id") or cand.get("id") or "").strip()
             if not vid:
                 continue
@@ -696,6 +774,7 @@ class BoundedIncrementalCollector:
                 collected_comments_count=final_comments_count,
                 accumulated_audio_minutes=final_audio_minutes,
                 stopped_reason=stopped_reason,
+                discovery_error=discovery_error,
                 output_jsonl=out_jsonl.name,
                 items=item_receipts,
                 timings_ms=timer.finalize(),

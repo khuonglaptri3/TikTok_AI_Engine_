@@ -140,11 +140,12 @@ def _merge_creators(
             seen.add(c.lower())
             merged.append(c)
     if auto_creators > 0:
+        target_total = min(len(merged) + auto_creators, max_creators)
         for auto_c in select_curated_fnb_creators(base_corpus_dir, top_k=max(auto_creators, max_creators)):
             if auto_c.lower() not in seen:
                 seen.add(auto_c.lower())
                 merged.append(auto_c)
-                if len(merged) >= max_creators:
+                if len(merged) >= target_total:
                     break
     return merged[:max_creators] if merged else None
 

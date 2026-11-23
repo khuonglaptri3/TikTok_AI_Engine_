@@ -105,6 +105,7 @@ class CrawlManifest(BaseModel):
     collected_comments_count: int = Field(default=0, ge=0)
     accumulated_audio_minutes: float = Field(default=0.0, ge=0.0)
     stopped_reason: str | None = None
+    discovery_error: str | None = None
     output_jsonl: str
     items: list[CollectorItemReceipt] = Field(default_factory=list)
     timings_ms: dict[str, float] = Field(default_factory=dict)
