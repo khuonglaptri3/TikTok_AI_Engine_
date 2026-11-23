@@ -3,7 +3,8 @@
   "scope": "text_only_cpu_parity_on_m2_2_human_verified_qrels",
   "contributor": "Nguyễn Việt Nguyên (N)",
   "signed_off_at": "2026-11-20T09:23:36+07:00",
-  "benchmark_receipt": "artifacts/benchmarks/m6_1_v2_pilot_human_verified.json",
+  "benchmark_receipt": "artifacts/benchmarks/m6_1_v2_pilot_human_verified.json (pruned after post-fix consolidation)",
+  "consolidated_post_fix_receipt": "artifacts/benchmarks/m6_1_v2_final_qrels_minilm_refresh.json",
   "benchmark_receipt_sha256": "86763d88d4f0cd3ed12519e69edf27271ff736c50c16d7c68bfe62eca66ac5dd",
   "qrels_verified": {
     "label_source": "two_human_verified_pooled_judgments",

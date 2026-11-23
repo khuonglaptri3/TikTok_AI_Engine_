@@ -14,7 +14,7 @@ All code defects were reproduced in [red-k-review-fixes.log](red-k-review-fixes.
 1. **`[C1]` Missing `restrict_to_df=True` in `dense_hybrid_v2_pilot.py` (`line 97`):** `benchmark_dense_backend` called `HybridRetrievalService.from_dirs(df_videos=df_parity, ...)` without `restrict_to_df=True` (default `False`). On all `27/40` unfiltered queries, `bm25.search(..., top_k=80, allowed_video_ids=None)` searched all `21,748` documents instead of the `5,000`-doc parity pool, starving `bm25` to `< 10` results on `d_k02` (`7`), `d_n02` (`6`), `d_k04` (`8`), and `t_n05` (`8`) and polluting `hybrid_rrf` rank fusion.
    - **Fix:** Enforced `restrict_to_df=True` in `dense_hybrid_v2_pilot.py`, filtered `fused_raw` strictly to `self.video_lookup` before viral boost and `top_k` slicing in `packages/retrieval/service.py`, and ensured contiguous `1..k` card ranks.
 2. **`[C2]` Pre-Signoff Draft Qrels in `m6_1_v2_pilot.json` (`46/408` Labels Updated in `M2.2` Closure `ba1dbb9a`):** `m6_1_v2_pilot.json` used `qrels_sha256 = 46a2263f...` (`human_signoff_complete=false`, `38` positives in `5k`), whereas finalized `M2.2` qrels (`9a478e54...`, `K` & `N` `408/408` verified) has **`47` positives in `5k`** (`+23.7%`, expanding evaluated positive-pool queries from `6 -> 7` on `dev` and `9 -> 11` on `locked_test`).
-   - **Fix:** Executed a clean post-fix benchmark receipt [m6_1_v2_final_qrels_parity.json](../../../../../artifacts/benchmarks/m6_1_v2_final_qrels_parity.json) (preserving `m6_1_v2_pilot.json` untouched) and recorded exact `unjudged_rate_at_10` per configuration in `pilot_m2_2.py`.
+   - **Fix:** Executed a clean post-fix benchmark receipt (consolidated into [m6_1_v2_final_qrels_minilm_refresh.json](../../../../../artifacts/benchmarks/m6_1_v2_final_qrels_minilm_refresh.json) with `dense-svd-v2` + `dense-minilm-v1`, preserving `m6_1_v2_pilot.json` untouched) and recorded exact `unjudged_rate_at_10` per configuration in `pilot_m2_2.py`.
 3. **`[I1]` & `[I3]` OOV Fast-Path Symmetry, Unsafe Implicit `e5-base` Download Removal, & `QdrantDenseAdapter` `> 5,000` Filter Safety:**
    - Removed the implicit `SentenceTransformer("intfloat/multilingual-e5-base")` auto-download fallback in `service.py` when `_dense_encoder is None`.
    - Aligned early OOV anchor short-circuiting across `bm25`, `hybrid_rrf`, and `dense` (after index-readiness verification) so OOV queries do not pay wasted dense query encoding.
@@ -22,7 +22,7 @@ All code defects were reproduced in [red-k-review-fixes.log](red-k-review-fixes.
 
 ## 2. Post-Fix `5,000`-Doc Parity Results on Finalized `M2.2` Two-Human Qrels (`9a478e54...`)
 
-From [m6_1_v2_final_qrels_parity.json](../../../../../artifacts/benchmarks/m6_1_v2_final_qrels_parity.json) and [khuong_m6_1_qrels_and_parity_audit.json](khuong_m6_1_qrels_and_parity_audit.json) (`locked_test`, `n=11` pos-pool / `n=16` all answerable; `4/4` `no_answer` abstained with `0` fabricated support):
+From [m6_1_v2_final_qrels_minilm_refresh.json](../../../../../artifacts/benchmarks/m6_1_v2_final_qrels_minilm_refresh.json) (`dense-svd-v2`, identical to the earlier partial `m6_1_v2_final_qrels_parity.json` receipt) and [khuong_m6_1_qrels_and_parity_audit.json](khuong_m6_1_qrels_and_parity_audit.json) (`locked_test`, `n=11` pos-pool / `n=16` all answerable; `4/4` `no_answer` abstained with `0` fabricated support):
 
 | Configuration (`5,000`-Doc Exact Parity) | `MRR@10` (pos-11 / all-16) | `nDCG@10` (pos-11 / all-16) | `Recall@10` (pos-11) | `Unjudged@10` Rate | Warm `p50 / p95` (100 req) |
 | --- | ---: | ---: | ---: | ---: | ---: |

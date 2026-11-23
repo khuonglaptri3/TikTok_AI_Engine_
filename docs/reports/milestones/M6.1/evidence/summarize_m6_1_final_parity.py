@@ -8,7 +8,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[5]))
 
 from pipelines.benchmark_retrieval.pilot_m2_2 import (
-    _load_jsonl,
     _load_qrels,
     compute_pooled_query_metrics,
 )
@@ -16,7 +15,7 @@ from pipelines.benchmark_retrieval.pilot_m2_2 import (
 
 def main() -> None:
     repo = Path(__file__).resolve().parents[5]
-    final_svd_path = repo / "artifacts/benchmarks/m6_1_v2_final_qrels_parity.json"
+    final_svd_path = repo / "artifacts/benchmarks/m6_1_v2_final_qrels_minilm_refresh.json"
     prior_path = repo / "artifacts/benchmarks/m6_1_v2_pilot.json"
     qrels_path = repo / "data/evaluation/v2_pilot/qrels_pooled_draft.jsonl"
     vids_5k_path = repo / "artifacts/indexes/dense-svd-v2/video_ids.json"
