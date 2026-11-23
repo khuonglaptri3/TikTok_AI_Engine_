@@ -26,6 +26,7 @@ from pipelines.crawl_incremental.models import (
     CrawlManifest,
 )
 from pipelines.crawl_incremental.providers import (
+    AntiBotChallengeError,
     AudioConverter,
     CollectorProvider,
     TransientCollectorError,
@@ -37,6 +38,9 @@ _COLLECTOR_QUOTED_KV_SECRET_RE = re.compile(
 )
 _COLLECTOR_KV_SECRET_RE = re.compile(
     rf"(?i)(['\"]?)\b({_COLLECTOR_SECRET_NAMES})\b\1(\s*[=:]\s*)([^\s&\"'`,;\]\}}]+)"
+)
+_COOKIES_FILE_ARG_RE = re.compile(
+    r"(--cookies(?:\s+|=))(?:'[^']*'|\"[^\"]*\"|[^\s,;]+)"
 )
 
 
@@ -57,12 +61,51 @@ class _PostDetailPermanentFail(Exception):
         self.reason = reason
 
 
-def _sanitize_reason(text: str) -> str:
-    # Apply collector-specific quoted & unquoted secret patterns BEFORE generic redact_secrets
-    out = _COLLECTOR_QUOTED_KV_SECRET_RE.sub(r"\1\2\1\3\4[REDACTED]\4", text)
+def _sanitize_text_preserve_length(text: str) -> str:
+    out = _COOKIES_FILE_ARG_RE.sub(r"\1[REDACTED]", text)
+    out = _COLLECTOR_QUOTED_KV_SECRET_RE.sub(r"\1\2\1\3\4[REDACTED]\4", out)
     out = _COLLECTOR_KV_SECRET_RE.sub(r"\1\2\1\3[REDACTED]", out)
-    out = redact_secrets(out)
-    return out[:280]
+    return redact_secrets(out)
+
+
+def _sanitize_reason(text: str) -> str:
+    # Apply collector-specific quoted, unquoted, and --cookies path redaction BEFORE generic redact_secrets
+    return _sanitize_text_preserve_length(text)[:280]
+
+
+_RAW_PAYLOAD_DROP_KEYS = frozenset({"formats", "requested_downloads", "requested_formats"})
+_RAW_PAYLOAD_REDACT_KEYS = frozenset(
+    {
+        "cookie",
+        "cookies",
+        "ms_token",
+        "mstoken",
+        "sessionid",
+        "csrf_token",
+        "authorization",
+        "cookies_file",
+    }
+)
+
+
+def _sanitize_raw_payload(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        cleaned: dict[str, Any] = {}
+        for raw_k, raw_v in obj.items():
+            key_str = str(raw_k)
+            key_low = key_str.lower()
+            if key_low in _RAW_PAYLOAD_DROP_KEYS:
+                continue
+            if key_low in _RAW_PAYLOAD_REDACT_KEYS:
+                cleaned[key_str] = "[REDACTED]"
+            else:
+                cleaned[key_str] = _sanitize_raw_payload(raw_v)
+        return cleaned
+    if isinstance(obj, list):
+        return [_sanitize_raw_payload(item) for item in obj]
+    if isinstance(obj, str):
+        return _sanitize_text_preserve_length(obj)
+    return obj
 
 
 def _atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -73,6 +116,38 @@ def _atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
         encoding="utf-8",
     )
     os.replace(tmp_path, path)
+
+
+def _write_raw_payload_archive(
+    raw_by_id: dict[str, dict[str, Any]],
+    output_dir: Path,
+) -> None:
+    if not raw_by_id:
+        return
+    output_dir.mkdir(parents=True, exist_ok=True)
+    target = output_dir / "raw_provider_payloads.jsonl"
+    tmp_target = output_dir / "raw_provider_payloads.jsonl.tmp"
+    with tmp_target.open("w", encoding="utf-8") as fp:
+        for entry in raw_by_id.values():
+            fp.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    os.replace(tmp_target, target)
+
+
+def _load_existing_raw_payload_archive(path: Path, allowed_ids: set[str]) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    if not path.is_file():
+        return out
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            obj = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        vid = str(obj.get("video_id") or "").strip()
+        if vid and vid in allowed_ids:
+            out[vid] = obj
+    return out
 
 
 def _has_non_empty_timestamp_value(raw_ct: Any) -> bool:
@@ -162,7 +237,7 @@ class BoundedIncrementalCollector:
             target_mp3.unlink()
         try:
             ok = self.audio_converter.extract_mp3_64k(detail, target_mp3)
-        except TransientCollectorError:
+        except (TransientCollectorError, AntiBotChallengeError):
             if target_mp3.exists():
                 target_mp3.unlink()
             raise
@@ -223,6 +298,7 @@ class BoundedIncrementalCollector:
         output_dir.mkdir(parents=True, exist_ok=True)
         checkpoint_path = output_dir / "collector_checkpoint.json"
         jsonl_path = output_dir / "videos_4m.jsonl"
+        raw_archive_path = output_dir / "raw_provider_payloads.jsonl"
 
         prior_records_by_id: dict[str, RawIncrementalVideoRecord] = {}
         prior_audio_receipts: dict[str, AudioConversionReceipt] = {}
@@ -244,6 +320,11 @@ class BoundedIncrementalCollector:
                     prior_audio_receipts[vid_k] = cp_prev.audio_receipts[vid_k]
 
         prior_succeeded_set = set(prior_records_by_id.keys())
+        raw_archive_by_id = (
+            _load_existing_raw_payload_archive(raw_archive_path, prior_succeeded_set)
+            if resume
+            else {}
+        )
         checkpoint = CollectorCheckpoint(
             source_mode=self.provider.source_mode,
             as_of_utc=effective_as_of.isoformat(),
@@ -263,11 +344,18 @@ class BoundedIncrementalCollector:
             else None
         )
 
+        stopped_reason: str | None = None
+        raw_candidates: list[dict[str, Any]] = []
         with timer.measure("discovery_ms"):
-            raw_candidates = self.provider.discover_candidates(
-                creators=bounded_creators,
-                max_per_creator=self.bounds.max_candidate_videos,
-            )
+            try:
+                raw_candidates = self.provider.discover_candidates(
+                    creators=bounded_creators,
+                    max_per_creator=self.bounds.max_candidate_videos,
+                )
+            except AntiBotChallengeError:
+                stopped_reason = "anti_bot_challenge_blocked"
+            except TransientCollectorError:
+                stopped_reason = "discovery_failed"
 
         unique_candidates: list[dict[str, Any]] = []
         seen_ids: set[str] = set()
@@ -289,7 +377,6 @@ class BoundedIncrementalCollector:
         accumulated_audio_min = sum(
             (r.duration_sec / 60.0) for r in merged_records_by_id.values() if r.audio_path
         )
-        stopped_reason: str | None = None
         max_attempts = 1 + self.bounds.max_retries
 
         with timer.measure("collection_ms"):
@@ -299,6 +386,21 @@ class BoundedIncrementalCollector:
                 raw_ct = cand.get("create_time") if "create_time" in cand else cand.get("createTime")
                 has_raw_ct = _has_non_empty_timestamp_value(raw_ct)
                 iso_ct = _parse_iso_create_time(raw_ct) if has_raw_ct else None
+
+                if stopped_reason == "anti_bot_challenge_blocked":
+                    checkpoint.skipped_reasons[vid] = "anti_bot_challenge_blocked"
+                    item_receipts.append(
+                        CollectorItemReceipt(
+                            video_id=vid,
+                            author_handle=handle,
+                            create_time=iso_ct,
+                            status="skipped",
+                            attempts=0,
+                            reason="anti_bot_challenge_blocked",
+                        )
+                    )
+                    _atomic_write_json(checkpoint_path, checkpoint.model_dump())
+                    continue
 
                 if (time.monotonic() - session_t0) > self.bounds.session_deadline_seconds:
                     stopped_reason = "session_deadline_exceeded"
@@ -402,12 +504,17 @@ class BoundedIncrementalCollector:
                 item_comments_count = 0
                 item_audio_receipt: AudioConversionReceipt | None = None
                 added_audio_min = 0.0
+                item_raw_payload_entry: dict[str, Any] | None = None
 
                 for attempt in range(1, max_attempts + 1):
                     attempts_used = attempt
                     created_mp3_this_attempt: Path | None = None
                     try:
-                        detail = self.provider.fetch_video_detail(cand)
+                        detail = dict(self.provider.fetch_video_detail(cand))
+                        raw_payload = detail.pop("_raw_provider_payload", None)
+                        provider_backend_tag = str(detail.pop("_provider_backend", "") or "")
+                        collected_at = str(detail.pop("collected_at_utc", "") or effective_as_of.isoformat())
+
                         detail_vid = str(detail.get("video_id") or detail.get("id") or vid).strip()
                         if detail_vid in protected_ids:
                             raise _PostDetailSkip("historical_protected_id", iso_ct=iso_ct)
@@ -460,6 +567,14 @@ class BoundedIncrementalCollector:
                         item_comments_count = len(parsed_comments)
                         item_audio_receipt = audio_receipt
                         added_audio_min = added_min
+                        if isinstance(raw_payload, dict):
+                            item_raw_payload_entry = {
+                                "video_id": item_rec.video_id,
+                                "collected_at_utc": collected_at,
+                                "backend": provider_backend_tag
+                                or str(getattr(self.provider, "backend_name", self.provider.source_mode)),
+                                "raw_payload": _sanitize_raw_payload(raw_payload),
+                            }
                         break
                     except _PostDetailSkip as skip_exc:
                         if created_mp3_this_attempt and created_mp3_this_attempt.exists():
@@ -470,6 +585,12 @@ class BoundedIncrementalCollector:
                         if created_mp3_this_attempt and created_mp3_this_attempt.exists():
                             created_mp3_this_attempt.unlink()
                         last_error = perm_exc.reason
+                        break
+                    except AntiBotChallengeError as anti_exc:
+                        if created_mp3_this_attempt and created_mp3_this_attempt.exists():
+                            created_mp3_this_attempt.unlink()
+                        last_error = _sanitize_reason(f"anti_bot_challenge_blocked: {anti_exc}")
+                        stopped_reason = "anti_bot_challenge_blocked"
                         break
                     except TransientCollectorError as exc:
                         if created_mp3_this_attempt and created_mp3_this_attempt.exists():
@@ -499,6 +620,9 @@ class BoundedIncrementalCollector:
                     merged_records_by_id[item_rec.video_id] = item_rec
                     collected_comments_total += item_comments_count
                     accumulated_audio_min += added_audio_min
+                    if item_raw_payload_entry is not None:
+                        raw_archive_by_id[item_rec.video_id] = item_raw_payload_entry
+                        _write_raw_payload_archive(raw_archive_by_id, output_dir)
                     if item_rec.video_id not in checkpoint.succeeded_ids:
                         checkpoint.succeeded_ids.append(item_rec.video_id)
                     if item_audio_receipt is not None:
@@ -536,6 +660,8 @@ class BoundedIncrementalCollector:
         with timer.measure("persist_ms"):
             final_records = list(merged_records_by_id.values())
             out_jsonl = write_incremental_batch(final_records, output_dir)
+            if raw_archive_by_id:
+                _write_raw_payload_archive(raw_archive_by_id, output_dir)
             succeeded_count = sum(1 for r in item_receipts if r.status == "succeeded")
             failed_count = sum(1 for r in item_receipts if r.status == "failed")
             skipped_count = sum(1 for r in item_receipts if r.status == "skipped")
@@ -544,10 +670,16 @@ class BoundedIncrementalCollector:
             final_audio_minutes = round(
                 sum((r.duration_sec / 60.0) for r in final_records if r.audio_path), 3
             )
+            req_backend = str(
+                getattr(self.provider, "requested_backend", self.provider.source_mode)
+            )
+            used_backends = list(getattr(self.provider, "backends_used", []))
 
             manifest = CrawlManifest(
                 source_mode=self.provider.source_mode,
                 is_synthetic_fixture=self.provider.is_synthetic_fixture,
+                collector_backend_requested=req_backend,
+                collector_backends_used=used_backends,
                 as_of_utc=effective_as_of.isoformat(),
                 cutoff_utc=cutoff_utc.isoformat(),
                 base_corpus_snapshot_id=base_corpus_snapshot_id,
