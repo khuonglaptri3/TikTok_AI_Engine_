@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from packages.data_contracts._validators import require_non_blank, validate_timings_ms
 
 SourceMode = Literal["offline_fixture", "live_provider"]
+CollectorBackend = Literal["auto", "tiktokapi", "ytdlp"]
 ItemStatus = Literal["succeeded", "failed", "skipped"]
 AudioReceiptStatus = Literal[
     "converted_64k_mp3",
@@ -86,6 +87,8 @@ class CrawlManifest(BaseModel):
 
     source_mode: SourceMode
     is_synthetic_fixture: bool
+    collector_backend_requested: str = "auto"
+    collector_backends_used: list[str] = Field(default_factory=list)
     as_of_utc: str
     cutoff_utc: str
     base_corpus_snapshot_id: str
