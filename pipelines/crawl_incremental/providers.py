@@ -6,7 +6,7 @@ import json
 import subprocess
 import threading
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -86,26 +86,49 @@ class _PersistentAsyncLoop:
         self._loop: asyncio.AbstractEventLoop | None = None
         self._thread: threading.Thread | None = None
         self._lock = threading.Lock()
+        self._fallback_sync_mode = False
 
     def run(self, coro: Any) -> Any:
         with self._lock:
-            if self._loop is None or self._loop.is_closed():
-                loop = asyncio.new_event_loop()
+            if not self._fallback_sync_mode and (self._loop is None or self._loop.is_closed()):
                 ready = threading.Event()
+                loop_holder: list[asyncio.AbstractEventLoop] = []
+                err_holder: list[BaseException] = []
 
                 def _worker() -> None:
-                    asyncio.set_event_loop(loop)
-                    loop.call_soon(ready.set)
-                    loop.run_forever()
+                    try:
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        loop_holder.append(loop)
+                        loop.call_soon(ready.set)
+                        loop.run_forever()
+                    except BaseException as exc:
+                        err_holder.append(exc)
+                        ready.set()
 
                 thread = threading.Thread(target=_worker, name="tiktokapi-loop", daemon=True)
                 thread.start()
-                ready.wait(timeout=5.0)
-                self._loop = loop
-                self._thread = thread
+                ready.wait(timeout=2.0)
+                if loop_holder and not err_holder:
+                    self._loop = loop_holder[0]
+                    self._thread = thread
+                else:
+                    # Windows restricted sandbox without local loopback socket falls back to direct coroutine execution
+                    self._fallback_sync_mode = True
             active_loop = self._loop
+
+        if self._fallback_sync_mode or active_loop is None:
+            return self._drive_sync_without_socket(coro)
         fut = asyncio.run_coroutine_threadsafe(coro, active_loop)
-        return fut.result()
+        return fut.result(timeout=60.0)
+
+    @staticmethod
+    def _drive_sync_without_socket(coro: Any) -> Any:
+        try:
+            while True:
+                coro.send(None)
+        except StopIteration as stop:
+            return stop.value
 
     def close(self) -> None:
         with self._lock:
@@ -114,10 +137,17 @@ class _PersistentAsyncLoop:
             self._loop = None
             self._thread = None
         if loop is not None and not loop.is_closed():
-            loop.call_soon_threadsafe(loop.stop)
+            try:
+                loop.call_soon_threadsafe(loop.stop)
+            except Exception:
+                pass
             if thread is not None and thread.is_alive():
-                thread.join(timeout=5.0)
-            loop.close()
+                thread.join(timeout=2.0)
+            if thread is None or not thread.is_alive():
+                try:
+                    loop.close()
+                except RuntimeError:
+                    pass
 
 
 class CollectorProvider(Protocol):
@@ -459,17 +489,45 @@ class TikTokApiCollectorProvider:
         async def _comments_async() -> list[dict[str, Any]]:
             collected: list[dict[str, Any]] = []
             api = await self._ensure_session_async()
-            video_obj = api.video(id=clean_vid)
-            idx = 0
-            async for c_obj in video_obj.comments(count=cap):
-                raw_c = getattr(c_obj, "as_dict", None)
-                if isinstance(raw_c, dict):
-                    norm = map_tiktok_comment_to_input(raw_c, canonical_vid=clean_vid, idx=idx)
-                    if norm is not None:
-                        collected.append(norm)
-                        if len(collected) >= cap:
-                            break
-                idx += 1
+            sessions = getattr(api, "sessions", None)
+            saved_params: list[tuple[Any, Any]] = []
+            if isinstance(sessions, list):
+                get_cookies_fn = getattr(api, "get_session_cookies", None)
+                for sess in sessions:
+                    old_p = getattr(sess, "params", None)
+                    saved_params.append((sess, old_p))
+                    if callable(get_cookies_fn):
+                        try:
+                            cookie_map = await get_cookies_fn(sess)
+                            if isinstance(cookie_map, dict) and cookie_map.get("msToken"):
+                                sess.ms_token = str(cookie_map["msToken"])
+                        except Exception:
+                            pass
+                    # TikTokApi 7.3.5 populates synthetic session.params (region='US', from_page='user', random device_id)
+                    # that cause /api/comment/list/ X-Bogus signing to return an empty response body.
+                    if isinstance(old_p, dict):
+                        sess.params = {"aid": str(old_p.get("aid") or "1988")}
+            try:
+                video_obj = api.video(id=clean_vid)
+                idx = 0
+                try:
+                    async for c_obj in video_obj.comments(count=cap):
+                        raw_c = getattr(c_obj, "as_dict", None)
+                        if isinstance(raw_c, dict):
+                            norm = map_tiktok_comment_to_input(raw_c, canonical_vid=clean_vid, idx=idx)
+                            if norm is not None:
+                                collected.append(norm)
+                                if len(collected) >= cap:
+                                    break
+                        idx += 1
+                except TypeError as te:
+                    # TikTokApi Video.comments does `for video in resp.get("comments", [])` which raises
+                    # TypeError("'NoneType' object is not iterable") when TikTok returns `{"comments": null, "has_more": 0}`.
+                    if "nonetype" not in str(te).lower() or "iterable" not in str(te).lower():
+                        raise
+            finally:
+                for sess, old_p in saved_params:
+                    sess.params = old_p
             return collected
 
         try:

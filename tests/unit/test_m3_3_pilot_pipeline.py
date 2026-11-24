@@ -619,3 +619,188 @@ def test_fix_m3_3_same_config_resume_avoids_gold_snapshot_collision(
     assert r_resumed.collection.succeeded_count == 4
     assert r_resumed.output_gold_snapshot_id is not None
     assert r_resumed.output_gold_snapshot_id != r_first.output_gold_snapshot_id
+
+
+def test_m3_3_comment_enrichment_preserves_audio_asr_human_verification_and_populates_fact_comments(
+    tmp_path: Path,
+) -> None:
+    from pipelines.crawl_incremental.providers import AntiBotChallengeError
+    from pipelines.pilot_m3_3.models import M33PilotConfig
+    from pipelines.pilot_m3_3.runner import run_m3_3_comment_enrichment, run_m3_3_pilot
+
+    base_dir = tmp_path / "gold_base_enrich"
+    before_hashes = _write_minimal_gold_base(base_dir, n_rows=4)
+    as_of = datetime(2026, 11, 23, 12, 0, 0, tzinfo=UTC)
+
+    # Step 1: initial pilot run with 6 videos and 0 comments (simulating yt-dlp initial pilot)
+    initial_rows: list[dict[str, Any]] = [
+        {
+            "video_id": f"pilot_v{i}",
+            "author_id": f"auth_{i}",
+            "author_handle": f"creator_{i}",
+            "create_time": (as_of - timedelta(days=i + 1)).isoformat(),
+            "caption": f"Review bún bò Huế đặc biệt Quận {i + 1}",
+            "duration_sec": 35,
+            "comment_count": 5 if i < 5 else 0,
+            "audio_fixture_payload": f"FAKE-MP3-{i}",
+            "comments": [],
+        }
+        for i in range(6)
+    ]
+    fx_initial = tmp_path / "fx_initial.jsonl"
+    fx_initial.write_text(
+        "\n".join(json.dumps(r, ensure_ascii=False) for r in initial_rows) + "\n",
+        encoding="utf-8",
+    )
+
+    batch_dir = tmp_path / "pilot_batch"
+    gold_v1_dir = tmp_path / "m3_3_pilot_snapshot_v1"
+    bm25_dir = tmp_path / "bm25_pilot"
+    receipt_path = tmp_path / "m3_3_pilot_receipt.json"
+    sheet_path = tmp_path / "sample_inspection_sheet.jsonl"
+
+    stub_asr = _StubCpuAsrEngine()
+    cfg_v1 = M33PilotConfig(
+        mode="dry_run_fixture",
+        base_corpus_dir=base_dir,
+        batch_dir=batch_dir,
+        output_gold_dir=gold_v1_dir,
+        output_bm25_dir=bm25_dir,
+        receipt_path=receipt_path,
+        inspection_sheet_path=sheet_path,
+        fixture_path=fx_initial,
+        as_of_utc=as_of,
+    )
+    r_v1 = run_m3_3_pilot(cfg_v1, asr_engine=stub_asr)
+    assert r_v1.collection.succeeded_count == 6
+    assert r_v1.collection.collected_comments_count == 0
+    assert r_v1.collection.comment_coverage_rate == 0.0
+    assert len(stub_asr.called_paths) == 6
+
+    # Simulate N and K completing 100% human verification in sample_inspection_sheet.jsonl
+    sheet_rows = [
+        json.loads(line)
+        for line in sheet_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    for row in sheet_rows:
+        row["human_verified"] = True
+        row["reviewer_notes"] = f"Verified by {row['assigned_reviewer']}"
+    sheet_path.write_text(
+        "\n".join(json.dumps(r, ensure_ascii=False) for r in sheet_rows) + "\n",
+        encoding="utf-8",
+    )
+
+    # Record Gold v1 manifest SHA256 to prove enrichment never mutates v1
+    gold_v1_manifest_sha = hashlib.sha256((gold_v1_dir / "manifest.json").read_bytes()).hexdigest()
+
+    # Step 2: Enrich comments using a comment-capable provider without re-running discovery, audio, or ASR
+    class _CommentEnrichProvider:
+        source_mode: Any = "live_provider"
+        is_synthetic_fixture = False
+        requested_backend = "tiktokapi"
+        backend_name = "tiktokapi"
+
+        def __init__(self) -> None:
+            self.backends_used = ["tiktokapi"]
+            self.discover_calls = 0
+            self.detail_calls = 0
+            self.comment_calls: list[str] = []
+
+        def discover_candidates(self, creators: list[str] | None, max_per_creator: int) -> list[dict[str, Any]]:
+            self.discover_calls += 1
+            return []
+
+        def fetch_video_detail(self, candidate: dict[str, Any]) -> dict[str, Any]:
+            self.detail_calls += 1
+            return candidate
+
+        def fetch_comments(self, video_id: str, max_comments: int) -> list[dict[str, Any]]:
+            self.comment_calls.append(video_id)
+            return [
+                {
+                    "comment_id": f"{video_id}_c1",
+                    "author_handle": "diner_a",
+                    "text": f"  Nước dùng {video_id} đậm đà nhưng giá hơi cao  ",
+                    "like_count": 12,
+                    "reply_count": 2,
+                },
+                {
+                    "comment_id": f"{video_id}_c2",
+                    "author_handle": "diner_b",
+                    "text": "Quán sạch sẽ, nhân viên phục vụ nhiệt tình",
+                    "like_count": 5,
+                    "reply_count": 0,
+                },
+            ][:max_comments]
+
+    enrich_provider = _CommentEnrichProvider()
+    cfg_enrich = cfg_v1.model_copy(
+        update={
+            "mode": "live_pilot",
+            "allow_live_network": True,
+            "enrich_comments_only": True,
+            "output_gold_dir": gold_v1_dir,  # Should auto-version or write to clean target without mutating v1
+        }
+    )
+    r_v2 = run_m3_3_comment_enrichment(cfg_enrich, provider=enrich_provider)
+
+    # Zero discovery, zero detail scraping, zero extra ASR calls
+    assert enrich_provider.discover_calls == 0
+    assert enrich_provider.detail_calls == 0
+    assert len(stub_asr.called_paths) == 6  # unchanged!
+    # pilot_v5 had comment_count == 0 in metadata, so only 5 videos needed comment fetches
+    assert len(enrich_provider.comment_calls) == 5
+    assert r_v2.pilot_status == "PASS"
+    assert r_v2.collection.succeeded_count == 6
+    assert r_v2.collection.collected_comments_count == 10
+    assert r_v2.collection.comment_coverage_rate == round(5 / 6, 4)
+    assert r_v2.searchability.searchable_fresh_transcribed_count >= 5
+
+    # Verify base corpus and Gold v1 snapshot were 100% untouched
+    for fname, sha in before_hashes.items():
+        assert hashlib.sha256((base_dir / fname).read_bytes()).hexdigest() == sha
+    assert hashlib.sha256((gold_v1_dir / "manifest.json").read_bytes()).hexdigest() == gold_v1_manifest_sha
+
+    # Verify new Gold snapshot has populated fact_comments.parquet with unstripped original text
+    assert r_v2.output_gold_snapshot_id is not None
+    new_gold_dir = tmp_path / r_v2.output_gold_snapshot_id
+    df_comments = pd.read_parquet(new_gold_dir / "fact_comments.parquet")
+    assert len(df_comments) == 10
+
+    # Verify sample_inspection_sheet.jsonl preserved human_verified=True & reviewer_notes while updating comment_count_collected
+    updated_sheet = [
+        json.loads(line)
+        for line in sheet_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert len(updated_sheet) == 6
+    assert all(r["human_verified"] is True for r in updated_sheet)
+    assert all(r["reviewer_notes"].startswith("Verified by ") for r in updated_sheet)
+    assert sum(r["comment_count_collected"] for r in updated_sheet) == 10
+
+    # Step 3: Verify fail-closed AntiBotChallengeError during comment enrichment preserves already-enriched comments
+    class _CaptchaCommentProvider(_CommentEnrichProvider):
+        def fetch_comments(self, video_id: str, max_comments: int) -> list[dict[str, Any]]:
+            raise AntiBotChallengeError("CaptchaException on /api/comment/list/ with msToken=secret_123")
+
+    # Reset 1 video's comments to empty to force a fetch on that video
+    batch_jsonl = batch_dir / "videos_4m.jsonl"
+    recs = [
+        RawIncrementalVideoRecord.model_validate_json(line)
+        for line in batch_jsonl.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    recs[0] = recs[0].model_copy(update={"comments": []})
+    batch_jsonl.write_text(
+        "\n".join(json.dumps(r.model_dump(), ensure_ascii=False) for r in recs) + "\n",
+        encoding="utf-8",
+    )
+
+    r_blocked = run_m3_3_comment_enrichment(cfg_enrich, provider=_CaptchaCommentProvider())
+    assert r_blocked.pilot_status == "BLOCKED"
+    assert any("anti_bot_challenge_blocked" in b or "Anti-bot" in b for b in r_blocked.blocker_reasons)
+    assert all("secret_123" not in b for b in r_blocked.blocker_reasons)
+    # Remaining 4 videos kept their 8 comments!
+    assert r_blocked.collection.collected_comments_count == 8
+

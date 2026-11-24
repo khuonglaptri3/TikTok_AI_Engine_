@@ -202,6 +202,11 @@ def main() -> None:
     )
     parser.add_argument("--resume", action="store_true", help="Resume from collector_checkpoint.json in --output-dir.")
     parser.add_argument(
+        "--enrich-comments-only",
+        action="store_true",
+        help="Enrich comments onto existing videos_4m.jsonl in --output-dir without re-running discovery or audio extraction.",
+    )
+    parser.add_argument(
         "--allow-live-network",
         action="store_true",
         help="Explicit opt-in required for --source live_provider after Gate G2.",
@@ -353,14 +358,22 @@ def main() -> None:
             audio_converter=live_audio,
             bounds=bounds,
         )
-        manifest = collector.run(
-            output_dir=args.output_dir,
-            as_of_utc=as_of_utc,
-            historical_video_ids=existing_ids,
-            base_corpus_snapshot_id=snapshot_id,
-            creators=resolved_creators,
-            resume=args.resume,
-        )
+        if args.enrich_comments_only:
+            manifest = collector.enrich_existing_comments(
+                output_dir=args.output_dir,
+                as_of_utc=as_of_utc,
+                historical_video_ids=existing_ids,
+                base_corpus_snapshot_id=snapshot_id,
+            )
+        else:
+            manifest = collector.run(
+                output_dir=args.output_dir,
+                as_of_utc=as_of_utc,
+                historical_video_ids=existing_ids,
+                base_corpus_snapshot_id=snapshot_id,
+                creators=resolved_creators,
+                resume=args.resume,
+            )
         print(json.dumps(manifest.model_dump(), ensure_ascii=False, indent=2))
         return
 

@@ -91,6 +91,11 @@ def main() -> None:
         help="Resume interrupted collection from collector_checkpoint.json inside --work-dir/batch.",
     )
     parser.add_argument(
+        "--enrich-comments-only",
+        action="store_true",
+        help="Enrich comments onto existing videos_4m.jsonl in --work-dir/batch without re-running discovery, audio, or ASR.",
+    )
+    parser.add_argument(
         "--preflight-only",
         action="store_true",
         help="Run local readiness check (0 network calls, 0 snapshot writes) and print JSON report.",
@@ -135,6 +140,7 @@ def main() -> None:
         creators=args.creator,
         auto_creators=args.auto_creators,
         resume=args.resume,
+        enrich_comments_only=args.enrich_comments_only,
         as_of_utc=as_of_dt,
         asr_model_size=args.asr_model,
     )

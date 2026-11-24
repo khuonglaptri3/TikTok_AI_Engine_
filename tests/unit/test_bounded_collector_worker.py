@@ -908,6 +908,7 @@ def test_tiktokapi_provider_skips_pinned_old_items_breaks_chronologically_and_ca
     cmts = prov.fetch_comments("fresh_2026_vid_1", max_comments=5)
     assert len(cmts) == 2
     assert cmts[0]["text"].startswith("  Món này")
+    prov.close()
 
 
 def test_auto_hybrid_fallback_raw_payload_archive_and_fail_closed_anti_bot_gate(tmp_path: Path) -> None:

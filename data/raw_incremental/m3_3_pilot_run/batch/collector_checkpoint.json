@@ -1,7 +1,7 @@
 {
   "source_mode": "live_provider",
-  "as_of_utc": "2026-11-23T03:05:26.123510+00:00",
-  "cutoff_utc": "2026-07-26T03:05:26.123510+00:00",
+  "as_of_utc": "2026-11-24T11:19:12.458908+00:00",
+  "cutoff_utc": "2026-07-27T11:19:12.458908+00:00",
   "succeeded_ids": [
     "7710799156024986887",
     "7711004930638630152",
@@ -34,28 +34,7 @@
     "7707183296874106119",
     "7706832341804633352"
   ],
-  "skipped_reasons": {
-    "7708713355699031297": "max_succeeded_ceiling",
-    "7710147092957678855": "max_succeeded_ceiling",
-    "7708698925552667924": "max_succeeded_ceiling",
-    "7706768764917812487": "max_succeeded_ceiling",
-    "7705017702598888712": "max_succeeded_ceiling",
-    "7708382866916281607": "max_succeeded_ceiling",
-    "7709733267477466386": "max_succeeded_ceiling",
-    "7708564001600310548": "max_succeeded_ceiling",
-    "7707196319953112321": "max_succeeded_ceiling",
-    "7704892100038462738": "max_succeeded_ceiling",
-    "7707936524070964498": "max_succeeded_ceiling",
-    "7709511050030288129": "max_succeeded_ceiling",
-    "7708270681527438600": "max_succeeded_ceiling",
-    "7706766124687379730": "max_succeeded_ceiling",
-    "7704214468691102984": "max_succeeded_ceiling",
-    "7707588221743418642": "max_succeeded_ceiling",
-    "7709349041145974024": "max_succeeded_ceiling",
-    "7707842549968293140": "max_succeeded_ceiling",
-    "7703803006717857030": "max_succeeded_ceiling",
-    "7703874599691341064": "max_succeeded_ceiling"
-  },
+  "skipped_reasons": {},
   "failed_reasons": {},
   "audio_receipts": {
     "7710799156024986887": {
