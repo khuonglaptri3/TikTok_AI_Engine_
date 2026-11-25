@@ -5,6 +5,7 @@ from itertools import product
 from typing import Any
 
 from packages.analytics import NicheAnalyticsEngine
+from packages.common.exceptions import UnsupportedDomainError
 from packages.common.logging import StageTimer
 from packages.data_contracts.analytics import NicheBenchmarkSummary
 from packages.data_contracts.query import (
@@ -18,10 +19,12 @@ from packages.llm import (
     BoundedGeminiClient,
     build_grounded_script_prompt,
     check_fnb_domain_relevance,
+    detect_unsupported_epistemic_claim,
     recalculate_timeline_and_verify,
 )
 from packages.retrieval import HybridRetrievalService
 from packages.taxonomy import (
+    DISH_ORIGIN_CITY_PHRASES_RE,
     classify_duration_bucket,
     extract_dishes_from_text,
     extract_occasions,
@@ -29,15 +32,6 @@ from packages.taxonomy import (
     infer_video_format,
     map_food_category,
     resolve_location,
-)
-
-_DISH_ORIGIN_CITY_PHRASES: re.Pattern[str] = re.compile(
-    r"(?i)\b(?:"
-    r"bún\s+bò\s+huế|nem\s+nướng\s+nha\s+trang|bánh\s+mì\s+(?:cay\s+)?hải\s+phòng|"
-    r"cơm\s+gà\s+hội\s+an|cao\s+lầu\s+hội\s+an|hủ\s+tiếu\s+mỹ\s+tho|"
-    r"(?:xôi\s+cua|bánh\s+tầm(?:\s+cay)?|cua)\s+cà\s+mau|"
-    r"(?:chuẩn\s+vị|hương\s+vị|phong\s+cách|kiểu)\s+(?:hà\s+nội|sài\s+gòn|huế|đà\s+nẵng|nha\s+trang|cà\s+mau)"
-    r")\b"
 )
 
 _NON_CULINARY_SPAN_MARKERS: tuple[str, ...] = (
@@ -104,7 +98,7 @@ class GroundedScriptEngine:
         occ_list = extract_occasions(brief, inferred_fmt)
         inferred_occ = explicit.occasion or (occ_list[0] if occ_list else None)
 
-        brief_for_location = _DISH_ORIGIN_CITY_PHRASES.sub(" ", brief)
+        brief_for_location = DISH_ORIGIN_CITY_PHRASES_RE.sub(" ", brief)
         city_auto, _, region_auto, _ = resolve_location(
             poi_city=None,
             poi_address=brief_for_location,
@@ -370,6 +364,10 @@ class GroundedScriptEngine:
 
         with timer.measure("domain_gate_ms"):
             check_fnb_domain_relevance(request.brief)
+            epistemic_hit = detect_unsupported_epistemic_claim(request.brief)
+            if epistemic_hit is not None:
+                _, epistemic_msg = epistemic_hit
+                raise UnsupportedDomainError(epistemic_msg)
             effective_filters = self._infer_effective_filters(
                 brief=request.brief,
                 explicit=request.filters,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 
 from packages.common.exceptions import UnsupportedDomainError
 from packages.data_contracts.analytics import NicheBenchmarkSummary
@@ -73,6 +74,49 @@ def check_fnb_domain_relevance(brief: str) -> None:
         raise UnsupportedDomainError(
             "Chưa nhận diện được ngữ cảnh ẩm thực/đồ uống trong đề bài. Hãy nêu rõ món ăn, loại quán, nguyên liệu hoặc phong cách ẩm thực."
         )
+
+
+_EPISTEMIC_CLAIM_RULES: tuple[tuple[str, re.Pattern[str], str], ...] = (
+    (
+        "epistemic_refusal_undisclosed_sponsorship",
+        re.compile(
+            r"(?i)(?:chứng\s*minh|kết\s*luận|khẳng\s*định|xác\s*minh|chắc\s*chắn).*(?:pr\s*ngầm|quảng\s*cáo\s*ngầm|nhận\s*tiền\s*pr|tài\s*trợ\s*ẩn)"
+        ),
+        "Không thể khẳng định hoặc suy diễn PR ngầm/nhận tiền tài trợ từ cờ is_ad quan sát được (M4.2 guardrail).",
+    ),
+    (
+        "epistemic_refusal_bot_seeding",
+        re.compile(
+            r"(?i)(?:kết\s*luận|chứng\s*minh|xác\s*định|gán\s*nhãn).*(?:tài\s*khoản\s*bot|trả\s*tiền.*seeding|thuê\s*seeding)"
+        ),
+        "Chỉ báo trùng lặp/liên hệ trên bình luận là dấu hiệu quan sát được, không chứng minh bot hay seeding trả tiền (M5.1 guardrail).",
+    ),
+    (
+        "epistemic_refusal_hygiene_certification",
+        re.compile(
+            r"(?i)(?:xác\s*nhận|chứng\s*nhận|kết\s*luận|chứng\s*minh).*(?:an\s*toàn\s*vệ\s*sinh\s*thực\s*phẩm|vệ\s*sinh\s*thực\s*phẩm\s*thực\s*tế)"
+        ),
+        "Cảm xúc bình luận khách hàng là chênh lệch cảm nhận (sentiment discrepancy), không phải chứng nhận vệ sinh an toàn thực phẩm thực tế (M5.2 guardrail).",
+    ),
+    (
+        "epistemic_refusal_missing_audio_timestamps",
+        re.compile(
+            r"(?i)(?:mili\s*giây|millisecond|chính\s*xác\s*từng\s*giây).*(?:không\s*có\s*audio|phụ\s*đề\s*nội\s*suy|wps_estimated)"
+        ),
+        "Video không có audio chỉ có mốc ước lượng theo tốc độ từ (wps_estimated), không trích xuất được timestamp chính xác theo audio (M4.1/M6.2 guardrail).",
+    ),
+)
+
+
+def detect_unsupported_epistemic_claim(text: str) -> tuple[str, str] | None:
+    """Return (code, refusal_message) when a query asks for claims forbidden by project guardrails."""
+    cleaned = text.strip()
+    if not cleaned:
+        return None
+    for code, pattern, msg in _EPISTEMIC_CLAIM_RULES:
+        if pattern.search(cleaned):
+            return code, msg
+    return None
 
 
 def build_grounded_script_prompt(

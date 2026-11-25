@@ -325,3 +325,22 @@ def resolve_location(
         return l_city, resolved_dist, region, "llm_inferred"
 
     return None, resolved_dist, "unknown", "unknown"
+
+
+DISH_ORIGIN_CITY_PHRASES_RE: re.Pattern[str] = re.compile(
+    r"(?i)\b(?:"
+    r"bún\s+bò\s+huế|nem\s+nướng\s+nha\s+trang|bánh\s+mì\s+(?:cay\s+)?hải\s+phòng|"
+    r"cơm\s+gà\s+hội\s+an|cao\s+lầu\s+hội\s+an|hủ\s+tiếu\s+mỹ\s+tho|"
+    r"(?:xôi\s+cua|bánh\s+tầm(?:\s+cay)?|cua)\s+cà\s+mau|"
+    r"(?:chuẩn\s+vị|hương\s+vị|phong\s+cách|kiểu)\s+(?:hà\s+nội|sài\s+gòn|huế|đà\s+nẵng|nha\s+trang|cà\s+mau)"
+    r")\b"
+)
+
+
+def resolve_location_from_caption(caption: str) -> tuple[str | None, str | None, str]:
+    """Infer venue location from caption/brief text while masking dish-origin city idioms."""
+    cleaned = DISH_ORIGIN_CITY_PHRASES_RE.sub(" ", caption or "").strip()
+    if not cleaned:
+        return None, None, "unknown"
+    city, dist, region, _ = resolve_location(poi_address=cleaned)
+    return city, dist, region

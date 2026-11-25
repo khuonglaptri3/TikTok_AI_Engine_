@@ -10,6 +10,7 @@ from packages.common.exceptions import IndexNotReadyError
 from packages.common.logging import StageTimer
 from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest
 from packages.data_contracts.retrieval import EvidenceCard, RetrievalResponse, VideoCitation
+from packages.llm import detect_unsupported_epistemic_claim
 from packages.retrieval.dense.encoder import DenseTextEncoder, load_saved_encoder
 from packages.retrieval.dense.local_index import LocalDenseIndex
 from packages.retrieval.dense.qdrant_adapter import QdrantDenseAdapter
@@ -22,6 +23,7 @@ from packages.retrieval.query_intent import (
 )
 from packages.retrieval.rerank.scorer import EvidenceReranker
 from packages.retrieval.sparse.bm25 import BM25Index
+from packages.taxonomy import resolve_location_from_caption
 
 
 def _as_str_list(val: Any) -> list[str]:
@@ -46,6 +48,7 @@ class HybridRetrievalService:
         restrict_to_df: bool = False,
     ) -> None:
         self.df_transcribed = df_videos[df_videos["has_transcript"]].copy()
+        self._backfill_missing_caption_locations()
         self.bm25 = bm25_index
         self.qdrant = qdrant_adapter
         self.dense_index = dense_index
@@ -60,6 +63,42 @@ class HybridRetrievalService:
             self.viral_multipliers[vid] = float(rec.get("viral_multiplier") or 0.0)
 
         self._dense_encoder: Any = dense_encoder
+
+    def _backfill_missing_caption_locations(self) -> None:
+        """Populate null city_norm/region in memory from explicit caption locations without altering Parquet."""
+        if (
+            self.df_transcribed.empty
+            or "city_norm" not in self.df_transcribed.columns
+            or "caption" not in self.df_transcribed.columns
+        ):
+            return
+        missing_mask = self.df_transcribed["city_norm"].isna() | (
+            self.df_transcribed["city_norm"].astype(str).str.strip() == ""
+        )
+        if not bool(missing_mask.any()):
+            return
+        has_dist = "district_norm" in self.df_transcribed.columns
+        has_reg = "region" in self.df_transcribed.columns
+        for idx in self.df_transcribed.index[missing_mask]:
+            cap_val = self.df_transcribed.at[idx, "caption"]
+            if not isinstance(cap_val, str) or not cap_val.strip():
+                continue
+            city, dist, reg = resolve_location_from_caption(cap_val)
+            if not city:
+                continue
+            self.df_transcribed.at[idx, "city_norm"] = city
+            if has_dist and dist:
+                cur_d = self.df_transcribed.at[idx, "district_norm"]
+                if cur_d is None or (isinstance(cur_d, float) and pd.isna(cur_d)) or not str(cur_d).strip():
+                    self.df_transcribed.at[idx, "district_norm"] = dist
+            if has_reg and reg != "unknown":
+                cur_r = self.df_transcribed.at[idx, "region"]
+                if (
+                    cur_r is None
+                    or (isinstance(cur_r, float) and pd.isna(cur_r))
+                    or str(cur_r).strip().lower() in ("", "unknown")
+                ):
+                    self.df_transcribed.at[idx, "region"] = reg
 
     @classmethod
     def from_dirs(
@@ -170,6 +209,20 @@ class HybridRetrievalService:
     def search(self, request: RetrievalRequest) -> RetrievalResponse:
         timer = StageTimer()
         candidate_limit = max(40, request.top_k * 8)
+        epistemic_hit = detect_unsupported_epistemic_claim(request.query)
+        if epistemic_hit is not None:
+            epistemic_code, _ = epistemic_hit
+            return RetrievalResponse(
+                query=request.query,
+                mode=request.mode,
+                reranked=False,
+                total_candidates=0,
+                relaxed_filters=[],
+                items=[],
+                insufficient_evidence=True,
+                abstain_reason=epistemic_code,
+                timings_ms=timer.finalize(),
+            )
         intent = parse_query_intent(request.query)
         if not intent.positive_query and intent.negated_terms:
             return RetrievalResponse(
