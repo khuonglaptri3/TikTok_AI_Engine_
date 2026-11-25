@@ -1,7 +1,7 @@
 # M5.1 — Duplicate, Contact/Link, and Noise Comment Indicators
 
-- Status: IN_PROGRESS (`N`'s observable indicator baseline + `K`'s adversarial code/leakage/sensitivity peer review & `5`-test TDD hardening complete (`194` repo tests); awaiting `150`–`300` real pilot comments from `M3.3` / `M3.G` and `N`/`K` double-annotation)
-- Execution date: 2026-11-19 to 2026-11-20 (Asia/Ho_Chi_Minh)
+- Status: IN_PROGRESS (`N`'s observable indicator baseline + `K`'s adversarial code/leakage/sensitivity peer review & `5`-test TDD hardening complete; Phase 2 blinded real pool (`300` comments / `22` videos) exported from `m3_3_pilot_snapshot_v2` and **`N`'s `180/180` half (`60` overlap + `120` `N_only`) complete & confirmed (`N_human_verified=True`)**; awaiting `K`'s `180`-item half + joint adjudication + held-out `1/3` evaluation)
+- Execution date: 2026-11-19 to 2026-11-25 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M5.1`)
 - Repository version: `main` (merging `feat/k-m4.2-m5.1-m6.1-peer-reviews` over `14becda0`)
 - Primary owner: Nguyễn Việt Nguyên (`N`) · Peer reviewer: Trần Đình Khương (`K`, baseline code/leakage/sensitivity review complete)
@@ -26,7 +26,8 @@
 
 | File | Purpose |
 | --- | --- |
-| [workflow.md](evidence/workflow.md) | `N` baseline + `K` peer-review TDD trace and command receipts |
+| [workflow.md](evidence/workflow.md) | `N` baseline + `K` peer-review TDD trace + Phase 2 `N` real-pool annotation receipt |
+| [m5_1_pilot_pool.jsonl](../../../../data/annotations/m5_1_pilot_pool.jsonl) / [m5_1_pilot_pool_locked_predictions.jsonl](../../../../data/annotations/m5_1_pilot_pool_locked_predictions.jsonl) | Exported `300`-comment blinded real pool (`22` videos from `m3_3_pilot_snapshot_v2`: `180/180 N_human_verified=True`, `K` `180`-item half pending) + untouched locked predictions |
 | [khuong_baseline_peer_review.md](evidence/khuong_baseline_peer_review.md) | `K`'s adversarial audit of label leakage, organic-duplicate FPs, gate math, and filter sensitivity |
 | [annotation_guidelines.md](evidence/annotation_guidelines.md) | Written `N`/`K` double-annotation rules (within-thread scope & 5–8 syllable Vietnamese inquiry exclusion) |
 | [m5_1_fixture_dry_run_v2_k_review.json](../../../../artifacts/benchmarks/m5_1_fixture_dry_run_v2_k_review.json) / [m5_1_fixture_dry_run.json](../../../../artifacts/benchmarks/m5_1_fixture_dry_run.json) | Post-review synthetic edge-fixture dry-run (`24 -> 0` org-dup FP; `max_abs_mean_score_shift > 0`; v1 preserved) |
@@ -47,7 +48,7 @@
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Real pilot comments (`150`–`300`) unavailable (`M3.3` / `M3.G` pending) | Held-out macro P/R/F1 on real TikTok comments and human Cohen's kappa cannot be measured yet; automated filtering remains disabled (`diagnostic_only_unvalidated`) | Collect real comments under `M3.3`, run `run_baseline_checks --mode real_pool`, and double-annotate (`N` & `K`) |
+| Real pilot comments (`300` items across `22` videos) exported & `N` half (`180/180`) complete; **`K`'s `180`-item half (`60` overlap + `120` `K_only`) and joint adjudication still pending** | Held-out macro P/R/F1 and human Cohen's kappa cannot be finalized until `K` signs off; automated filtering stays disabled (`diagnostic_only_without_filtering`) | `K` completes `K_label` + `K_human_verified=True` in `data/annotations/m5_1_pilot_pool.jsonl`, then run IAA & held-out evaluation |
 
 ## Acceptance and handoff
 
@@ -55,7 +56,7 @@
 | --- | --- | --- |
 | Preserve originals and reasons; observable duplicate/contact/noise labels; no bot/payment/seeding/identity assertions | Met (`N` + `K` verified) | [detector.py](../../../../packages/seeding/detector.py), [khuong_baseline_peer_review.md](evidence/khuong_baseline_peer_review.md) |
 | Diagnostic flags without automatic filtering until `>= 150` real annotated comments pass `P >= 0.85`, `R >= 0.60` | Met (`held_out_third` gate deadlock fixed & verified) | [evaluation.py](../../../../packages/seeding/evaluation.py), [ui.py](../../../../apps/demo/ui.py) |
-| Video/thread-disjoint splitting, agreement, P/R/F1 + bootstrap uncertainty, blinded pool export, written guidelines | Met on fixtures; awaiting real comments | [evaluation.py](../../../../packages/seeding/evaluation.py), [annotation_guidelines.md](evidence/annotation_guidelines.md) |
-| Independently annotate `150`–`300` real pilot comments after `M3.3` | Pending (`M3.3` prerequisite; `K` baseline code review complete) | `data/raw_incremental/` awaits `M3.3` |
+| Video/thread-disjoint splitting, agreement, P/R/F1 + bootstrap uncertainty, blinded pool export, written guidelines | Met on fixtures & real-pool export | [evaluation.py](../../../../packages/seeding/evaluation.py), [annotation_guidelines.md](evidence/annotation_guidelines.md) |
+| Independently annotate `150`–`300` real pilot comments after `M3.3` | **In progress (`N = 180/180 verified`, `K = 0/180` pending)** | [m5_1_pilot_pool.jsonl](../../../../data/annotations/m5_1_pilot_pool.jsonl) |
 
-Final task status: **IN_PROGRESS** (`N` implementation + `K` baseline code, leakage, organic-duplicate, and sensitivity peer review complete; awaiting `M3.3` real pilot comments for `150`–`300`-item human double-annotation prior to `M5.G`).
+Final task status: **IN_PROGRESS** (`N` implementation + `K` baseline review + real `300`-comment pool export + **`N`'s `180/180` half complete & confirmed**; awaiting `K`'s `180`-item half, joint adjudication, and held-out `1/3` evaluation before `M5.G`).
