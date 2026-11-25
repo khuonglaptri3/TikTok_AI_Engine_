@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from apps.api.app.dependencies import ServiceContainer, build_container
 from apps.api.app.routers import analytics, health, retrieval, script, trust
 from apps.demo.ui import build_gradio_blocks
+from apps.demo.visuals import DEMO_CSS, build_demo_theme
 from packages.common.exceptions import ViralRagError
 from packages.common.settings import AppSettings
 from packages.data_contracts.errors import CanonicalErrorResponse
@@ -56,6 +57,12 @@ def create_app(
 
     if mount_demo:
         blocks = build_gradio_blocks(app)
-        app = gr.mount_gradio_app(app, blocks, path="/demo")
+        app = gr.mount_gradio_app(
+            app,
+            blocks,
+            path="/demo",
+            theme=build_demo_theme(),
+            css=DEMO_CSS,
+        )
 
     return app
