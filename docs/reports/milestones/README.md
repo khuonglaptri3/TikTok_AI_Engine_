@@ -23,7 +23,7 @@ Each started task has exactly two directories, `evidence/` and `superpowers/`, a
 | M5.1 | Observable duplicate/contact/noise indicators, `K` peer review + TDD fixes (`194` tests), real `300`-comment pool exported & **`N` `180/180` confirmed**; awaiting `K` half | IN_PROGRESS | [Read results](M5.1/README.md) |
 | M5.2 | 4-aspect ABSA + NFC spans, `3x3` sensitivity, `N` Phase 1 review, real `180`-unit pool exported & **`N` `115/115` confirmed (`31/31` NFC spans = `1.0`)**; awaiting `K` half | IN_PROGRESS | [Read results](M5.2/README.md) |
 | M6.1 | `5,000`-doc `restrict_to_df=True` parity on finalized `M2.2` human qrels across `tfidf_svd` & `fastembed` `MiniLM` vs `bm25-v3` + `N`/`K` sign-off (`bm25-v3` default confirmed; multimodal awaits `M4.G`/`M5.G`) | IN_PROGRESS | [Read results](M6.1/README.md) |
-| M6.2 | `30` held-out Q&A/demo evaluation prompts (`20` historical+`M3.3` answerable, `10` no-answer/guardrail cases) & contract suite prepared; offline `30`-run `p95 <= 5 s` latency & `N`+`K` response inspection pending | IN_PROGRESS | [Read results](M6.2/README.md) |
+| M6.2 | `30` held-out Q&A/demo prompts (`p95 = 77.43 ms`), API error states, & **`N` `30/30` confirmed** (`18/20 = 90.0%` claims, `30/30` citations/provenance, `10/10` refusals); awaiting `K` co-inspection & `M3.G`/`M4.G`/`M5.G` | IN_PROGRESS | [Read results](M6.2/README.md) |
 
 Independent cross-project assessments are listed in [task reports](../tasks/README.md). Their conclusions do not change milestone status or pass a gate.
 

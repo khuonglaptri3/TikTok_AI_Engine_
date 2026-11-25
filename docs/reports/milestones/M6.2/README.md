@@ -1,6 +1,6 @@
 # M6.2 — Source-Resolving Q&A and Demo Integration
 
-- Status: IN_PROGRESS (Held-out `30`-question evaluation dataset prepared & empirically probed against `m3_3_pilot_snapshot_v2` + `bm25-m3_3-pilot`; full API/`/demo/` latency benchmark over `30` repetitions and two-contributor `N`+`K` response inspection pending `M3.G`/`M4.G`/`M5.G` acceptance)
+- Status: IN_PROGRESS (`30`-question evaluation dataset, `30`-question offline ASGI latency benchmark `p95 = 77.43 ms <= 5,000 ms`, API error-state verification, and **`N`'s `30/30` human answer/provenance inspection (`18/20 = 90.0%` supported claims, `30/30` provenance/citations, `10/10` refusals, `N_human_verified=True`)** complete; awaiting `K`'s co-inspection half and `M3.G`/`M4.G`/`M5.G` gate closure)
 - Execution date: 2026-11-25 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M6.2`)
 - Specification: [spec.md](superpowers/spec.md)
@@ -8,7 +8,7 @@
 
 ## Conclusion
 
-Prepared and empirically validated the **`30` held-out evaluation questions** in [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) (`0` overlap with `M2` `v1`/`v2_pilot` sets; **`20` answerable** + **`10` no-answer / guardrail cases**). Task stays **`IN_PROGRESS`** pending downstream gate alignment (`G3`/`G4`/`G5`), the `30`-repetition offline `p95 <= 5 s` latency benchmark, and joint `N`+`K` answer/provenance inspection.
+Prepared the **`30` held-out evaluation questions** in [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl), ran all `30` offline ASGI Q&A/script requests (`p95 = 77.43 ms <= 5,000 ms`, `185/185` valid citations), verified API error boundaries (`503`/`422`/`200`), and completed **`N`'s `30/30` confirmed inspection** ([m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl): **`18/20 = 90.0%` supported claims**, `30/30` valid provenance/citations, `10/10` bounded refusals). Task stays **`IN_PROGRESS`** awaiting `K`'s co-inspection (`K_human_verified=False`) and downstream gates `G3`/`G4`/`G5`.
 
 ## Work performed
 
@@ -24,7 +24,7 @@ Prepared and empirically validated the **`30` held-out evaluation questions** in
 | --- | --- |
 | [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) | `30` held-out Q&A/demo evaluation prompts (`20` answerable + `10` no-answer/guardrail cases) |
 | [run_m6_2_eval.py](evidence/run_m6_2_eval.py) | Single-concurrency ASGI `/api/v1/retrieval/search` + `/api/v1/script/generate` (`offline_grounded`) + `/demo/` probe |
-| [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) / [m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl) | Measured `30`-question dry-run receipt (`p95 = 77.43 ms <= 5,000 ms`, `185/185` resolved citations, `10/10` strict refusals; pending joint `N`+`K` claim audit) |
+| [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) / [m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl) | Measured `30`-question offline ASGI receipt (`p95 = 77.43 ms <= 5,000 ms`, `185/185` resolved citations, `10/10` strict refusals) and **`30/30` `N_human_verified=True`** claim/provenance sheet (`K` co-inspection pending) |
 | [test_m6_2_eval_dataset.py](../../../../tests/unit/test_m6_2_eval_dataset.py) | Schema, no-overlap, epistemic guardrail, and caption location fallback regression tests |
 | [workflow.md](evidence/workflow.md) | Empirical probe notes and guardrail fix ledger against `m3_3_pilot_snapshot_v2` |
 
@@ -39,13 +39,13 @@ Prepared and empirically validated the **`30` held-out evaluation questions** in
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Full `30`-question API/`/demo/` execution (`p95 <= 5 s`) and two-human `N`+`K` response inspection not yet run | `M6.2` remains `IN_PROGRESS` until `30` outputs and timings are jointly verified | Run `30`-repetition offline benchmark & complete joint `N`+`K` inspection after `M3.G`/`M4.G`/`M5.G` |
+| Full `30`-question offline run (`p95 <= 5 s`), API error states, & two-human `N`+`K` inspection | `N` half (`30/30` verified: `18/20 = 90.0%` supported, `30/30` provenance/citations, `10/10` refusals) + API error states (`503`/`422`/`200`) complete; **`K`'s co-inspection (`30` responses) & `M3.G`/`M4.G`/`M5.G` still pending** | `K` completes `K_human_verified=True` in `m6_2_answers_sheet.jsonl` alongside downstream gate completion |
 
 ## Acceptance and handoff
 
 | Task criterion | Result | Evidence |
 | --- | --- | --- |
-| Prepare `30` held-out questions including `>= 10` no-answer/insufficient-evidence cases | **Met (draft dataset verified; awaiting `K` co-inspection)** | [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) |
-| `>= 95%` citation, `>= 90%` claims, `100%` ID/timestamp/refusal, `p95 <= 5 s`, `N`+`K` audit | Pending full benchmark & `N`+`K` review | Deferred to `M6.2` Task 2–3 |
+| Prepare `30` held-out questions including `>= 10` no-answer/insufficient-evidence cases | **Met (`30` queries probed + tested)** | [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) |
+| `>= 95%` citation, `>= 90%` claims, `100%` ID/timestamp/refusal, `p95 <= 5 s`, `N`+`K` audit | **`N` verified (`30/30` ID/provenance/citations, `18/20 = 90.0%` claims, `10/10` refusals, `p95 = 77.43 ms`); awaiting `K` co-inspection** | [m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl), [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) |
 
-Final task status: **IN_PROGRESS** (`30` held-out evaluation questions ready; full `M6.2` integration, `30`-repetition latency run, and `N`+`K` inspection pending).
+Final task status: **IN_PROGRESS** (`30` held-out questions, offline `p95 = 77.43 ms` run, error-state checks, and **`N`'s `30/30` human inspection complete**; awaiting `K` co-inspection & `M3.G`/`M4.G`/`M5.G`).
