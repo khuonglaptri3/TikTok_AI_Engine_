@@ -509,6 +509,7 @@ class TikTokApiCollectorProvider:
                         sess.params = {"aid": str(old_p.get("aid") or "1988")}
             try:
                 video_obj = api.video(id=clean_vid)
+                seen_comment_ids: set[str] = set()
                 idx = 0
                 try:
                     async for c_obj in video_obj.comments(count=cap):
@@ -516,6 +517,12 @@ class TikTokApiCollectorProvider:
                         if isinstance(raw_c, dict):
                             norm = map_tiktok_comment_to_input(raw_c, canonical_vid=clean_vid, idx=idx)
                             if norm is not None:
+                                cid = str(norm.get("comment_id") or "").strip()
+                                if cid and cid in seen_comment_ids:
+                                    idx += 1
+                                    continue
+                                if cid:
+                                    seen_comment_ids.add(cid)
                                 collected.append(norm)
                                 if len(collected) >= cap:
                                     break

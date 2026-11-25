@@ -1,9 +1,9 @@
 # M3.3 — Capped Capture-to-Transcript-to-Search Pilot (`live_pilot = PASS`, `30/30` `N`+`K` Verified) & Hybrid `21KHDL-TikTok-Analytics` Collector Upgrade
 
-- Status: COMPLETE (`live_pilot` capture -> `faster-whisper/small-cpu-int8` ASR -> `TikTokApi` desktop comment enrichment (`454` real comments across `28/30` videos, `452` unique `fact_comments.parquet` rows) -> `M3.1` Dual-Sink Gold (`m3_3_pilot_snapshot_v2`) -> `BM25Index` -> searchability **executed and passed** on real TikTok data: `30` fresh videos across `5` creators, `29` 64kbps `.mp3` files, `10` CPU-transcribed videos (`16.683` min, `RTF=0.1971`), **`10/10` searchable**, **`30/30` (`15 N` + `15 K`) audio + transcript inspection completed** (`human_verified=true`), combined with Phase 2/3 `21KHDL-TikTok-Analytics` hybrid `TikTokApi -> yt-dlp` `--backend auto` + `--enrich-comments-only` upgrade across `219` repo tests + `106`-file Linux/`win32` `mypy`; Gate `G3` (`M3.G`) remains `NOT_RUN` pending formal gate review)
-- Execution date: 2026-11-20 to 2026-11-24 (Asia/Ho_Chi_Minh)
+- Status: COMPLETE (`live_pilot` capture -> `faster-whisper/small-cpu-int8` ASR -> `TikTokApi` desktop comment enrichment (`454` real comments across `28/30` videos, `452` unique `fact_comments.parquet` rows) -> `M3.1` Dual-Sink Gold (`m3_3_pilot_snapshot_v2`) -> `BM25Index` -> searchability **executed and passed** on real TikTok data: `30` fresh videos across `5` creators, `29` 64kbps `.mp3` files, `10` CPU-transcribed videos (`16.683` min, `RTF=0.1971`), **`10/10` searchable**, **`30/30` (`15 N` + `15 K`) audio + transcript inspection completed** (`human_verified=true`), combined with Phase 2/3 `21KHDL-TikTok-Analytics` hybrid `TikTokApi -> yt-dlp` `--backend auto` + `--enrich-comments-only` upgrade across `221` repo tests + `105`-file Linux/`win32` `mypy`; Gate `G3` (`M3.G`) remains `NOT_RUN` pending formal gate review)
+- Execution date: 2026-11-20 to 2026-11-25 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.3`)
-- Repository version: `main` (`11e01476` + `K` `15/15` inspection sign-off)
+- Repository version: `main` (`bde4017f`) + `feat/m3.3-live-comment-enrichment` (`K` `15/15` + `N` `15/15` sign-off & Phase 3 comment enrichment)
 - Owners: Nguyễn Việt Nguyên (`N`) & Trần Đình Khương (`K`) (shared integration & 50/50 inspection)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
@@ -28,7 +28,7 @@ Executed the official bounded **`M3.3` `live_pilot`** pipeline ([m3_3_pilot_rece
 
 | File | Purpose |
 | --- | --- |
-| [m3_3_pilot_receipt.json](evidence/m3_3_pilot_receipt.json) | Official `live_pilot` receipt (`pilot_status = "PASS"`, `30` succeeded, `10` ASR `small` `RTF=0.1971`, `10/10` searchable, `3.14 GiB` RAM, `119.92 MiB` disk) |
+| [m3_3_pilot_receipt.json](evidence/m3_3_pilot_receipt.json) | Official `live_pilot` Phase 3 receipt (`pilot_status = "PASS"`, `30` succeeded, `454` raw comments / `93.33%` coverage, `10` ASR `small` `RTF=0.1971`, `10/10` searchable, `2.84 GiB` enrichment peak RSS, `41.141 s` enrichment wall time, `120.01 MiB` total disk; Phase 1 `50 -> 30` capture & `744.154 s` metrics preserved in narrative and git `bde4017f`) |
 | [sample_inspection_sheet.jsonl](evidence/sample_inspection_sheet.jsonl) | `30`-video equal inspection workbook (`15` assigned to `K`, `15` assigned to `N`, `6` per creator) |
 | [workflow.md](evidence/workflow.md) | `M3.3` Phase 1 live pilot & Phase 2 `21KHDL` hybrid collector TDD ledger, rulings, and verification receipts |
 | [red-m3_3-tests.log](evidence/red-m3_3-tests.log), [green-m3_3-tests.log](evidence/green-m3_3-tests.log) | TDD RED -> GREEN logs for `pipelines/pilot_m3_3/` |
@@ -83,9 +83,9 @@ Executed the official bounded **`M3.3` `live_pilot`** pipeline ([m3_3_pilot_rece
 | Check | Result | Scope / evidence |
 | --- | --- | --- |
 | Official `live_pilot` across `5` F&B creators (`--asr-model small`) + desktop `TikTokApi` comment enrichment (`--enrich-comments-only`) | **PASS (`30/30` collected, `454` comments / `93.33%` coverage, `10/10` ASR searchable)** | `16.683` min audio in `197.269 s` (`RTF=0.1971`), `452` unique `fact_comments.parquet` rows in `m3_3_pilot_snapshot_v2`, `21,758` BM25 docs; [m3_3_pilot_receipt.json](evidence/m3_3_pilot_receipt.json) |
-| `python3 -m pytest tests/unit/test_bounded_collector_worker.py tests/unit/test_m3_3_pilot_pipeline.py -v` | PASS (`31 passed`: `21` collector worker + `10` M3.3 pilot) | `h264` + `--impersonate chrome`, `21KHDL` `itemStruct`/comment/`yt-dlp` mappers, `isPinnedItem` loop, `video.as_dict` cache, single-session Playwright reuse, `--backend auto` fallback + circuit breaker, `--enrich-comments-only`, multi-creator round-robin, fail-closed `AntiBotChallengeError`, multi-cookie redaction, `--preflight-only`, and non-colliding `--resume` |
-| `python3 -m mypy packages apps pipelines` & `python3 -m mypy --platform win32 packages apps pipelines` | PASS (`106` source files clean on Linux & `win32`) | Full static typing across Linux and Windows environments |
-| `python3 -m pytest -q` & `python3 scripts/check_secrets.py` | PASS (`220 passed`; `0` secret leaks) | Full repository regression suite and secret hygiene |
+| `python3 -m pytest tests/unit/test_bounded_collector_worker.py tests/unit/test_m3_3_pilot_pipeline.py -v` | PASS (`32 passed`: `22` collector worker + `10` M3.3 pilot) | `h264` + `--impersonate chrome`, `21KHDL` `itemStruct`/comment/`yt-dlp` mappers, `isPinnedItem` loop, `video.as_dict` cache, single-session Playwright reuse, `--backend auto` fallback + circuit breaker, `--enrich-comments-only`, paginated `comment_id` deduplication, multi-creator round-robin, fail-closed `AntiBotChallengeError`, multi-cookie redaction, `--preflight-only`, and non-colliding `--resume` |
+| `python3 -m mypy packages apps pipelines` & `python3 -m mypy --platform win32 packages apps pipelines` | PASS (`105` source files clean on Linux & `win32`) | Full static typing across Linux and Windows environments |
+| `python3 -m pytest -q` & `python3 scripts/check_secrets.py` | PASS (`221 passed`; `0` secret leaks) | Full repository regression suite and secret hygiene |
 
 ## Open issues
 
@@ -98,7 +98,7 @@ Executed the official bounded **`M3.3` `live_pilot`** pipeline ([m3_3_pilot_rece
 
 | Task criterion | Result | Evidence |
 | --- | --- | --- |
-| Bounded ceilings (`5` creators, `50` cands, `30` videos, `60`m audio, `1,000` comments, `2`h), hybrid `21KHDL` collector, & CPU ASR (`<= 10` videos / `<= 20`m) | Met (`30` succeeded, `29` `.mp3`, `454` comments, `10` ASR `small` `16.683` min `RTF=0.1971`, `31/31` collector/pilot tests) | [m3_3_pilot_receipt.json](evidence/m3_3_pilot_receipt.json), [providers.py](../../../../pipelines/crawl_incremental/providers.py) |
+| Bounded ceilings (`5` creators, `50` cands, `30` videos, `60`m audio, `1,000` comments, `2`h), hybrid `21KHDL` collector, & CPU ASR (`<= 10` videos / `<= 20`m) | Met (`30` succeeded, `29` `.mp3`, `454` comments, `10` ASR `small` `16.683` min `RTF=0.1971`, `32/32` collector/pilot tests) | [m3_3_pilot_receipt.json](evidence/m3_3_pilot_receipt.json), [providers.py](../../../../pipelines/crawl_incremental/providers.py) |
 | Real non-synthetic receipts, coverage/failure rates, disk/RAM/time, repeatable `M3.1` Gold snapshot, and `>= 5` searchable real fresh videos | Met (`10/10` searchable in `bm25-m3_3-pilot`; `452` rows in `fact_comments.parquet`; `120.01 MiB` total disk; `2.84 GiB`–`3.14 GiB` peak RSS) | [m3_3_pilot_receipt.json](evidence/m3_3_pilot_receipt.json), [m3_3_pilot_snapshot_v2](../../../../data/corpus/m3_3_pilot_snapshot_v2/manifest.json) |
 | Both contributors inspect half of the successful sample (`15 K / 15 N`) | **Met (`30/30` verified: `N = 15/15`, `K = 15/15`, `human_verified = true`)** | [sample_inspection_sheet.jsonl](evidence/sample_inspection_sheet.jsonl) |
 
