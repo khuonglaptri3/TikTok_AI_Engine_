@@ -9,6 +9,7 @@
 - **Revision History:**
   - `2026-11-20` (Phase 1): Bounded `M3.3` capture -> CPU ASR -> Dual-Sink Gold -> BM25 -> searchability orchestrator & host `.venv` `faster-whisper` verification.
   - `2026-11-23` (Phase 2, authored by `K`): Deep-grounded hybrid `TikTokApi` + `yt-dlp` collector upgrade adapting the exact `21KHDL-TikTok-Analytics` crawler mechanics (`isPinnedItem` chronological loop, zero-extra-HTTP `video.as_dict` caching, `TIKTOK_BROWSER`/headless session controls, UTF-8 Windows/Linux subprocess safety, Chapter 3 + `author_unique_ids.txt` F&B creator selection, `collectTime` + raw payload archiving, and authenticated `64 kbps` `.mp3` extraction).
+  - `2026-11-24` (Phase 3, authored by `N` & `K`): Targeted Batch Comment Enrichment (`enrich_batch_comments` / `--enrich-comments-only`) keyed strictly on the `30` existing `M3.3` pilot `video_id`s in `videos_4m.jsonl` (`max_comments_per_video <= 50`, `max_comments_total <= 1000`), preserving 100% of existing `.mp3` audio, Whisper transcripts, and `30/30` human verification flags while publishing an updated Dual-Sink Gold snapshot (`update_existing=True`) with populated `fact_comments.parquet` and `fact_absa_reviews.parquet` for `M3.G`, `M5.1`, and `M5.2`.
 
 ---
 
@@ -70,3 +71,13 @@ Prepare and execute (when live network tools and `MS_TOKEN` are available) the b
 - **CLI & Orchestrator Controls (`pipelines.crawl_incremental` & `pipelines.pilot_m3_3`):**
   - `--backend {auto,tiktokapi,ytdlp}` (default `auto`), `--cookies-file <path>`, `--tiktok-browser {chromium,webkit,firefox}`, `--tiktok-headless` / `--no-tiktok-headless`, `--auto-creators <k>`, `--resume` (forwarded into `BoundedIncrementalCollector.run`), and `--preflight-only` (0 network calls; outputs JSON readiness check covering `MS_TOKEN`, `yt-dlp`, `ffmpeg`, `faster-whisper`, optional `TikTokApi`/Playwright, `70,996` protected IDs, and resolved creators).
   - Additive defaulted provenance fields `collector_backend_requested: str = "auto"` and `collector_backends_used: list[str] = Field(default_factory=list)` on `CrawlManifest` and `CollectionSummaryReceipt`.
+
+### 2.5 Phase 3 Targeted Batch Comment Enrichment (`enrich_batch_comments` & `--enrich-comments-only`)
+
+- **Why needed:** During the initial `yt-dlp` pilot capture, `30` fresh videos, `29` `.mp3` files, and `10` CPU Whisper transcripts were collected and `30/30` human-verified, but `collected_comments_count` was `0`. Under normal `--resume`, `BoundedIncrementalCollector` skips `already_succeeded_in_checkpoint` items without re-calling `fetch_comments()`.
+- **Bounded Enrichment Mechanics (`BoundedIncrementalCollector.enrich_existing_comments` & `run_m3_3_comment_enrichment`):**
+  1. Reads existing `videos_4m.jsonl` from `batch_dir` (failing closed if `videos_4m.jsonl` is absent or empty, or if any record violates `historical_video_ids`).
+  2. For each record lacking comments (or when `refresh_all=False`, skipping records that already have non-empty `comments` or `comment_count == 0` when metadata explicitly says `0`), calls `provider.fetch_comments(video_id, max_comments=min(max_comments_per_video, remaining_budget))` with bounded retry (`<= 1 + max_retries`) and fail-closed `AntiBotChallengeError` halting (`stopped_reason="anti_bot_challenge_blocked"`).
+  3. Preserves 100% of existing `audio_path`, `transcript`, `whisper_segments`, and metadata fields on `RawIncrementalVideoRecord`; atomically updates `videos_4m.jsonl` and `crawl_manifest.json` after each video so partial progress is crash-safe and resumable.
+  4. Runs `ingest_incremental_batch_to_gold(..., update_existing=True)` atop `base_corpus_dir` (or the prior pilot snapshot) into a new immutable Gold snapshot (`m3_3_pilot_snapshot_v2` or auto-versioned `--output-gold`) so `fact_comments.parquet` and `fact_absa_reviews.parquet` are populated without mutating `20261118_taxonomy_fix_v1` or `m3_3_pilot_snapshot_v1`.
+  5. Updates `comment_count_collected` in `sample_inspection_sheet.jsonl` while preserving existing `assigned_reviewer`, `human_verified`, and `reviewer_notes` fields verbatim.

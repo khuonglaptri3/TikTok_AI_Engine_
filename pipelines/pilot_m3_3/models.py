@@ -35,6 +35,7 @@ class M33PilotConfig(BaseModel):
     creators: list[str] = Field(default_factory=list)
     auto_creators: int = Field(default=0, ge=0, le=5)
     resume: bool = False
+    enrich_comments_only: bool = False
     as_of_utc: datetime | None = None
 
     window_days: int = Field(default=120, ge=1, le=365)

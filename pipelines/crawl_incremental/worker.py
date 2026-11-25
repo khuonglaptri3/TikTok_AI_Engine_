@@ -340,6 +340,280 @@ class BoundedIncrementalCollector:
             if callable(close_fn):
                 close_fn()
 
+    def enrich_existing_comments(
+        self,
+        output_dir: Path,
+        *,
+        as_of_utc: datetime | None = None,
+        historical_video_ids: set[str] | None = None,
+        base_corpus_snapshot_id: str = "20261118_taxonomy_fix_v1",
+    ) -> CrawlManifest:
+        """Enrich comments onto an existing batch videos_4m.jsonl without re-running discovery or audio extraction."""
+        try:
+            return self._enrich_existing_comments_inner(
+                output_dir=output_dir,
+                as_of_utc=as_of_utc,
+                historical_video_ids=historical_video_ids,
+                base_corpus_snapshot_id=base_corpus_snapshot_id,
+            )
+        finally:
+            close_fn = getattr(self.provider, "close", None)
+            if callable(close_fn):
+                close_fn()
+
+    def _enrich_existing_comments_inner(
+        self,
+        output_dir: Path,
+        *,
+        as_of_utc: datetime | None = None,
+        historical_video_ids: set[str] | None = None,
+        base_corpus_snapshot_id: str = "20261118_taxonomy_fix_v1",
+    ) -> CrawlManifest:
+        timer = StageTimer()
+        session_t0 = time.monotonic()
+        effective_as_of = as_of_utc or datetime.now(UTC)
+        if effective_as_of.tzinfo is None:
+            effective_as_of = effective_as_of.replace(tzinfo=UTC)
+        cutoff_utc = compute_cutoff_utc(effective_as_of, window_days=self.bounds.window_days)
+        protected_ids = historical_video_ids or set()
+
+        jsonl_path = output_dir / "videos_4m.jsonl"
+        checkpoint_path = output_dir / "collector_checkpoint.json"
+        if not jsonl_path.is_file():
+            raise FileNotFoundError(
+                f"Cannot enrich comments: existing batch JSONL not found at {jsonl_path}"
+            )
+
+        existing_records = self._load_existing_batch_records(jsonl_path)
+        prior_audio_receipts: dict[str, AudioConversionReceipt] = {}
+        if checkpoint_path.is_file():
+            try:
+                cp_prev = CollectorCheckpoint.model_validate(
+                    json.loads(checkpoint_path.read_text(encoding="utf-8"))
+                )
+                prior_audio_receipts = dict(cp_prev.audio_receipts)
+            except Exception:
+                prior_audio_receipts = {}
+
+        merged_records_by_id: dict[str, RawIncrementalVideoRecord] = dict(existing_records)
+        collected_comments_total = sum(len(r.comments) for r in merged_records_by_id.values())
+        max_attempts = 1 + self.bounds.max_retries
+        stopped_reason: str | None = None
+        item_receipts: list[CollectorItemReceipt] = []
+
+        checkpoint = CollectorCheckpoint(
+            source_mode=self.provider.source_mode,
+            as_of_utc=effective_as_of.isoformat(),
+            cutoff_utc=cutoff_utc.isoformat(),
+            succeeded_ids=list(merged_records_by_id.keys()),
+            audio_receipts=prior_audio_receipts,
+        )
+
+        with timer.measure("collection_ms"):
+            for vid, rec in list(merged_records_by_id.items()):
+                audio_rcpt = prior_audio_receipts.get(vid)
+                if audio_rcpt is None and rec.audio_path:
+                    mp3_p = output_dir / rec.audio_path
+                    if mp3_p.is_file() and mp3_p.stat().st_size > 0:
+                        raw_b = mp3_p.read_bytes()
+                        audio_rcpt = AudioConversionReceipt(
+                            status="converted_64k_mp3",
+                            target_bitrate_kbps=64,
+                            audio_path=rec.audio_path,
+                            audio_bytes=len(raw_b),
+                            audio_sha256=hashlib.sha256(raw_b).hexdigest(),
+                        )
+                        checkpoint.audio_receipts[vid] = audio_rcpt
+
+                if vid in protected_ids:
+                    checkpoint.skipped_reasons[vid] = "historical_protected_id"
+                    item_receipts.append(
+                        CollectorItemReceipt(
+                            video_id=vid,
+                            author_handle=rec.author_handle,
+                            create_time=rec.create_time,
+                            status="skipped",
+                            attempts=0,
+                            reason="historical_protected_id",
+                            comment_count=len(rec.comments),
+                            audio_receipt=audio_rcpt,
+                        )
+                    )
+                    continue
+
+                if stopped_reason == "anti_bot_challenge_blocked":
+                    checkpoint.skipped_reasons[vid] = "anti_bot_challenge_blocked"
+                    item_receipts.append(
+                        CollectorItemReceipt(
+                            video_id=vid,
+                            author_handle=rec.author_handle,
+                            create_time=rec.create_time,
+                            status="skipped",
+                            attempts=0,
+                            reason="anti_bot_challenge_blocked",
+                            comment_count=len(rec.comments),
+                            audio_receipt=audio_rcpt,
+                        )
+                    )
+                    continue
+
+                if (time.monotonic() - session_t0) > self.bounds.session_deadline_seconds:
+                    stopped_reason = "session_deadline_exceeded"
+                    checkpoint.skipped_reasons[vid] = "session_deadline_exceeded"
+                    item_receipts.append(
+                        CollectorItemReceipt(
+                            video_id=vid,
+                            author_handle=rec.author_handle,
+                            create_time=rec.create_time,
+                            status="skipped",
+                            attempts=0,
+                            reason="session_deadline_exceeded",
+                            comment_count=len(rec.comments),
+                            audio_receipt=audio_rcpt,
+                        )
+                    )
+                    continue
+
+                # If record already has comments or metadata says comment_count == 0, keep as succeeded without extra network calls
+                if rec.comments or rec.comment_count == 0:
+                    item_receipts.append(
+                        CollectorItemReceipt(
+                            video_id=vid,
+                            author_handle=rec.author_handle,
+                            create_time=rec.create_time,
+                            status="succeeded",
+                            attempts=0,
+                            reason="ok",
+                            comment_count=len(rec.comments),
+                            audio_receipt=audio_rcpt,
+                        )
+                    )
+                    continue
+
+                remaining_comment_budget = max(
+                    0, self.bounds.max_comments_total - collected_comments_total
+                )
+                per_vid_cap = min(self.bounds.max_comments_per_video, remaining_comment_budget)
+                if per_vid_cap <= 0:
+                    item_receipts.append(
+                        CollectorItemReceipt(
+                            video_id=vid,
+                            author_handle=rec.author_handle,
+                            create_time=rec.create_time,
+                            status="succeeded",
+                            attempts=0,
+                            reason="max_comments_ceiling_reached",
+                            comment_count=len(rec.comments),
+                            audio_receipt=audio_rcpt,
+                        )
+                    )
+                    continue
+
+                attempts_used = 0
+                last_error = ""
+                parsed_comments: list[RawCommentInput] | None = None
+                for attempt in range(1, max_attempts + 1):
+                    attempts_used = attempt
+                    try:
+                        raw_comments = self.provider.fetch_comments(
+                            vid, max_comments=per_vid_cap
+                        )[:per_vid_cap]
+                        parsed_comments = [RawCommentInput.model_validate(c) for c in raw_comments]
+                        break
+                    except AntiBotChallengeError as anti_exc:
+                        last_error = _sanitize_reason(f"anti_bot_challenge_blocked: {anti_exc}")
+                        stopped_reason = "anti_bot_challenge_blocked"
+                        break
+                    except TransientCollectorError as exc:
+                        last_error = _sanitize_reason(f"transient_error: {exc}")
+                        if attempt < max_attempts:
+                            self.sleep_fn(0.5 * attempt)
+                    except Exception as exc:
+                        last_error = _sanitize_reason(f"validation_or_permanent_error: {exc}")
+                        break
+
+                if parsed_comments is not None:
+                    updated_rec = rec.model_copy(update={"comments": parsed_comments})
+                    merged_records_by_id[vid] = updated_rec
+                    collected_comments_total += len(parsed_comments)
+                    write_incremental_batch(list(merged_records_by_id.values()), output_dir)
+                    item_receipts.append(
+                        CollectorItemReceipt(
+                            video_id=vid,
+                            author_handle=updated_rec.author_handle,
+                            create_time=updated_rec.create_time,
+                            status="succeeded",
+                            attempts=attempts_used,
+                            reason="ok",
+                            comment_count=len(parsed_comments),
+                            audio_receipt=audio_rcpt,
+                        )
+                    )
+                else:
+                    checkpoint.failed_reasons[vid] = last_error or "unknown_failure"
+                    item_receipts.append(
+                        CollectorItemReceipt(
+                            video_id=vid,
+                            author_handle=rec.author_handle,
+                            create_time=rec.create_time,
+                            status="failed",
+                            attempts=attempts_used,
+                            reason=last_error or "unknown_failure",
+                            comment_count=len(rec.comments),
+                            audio_receipt=audio_rcpt,
+                        )
+                    )
+                _atomic_write_json(checkpoint_path, checkpoint.model_dump())
+
+        with timer.measure("persist_ms"):
+            final_records = list(merged_records_by_id.values())
+            out_jsonl = write_incremental_batch(final_records, output_dir)
+            _atomic_write_json(checkpoint_path, checkpoint.model_dump())
+            succeeded_count = sum(1 for r in item_receipts if r.status == "succeeded")
+            failed_count = sum(1 for r in item_receipts if r.status == "failed")
+            skipped_count = sum(1 for r in item_receipts if r.status == "skipped")
+            final_audio_count = sum(1 for r in final_records if r.audio_path)
+            final_comments_count = sum(len(r.comments) for r in final_records)
+            final_audio_minutes = round(
+                sum((r.duration_sec / 60.0) for r in final_records if r.audio_path), 3
+            )
+            req_backend = str(
+                getattr(self.provider, "requested_backend", self.provider.source_mode)
+            )
+            used_backends = list(getattr(self.provider, "backends_used", []))
+            creators_seen = sorted(
+                {r.author_handle for r in final_records if r.author_handle.strip()}
+            )
+            manifest = CrawlManifest(
+                source_mode=self.provider.source_mode,
+                is_synthetic_fixture=self.provider.is_synthetic_fixture,
+                collector_backend_requested=req_backend,
+                collector_backends_used=used_backends,
+                as_of_utc=effective_as_of.isoformat(),
+                cutoff_utc=cutoff_utc.isoformat(),
+                base_corpus_snapshot_id=base_corpus_snapshot_id,
+                historical_protected_count=len(protected_ids),
+                creators_queried=creators_seen,
+                bounds=self.bounds,
+                requested_count=len(final_records),
+                succeeded_count=succeeded_count,
+                failed_count=failed_count,
+                skipped_count=skipped_count,
+                persisted_records_count=len(final_records),
+                duplicate_candidates_ignored=0,
+                converted_audio_count=final_audio_count,
+                collected_comments_count=final_comments_count,
+                accumulated_audio_minutes=final_audio_minutes,
+                stopped_reason=stopped_reason,
+                discovery_error=None,
+                output_jsonl=out_jsonl.name,
+                items=item_receipts,
+                timings_ms=timer.finalize(),
+            )
+            _atomic_write_json(output_dir / "crawl_manifest.json", manifest.model_dump())
+
+        return manifest
+
     def _run_inner(
         self,
         output_dir: Path,

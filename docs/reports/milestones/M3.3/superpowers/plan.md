@@ -688,3 +688,28 @@ python3 scripts/check_secrets.py
 git add pipelines/pilot_m3_3/ .env.example docs/reports/milestones/M3.3/ docs/reports/milestones/README.md tests/unit/test_m3_3_pilot_pipeline.py
 git commit -m "feat(m3.3): wire hybrid auto backend, auto-creators, resume, preflight, and home run guide"
 ```
+
+---
+
+### Task 4: Phase 3 Targeted Batch Comment Enrichment (`--enrich-comments-only`) & Dual-Sink `fact_comments.parquet` Publication
+
+**Files:**
+- Modify: `pipelines/crawl_incremental/worker.py`
+- Modify: `pipelines/crawl_incremental/__main__.py`
+- Modify: `pipelines/pilot_m3_3/models.py`
+- Modify: `pipelines/pilot_m3_3/runner.py`
+- Modify: `pipelines/pilot_m3_3/__main__.py`
+- Modify: `tests/unit/test_m3_3_pilot_pipeline.py`
+
+**Interfaces:**
+- Consumes: Existing `batch_dir / "videos_4m.jsonl"`, `CollectorProvider.fetch_comments`, `ingest_incremental_batch_to_gold(..., update_existing=True)`
+- Produces:
+  - `BoundedIncrementalCollector.enrich_existing_comments(self, output_dir: Path, *, historical_video_ids: set[str] | None = None, base_corpus_snapshot_id: str = "20261118_taxonomy_fix_v1") -> CrawlManifest` (`pipelines/crawl_incremental/worker.py`)
+  - `M33PilotConfig.enrich_comments_only: bool = False` (`pipelines/pilot_m3_3/models.py`)
+  - `run_m3_3_comment_enrichment(config: M33PilotConfig, *, provider: CollectorProvider | None = None, dotenv_path: Path | None = None) -> M33PilotReceipt` (`pipelines/pilot_m3_3/runner.py`)
+  - CLI flag `--enrich-comments-only` on `pipelines.pilot_m3_3` and `pipelines.crawl_incremental`
+
+- [x] **Step 1: Write failing unit tests in `tests/unit/test_m3_3_pilot_pipeline.py`**
+  - Verify `run_m3_3_comment_enrichment` (and `run_m3_3_pilot` with `enrich_comments_only=True`) enriches comments onto an existing `videos_4m.jsonl` batch without re-running discovery, audio extraction, or CPU ASR, preserves existing `transcript`, `whisper_segments`, `audio_path`, and `sample_inspection_sheet.jsonl` `human_verified=True` annotations, respects `max_comments_per_video` / `max_comments_total` and fail-closed `AntiBotChallengeError`, and publishes a new Gold snapshot with populated `fact_comments.parquet`.
+- [x] **Step 2: Implement `enrich_existing_comments` and `run_m3_3_comment_enrichment`**
+- [x] **Step 3: Run unit tests, `mypy`, `ruff`, and execute live comment enrichment on Windows desktop**

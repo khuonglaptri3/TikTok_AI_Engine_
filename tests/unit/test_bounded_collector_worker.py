@@ -908,6 +908,7 @@ def test_tiktokapi_provider_skips_pinned_old_items_breaks_chronologically_and_ca
     cmts = prov.fetch_comments("fresh_2026_vid_1", max_comments=5)
     assert len(cmts) == 2
     assert cmts[0]["text"].startswith("  Món này")
+    prov.close()
 
 
 def test_auto_hybrid_fallback_raw_payload_archive_and_fail_closed_anti_bot_gate(tmp_path: Path) -> None:
@@ -1393,3 +1394,41 @@ def test_fix_discovery_anti_bot_recorded_and_dotenv_inline_comment_nan_safe(
     assert len(picked_nan) == 3
     merged_two = _merge_creators(None, auto_creators=2, base_corpus_dir=nan_corpus, max_creators=5)
     assert merged_two is not None and len(merged_two) == 2
+
+
+def test_tiktokapi_fetch_comments_deduplicates_paginated_comment_ids() -> None:
+    """TikTokApi pagination can yield duplicate cid objects across cursors; keep first seen per cid."""
+    from pipelines.crawl_incremental.providers import TikTokApiCollectorProvider
+
+    class _DupCommentsApi:
+        async def __aenter__(self) -> _DupCommentsApi:
+            return self
+
+        async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+            return None
+
+        async def create_sessions(self, **kwargs: Any) -> None:
+            return None
+
+        def video(self, id: str | None = None, url: str | None = None) -> Any:
+            class _V:
+                async def comments(self, count: int = 20) -> Any:
+                    for cid, txt in [("c_dup", "Comment 1"), ("c_dup", "Comment 1"), ("c_two", "Comment 2")]:
+                        class _C:
+                            as_dict = {"cid": cid, "text": txt, "digg_count": 1, "user": {"unique_id": "u1"}}
+
+                        yield _C()
+
+            return _V()
+
+    prov = TikTokApiCollectorProvider(
+        allow_live_network=True,
+        ms_token="tok_ok",
+        api_factory=_DupCommentsApi,
+    )
+    try:
+        rows = prov.fetch_comments("7707187736549117192", max_comments=10)
+    finally:
+        prov.close()
+    assert [r["comment_id"] for r in rows] == ["c_dup", "c_two"]
+
