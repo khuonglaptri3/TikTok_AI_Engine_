@@ -1,0 +1,45 @@
+{
+  "task_id": "M6.2",
+  "mode": "offline_grounded_30q_dry_run",
+  "corpus_snapshot_id": "m3_3_pilot_snapshot_v2",
+  "bm25_index_dir": "artifacts/indexes/bm25-m3_3-pilot",
+  "hardware": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python_version": "3.12.3",
+    "cpu_count": 4,
+    "concurrency": 1
+  },
+  "startup_artifact_load_ms": 9669.025,
+  "peak_rss_mib": 1158.55,
+  "health_ready_status": 200,
+  "demo_mount_status": 200,
+  "questions_total": 30,
+  "answerable_count": 20,
+  "answerable_retrieval_hits_nonempty": 20,
+  "answerable_fresh_target_hits": 8,
+  "answerable_fresh_target_total": 8,
+  "no_answer_count": 10,
+  "no_answer_strict_retrieval_or_http_refusal_count": 10,
+  "no_answer_flagged_or_refused_count": 10,
+  "source_resolution_rate": 1.0,
+  "total_citations_checked": 185,
+  "latency_ms_excluding_startup": {
+    "retrieval": {
+      "p50": 12.713,
+      "p95": 21.054,
+      "max": 22.316
+    },
+    "script_offline_grounded": {
+      "p50": 47.894,
+      "p95": 61.022,
+      "max": 62.741
+    },
+    "combined_per_question": {
+      "p50": 61.887,
+      "p95": 77.428,
+      "max": 78.208
+    }
+  },
+  "meets_offline_p95_lte_5000ms": true,
+  "human_inspection_complete": false
+}

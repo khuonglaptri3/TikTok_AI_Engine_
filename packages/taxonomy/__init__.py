@@ -9,7 +9,11 @@ from packages.taxonomy.context_enums import (
     classify_duration_bucket,
 )
 from packages.taxonomy.food_hierarchy import extract_dishes_from_text, map_food_category
-from packages.taxonomy.location_poi import resolve_location
+from packages.taxonomy.location_poi import (
+    DISH_ORIGIN_CITY_PHRASES_RE,
+    resolve_location,
+    resolve_location_from_caption,
+)
 from packages.taxonomy.rule_extractor import (
     extract_occasions,
     extract_price_tier,
@@ -18,6 +22,7 @@ from packages.taxonomy.rule_extractor import (
 )
 
 __all__ = [
+    "DISH_ORIGIN_CITY_PHRASES_RE",
     "DURATION_BUCKETS",
     "FOOD_CATEGORIES",
     "OCCASION_LABELS",
@@ -31,4 +36,5 @@ __all__ = [
     "infer_video_format",
     "map_food_category",
     "resolve_location",
+    "resolve_location_from_caption",
 ]

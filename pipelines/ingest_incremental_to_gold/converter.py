@@ -31,6 +31,7 @@ from packages.taxonomy import (
     infer_video_format,
     map_food_category,
     resolve_location,
+    resolve_location_from_caption,
 )
 from pipelines.build_gold_corpus.builder import (
     classify_follower_tier,
@@ -333,6 +334,13 @@ def _ingest_incremental_batch_to_gold(
             llm_district=None,
             poi_name=rec.poi_name,
         )
+        if city_norm is None and rec.caption.strip():
+            cap_city, cap_dist, cap_reg = resolve_location_from_caption(rec.caption)
+            if cap_city:
+                city_norm = cap_city
+                district_norm = district_norm or cap_dist
+                region = cap_reg if cap_reg != "unknown" else region
+                loc_source = "caption_inferred"
         hashtags = [h.lstrip("#").lower() for h in rec.hashtags if h.strip()]
         combined_text = f"{rec.caption} {' '.join(hashtags)} {rec.poi_name or ''} {rec.transcript[:800]}"
         video_format = infer_video_format(
