@@ -1,60 +1,71 @@
-# M3.G — Acquisition & Resource Gate Preparation (`Gate G3 = NOT_RUN`)
+# M3.G — Bounded Capture-to-Transcript-to-Search & Capacity Gate (`G3`)
 
-- Status: IN_PROGRESS (`N` completed `M3.1` repeated-ingest verification, `29`-file `.mp3` audio capacity accounting, and throughput projections in [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json), synced with PR #9 `M3.3 = COMPLETE` (`30/30` verified); **official Gate `G3` remains `NOT_RUN`** awaiting `K` annotation timing and `K`/`N` joint sign-off)
-- Gate result: NOT_RUN
-- Execution date: 2026-11-23 (Asia/Ho_Chi_Minh)
+- Status: IN_PROGRESS (All technical `G3` checks, `M3.1` repeated-ingest replays, `29`-`.mp3` SHA-256 verification, `30/30` `N`+`K` inspection timings (`33.0` min total), and `v2`/`v5` comment readiness checks **PASS** (`M4.1 = READY_UNBLOCKED`, `M5.1 = READY_UNBLOCKED`, `M5.2 = READY_UNBLOCKED`); awaiting `N` final co-sign on the unified `v1`/`v2`/`v5` receipt before flipping global `G3` from `NOT_RUN` to `PASS`)
+- Execution date: 2026-11-23 to 2026-11-26 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.G`)
-- Repository version: `main` (prepared over `186a4b0a`)
-- Primary owner (`M3.G` Gate Decision): Trần Đình Khương (`K`) · Peer reviewer & preparation contributor: Nguyễn Việt Nguyên (`N`)
+- Primary owner: Trần Đình Khương (`K`, `2` pts) · Peer reviewer & replay contributor: Nguyễn Việt Nguyên (`N`, `2` pts)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
 ## Conclusion
 
-**Gate `G3` (`M3.G`) technical preparation passes all `M3.1` repeated-ingest and resource-accounting checks (`0` duplicate keys, `100%` SHA256 base/pilot preservation, `1,322.89 MiB` replay peak RSS) and `M3.3` is now `COMPLETE` (`30/30` `N`+`K` verified via PR #9 `d0ced5c0`), while `M3.G` stays `IN_PROGRESS` (`G3 = NOT_RUN`) awaiting `K`'s human annotation timing and a joint `K`/`N` ruling on `comment_coverage_rate = 0.0`.**
+Executed and unified both `N`'s repeated-ingest replay preparation ([g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json)) and `K`'s deterministic Gate `G3` verification suite ([run_g3_checks.py](evidence/run_g3_checks.py) -> [g3_verification_receipt.json](evidence/g3_verification_receipt.json)) across all four Gold snapshots (`20261118_taxonomy_fix_v1`, `m3_3_pilot_snapshot_v1`, `m3_3_pilot_snapshot_v2`, and `m3_3_playwright_comments_20261125_v5`) at **`USD 0` spend** with **`0` byte mutations**:
 
-- **Repeated Dual-Sink Ingest (`M3.1` Replay, [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json)):** Both `update_existing=False` (`5,635.45 ms`) and `update_existing=True` (`6,140.35 ms`) over [m3_3_pilot_snapshot_v1](../../../../data/corpus/m3_3_pilot_snapshot_v1/manifest.json) produced `71,026` videos (`71,026` unique `video_id`), `264` creators, `436` voice segments (`436` unique `segment_id`), `0` comments, and `30` ABSA rows with `zero_duplicate_keys=true`, `manifest_checksums_verified=true`, and `100%` unchanged SHA256s on both `20261118_taxonomy_fix_v1` and `m3_3_pilot_snapshot_v1`.
-- **Observed Pilot Throughput & Audio Inventory ([m3_3_pilot_receipt.json](../M3.3/evidence/m3_3_pilot_receipt.json)):** `50` candidates -> `30` succeeded (`capture_yield_rate = 0.6`, `failure_rate = 0.0`, `comment_coverage_rate = 0.0`); `29` captured `.mp3` files total **`2,801 s` (`46.683` min)** across **`22,524,055` B** (`0.4601 MiB/audio-min`); CPU `faster-whisper/small-cpu-int8` transcribed `10` videos (`16.683` min) in `197.269 s` (`RTF = 0.1971`, ASR peak RSS `1,009.46 MiB`); `10/10` searchable in `bm25-m3_3-pilot`; whole pilot `744.154 s`, peak RSS `3,214.92 MiB`, total disk `125,741,108` B.
-- **Projections & Strict Budget Guardrail:** Transcribing the remaining `19` captured pilot `.mp3` files (`30.0` audio min) at measured `RTF = 0.1971` projects `~552.08 s` (`~9.20` min) total ASR time across all `29` files. A hypothetical `50`-succeeded-video batch (strictly contingent on an explicit approved budget after `G3`) projects `~84` candidates (`60%` yield), `~20.67` min total wall time at pilot rate, `~37.04 MiB` audio disk, and **`~50.0` min human review** scaled from `N`'s reported `~15.0` min estimate for `15` videos (`~1.0` min/video; `K`'s timing remains `PENDING_MEASUREMENT`).
-- **Comment Block Honest Record:** Re-testing `TikTokApi` with updated `MS_TOKEN` (`len=156`) on this headless terminal raised `EmptyResponseException` (`AntiBotChallengeError`); comment collection remains at `0` unless executed on a GUI desktop with `--no-tiktok-headless` or explicitly deferred in `G3`.
+- **Vertical Slice, Replays & Cryptographic Lineage (`PASS` in `29.639 s`):** `G0`, `G1` (local-only), and `G2` are `PASS`; `M3.1`, `M3.2`, and `M3.3` are `COMPLETE`. All Parquet SHA-256 digests across `base` (`70,996` historical videos), `v1` (`71,026` videos, `436` voice segments), `v2` (`452` native-ID comments across `28/30` pilot videos), and `v5` (`2,823` DOM comments across `118/130` fresh F&B videos), all `29/29` `64 kbps` `.mp3` SHA-256 digests (`22,524,055` B, `46.683` audio min), **`10/10` (`>= 5`)** fresh ASR-transcribed video retrievals on `bm25-m3_3-pilot`, **`30/30` (`15 K` + `15 N`)** human verifications (`N = 15.0` min + `K = 18.0` min = **`33.0` person-minutes**), and disposable `/tmp` `M3.1` repeated-ingest (`5.64 s` / `6.14 s`) + duplicate-comment `update_existing=True` preservation probes (`3 -> 2` deduplicated comments, `436` voice segments preserved) passed.
+- **Per-Downstream Modality Readiness Matrix (`ALL READY_UNBLOCKED`):**
+  - **`M4.1` (`Timestamp / Prosody CPU Evaluation`) = `READY_UNBLOCKED`:** `29/30` (`96.67%`) valid `64 kbps` `.mp3` files (`46.683` min `<= 60.0` cap; **`27/30 = 90.0%`** pure in-domain F&B audio). `N` has already processed all `29` `.mp3`s (`RTF = 0.009` prosody, `436/436` `audio_derived`) and verified `38/38` `N` utterances in [M4.1](../M4.1/README.md).
+  - **`M5.1` (`Duplicate / Contact / Noise Indicators`) = `READY_UNBLOCKED`:** `452` native-ID comments across `28` pilot videos in `m3_3_pilot_snapshot_v2` (`>= 150` comments & `>= 10` videos); `300`-comment pool exported with `N` `180/180` verified in [M5.1](../M5.1/README.md).
+  - **`M5.2` (`Four-Aspect Sentiment with Source Spans`) = `READY_UNBLOCKED`:** `452` native-ID viewer comments across `28` pilot videos in `v2` (`180`-unit pool exported with `N` `115/115` verified in [M5.2](../M5.2/README.md)), plus `2,429` video-disjoint expansion comments (`90` videos) in `data/annotations/absa_train_video_disjoint_v1.jsonl`.
+- **Post-Pilot Collection Freeze ([g3-gate-decision-receipt.json](evidence/g3-gate-decision-receipt.json)):** Because all downstream `M4`/`M5` modalities are populated on disk, **all further live TikTok network crawling is frozen (`0` additional sessions authorized)**. Per two-person governance, `M3.G` records `K`'s primary-owner `PASS` recommendation and awaits `N`'s final co-sign on the unified `v1`/`v2`/`v5` receipt before flipping global `G3` from `NOT_RUN` to `PASS`.
 
 ## Work performed
 
-- Verified byte-for-byte SHA256 hashes of `20261118_taxonomy_fix_v1` and `m3_3_pilot_snapshot_v1` before and after temporary `/tmp` `M3.1` replay runs.
-- Executed `ingest_incremental_batch_to_gold` over `m3_3_pilot_snapshot_v1` + `data/raw_incremental/m3_3_pilot_run/batch/videos_4m.jsonl` under both `update_existing=False` and `update_existing=True` (`5.64 s` and `6.14 s`).
-- Audited all `29` `.mp3` files in `audio_64k/` (`46.683` min total), inspection counts in [sample_inspection_sheet.jsonl](../M3.3/evidence/sample_inspection_sheet.jsonl) (`30/30`: `N = 15/15`, `K = 15/15`), and conservative capacity projections into [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json).
+- **`N` repeated-ingest replay & throughput baseline ([g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json)):** Executed `/tmp` `ingest_incremental_batch_to_gold` replays (`update_existing=False` in `5,635.45 ms`, `update_existing=True` in `6,140.35 ms`, `zero_duplicate_keys=true`), measured `29`-`.mp3` byte/minute rates (`0.4601 MiB/min`), and recorded `N_minutes = 15.0`.
+- **`K` MLOps readiness probe, whole-branch review hardening & `v1`/`v2`/`v5` unification ([run_g3_checks.py](evidence/run_g3_checks.py), [test_m3_g_gate_checks.py](../../../../tests/unit/test_m3_g_gate_checks.py)):** Implemented `6` TDD unit tests covering `.mp3` SHA-256/orphan checks, fail-closed `G0`/`M3.x` receipts, `15 K / 15 N` completeness & ID parity, `>= 150` comments & `>= 10` videos readiness transitions, dynamic capacity projections, and `3 -> 2` duplicate-comment `update_existing=True` preservation; recorded `K_minutes = 18.0` (`33.0` min total) and verified all four Gold snapshots end-to-end.
+
+## Measured Yield, Readiness & Capacity Summary
+
+| Metric / Stage | Observed Measurement | Downstream Status & Policy |
+| --- | --- | --- |
+| Candidate -> Succeeded -> Audio -> Pure F&B Audio (`v1`) | `50` -> `30` (`60.0%`) -> `29` (`96.7%`) -> **`27` (`90.0%`)** | Effective pure F&B audio yield = **`0.54` videos/candidate** (`#13` mixed, `#19` no-audio, `#26` museum OOD) |
+| Stage 1: Network Capture & Comment Enrichments (`v1`, `v2`, `v5`) | `v1` capture `539.885 s` · `v2` `TikTokApi` `41.141 s` (`452` comments / `28` vids) · `v5` Playwright `2,383.1 s` (`2,823` comments / `118` vids) | **Frozen at `0` new sessions**; `M5.1` & `M5.2` **`READY_UNBLOCKED`** |
+| Stage 2: CPU ASR (`faster-whisper/small-cpu-int8`) | `197.269 s` / `16.683` min (**`RTF = 0.1971`**, `1,009.46 MiB` RSS) | Full `29`-file `M4.1` (`46.683` min) projected **`552.07 s` (`0.1534` CPU h `<= 4.0` CPU h)**; **`M4.1 = READY_UNBLOCKED`** |
+| Stage 3: Dual-Sink Gold Replay & BM25 Publish | Replay `5.64 s` / `6.14 s` (`0` duplicates, `3,214.92 MiB` max RSS) | `100%` SHA-256 immutability verified across `base`, `v1`, `v2`, and `v5` |
+| Stage 4: Two-Person Inspection & Annotation | `M3.3` `30/30` verified in **`33.0` min** (`N = 15.0` min + `K = 18.0` min) | `M4.1` (`60` utts): `~90` min · `M5.1` (`300` comments): `~150` min · `M5.2` (`180` units): `~180` min |
 
 ## Outputs
 
 | File | Purpose |
 | --- | --- |
-| [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json) | Measured `M3.1` replay timing/dedup, SHA256 preservation proofs, `29`-`.mp3` audio totals, inspection split counts, throughput estimates, and blocking open items |
-| [workflow.md](evidence/workflow.md) | `M3.G` preparation workflow provenance, commands, and blocker log |
-| [spec.md](superpowers/spec.md), [plan.md](superpowers/plan.md) | Gate `G3` preparation specification and execution plan |
+| [g3-gate-decision-receipt.json](evidence/g3-gate-decision-receipt.json) | Primary-owner `G3` recommendation (`PASS_FREEZE_FURTHER_CRAWLING`), `N`+`K` inspection timings, and `0`-session freeze |
+| [g3_verification_receipt.json](evidence/g3_verification_receipt.json) | Unified `G3` SHA-256 lineage (`base`, `v1`, `v2`, `v5`), readiness matrix (`ALL READY_UNBLOCKED`), and capacity receipt |
+| [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json) | `N`'s `M3.1` `update_existing=False/True` replay timings (`5.64 s` / `6.14 s`) and `29`-`.mp3` throughput receipt |
+| [run_g3_checks.py](evidence/run_g3_checks.py) | Deterministic executable `G3` verification and capacity-modeling script |
+| [g3_checks.log](evidence/g3_checks.log) | Console execution log (`PASS in 29.639s`, `M4.1/M5.1/M5.2 = READY_UNBLOCKED`, `10/10` searchable) |
+| [workflow.md](evidence/workflow.md) | Two-contributor (`N` + `K`) Superpowers TDD workflow ledger and verification SHA-256 digests |
 
 ## Verification
 
 | Check | Result | Scope / evidence |
 | --- | --- | --- |
-| `M3.1` replay verification script (`ingest_incremental_batch_to_gold`, `update_existing=False` & `True`) | PASS | `5,635.45 ms` / `6,140.35 ms`; `zero_duplicate_keys=true`; `base_corpus_bytes_preserved_sha256=true`; [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json) |
-| `.venv/bin/python -m pytest tests/unit/test_snapshot_continuity.py tests/unit/test_incremental_absa_seeding.py tests/unit/test_m3_3_pilot_pipeline.py -v` | PASS (`38 passed in 10.04s`) | Snapshot continuity, Dual-Sink ABSA/ingest, and M3.3 pilot regression checks |
-| `python3 scripts/check_secrets.py` & `M3.G` relative links/layout check | PASS (`0` leaks; `54` relative links `0` broken) | `M3.G/` top-level (`README.md`, `evidence/`, `superpowers/{spec.md, plan.md}`) verified |
+| `python3 docs/reports/milestones/M3.G/evidence/run_g3_checks.py` | PASS (`29.639 s`, `0` byte mutations) | `G0/G1/G2` + `M3.1–M3.3`, SHA-256 across `base`/`v1`/`v2`/`v5` & `29` `.mp3`s, `10/10` BM25 searchability, `30/30` inspection, `M3.1` dedup/preservation; [g3_verification_receipt.json](evidence/g3_verification_receipt.json) |
+| `python3 -m pytest tests/unit/test_m3_g_gate_checks.py -v` | PASS (`6 passed`) | Tamper/orphan detection, fail-closed `G0`/`M3.x` receipts, `15 K / 15 N` completeness & ID parity, `>=150` comments & `>=10` videos readiness transitions, dynamic capacity & dedup probe |
+| `python3 -m pytest -q` & `python3 -m mypy` (Linux & `--platform win32`) | PASS (`265 passed, 10 skipped`; `117` source files `0` type issues) | Full unified workspace regression and cross-platform static typing |
+| `python3 scripts/check_secrets.py` | PASS (`0` secret leaks) | Full repository secret hygiene check |
 
 ## Open issues
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| `K` vs `N` sample inspection (`sample_inspection_sheet.jsonl`) | Resolved (`30/30` verified via PR #9 `d0ced5c0`: `N=15/15`, `K=15/15`) | `M3.3` complete; ready for `G3` timing & ruling |
-| Human `annotation_time_minutes` (`M3.3` sample inspection) | `N` reported `~15.0` min estimate (`~1.0` min/video); `K` timing still `PENDING_MEASUREMENT` | `K` records actual time for final combined `G3` estimate |
-| `comment_coverage_rate = 0.0` (`TikTokApi` headless Chromium hit `EmptyResponseException`) | `M3.3`/`M3.G`/`M4.1` audio & search paths are unblocked; `M5.1`/`M5.2` real-comment evaluation awaits GUI desktop capture (`--no-tiktok-headless`) or explicit deferral | Decide jointly at `G3` whether to run desktop GUI comment enrichment or defer `M5` real-comment gates |
+| Final `N` co-sign on unified `v1`/`v2`/`v5` `G3` receipt | Both open items from `N`'s initial prep (`K` inspection time & `comment_coverage_rate = 0.0`) are now resolved; global `G3` stays `NOT_RUN` until `N` confirms the unified receipt | `N` quick concurrence (`M3.G -> COMPLETE`, `G3 -> PASS`) |
 
 ## Acceptance and handoff
 
 | Task criterion | Result | Evidence |
 | --- | --- | --- |
-| Repeated ingest passes & base corpus preserved | Met (`update_existing=False` & `True`, `0` duplicate keys, SHA256 identical) | [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json) |
-| `M3.3` vertical slice meets technical/human inspection | Met (`30/30` captured, `10/10` searchable, `N=15/15` & `K=15/15` verified) | [M3.3/README.md](../M3.3/README.md), [sample_inspection_sheet.jsonl](../M3.3/evidence/sample_inspection_sheet.jsonl) |
-| Measure audio RTF, capture yield, comment coverage & annotation time | Partial (`RTF=0.1971`, `yield=0.6`, `comment_coverage=0.0`, `N ~15.0 min` reported; `K` timing `PENDING_MEASUREMENT`) | [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json) |
-| Further batch estimate & no-expansion guardrail + `K`/`N` joint gate sign-off | Drafted by `N`; `K` timing & joint `G3` sign-off pending | [spec.md](superpowers/spec.md), [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json) |
+| Repeated `M3.1` ingest & `M3.3` minimum vertical slice (`>= 5` searchable real fresh videos) | Met (`5.64 s` / `6.14 s` replays; `10/10` searchable; `436` voice segments preserved) | [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json), [g3_verification_receipt.json](evidence/g3_verification_receipt.json) |
+| Measured audio `RTF`, capture yield, domain purity, comment coverage & annotation time | Met (`RTF = 0.1971`, `0.60` capture, `27/30` pure F&B audio, `93.33%` `v2` comment coverage / `2,823` `v5` comments, `33.0` min `N`+`K` inspection) | [g3_verification_receipt.json](evidence/g3_verification_receipt.json) |
+| Further collection estimated & bounded by explicit budget | Met (`0` further live sessions authorized; all `M4`/`M5` datasets on disk) | [g3-gate-decision-receipt.json](evidence/g3-gate-decision-receipt.json) |
+| Two-person reciprocal gate confirmation (`K` + `N`) | Ready for final `N` co-sign (`N` prep + `K` gate decision unified) | [g3-gate-decision-receipt.json](evidence/g3-gate-decision-receipt.json) |
 
-Final task status: **IN_PROGRESS** (`Gate G3 = NOT_RUN`; technical repeated-ingest, capacity prep, and `M3.3 = COMPLETE` prerequisite satisfied, handed off for `K` annotation timing and joint `G3` decision).
+Final status: **`M3.G` is `IN_PROGRESS` (all technical & data-readiness criteria `PASS`; awaiting `N` final concurrence on the unified receipt to flip `M3.G -> COMPLETE` / `G3 -> PASS`)**.

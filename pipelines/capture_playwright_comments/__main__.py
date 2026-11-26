@@ -8,9 +8,8 @@ import time
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
-
-from playwright.sync_api import sync_playwright
 
 from packages.analytics import load_verified_corpus
 from pipelines.crawl_incremental.crawler_service import load_dotenv_if_present
@@ -101,6 +100,11 @@ def main() -> None:
     except ValueError as exc:
         parser.error(str(exc))
     session_cookies = _load_tiktok_session_cookies(cookie_file, ms_token)
+    try:
+        from playwright.sync_api import sync_playwright
+    except ModuleNotFoundError:
+        parser.error("playwright is required for live browser capture; install playwright and chromium")
+    pw_factory: Any = sync_playwright
 
     if args.remaining_pilot:
         manifest, _, _ = load_verified_corpus(args.base_corpus)
@@ -108,7 +112,7 @@ def main() -> None:
         if not targets:
             print(json.dumps({"status": "NOTHING_REMAINING", "base_snapshot_id": manifest.snapshot_id}, indent=2))
             return
-        with sync_playwright() as playwright:
+        with pw_factory() as playwright:
             browser = playwright.chromium.launch(headless=False)
             try:
                 context = browser.new_context(locale="vi-VN")
@@ -138,7 +142,7 @@ def main() -> None:
     video_id = validate_known_video_url(args.url, known, as_of)
 
     start = time.monotonic()
-    with sync_playwright() as playwright:
+    with pw_factory() as playwright:
         browser = playwright.chromium.launch(headless=False)
         try:
             context = browser.new_context(locale="vi-VN")

@@ -1,0 +1,47 @@
+{
+  "gate_id": "G3",
+  "task_id": "M3.G",
+  "primary_owner": "Trần Đình Khương (K)",
+  "peer_reviewer_and_replay_contributor": "Nguyễn Việt Nguyên (N)",
+  "decided_by_primary_owner_at": "2026-11-26T09:17:00+07:00",
+  "primary_owner_recommendation": "PASS_FREEZE_FURTHER_CRAWLING",
+  "n_peer_approval": "PENDING_N_FINAL_CONCURRENCE_ON_UNIFIED_V2_V5_RECEIPT",
+  "gate_status_until_two_person_signoff": "IN_PROGRESS_READY_FOR_JOINT_PASS",
+  "decision_scope": "M3.1-M3.3 vertical capture-to-ASR-to-Gold-to-BM25 slice and post-pilot comment enrichments verified across 4 immutable Gold snapshots (base 20261118_taxonomy_fix_v1, pilot v1, TikTokApi native-comment v2 = 452 comments across 28/30 pilot videos, and Playwright expansion v5 = 2,823 comments across 118/130 fresh F&B videos) with 0 byte mutations, 29/29 64kbps mp3 SHA-256 verified (46.683 min; 27 pure F&B), 10/10 fresh ASR searchable (RTF=0.1971), 30/30 N+K human verified (N=15.0 min, K=18.0 min, total=33.0 min), and M3.1 repeated-ingest + deduplication probes passing. Unblocks M4.1, M5.1, and M5.2; freezes all further live network crawling (0 additional sessions authorized).",
+  "prerequisite_gates": {
+    "G0": "PASS",
+    "G1": "PASS (local-only; public redistribution BLOCKED)",
+    "G2": "PASS (historical local CPU core)"
+  },
+  "upstream_tasks": {
+    "M3.1": "COMPLETE",
+    "M3.2": "COMPLETE",
+    "M3.3": "COMPLETE"
+  },
+  "recorded_inspection_time_minutes": {
+    "N_minutes_15_videos": 15.0,
+    "K_minutes_15_videos": 18.0,
+    "total_person_minutes_30_videos": 33.0
+  },
+  "downstream_authorizations": {
+    "M4.1": "READY_UNBLOCKED (29 existing pilot mp3s = 46.683 min; N 38/38 audio references verified, awaiting K 38-utterance co-review)",
+    "M4.2_audio_join": "GATED_ON_M4_1",
+    "M5.1": "READY_UNBLOCKED (300-comment real pool exported from m3_3_pilot_snapshot_v2; N 180/180 verified, awaiting K 180-comment co-annotation)",
+    "M5.2": "READY_UNBLOCKED (180-unit real pool exported from m3_3_pilot_snapshot_v2 with N 115/115 verified, plus 2,429 video-disjoint expansion comments in absa_train_video_disjoint_v1.jsonl)",
+    "further_live_collection_budget": {
+      "authorized_sessions": 0,
+      "new_videos_authorized": 0,
+      "new_comments_authorized": 0,
+      "authorized_spend_usd": 0.0,
+      "policy": "All M4/M5 modalities are populated on disk; further live TikTok crawling is frozen unless a new bounded gate budget is jointly approved."
+    }
+  },
+  "referenced_evidence_sha256": {
+    "docs/reports/milestones/M3.G/evidence/g3_verification_receipt.json": "82bc9c6f9efc26d134ee1e189008d477f59ec263ebc5792ce0b71953ac81f12f",
+    "docs/reports/milestones/M3.G/evidence/g3_capacity_and_replay_receipt.json": "f308a52614436c5f4198eb35ead441abe858d8632c589a765e3a8998eb69ed3c",
+    "docs/reports/milestones/M3.3/evidence/m3_3_original_pass_receipt.json": "3a67062ed46c73052397f42f7a247f6b6594c24186d925a1b2508a2dae591d8a",
+    "docs/reports/milestones/M3.3/evidence/m3_3_pilot_receipt.json": "487d0c5897ca537d71b0529ef8b84cc2f2f285ed970f881ccbc89e54d175ce05",
+    "docs/reports/milestones/M3.3/evidence/playwright_comment_capture_20261125.json": "ba111596cefe14cae228ac1cabca7398507a1e7f51d03d0cf2ff1385c349022e",
+    "docs/reports/milestones/M3.3/evidence/sample_inspection_sheet.jsonl": "0c3120f8e5add22914bd93c8a7fbd1b8329ce0653920a86a8fb635b2edcd9b36"
+  }
+}

@@ -1,18 +1,17 @@
-# M3.G — Acquisition & Resource Gate Preparation Plan
+# M3.G Gate Decision Implementation Plan
 
-**Goal:** Produce a reproducible `M3.1` repeated-ingest replay receipt, full `29`-file `.mp3` audio-minute & throughput capacity projections, honest open-blocker accounting (`K 0/15`, `comment_coverage_rate = 0.0`, `annotation_time = PENDING_MEASUREMENT`), and compliant `docs/reports/milestones/M3.G/` documentation without altering immutable corpus data or prematurely marking Gate `G3` as `PASS`.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
-## Steps
+**Goal:** Unify `N`'s `M3.1` repeated-ingest replay receipt (`g3_capacity_and_replay_receipt.json`) and `K`'s deterministic `G3` verification probe (`run_g3_checks.py` + `test_m3_g_gate_checks.py`) across `20261118_taxonomy_fix_v1`, `m3_3_pilot_snapshot_v1`, `m3_3_pilot_snapshot_v2` (`452` native comments), and `m3_3_playwright_comments_20261125_v5` (`2,823` DOM comments) at `USD 0` spend with `0` byte mutations.
 
-1. **Pre-execution artifact & schema checks:**
-   - Confirm [manifest.json](../../../../../data/corpus/20261118_taxonomy_fix_v1/manifest.json) and [manifest.json](../../../../../data/corpus/m3_3_pilot_snapshot_v1/manifest.json) pass `load_verified_corpus` SHA256 verification untouched.
-   - Verify exact row/inspection counts in `docs/reports/milestones/M3.3/evidence/sample_inspection_sheet.jsonl` and read exact metrics from `docs/reports/milestones/M3.3/evidence/m3_3_pilot_receipt.json`.
-2. **Execute live `M3.1` repeated-ingest & capacity verification script (writing snapshots strictly under `/tmp/`):**
-   - Measure total duration and bytes of all `29` `.mp3` files under `data/raw_incremental/m3_3_pilot_run/batch/audio_64k/` (from `videos_4m.jsonl` `duration_sec` / `audio_path` + `crawl_manifest.json` / `ffmpeg` or container metadata if available).
-   - Run `ingest_incremental_batch_to_gold(base_corpus_dir=Path("data/corpus/m3_3_pilot_snapshot_v1"), incremental_jsonl=Path("data/raw_incremental/m3_3_pilot_run/batch/videos_4m.jsonl"), ..., update_existing=False)` into `/tmp/m3_g_replay_skip` -> measure wall ms, peak RSS, row counts, and SHA256 verification.
-   - Run `ingest_incremental_batch_to_gold(..., update_existing=True)` into `/tmp/m3_g_replay_enrich` -> measure wall ms, peak RSS, row counts, zero duplicate keys, and SHA256 verification.
-   - Save JSON receipt to `docs/reports/milestones/M3.G/evidence/g3_capacity_and_replay_receipt.json` (cleaning up `/tmp/m3_g_replay_*`).
-3. **Author `M3.G` documentation & ledger (`IN_PROGRESS`, `G3 = NOT_RUN`):**
-   - Write `docs/reports/milestones/M3.G/evidence/workflow.md`, `docs/reports/milestones/M3.G/README.md`, and add the `M3.G` row in `docs/reports/milestones/README.md`.
-4. **Full pre-handoff verification:**
-   - Run `python3 scripts/check_secrets.py` (`0` leaks), relative markdown link validation across `docs/reports/milestones/M3.G/` and `docs/reports/milestones/README.md`, `M3.G/` top-level directory check (`README.md`, `evidence/`, `superpowers/{spec.md, plan.md}`), and relevant `pytest` (`test_snapshot_continuity.py`, `test_incremental_absa_seeding.py`, `test_m3_3_pilot_pipeline.py`).
+**Architecture:** `docs/reports/milestones/M3.G/evidence/run_g3_checks.py` provides importable verification, readiness-matrix, and 4-component capacity functions backed by `6` unit tests in `tests/unit/test_m3_g_gate_checks.py`, while `g3_capacity_and_replay_receipt.json`, `g3_verification_receipt.json`, and `g3-gate-decision-receipt.json` record both contributors' measured timings and freeze further live crawling.
+
+**Tech Stack:** Python `3.11+`, `pyarrow`, `pandas`, `pydantic`, `pytest`, `mypy` (Linux + `--platform win32`), `packages.analytics.load_verified_corpus`, `packages.retrieval.HybridRetrievalService`, `pipelines.ingest_incremental_to_gold.ingest_incremental_batch_to_gold`.
+
+**Spec:** `docs/reports/milestones/M3.G/superpowers/spec.md`
+
+## Completed Tasks
+
+- [x] **Task 1 (`N`, `2026-11-23`):** Execute disposable `/tmp` `M3.1` repeated-ingest replays (`update_existing=False` in `5.64 s`, `update_existing=True` in `6.14 s`, `0` duplicates, SHA-256 preserved), audit `29` `.mp3` durations (`46.683` min), and record `N_minutes = 15.0` in `g3_capacity_and_replay_receipt.json`.
+- [x] **Task 2 (`K`, `2026-11-23`):** Implement TDD `run_g3_checks.py` and `tests/unit/test_m3_g_gate_checks.py` (`6/6` tests passing after whole-branch code review hardening: `.mp3` tamper/orphan checks, fail-closed `G0`/`M3.x` receipts, `15 K / 15 N` completeness & ID parity, `>= 150` comments & `>= 10` videos readiness transitions, dynamic telemetry, and `3 -> 2` duplicate-comment `update_existing=True` preservation probe).
+- [x] **Task 3 (`K`, `2026-11-26`):** Re-execute unified `run_g3_checks.py` across `base`, `v1`, `v2` (`452` comments / `28` videos), and `v5` (`2,823` comments / `118` videos) -> `PASS in 22.819s` (`M4.1 = READY_UNBLOCKED`, `M5.1 = READY_UNBLOCKED`, `M5.2 = READY_UNBLOCKED`, `10/10` searchable, `0` byte mutations), record `K_minutes = 18.0`, and synchronize `M3.G/README.md`, `workflow.md`, and `docs/reports/milestones/README.md`.

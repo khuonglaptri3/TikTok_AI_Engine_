@@ -10,14 +10,16 @@ from collections.abc import Callable, Mapping
 from datetime import UTC, datetime, timedelta
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import unquote, urlparse
 
 import pandas as pd
-from playwright.sync_api import BrowserContext, Page
 
 from packages.analytics import load_verified_corpus
 from pipelines.crawl_incremental.providers import AntiBotChallengeError
+
+if TYPE_CHECKING:
+    from playwright.sync_api import BrowserContext, Page
 
 _VOID_TAGS = frozenset({
     "area",

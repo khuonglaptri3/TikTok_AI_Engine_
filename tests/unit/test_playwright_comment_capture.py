@@ -4,8 +4,24 @@ import subprocess
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
+
+
+def _sync_playwright() -> Any:
+    pw_mod = pytest.importorskip("playwright.sync_api")
+    return pw_mod.sync_playwright
+
+
+def _launch_headless_chromium(pw: Any) -> Any:
+    try:
+        return pw.chromium.launch(headless=True)
+    except Exception as exc:
+        msg = str(exc).lower()
+        if "executable doesn't exist" in msg or "executable does not exist" in msg or "playwright install" in msg:
+            pytest.skip("Playwright Chromium browser binary is not installed on this host")
+        raise
 
 
 def test_normalize_rendered_cards_preserves_text_and_bounds_rows() -> None:
@@ -68,12 +84,11 @@ def test_write_normalized_jsonl_requires_rows_and_new_path(tmp_path: Path) -> No
 
 
 def test_visible_comment_cards_reads_observed_dom_wrapper() -> None:
-    from playwright.sync_api import sync_playwright
-
     from pipelines.capture_playwright_comments.capture import visible_comment_cards
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.set_content('<div class="DivCommentItemWrapper"><span data-e2e="comment-level-1">Good</span></div>')
@@ -85,12 +100,11 @@ def test_visible_comment_cards_reads_observed_dom_wrapper() -> None:
 
 
 def test_capture_comments_on_page_opens_visible_panel() -> None:
-    from playwright.sync_api import sync_playwright
-
     from pipelines.capture_playwright_comments.capture import capture_comments_on_page
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.set_content('<section><div data-e2e="comment-icon">Comments</div></section><div id="target"></div>')
@@ -110,13 +124,12 @@ def test_capture_comments_on_page_opens_visible_panel() -> None:
 
 
 def test_capture_comments_on_page_stops_at_unsolved_slider() -> None:
-    from playwright.sync_api import sync_playwright
-
     from pipelines.capture_playwright_comments.capture import capture_comments_on_page
     from pipelines.crawl_incremental.providers import AntiBotChallengeError
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.set_content(
@@ -132,12 +145,11 @@ def test_capture_comments_on_page_stops_at_unsolved_slider() -> None:
 
 
 def test_capture_comments_on_page_waits_for_visible_list_to_settle() -> None:
-    from playwright.sync_api import sync_playwright
-
     from pipelines.capture_playwright_comments.capture import capture_comments_on_page
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.set_content(
@@ -182,12 +194,11 @@ def test_capture_paths_reject_existing_receipt_before_capture(tmp_path: Path) ->
 
 
 def test_capture_comments_ignores_captcha_word_inside_real_comment() -> None:
-    from playwright.sync_api import sync_playwright
-
     from pipelines.capture_playwright_comments.capture import capture_comments_on_page
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.set_content(
@@ -212,13 +223,12 @@ def test_validate_loaded_video_identity_rejects_same_host_redirect() -> None:
 
 
 def test_capture_comments_detects_visible_slider_without_named_class() -> None:
-    from playwright.sync_api import sync_playwright
-
     from pipelines.capture_playwright_comments.capture import capture_comments_on_page
     from pipelines.crawl_incremental.providers import AntiBotChallengeError
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.set_content(
@@ -232,18 +242,10 @@ def test_capture_comments_detects_visible_slider_without_named_class() -> None:
 
 
 def test_capture_comments_rejects_manual_wait_above_five_minutes() -> None:
-    from playwright.sync_api import sync_playwright
-
     from pipelines.capture_playwright_comments.capture import capture_comments_on_page
 
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
-        try:
-            page = browser.new_page()
-            with pytest.raises(ValueError, match="bounds"):
-                capture_comments_on_page(page, "123", manual_wait_seconds=301)
-        finally:
-            browser.close()
+    with pytest.raises(ValueError, match="bounds"):
+        capture_comments_on_page(cast(Any, object()), "123", manual_wait_seconds=301)
 
 
 def test_capture_cli_validates_bounds_and_env_precedence_before_browser_launch(tmp_path: Path) -> None:
@@ -344,12 +346,11 @@ def test_normalize_rendered_cards_handles_void_tags_and_ignores_in_body_mentions
 
 
 def test_challenge_overlay_ignores_zero_size_hidden_parent_and_verified_creator_badge() -> None:
-    from playwright.sync_api import sync_playwright
-
     from pipelines.capture_playwright_comments.capture import capture_comments_on_page
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.set_content(
@@ -373,8 +374,6 @@ def test_challenge_overlay_ignores_zero_size_hidden_parent_and_verified_creator_
 
 
 def test_capture_comments_waits_for_hydrated_icon_skips_skeleton_cards_and_guards_loop_redirect() -> None:
-    from playwright.sync_api import Route, sync_playwright
-
     from pipelines.capture_playwright_comments.capture import (
         capture_comments_on_page,
         validate_known_video_url,
@@ -392,8 +391,9 @@ def test_capture_comments_waits_for_hydrated_icon_skips_skeleton_cards_and_guard
     with pytest.raises(ValueError):
         validate_loaded_video_identity("https://www.tiktok.com:8443/@creator/video/123", "123")
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.set_content(
@@ -424,7 +424,7 @@ def test_capture_comments_waits_for_hydrated_icon_skips_skeleton_cards_and_guard
 
             redirected_page = browser.new_page()
 
-            def _fulfill_video(route: Route) -> None:
+            def _fulfill_video(route: Any) -> None:
                 route.fulfill(
                     status=200,
                     content_type="text/html",
@@ -534,12 +534,11 @@ def test_select_remaining_pilot_urls_excludes_old_and_already_commented_videos(t
 
 
 def test_capture_comments_on_page_scrolls_up_to_limit_and_allows_zero_comments() -> None:
-    from playwright.sync_api import sync_playwright
-
     from pipelines.capture_playwright_comments.capture import capture_comments_on_page
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.set_content(
@@ -590,15 +589,13 @@ def test_run_batch_comment_capture_reuses_page_applies_cooldown_checkpoints_and_
 ) -> None:
     import json
 
-    from playwright.sync_api import Route, sync_playwright
-
     from pipelines.capture_playwright_comments.capture import run_batch_comment_capture
     from pipelines.crawl_incremental.providers import AntiBotChallengeError
 
     sleeps: list[float] = []
     block_third = True
 
-    def _router(route: Route) -> None:
+    def _router(route: Any) -> None:
         url = route.request.url
         if url.endswith("/video/111"):
             body = (
@@ -634,8 +631,9 @@ def test_run_batch_comment_capture_reuses_page_applies_cooldown_checkpoints_and_
     ]
     out_jsonl = tmp_path / "batch_comments.jsonl"
 
+    sync_playwright = _sync_playwright()
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = _launch_headless_chromium(pw)
         try:
             page = browser.new_page()
             page.route("https://www.tiktok.com/**", _router)
