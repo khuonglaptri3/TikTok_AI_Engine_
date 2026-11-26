@@ -1,0 +1,28 @@
+{
+  "gate_id": "G4",
+  "task_id": "M4.G",
+  "primary_owner": "Nguyễn Việt Nguyên (N)",
+  "peer_reviewer_and_probe_author": "Trần Đình Khương (K)",
+  "reviewed_by_k_at": "2026-11-26T11:05:00+07:00",
+  "k_peer_review_recommendation": "PASS_QUALIFIED_AUDIO_AND_OBSERVABLE_PROMO_ONLY",
+  "n_primary_owner_signoff": "PENDING_N_FINAL_CONCURRENCE_WITH_G3",
+  "gate_status_until_two_person_signoff": "IN_PROGRESS_READY_FOR_JOINT_PASS",
+  "feature_decisions": {
+    "fresh_asr_segment_timestamps": "ACCEPTED_AS_BOUNDED_AUDIO_DERIVED_ESTIMATES (436/436 invariants=1.0; 53>=50 agreed utts med=0.06s<=1.0s, p95=0.20s<=3.0s; never exact word-level speech timing)",
+    "historical_interpolated_timestamps": "RETAINED_AS_WPS_ESTIMATED_NEVER_AUDIO_EXACT",
+    "cpu_prosody_features": "ACCEPTED_DESCRIPTIVE_ACOUSTIC_ONLY (29 mp3s=46.875m in 25.331s, RTF=0.009, 240.14 MiB; never intent, excitement certainty, or sponsorship evidence)",
+    "observed_disclosure_flags_and_promo_lexicon": "ACCEPTED_SEPARATED_OBSERVABLE_INDICATORS (is_ad/is_ec_video separated from 4-category promo cues; unlabeled_unknown retained; 100/100 N+K verified kappa=0.6364; grouped is_ad_only vs is_ec_only PR-AUC=0.8915 / 0.8728 no-MCN)",
+    "undisclosed_sponsorship_prediction": "DEFERRED_AND_ABSTAINED (0 verified hidden-PR ground truth; HTTP 422 epistemic refusal enforced)",
+    "prosody_based_promotion_classifier": "REJECTED_EPISTEMICALLY_INVALID (29-video fresh check shows broad overlap: promo-cue median pitch_std=49.40 Hz / energy_cv=0.4778 vs organic 51.36 Hz / 0.5407)"
+  },
+  "referenced_evidence_sha256": {
+    "docs/reports/milestones/M4.G/evidence/g4_verification_receipt.json": "14253be3ac2591c4bc771bb006045fd694b9f2ef757210128d1c401ef584fed3",
+    "docs/reports/milestones/M4.1/evidence/m4_1_audio_pilot_receipt.json": "3e52afb686c8a73bfa81bca49f457fb37d1d20439cdfdd00cc140ec7b7b5a408",
+    "docs/reports/milestones/M4.1/evidence/m4_1_utterance_review_sheet.jsonl": "32865789bcf6388a40d9c1456e31e8a43a35633847c5c9d8285353fe53010025",
+    "docs/reports/milestones/M4.1/evidence/m4_1_joint_reference_eval_receipt.json": "2f983f922b2eb6b40aba1bf0473d5e0bedfca00eff89b23bb005c56b8eddb367",
+    "artifacts/benchmarks/m4_2_observed_disclosure_study_v2_k_review.json": "ed3ad113318144fdd3e0eaa0f8cf844c1ecbcf649fdbb6241588c198d211f377",
+    "data/evaluation/m4_2_disclosure/review_sample_100.jsonl": "fdb64e12276dcd2b5c8944f36f31655294ba38f96eef6fe44a41cf27a47688fc",
+    "docs/reports/milestones/M4.2/evidence/n_k_100_combined_audit_summary.json": "dedee389972e4c45965aec5c98c474f4bf560508434493a144211130ae784352",
+    "docs/reports/milestones/M4.2/evidence/nguyen_signoff_receipt.json": "0578d2d371d2b8ee80e0d244e3e643d54d31370d7dafccbed65e4d6c2bb07a06"
+  }
+}
