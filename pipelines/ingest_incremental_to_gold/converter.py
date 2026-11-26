@@ -62,6 +62,7 @@ _COMMENTS_SCHEMA = pa.schema(
         ("video_id", pa.string()),
         ("author_handle", pa.string()),
         ("text", pa.string()),
+        ("original_text", pa.string()),
         ("like_count", pa.int64()),
         ("reply_count", pa.int64()),
         ("is_seeding", pa.bool_()),
@@ -307,6 +308,8 @@ def _ingest_incremental_batch_to_gold(
             if old_comments is not None:
                 for item in old_comments[old_comments["video_id"] == rec.video_id].to_dict(orient="records"):
                     cleaned_item = {k: _normalize_scalar(v) for k, v in item.items()}
+                    if cleaned_item.get("original_text"):
+                        cleaned_item["text"] = cleaned_item["original_text"]
                     prior_comments.append(RawCommentInput.model_validate(cleaned_item))
             rec = rec.model_copy(update={"comments": _merge_comments(prior_comments, rec.comments)})
         existing_vids.add(rec.video_id)
@@ -514,6 +517,10 @@ def _ingest_incremental_batch_to_gold(
 
     df_voice = _carry_forward("fact_voice_segments.parquet", df_voice, replaced_voice_ids)
     df_comments = _carry_forward("fact_comments.parquet", df_comments, updated_video_ids)
+    if "original_text" not in df_comments.columns:
+        df_comments["original_text"] = df_comments["text"]
+    elif len(df_comments):
+        df_comments["original_text"] = df_comments["original_text"].fillna(df_comments["text"])
     df_absa = _carry_forward("fact_absa_reviews.parquet", df_absa, updated_video_ids)
 
     tables: list[tuple[str, pd.DataFrame, pa.Schema | None]] = [

@@ -1,0 +1,2309 @@
+{
+  "source_mode": "live_provider",
+  "is_synthetic_fixture": false,
+  "collector_backend_requested": "ytdlp",
+  "collector_backends_used": [
+    "ytdlp"
+  ],
+  "as_of_utc": "2026-11-25T15:22:26.440239+00:00",
+  "cutoff_utc": "2026-07-28T15:22:26.440239+00:00",
+  "base_corpus_snapshot_id": "m3_3_playwright_comments_20261125_v3",
+  "historical_protected_count": 71026,
+  "creators_queried": [
+    "ansapsaigon",
+    "tinhtungtangvn",
+    "dicungphuc",
+    "diadiemanuong",
+    "saigonmap",
+    "spicykim9386",
+    "haidangrevieww",
+    "khaikhampha",
+    "putaangi",
+    "trangtam2607",
+    "huynhanhtuan_dienvien",
+    "muoidian"
+  ],
+  "bounds": {
+    "window_days": 120,
+    "max_creators": 12,
+    "max_candidate_videos": 900,
+    "max_succeeded_videos": 100,
+    "max_audio_minutes": 0.0,
+    "max_comments_total": 1000,
+    "max_comments_per_video": 50,
+    "max_retries": 2,
+    "session_deadline_seconds": 7200.0
+  },
+  "requested_count": 156,
+  "succeeded_count": 50,
+  "failed_count": 0,
+  "skipped_count": 106,
+  "persisted_records_count": 100,
+  "duplicate_candidates_ignored": 0,
+  "converted_audio_count": 0,
+  "collected_comments_count": 0,
+  "accumulated_audio_minutes": 0.0,
+  "stopped_reason": "max_succeeded_ceiling",
+  "discovery_error": null,
+  "output_jsonl": "videos_4m.jsonl",
+  "items": [
+    {
+      "video_id": "7712010582064434440",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-25T07:40:05+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7712129360777579783",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-25T15:20:54+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711971981343673601",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-25T05:10:08+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711957828755492104",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-25T12:30:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7712061965249547526",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-25T10:59:18+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709935080692616468",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-19T17:25:52+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711969409136479509",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-25T05:00:12+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7712082891462741266",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-25T12:20:30+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709852534852193544",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-19T12:05:32+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706504130927545620",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-11-10T11:32:04+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711933979229719826",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-11-25T02:42:43+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7712078020462382344",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-25T12:01:36+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711292781196479762",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-23T09:14:33+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7712039287218343174",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-25T09:31:20+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711573507380907270",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-24T03:23:51+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710160130234518802",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-23T12:30:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711954639633009927",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-25T04:03:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709123948134419733",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-17T12:58:17+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711218437204282645",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-23T05:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711310158609075464",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-23T10:22:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709469873650339090",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-18T11:20:40+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7705377772474060053",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-11-07T10:41:12+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709669796459154696",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-11-19T00:16:32+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7712016037310401799",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-25T08:01:06+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710799156024986887",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-22T01:19:04+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711997085150612754",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-25T06:47:37+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710598047721458945",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-21T12:18:31+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710150153201536262",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-21T12:30:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711241845690486023",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-23T11:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7707295032742513940",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-12T14:41:08+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710897979464404245",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-22T11:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710252426921741575",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-20T13:57:21+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709116352463654162",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-17T12:28:47+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7701299342182862101",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-10-27T10:54:53+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7705018509901696264",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-11-06T11:27:09+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711647537203121426",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-24T08:11:15+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709793907894193415",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-19T08:18:13+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711759906981825810",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-24T15:27:09+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710450847070653716",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-21T02:47:19+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710143263436508417",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-20T12:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711170683740441863",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-23T04:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706562281068596501",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-10T15:17:42+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710154219377970439",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-20T11:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709502966520106247",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-18T13:29:04+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7708039878256168198",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-14T14:51:35+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7696847390648667412",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-10-15T10:58:59+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7703356521685601543",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-11-01T23:57:45+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711335983152647476",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-23T12:02:07+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709738723730066706",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-19T04:44:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711670394104696071",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-24T09:39:58+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710262606010846484",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-20T14:36:50+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709711126140849426",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-19T12:30:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710502428428356871",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-21T10:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7705476932762160404",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-07T17:05:58+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709825324946623751",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-19T11:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7708643166085188872",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-16T05:52:36+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7707260715001826568",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-12T12:27:58+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7692765616008138004",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-10-04T10:59:34+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7696678649688263944",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-10-15T00:04:17+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711273855016389896",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-23T08:01:05+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "already_succeeded_in_checkpoint",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709416664755866887",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-18T07:54:16+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711584193318358290",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-24T04:05:26+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710067177193377045",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-20T01:58:30+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709372899198602514",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-18T06:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710191968239848711",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-20T10:02:52+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7705095070306946325",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-06T16:24:12+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709727319648242965",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-19T05:00:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7708372026800557320",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-15T12:20:38+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7707164813314608392",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-12T06:16:03+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7690909201639558401",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-09-29T10:55:47+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7694462429115223304",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-10-09T00:44:07+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710964724397100295",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-22T12:01:27+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709388788732087570",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-18T06:06:02+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711371734485650706",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-23T14:20:50+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709423559424167188",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-18T08:21:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709031604986940679",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-17T12:30:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7708970028552457480",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-17T12:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7703249876330581300",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-01T17:03:54+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709410671854750997",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-18T11:00:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706864008757808391",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-11T10:48:36+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706478215711264018",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-10T09:51:35+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7686838412061494549",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-09-18T11:39:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7690055730921065746",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-09-27T03:43:58+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710902954861071634",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-22T08:01:48+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709375359300537601",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-18T05:14:01+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711297582449921298",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-23T09:33:12+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709080401645473044",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-17T10:09:20+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7707183296874106119",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-15T12:30:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7708688614837832978",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-16T12:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7702879703316630804",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-10-31T17:07:23+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7709094794856893717",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-17T11:05:10+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706140392672087304",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-09T12:00:41+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706179970976009490",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-09T14:34:13+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7686456408203660565",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-09-17T10:56:37+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7684830674053778695",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-09-13T01:48:02+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710593738245967112",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-21T12:01:48+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7708713355699031297",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-16T10:24:58+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711218285852822792",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-23T04:25:31+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7708698925552667924",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-16T09:28:58+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706768764917812487",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-13T12:30:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7707187736549117192",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-13T11:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7702492534014070036",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-10-30T16:05:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7708679546215714068",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-16T11:00:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7705394036537953544",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-07T11:44:20+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706170027912727816",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-09T13:55:37+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7684231336265092372",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-09-11T11:02:14+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7682969259399580946",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-09-08T01:24:50+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710531715134917906",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-21T08:01:18+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7708382866916281607",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-15T13:02:31+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7711004930638630152",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-22T14:37:29+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7708564001600310548",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-16T00:45:25+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7707196319953112321",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-12T12:00:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706832341804633352",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-11T12:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7698793688197172501",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-10-20T16:51:34+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7708308212000345365",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-15T11:00:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7705269194027437318",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-07T03:40:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706133614450199816",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-09T11:34:18+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7683118184123288853",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-09-08T11:02:40+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7678670143861296391",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-08-27T11:21:57+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710222607970225426",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-20T12:01:38+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7707936524070964498",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-14T08:10:37+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7710927418533399815",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-22T09:36:43+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7708270681527438600",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-15T05:47:15+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7706766124687379730",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-11T12:30:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7705017702598888712",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-06T12:00:00+00:00",
+      "status": "succeeded",
+      "attempts": 1,
+      "reason": "ok",
+      "comment_count": 0,
+      "audio_receipt": {
+        "status": "skipped_audio_ceiling",
+        "target_bitrate_kbps": 64,
+        "audio_path": null,
+        "audio_bytes": 0,
+        "audio_sha256": null,
+        "reason": "max_audio_minutes_ceiling_reached"
+      }
+    },
+    {
+      "video_id": "7698039572726320404",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-10-18T16:05:13+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7707972005148101908",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-14T11:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7704910687608343815",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-06T15:05:53+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7705375642610683157",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-07T10:33:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7678293230022102293",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-08-26T10:59:21+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7676417143906356498",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-08-21T09:39:11+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710160733375302920",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-20T08:01:37+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7707588221743418642",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-13T09:38:52+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710634206874946824",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-21T14:38:50+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7707842549968293140",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-14T02:05:48+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7703803006717857030",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-09T12:30:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7704892100038462738",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-06T04:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7697681446600740117",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-10-17T16:55:31+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7707602031716044052",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-13T11:02:24+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7704643534627900679",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-05T11:12:02+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7704303369854209298",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-04T13:11:58+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7677552308686966037",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-08-24T11:04:11+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7672633307108052232",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-08-11T04:56:02+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709851447835381000",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-19T12:01:20+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7707214349877939464",
+      "author_handle": "ansapsaigon",
+      "create_time": "2026-11-12T09:28:06+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710562414172966151",
+      "author_handle": "tinhtungtangvn",
+      "create_time": "2026-11-21T10:00:22+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "historical_protected_id",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7707597480459767060",
+      "author_handle": "dicungphuc",
+      "create_time": "2026-11-13T10:14:48+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7704913136222014728",
+      "author_handle": "diadiemanuong",
+      "create_time": "2026-11-07T12:30:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7704214468691102984",
+      "author_handle": "saigonmap",
+      "create_time": "2026-11-04T10:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7697318738500013332",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-10-16T17:28:02+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7707513812626296082",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-13T05:10:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7703939464489487634",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-03T13:39:55+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7703973469100313863",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-03T15:51:51+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7676807423457332500",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-08-22T10:53:43+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7671610475116809490",
+      "author_handle": "huynhanhtuan_dienvien",
+      "create_time": "2026-08-08T10:46:49+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709789489358589191",
+      "author_handle": "muoidian",
+      "create_time": "2026-11-19T08:01:05+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "max_succeeded_ceiling",
+      "comment_count": 0,
+      "audio_receipt": null
+    }
+  ],
+  "timings_ms": {
+    "discovery_ms": 55763.3,
+    "collection_ms": 149927.73,
+    "total_ms": 205795.4
+  }
+}

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -541,3 +543,177 @@ def test_cli_update_existing_and_corrupt_multimodal_base_fails_closed(
     with pytest.raises(CorpusNotReadyError):
         ingest_incremental_batch_to_gold(v2, _batch(tmp_path, "C"), v4)
     assert not v4.exists()
+
+
+def test_authorized_comment_import_preserves_existing_snapshot_and_updates_dual_sink(
+    base_snapshot: Path, tmp_path: Path,
+) -> None:
+    from pipelines.import_authorized_comments import import_authorized_comments
+
+    existing = tmp_path / "existing"
+    ingest_incremental_batch_to_gold(base_snapshot, _batch(tmp_path, "A"), existing)
+    existing_hashes = _hashes(existing)
+    source = tmp_path / "creator_comments.csv"
+    with source.open("w", encoding="utf-8", newline="") as fp:
+        writer = csv.DictWriter(
+            fp, fieldnames=["video_id", "comment_id", "text", "author_handle", "like_count", "reply_count"]
+        )
+        writer.writeheader()
+        writer.writerows([
+            {"video_id": "A", "comment_id": "c_new_1", "text": "  Gia hop ly  ",
+             "author_handle": "viewer_one", "like_count": "2", "reply_count": "0"},
+            {"video_id": "A", "comment_id": "c_new_2", "text": "Mon an ngon",
+             "author_handle": "viewer_two", "like_count": "1", "reply_count": "1"},
+        ])
+    as_of = datetime(2026, 11, 25, tzinfo=UTC)
+    ready = import_authorized_comments(
+        source, existing, tmp_path / "preflight_work", tmp_path / "preflight_gold",
+        source_label="creator_export_20261125", as_of_utc=as_of, preflight_only=True,
+    )
+    assert ready.status == "READY"
+    assert ready.input_rows == 2
+    assert not (tmp_path / "preflight_work").exists()
+    assert not (tmp_path / "preflight_gold").exists()
+
+    output = tmp_path / "enriched"
+    receipt = import_authorized_comments(
+        source, existing, tmp_path / "import_work", output,
+        source_label="creator_export_20261125", as_of_utc=as_of,
+    )
+    assert receipt.status == "IMPORTED"
+    assert receipt.source_sha256 == hashlib.sha256(source.read_bytes()).hexdigest()
+    assert receipt.input_rows == 2 and receipt.matched_videos == 1
+    assert receipt.output_snapshot_id == "enriched"
+    assert (tmp_path / "import_work/authorized_comments.jsonl").is_file()
+    assert (tmp_path / "import_work/import_receipt.json").is_file()
+    assert _hashes(existing) == existing_hashes
+    load_verified_corpus(output)
+    old_video = pd.read_parquet(existing / "fact_videos.parquet").set_index("video_id").loc["A"]
+    new_video = pd.read_parquet(output / "fact_videos.parquet").set_index("video_id").loc["A"]
+    assert new_video["caption"] == old_video["caption"]
+    assert new_video["transcript"] == old_video["transcript"]
+    assert len(pd.read_parquet(output / "fact_voice_segments.parquet")) == 1
+    comments = pd.read_parquet(output / "fact_comments.parquet")
+    assert set(comments["comment_id"]) == {"A_comment", "c_new_1", "c_new_2"}
+    assert comments.set_index("comment_id").loc["c_new_1", "original_text"] == "  Gia hop ly  "
+    assert set(pd.read_parquet(output / "fact_absa_reviews.parquet")["video_id"]) == {"A"}
+
+    next_source = tmp_path / "next_comments.jsonl"
+    next_source.write_text(json.dumps({
+        "video_id": "A", "comment_id": "c_new_3", "text": "Next review",
+    }) + "\n", encoding="utf-8")
+    import_authorized_comments(
+        next_source, output, tmp_path / "second_work", tmp_path / "second_gold",
+        source_label="creator_export_second", as_of_utc=as_of,
+    )
+    second_comments = pd.read_parquet(tmp_path / "second_gold/fact_comments.parquet")
+    assert second_comments.set_index("comment_id").loc["c_new_1", "original_text"] == "  Gia hop ly  "
+
+
+@pytest.mark.parametrize("case", ["unknown", "old", "duplicate", "blank", "negative", "per_video_limit", "total_limit", "empty"])
+def test_authorized_comment_import_rejects_invalid_input_without_writes(
+    base_snapshot: Path, tmp_path: Path, case: str,
+) -> None:
+    from pipelines.import_authorized_comments import import_authorized_comments
+
+    rows = [{"video_id": "base_video", "comment_id": "c1", "text": "Good", "like_count": "0"}]
+    as_of = datetime(2026, 11, 25, tzinfo=UTC)
+    if case == "unknown":
+        rows[0]["video_id"] = "not_in_gold"
+    elif case == "old":
+        as_of = datetime(2027, 5, 1, tzinfo=UTC)
+    elif case == "duplicate":
+        rows.append(dict(rows[0]))
+    elif case == "blank":
+        rows[0]["text"] = "   "
+    elif case == "negative":
+        rows[0]["like_count"] = "-1"
+    elif case == "per_video_limit":
+        rows = [{"video_id": "base_video", "comment_id": f"c{i}", "text": "Good", "like_count": "0"} for i in range(51)]
+    elif case == "total_limit":
+        rows = [{"video_id": "base_video", "comment_id": f"c{i}", "text": "Good"} for i in range(1001)]
+    else:
+        rows = []
+    source = tmp_path / "invalid.jsonl"
+    source.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+    work, output = tmp_path / "work", tmp_path / "gold"
+    with pytest.raises(ValueError):
+        import_authorized_comments(
+            source, base_snapshot, work, output,
+            source_label="creator_export_20261125", as_of_utc=as_of,
+        )
+    assert not work.exists() and not output.exists()
+
+
+def test_authorized_comment_import_accepts_jsonl(base_snapshot: Path, tmp_path: Path) -> None:
+    from pipelines.import_authorized_comments import import_authorized_comments
+
+    source = tmp_path / "creator_comments.jsonl"
+    source.write_text(json.dumps({
+        "video_id": "base_video", "comment_id": "jsonl_1", "text": "  Service good  ",
+        "author_handle": "viewer", "like_count": 1, "reply_count": 0,
+    }) + "\n", encoding="utf-8")
+    receipt = import_authorized_comments(
+        source, base_snapshot, tmp_path / "work", tmp_path / "gold",
+        source_label="creator_export_20261125", as_of_utc=datetime(2026, 11, 25, tzinfo=UTC),
+    )
+    assert receipt.status == "IMPORTED"
+    comments = pd.read_parquet(tmp_path / "gold/fact_comments.parquet")
+    assert comments.loc[0, "comment_id"] == "jsonl_1"
+    assert comments.loc[0, "original_text"] == "  Service good  "
+
+
+def test_authorized_comment_import_preserves_omitted_existing_metadata(base_snapshot: Path, tmp_path: Path) -> None:
+    from pipelines.import_authorized_comments import import_authorized_comments
+
+    existing = tmp_path / "existing"
+    ingest_incremental_batch_to_gold(base_snapshot, _batch(
+        tmp_path, "A", comment=RawCommentInput(
+            comment_id="A_comment", author_handle="first_author", text="Original", like_count=57, reply_count=4,
+        ),
+    ), existing)
+    source = tmp_path / "update.jsonl"
+    source.write_text(json.dumps({"video_id": "A", "comment_id": "A_comment", "text": "Updated"}) + "\n", encoding="utf-8")
+    import_authorized_comments(
+        source, existing, tmp_path / "work", tmp_path / "gold",
+        source_label="creator_export", as_of_utc=datetime(2026, 11, 25, tzinfo=UTC),
+    )
+    comment = pd.read_parquet(tmp_path / "gold/fact_comments.parquet").iloc[0]
+    assert comment["text"] == "Updated"
+    assert comment["author_handle"] == "first_author"
+    assert comment["like_count"] == 57
+    assert comment["reply_count"] == 4
+
+
+def test_authorized_comment_import_rejects_cumulative_video_ceiling(base_snapshot: Path, tmp_path: Path) -> None:
+    from pipelines.import_authorized_comments import import_authorized_comments
+
+    existing = tmp_path / "existing"
+    record = RawIncrementalVideoRecord(
+        video_id="A", author_id="a1", author_handle="fixture_creator", create_time="2026-11-10T00:00:00+00:00",
+        comments=[RawCommentInput(comment_id=f"old_{i}", text=f"Comment {i}") for i in range(50)],
+    )
+    batch = tmp_path / "batch.jsonl"
+    batch.write_text(record.model_dump_json(exclude_unset=True) + "\n", encoding="utf-8")
+    ingest_incremental_batch_to_gold(base_snapshot, batch, existing)
+    source = tmp_path / "one_more.jsonl"
+    source.write_text(json.dumps({"video_id": "A", "comment_id": "new_51", "text": "Extra"}) + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="50-comment"):
+        import_authorized_comments(
+            source, existing, tmp_path / "work", tmp_path / "gold",
+            source_label="creator_export", as_of_utc=datetime(2026, 11, 25, tzinfo=UTC),
+        )
+    assert not (tmp_path / "work").exists() and not (tmp_path / "gold").exists()
+
+
+def test_authorized_comment_import_rejects_surplus_csv_cells(base_snapshot: Path, tmp_path: Path) -> None:
+    from pipelines.import_authorized_comments import import_authorized_comments
+
+    source = tmp_path / "malformed.csv"
+    source.write_text("video_id,comment_id,text\nbase_video,c1,Good, spicy\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="CSV"):
+        import_authorized_comments(
+            source, base_snapshot, tmp_path / "work", tmp_path / "gold",
+            source_label="creator_export", as_of_utc=datetime(2026, 11, 25, tzinfo=UTC),
+        )
+    assert not (tmp_path / "work").exists() and not (tmp_path / "gold").exists()

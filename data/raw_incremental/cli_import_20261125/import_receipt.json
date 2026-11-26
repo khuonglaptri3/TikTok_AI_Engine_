@@ -1,0 +1,10 @@
+{
+  "status": "IMPORTED",
+  "source_label": "playwright_dom_cli_20261125",
+  "source_sha256": "ff73efaf29e08d0a7b82cee9209855b4dc2549a1f4670321ae6916051bde9b6c",
+  "base_snapshot_id": "m3_3_playwright_comments_20261125_v1",
+  "output_snapshot_id": "m3_3_playwright_comments_20261125_v2",
+  "as_of_utc": "2026-11-25T14:04:39.778131+00:00",
+  "input_rows": 20,
+  "matched_videos": 1
+}

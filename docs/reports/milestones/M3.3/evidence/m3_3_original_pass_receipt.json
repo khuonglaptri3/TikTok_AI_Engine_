@@ -1,0 +1,74 @@
+{
+  "task_id": "M3.3",
+  "mode": "live_pilot",
+  "pilot_status": "PASS",
+  "is_synthetic_fixture": false,
+  "executed_at_utc": "2026-11-23T03:05:26.123567+00:00",
+  "blocker_reasons": [],
+  "base_corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "output_gold_snapshot_id": "m3_3_pilot_snapshot_v1",
+  "collection": {
+    "requested_count": 50,
+    "succeeded_count": 30,
+    "failed_count": 0,
+    "skipped_count": 20,
+    "historical_protected_count": 70996,
+    "converted_audio_count": 29,
+    "collected_comments_count": 0,
+    "capture_yield_rate": 0.6,
+    "failure_rate": 0.0,
+    "comment_coverage_rate": 0.0
+  },
+  "asr": {
+    "engine_model_id": "faster-whisper/small-cpu-int8",
+    "max_videos_cap": 10,
+    "max_audio_minutes_cap": 20.0,
+    "transcribed_count": 10,
+    "skipped_no_audio_count": 1,
+    "skipped_asr_ceiling_count": 19,
+    "failed_count": 0,
+    "accumulated_audio_minutes": 16.683,
+    "wall_seconds": 197.269,
+    "real_time_factor": 0.1971,
+    "peak_rss_mib": 1009.46
+  },
+  "searchability": {
+    "indexed_total_documents": 21758,
+    "probed_fresh_transcribed_count": 10,
+    "searchable_fresh_transcribed_count": 10,
+    "matched_fresh_video_ids": [
+      "7710799156024986887",
+      "7711004930638630152",
+      "7710598047721458945",
+      "7710150153201536262",
+      "7710502428428356871",
+      "7709793907894193415",
+      "7710927418533399815",
+      "7710450847070653716",
+      "7710143263436508417",
+      "7710191968239848711"
+    ],
+    "probe_queries": {
+      "7710799156024986887": "Check var tiệm bán đặc sản",
+      "7711004930638630152": "Kem ăn vặt sawadee đồng giá",
+      "7710598047721458945": "Bún Bò Sườn Sụn Dạ quán",
+      "7710150153201536262": "Đổ xô đi ăn TÔ BÁNH",
+      "7710502428428356871": "Đậu hũ thúi hong Quán cực",
+      "7709793907894193415": "Fomo trải nghiệm món croissant kẹp",
+      "7710927418533399815": "Vú sữa dầm dừa non hot",
+      "7710450847070653716": "Cơm trộn sốt cua Trời ban",
+      "7710143263436508417": "MỆNH DANH BÁNH XÈO ĐẠI GIA",
+      "7710191968239848711": "Chú Long khai trương cửa hàng"
+    }
+  },
+  "resources": {
+    "wall_seconds": 744.154,
+    "peak_rss_mib": 3214.92,
+    "batch_disk_bytes": 22646824,
+    "gold_snapshot_disk_bytes": 58965140,
+    "bm25_index_disk_bytes": 44129144,
+    "total_disk_bytes": 125741108
+  },
+  "inspection_k_count": 15,
+  "inspection_n_count": 15
+}

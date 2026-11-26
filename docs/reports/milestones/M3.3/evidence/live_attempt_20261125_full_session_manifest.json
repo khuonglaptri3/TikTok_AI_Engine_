@@ -1,0 +1,46 @@
+{
+  "source_mode": "live_provider",
+  "is_synthetic_fixture": false,
+  "collector_backend_requested": "auto",
+  "collector_backends_used": [],
+  "as_of_utc": "2026-11-25T07:36:35.558691+00:00",
+  "cutoff_utc": "2026-07-28T07:36:35.558691+00:00",
+  "base_corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "historical_protected_count": 70996,
+  "creators_queried": [
+    "spicykim9386",
+    "haidangrevieww",
+    "khaikhampha",
+    "putaangi",
+    "trangtam2607"
+  ],
+  "bounds": {
+    "window_days": 120,
+    "max_creators": 5,
+    "max_candidate_videos": 50,
+    "max_succeeded_videos": 30,
+    "max_audio_minutes": 60.0,
+    "max_comments_total": 1000,
+    "max_comments_per_video": 50,
+    "max_retries": 2,
+    "session_deadline_seconds": 7200.0
+  },
+  "requested_count": 0,
+  "succeeded_count": 0,
+  "failed_count": 0,
+  "skipped_count": 0,
+  "persisted_records_count": 0,
+  "duplicate_candidates_ignored": 0,
+  "converted_audio_count": 0,
+  "collected_comments_count": 0,
+  "accumulated_audio_minutes": 0.0,
+  "stopped_reason": "anti_bot_challenge_blocked",
+  "discovery_error": "anti_bot_challenge_blocked: discovery blocked by anti-bot/captcha challenge (tip: try --no-tiktok-headless on desktop or refresh MS_TOKEN): None -> TikTok returned an empty response. They are detecting you're a bot, try some of these: headless=False, browser='webkit', consider us",
+  "output_jsonl": "videos_4m.jsonl",
+  "items": [],
+  "timings_ms": {
+    "discovery_ms": 13647.78,
+    "collection_ms": 0.0,
+    "total_ms": 13658.58
+  }
+}

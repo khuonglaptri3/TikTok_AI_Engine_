@@ -1,0 +1,16 @@
+{
+  "report_top_level_exact": true,
+  "superpowers_exact": true,
+  "report_missing_relative_links": [],
+  "original_pass_receipt": true,
+  "new_blocked_receipt": true,
+  "new_manifest_fail_closed": true,
+  "new_gold_exists": false,
+  "new_bm25_exists": false,
+  "sha256": {
+    "m3_3_original_pass_receipt.json": "3a67062ed46c73052397f42f7a247f6b6594c24186d925a1b2508a2dae591d8a",
+    "live_attempt_20261125_before_cookie_sync.json": "a331b8fc2f557aa038b43721a472c2510b500f1244178a0e71eb099f82df06ef",
+    "live_attempt_20261125_cookie_sync.json": "d9e27802c4e9219edfc8af6fb9763a5ec8ae72d72750acd8a0db3a1d14c12e8c",
+    "live_attempt_20261125_cookie_sync_manifest.json": "db65becf8b3ca663ee1e74d5f1ec9c29b4bd7510cb7c1c7457559bd4bb54e1fc"
+  }
+}

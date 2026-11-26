@@ -1,0 +1,11 @@
+{
+  "source": "playwright_rendered_video_page",
+  "base_snapshot_id": "m3_3_pilot_snapshot_v1",
+  "video_id": "7710502428428356871",
+  "url": "https://www.tiktok.com/@saigonmap/video/7710502428428356871",
+  "comment_count": 20,
+  "comment_id_scheme": "dom_derived_sha256_not_tiktok_native",
+  "manual_challenge_seen": true,
+  "elapsed_seconds": 17.656,
+  "source_sha256": "ff73efaf29e08d0a7b82cee9209855b4dc2549a1f4670321ae6916051bde9b6c"
+}

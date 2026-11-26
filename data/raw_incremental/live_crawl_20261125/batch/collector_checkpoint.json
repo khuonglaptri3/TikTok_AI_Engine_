@@ -1,0 +1,31 @@
+{
+  "source_mode": "live_provider",
+  "as_of_utc": "2026-11-25T06:31:36.947343+00:00",
+  "cutoff_utc": "2026-07-28T06:31:36.947343+00:00",
+  "succeeded_ids": [],
+  "skipped_reasons": {
+    "7711969409136479509": "anti_bot_challenge_blocked",
+    "7711310158609075464": "anti_bot_challenge_blocked",
+    "7709852534852193544": "anti_bot_challenge_blocked",
+    "7706504130927545620": "anti_bot_challenge_blocked",
+    "7709123948134419733": "anti_bot_challenge_blocked",
+    "7711218437204282645": "anti_bot_challenge_blocked",
+    "7710252426921741575": "anti_bot_challenge_blocked",
+    "7709469873650339090": "anti_bot_challenge_blocked",
+    "7705377772474060053": "anti_bot_challenge_blocked",
+    "7707295032742513940": "anti_bot_challenge_blocked",
+    "7710897979464404245": "anti_bot_challenge_blocked",
+    "7709502966520106247": "anti_bot_challenge_blocked",
+    "7709116352463654162": "anti_bot_challenge_blocked",
+    "7701299342182862101": "anti_bot_challenge_blocked",
+    "7706562281068596501": "anti_bot_challenge_blocked",
+    "7710154219377970439": "anti_bot_challenge_blocked",
+    "7708643166085188872": "anti_bot_challenge_blocked",
+    "7708039878256168198": "anti_bot_challenge_blocked",
+    "7696847390648667412": "anti_bot_challenge_blocked"
+  },
+  "failed_reasons": {
+    "7709935080692616468": "anti_bot_challenge_blocked: comments blocked by anti-bot/captcha challenge (tip: try --no-tiktok-headless on desktop or refresh MS_TOKEN): None -> TikTok returned an empty response. They are detecting you're a bot, try some of these: headless=False, browser='webkit', consider usi"
+  },
+  "audio_receipts": {}
+}

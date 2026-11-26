@@ -1,0 +1,57 @@
+{
+  "snapshot_id": "m3_3_playwright_comments_20261125_v1",
+  "parent_snapshot_id": "m3_3_pilot_snapshot_v1",
+  "parent_manifest_sha256": "06c24e14a1dfce0f786b50c2adae140751029e0731de149f8517421d7369f676",
+  "created_at": "2026-11-25T12:19:00.566627+00:00",
+  "date_window_start": "2023-11-25",
+  "date_window_end": "2026-11-22",
+  "total_creators": 264,
+  "total_videos": 71026,
+  "transcribed_videos": 21758,
+  "poi_tagged_videos": 23448,
+  "ec_tagged_videos": 5798,
+  "files": [
+    {
+      "filename": "dim_creators.parquet",
+      "rows": 264,
+      "columns": 15,
+      "sha256": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "size_bytes": 35285
+    },
+    {
+      "filename": "fact_videos.parquet",
+      "rows": 71026,
+      "columns": 49,
+      "sha256": "7c9669b09ac941367d6accf71d6c77bdaae1d2b660cb09940ca851bd475e151c",
+      "size_bytes": 58883071
+    },
+    {
+      "filename": "fact_voice_segments.parquet",
+      "rows": 436,
+      "columns": 10,
+      "sha256": "e3836b87e220df3c8b2c494c21ca39c2552a920c34822cec53dfd06c9781e04f",
+      "size_bytes": 29729
+    },
+    {
+      "filename": "fact_comments.parquet",
+      "rows": 19,
+      "columns": 11,
+      "sha256": "3f9bb7f6ada17fd8d144f581b3fb8e778822d506b5e027d1a6673e94e1418ee5",
+      "size_bytes": 9163
+    },
+    {
+      "filename": "fact_absa_reviews.parquet",
+      "rows": 30,
+      "columns": 14,
+      "sha256": "34c861465693beb3e6a00b2cc5c9e91fc61906416987ba34222e2029500ebea3",
+      "size_bytes": 10158
+    }
+  ],
+  "caveats": [
+    "Creator-centric cohort (264 Vietnamese F&B creators, Nov 2023 - Apr 2025), not a uniform random sample of all TikTok Vietnam uploads.",
+    "Engagement metrics are single-snapshot observations captured in Mar-Apr 2025; viral_multiplier normalizes plays against each creator's own empirical median.",
+    "Spoken transcripts cover top weekly viral and enriched subsets (~22.6K videos), while metadata and POI benchmarks cover all 70,996 videos.",
+    "Applied 30 incremental video records; explicit enrichment=False. Parent snapshot=20261118_taxonomy_fix_v1.",
+    "Applied 1 incremental video records; explicit enrichment=True. Parent snapshot=m3_3_pilot_snapshot_v1."
+  ]
+}
