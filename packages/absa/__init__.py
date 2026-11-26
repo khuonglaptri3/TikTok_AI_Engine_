@@ -13,6 +13,7 @@ from packages.absa.evaluation import (
     evaluate_m5_2_aspect_sentiment,
     predict_unit_aspects,
     split_units_by_video,
+    validate_and_summarize_m5_2_pool,
 )
 from packages.absa.spans import (
     TextUnitInput,
@@ -35,4 +36,5 @@ __all__ = [
     "score_text_aspects",
     "split_units_by_video",
     "summarize_units_aspects",
+    "validate_and_summarize_m5_2_pool",
 ]

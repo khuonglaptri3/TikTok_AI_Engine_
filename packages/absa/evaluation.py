@@ -728,6 +728,179 @@ def build_m5_2_annotation_pool(
     return pool_out
 
 
+def validate_and_summarize_m5_2_pool(
+    pool_rows: list[dict[str, Any]],
+    locked_prediction_rows: list[dict[str, Any]],
+    *,
+    min_units: int = 120,
+    max_units: int = 200,
+    min_videos: int = 10,
+    min_double_overlap: int = 50,
+) -> dict[str, Any]:
+    """Fail-closed human signoff, exact NFC gold-span backing, and IAA validator for M5.2 pools."""
+    if not (min_units <= len(pool_rows) <= max_units):
+        raise ValueError(f"M5.2 pool size must be in [{min_units}, {max_units}], got {len(pool_rows)}")
+    if len(locked_prediction_rows) != len(pool_rows):
+        raise ValueError(
+            f"Locked prediction count ({len(locked_prediction_rows)}) != pool count ({len(pool_rows)})"
+        )
+
+    pred_by_item: dict[str, dict[str, Any]] = {}
+    for p in locked_prediction_rows:
+        iid = str(p.get("item_id") or "").strip()
+        if not iid or iid in pred_by_item:
+            raise ValueError(f"Missing or duplicate item_id in locked predictions: {iid!r}")
+        _require_aspect_state_map(p.get("pred_aspects"), f"{iid}.pred_aspects")
+        pred_by_item[iid] = p
+
+    seen_items: set[str] = set()
+    seen_units: set[str] = set()
+    units_by_id: dict[str, str] = {}
+    all_gold_spans: list[dict[str, Any]] = []
+    all_locked_spans: list[dict[str, Any]] = []
+    locked_spans_by_uid: dict[str, list[dict[str, Any]]] = {}
+    disagreements: list[dict[str, Any]] = []
+    merged_rows: list[dict[str, Any]] = []
+    assign_counts: Counter[str] = Counter()
+
+    for row in pool_rows:
+        iid = str(row.get("item_id") or "").strip()
+        uid = str(row.get("unit_id") or "").strip()
+        vid = str(row.get("video_id") or "").strip()
+        skind = str(row.get("source_kind") or "").strip()
+        txt = str(row.get("text") or "")
+        if not iid or not uid or not vid or not skind:
+            raise ValueError(f"Missing item_id/unit_id/video_id/source_kind in row: {row!r}")
+        if iid in seen_items or uid in seen_units:
+            raise ValueError(f"Duplicate item_id or unit_id in pool: {iid} / {uid}")
+        seen_items.add(iid)
+        seen_units.add(uid)
+        units_by_id[uid] = txt
+
+        pred_entry = pred_by_item.get(iid)
+        if pred_entry is None:
+            raise ValueError(f"Missing locked prediction for {iid}")
+        if (
+            str(pred_entry.get("unit_id") or "").strip() != uid
+            or str(pred_entry.get("video_id") or "").strip() != vid
+        ):
+            raise ValueError(f"Locked prediction key mismatch on {iid}")
+
+        assign = str(row.get("review_assignment") or "").strip()
+        assign_counts[assign] += 1
+        adj_map = _require_aspect_state_map(row.get("adjudicated_aspects"), f"{iid}.adjudicated_aspects")
+        raw_adj_spans = row.get("adjudicated_spans")
+        if not isinstance(raw_adj_spans, list):
+            raise ValueError(f"{iid}: adjudicated_spans must be a list")
+
+        if assign == "double_review_N_K":
+            if row.get("N_human_verified") is not True:
+                raise ValueError(f"{iid}: double_review_N_K requires N_human_verified=True")
+            if row.get("K_human_verified") is not True:
+                raise ValueError(f"{iid}: double_review_N_K requires K_human_verified=True")
+            n_map = _require_aspect_state_map(row.get("N_aspects"), f"{iid}.N_aspects")
+            k_map = _require_aspect_state_map(row.get("K_aspects"), f"{iid}.K_aspects")
+            for aspect in ASPECT_NAMES:
+                if n_map[aspect] == k_map[aspect] and adj_map[aspect] != n_map[aspect]:
+                    raise ValueError(
+                        f"{iid}.{aspect}: cannot override unanimous N==K state {n_map[aspect]!r}"
+                    )
+                if n_map[aspect] != k_map[aspect]:
+                    disagreements.append(
+                        {
+                            "item_id": iid,
+                            "unit_id": uid,
+                            "video_id": vid,
+                            "source_kind": skind,
+                            "text": txt,
+                            "aspect": aspect,
+                            "N_state": n_map[aspect],
+                            "K_state": k_map[aspect],
+                            "adjudicated_state": adj_map[aspect],
+                            "adjudication_note": str(row.get("adjudication_note") or ""),
+                        }
+                    )
+        elif assign == "N_only":
+            if row.get("N_human_verified") is not True:
+                raise ValueError(f"{iid}: N_only requires N_human_verified=True")
+            if row.get("K_human_verified") is not False or row.get("K_aspects") is not None:
+                raise ValueError(f"{iid}: N_only must keep K_human_verified=False and K_aspects=None")
+            n_map = _require_aspect_state_map(row.get("N_aspects"), f"{iid}.N_aspects")
+            if adj_map != n_map:
+                raise ValueError(f"{iid}: N_only adjudicated_aspects != N_aspects")
+        elif assign == "K_only":
+            if row.get("K_human_verified") is not True:
+                raise ValueError(f"{iid}: K_only requires K_human_verified=True")
+            if row.get("N_human_verified") is not False or row.get("N_aspects") is not None:
+                raise ValueError(f"{iid}: K_only must keep N_human_verified=False and N_aspects=None")
+            k_map = _require_aspect_state_map(row.get("K_aspects"), f"{iid}.K_aspects")
+            if adj_map != k_map:
+                raise ValueError(f"{iid}: K_only adjudicated_aspects != K_aspects")
+        else:
+            raise ValueError(f"{iid}: invalid review_assignment {assign!r}")
+
+        row_gold_spans = [dict(sp) for sp in raw_adj_spans if isinstance(sp, dict)]
+        if len(row_gold_spans) != len(raw_adj_spans):
+            raise ValueError(f"{iid}: invalid non-dict element in adjudicated_spans")
+        all_gold_spans.extend(row_gold_spans)
+
+        pred_map = _require_aspect_state_map(pred_entry.get("pred_aspects"), f"{iid}.pred_aspects")
+        row_pred_spans = [dict(sp) for sp in (pred_entry.get("pred_spans") or []) if isinstance(sp, dict)]
+        locked_spans_by_uid[uid] = row_pred_spans
+        all_locked_spans.extend(row_pred_spans)
+
+        merged_rows.append(
+            {
+                **row,
+                "adjudicated_aspects": adj_map,
+                "adjudicated_spans": row_gold_spans,
+                "pred_aspects": pred_map,
+            }
+        )
+
+    unique_vids = sorted({str(r["video_id"]) for r in merged_rows})
+    if len(unique_vids) < min_videos:
+        raise ValueError(f"Expected >= {min_videos} distinct videos in M5.2 pool, got {len(unique_vids)}")
+
+    gold_span_audit, valid_gold_pairs = _audit_source_spans_internal(units_by_id, all_gold_spans)
+    if int(gold_span_audit["invalid_spans"]) > 0:
+        raise ValueError(f"Invalid human adjudicated_spans detected: {gold_span_audit['invalid_examples']}")
+
+    for r in merged_rows:
+        uid = str(r["unit_id"])
+        adj_map = r["adjudicated_aspects"]
+        row_span_aspects = {str(sp.get("aspect")) for sp in r["adjudicated_spans"]}
+        for aspect in ASPECT_NAMES:
+            if adj_map[aspect] != "absent_unknown":
+                if (uid, aspect) not in valid_gold_pairs:
+                    raise ValueError(
+                        f"Gold observed aspect ({uid}, {aspect}) lacks a valid NFC span in adjudicated_spans"
+                    )
+            elif aspect in row_span_aspects:
+                raise ValueError(
+                    f"Gold absent_unknown aspect ({uid}, {aspect}) must not have adjudicated_spans"
+                )
+
+    iaa = compute_m5_2_annotator_agreement(merged_rows)
+    if int(iaa["double_verified_unit_count"]) < min_double_overlap:
+        raise ValueError(
+            f"Expected >= {min_double_overlap} double-verified units, got {iaa['double_verified_unit_count']}"
+        )
+
+    return {
+        "total_units": len(merged_rows),
+        "unique_video_count": len(unique_vids),
+        "assignment_counts": dict(sorted(assign_counts.items())),
+        "gold_span_audit": gold_span_audit,
+        "agreement": iaa,
+        "disagreements": disagreements,
+        "units_by_id": units_by_id,
+        "locked_spans_by_uid": locked_spans_by_uid,
+        "all_locked_spans": all_locked_spans,
+        "merged_rows": merged_rows,
+    }
+
+
 __all__ = [
     "OBSERVED_SENTIMENT_STATES",
     "VALID_ASPECT_STATES",
@@ -737,4 +910,5 @@ __all__ = [
     "evaluate_m5_2_aspect_sentiment",
     "predict_unit_aspects",
     "split_units_by_video",
+    "validate_and_summarize_m5_2_pool",
 ]

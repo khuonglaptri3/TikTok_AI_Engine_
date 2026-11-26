@@ -1,0 +1,899 @@
+{
+  "study_id": "m5_2_real_pilot_eval_v1",
+  "fixture_type": "real_m3_3_pilot_double_annotated_multimodal_pool",
+  "real_pilot_data_available": true,
+  "prediction_source": "current_dev_refined_engine",
+  "evaluated_at": "2026-11-26T09:00:20.458254+00:00",
+  "environment": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.11.14 | packaged by conda-forge | (main, Oct 13 2025, 14:09:32) [GCC 14.3.0]",
+    "cpu_count": 4,
+    "process_peak_rss_mib": 1199.16
+  },
+  "annotation_summary": {
+    "total_units": 180,
+    "unique_video_count": 29,
+    "assignment_counts": {
+      "K_only": 65,
+      "N_only": 65,
+      "double_review_N_K": 50
+    },
+    "gold_span_audit": {
+      "total_spans": 44,
+      "valid_spans": 44,
+      "invalid_spans": 0,
+      "validity_rate": 1.0,
+      "meets_95pct_gate": true,
+      "invalid_examples": []
+    },
+    "inter_annotator_agreement": {
+      "double_verified_unit_count": 50,
+      "aspect_pair_count": 200,
+      "raw_agreement_presence": 0.985,
+      "cohens_kappa_presence": 0.8616,
+      "raw_agreement_4state": 0.975,
+      "cohens_kappa_4state": 0.7731,
+      "per_aspect_agreement": {
+        "taste": {
+          "unit_count": 50,
+          "raw_agreement_presence": 0.98,
+          "cohens_kappa_presence": 0.898,
+          "raw_agreement_4state": 0.96,
+          "cohens_kappa_4state": 0.8012
+        },
+        "price": {
+          "unit_count": 50,
+          "raw_agreement_presence": 0.96,
+          "cohens_kappa_presence": 0.8106,
+          "raw_agreement_4state": 0.94,
+          "cohens_kappa_4state": 0.7263
+        },
+        "hygiene": {
+          "unit_count": 50,
+          "raw_agreement_presence": 1.0,
+          "cohens_kappa_presence": 1.0,
+          "raw_agreement_4state": 1.0,
+          "cohens_kappa_4state": 1.0
+        },
+        "service": {
+          "unit_count": 50,
+          "raw_agreement_presence": 1.0,
+          "cohens_kappa_presence": 1.0,
+          "raw_agreement_4state": 1.0,
+          "cohens_kappa_4state": 1.0
+        }
+      }
+    },
+    "disagreements": [
+      {
+        "item_id": "m5_2_009",
+        "unit_id": "7710150153201536262::cmt::7710875375039283976",
+        "video_id": "7710150153201536262",
+        "source_kind": "viewer_comment",
+        "text": "cô không lấy tiền công + vào món ăn củng vậy",
+        "aspect": "price",
+        "N_state": "neutral",
+        "K_state": "negative",
+        "adjudicated_state": "neutral",
+        "adjudication_note": "Adjudicated price=neutral per guideline line 56: comment notes crab-peeling labor is included in dish price without explicit overpricing complaint."
+      },
+      {
+        "item_id": "m5_2_077",
+        "unit_id": "7709372899198602514::cmt::7709393018894435092",
+        "video_id": "7709372899198602514",
+        "source_kind": "viewer_comment",
+        "text": "🛒 Cách thức tham gia cực đơn giản:\n• Đơn hàng chỉ từ 50.000đ và có chứa ít nhất 1 sản phẩm tham gia chương trình (không áp dụng cho rượu, thuốc lá, dịch vụ Payoo) .\n• Nhận ngay voucher 5.000đ cho lần mua kế tiếp và mã code tham gia vòng quay trúng iPhone.\n🎁 Ngập tràn ưu đãi đi kèm: Mua 3 tính 2, mua 2 tính 1, mua trà ô long tặng gấu bông cực xinh,...\n⏰ Thời gian: Áp dụng đến hết ngày 01/12 tại các cửa hàng Ministop TP.HCM (trừ chi nhánh Hutech - Điện Biên Phủ, Bệnh Viện Nhi Đồng 1 - Khu Ngoại Trú, Hutech 2 - Khu Công Nghệ Cao, Bệnh Viện Quân Y 175 và Đại học Văn Lang)\nGhé ngay Ministop gần nhất để mua sắm, nhận quà và thử “nhân phẩm” ngay thôi mấy bồ ơi! 🏃♂️💨",
+        "aspect": "price",
+        "N_state": "absent_unknown",
+        "K_state": "neutral",
+        "adjudicated_state": "absent_unknown",
+        "adjudication_note": "Adjudicated price=absent_unknown per guideline section 3: 50,000đ is a convenience-store raffle entry threshold rather than a food/dish price evaluation."
+      },
+      {
+        "item_id": "m5_2_103",
+        "unit_id": "7710143263436508417::utt::7710143263436508417_s000",
+        "video_id": "7710143263436508417",
+        "source_kind": "creator_utterance",
+        "text": "Thật ra bánh xeo mình cũng không có cái gì mà đại gia lắm đâu",
+        "aspect": "price",
+        "N_state": "neutral",
+        "K_state": "absent_unknown",
+        "adjudicated_state": "absent_unknown",
+        "adjudication_note": "Adjudicated price=absent_unknown per guideline section 1: standalone utterance contains nickname 'đại gia' with no explicit monetary or price term."
+      },
+      {
+        "item_id": "m5_2_117",
+        "unit_id": "7710502428428356871::utt::7710502428428356871_s000",
+        "video_id": "7710502428428356871",
+        "source_kind": "creator_utterance",
+        "text": "Mà hủ thúi nhưng mà không hài thúi nha",
+        "aspect": "taste",
+        "N_state": "positive",
+        "K_state": "neutral",
+        "adjudicated_state": "neutral",
+        "adjudication_note": "Adjudicated taste=neutral per guideline line 58 (softened litotes: negating unpleasant smell 'không hề thúi' yields neutral polarity)."
+      },
+      {
+        "item_id": "m5_2_123",
+        "unit_id": "7709738723730066706::cap",
+        "video_id": "7709738723730066706",
+        "source_kind": "creator_caption",
+        "text": "Tiệm buffet sushi - nướng - lẩu, giá hạt dẻ mà chất lượng khu Thảo Điền #LearnOnTikTok #vtmgr #AnCungTikTok #saigon #ansapsaigon ",
+        "aspect": "taste",
+        "N_state": "positive",
+        "K_state": "absent_unknown",
+        "adjudicated_state": "absent_unknown",
+        "adjudication_note": "Adjudicated price=positive (unanimous) and taste=absent_unknown per guideline table line 39 ('chất lượng' is general quality without flavor/texture/aroma cue)."
+      }
+    ]
+  },
+  "split_counts": {
+    "dev_units": 87,
+    "held_out_units": 93,
+    "dev_videos": 14,
+    "held_out_videos": 15,
+    "total_units": 180,
+    "total_videos": 29,
+    "video_overlap_count": 0
+  },
+  "dev_metrics": {
+    "evaluated_unit_count": 87,
+    "evaluated_video_count": 14,
+    "effective_total_annotated_units": 180,
+    "effective_total_unique_videos": 29,
+    "is_real_pilot_data": true,
+    "human_signoff_complete": true,
+    "per_aspect_detection": {
+      "taste": {
+        "gold_support": 13,
+        "pred_support": 13,
+        "gold_coverage": 0.1494,
+        "pred_coverage": 0.1494,
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "tn": 74,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "gold_state_counts": {
+          "absent_unknown": 74,
+          "negative": 1,
+          "neutral": 2,
+          "positive": 10
+        },
+        "pred_state_counts": {
+          "absent_unknown": 74,
+          "negative": 1,
+          "neutral": 2,
+          "positive": 10
+        }
+      },
+      "price": {
+        "gold_support": 6,
+        "pred_support": 7,
+        "gold_coverage": 0.069,
+        "pred_coverage": 0.0805,
+        "tp": 6,
+        "fp": 1,
+        "fn": 0,
+        "tn": 80,
+        "precision": 0.8571,
+        "recall": 1.0,
+        "f1": 0.9231,
+        "gold_state_counts": {
+          "absent_unknown": 81,
+          "negative": 0,
+          "neutral": 5,
+          "positive": 1
+        },
+        "pred_state_counts": {
+          "absent_unknown": 80,
+          "negative": 0,
+          "neutral": 6,
+          "positive": 1
+        }
+      },
+      "hygiene": {
+        "gold_support": 1,
+        "pred_support": 1,
+        "gold_coverage": 0.0115,
+        "pred_coverage": 0.0115,
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 86,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "gold_state_counts": {
+          "absent_unknown": 86,
+          "negative": 1,
+          "neutral": 0,
+          "positive": 0
+        },
+        "pred_state_counts": {
+          "absent_unknown": 86,
+          "negative": 1,
+          "neutral": 0,
+          "positive": 0
+        }
+      },
+      "service": {
+        "gold_support": 0,
+        "pred_support": 0,
+        "gold_coverage": 0.0,
+        "pred_coverage": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 87,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "gold_state_counts": {
+          "absent_unknown": 87,
+          "negative": 0,
+          "neutral": 0,
+          "positive": 0
+        },
+        "pred_state_counts": {
+          "absent_unknown": 87,
+          "negative": 0,
+          "neutral": 0,
+          "positive": 0
+        }
+      }
+    },
+    "aspect_detection_macro_precision": 0.9524,
+    "aspect_detection_macro_recall": 1.0,
+    "aspect_detection_macro_f1": 0.9744,
+    "gold_observed_aspect_pair_count": 20,
+    "per_polarity_observed_sentiment": {
+      "positive": {
+        "support": 11,
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "neutral": {
+        "support": 7,
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "negative": {
+        "support": 2,
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      }
+    },
+    "observed_sentiment_macro_precision": 1.0,
+    "observed_sentiment_macro_recall": 1.0,
+    "observed_sentiment_macro_f1": 1.0,
+    "aspect_detection_macro_f1_ci95": [
+      0.8333,
+      1.0
+    ],
+    "observed_sentiment_macro_f1_ci95": [
+      1.0,
+      1.0
+    ],
+    "span_audit": {
+      "total_spans": 22,
+      "valid_spans": 22,
+      "invalid_spans": 0,
+      "validity_rate": 1.0,
+      "meets_95pct_gate": true,
+      "invalid_examples": []
+    },
+    "predicted_observed_pair_count": 21,
+    "backed_predicted_observed_pair_count": 21,
+    "unbacked_predicted_observed_pair_count": 0,
+    "all_predicted_aspects_span_backed": true,
+    "m5_2_pilot_gate_eligible": true
+  },
+  "held_out_metrics": {
+    "evaluated_unit_count": 93,
+    "evaluated_video_count": 15,
+    "effective_total_annotated_units": 180,
+    "effective_total_unique_videos": 29,
+    "is_real_pilot_data": true,
+    "human_signoff_complete": true,
+    "per_aspect_detection": {
+      "taste": {
+        "gold_support": 14,
+        "pred_support": 14,
+        "gold_coverage": 0.1505,
+        "pred_coverage": 0.1505,
+        "tp": 11,
+        "fp": 3,
+        "fn": 3,
+        "tn": 76,
+        "precision": 0.7857,
+        "recall": 0.7857,
+        "f1": 0.7857,
+        "gold_state_counts": {
+          "absent_unknown": 79,
+          "negative": 1,
+          "neutral": 1,
+          "positive": 12
+        },
+        "pred_state_counts": {
+          "absent_unknown": 79,
+          "negative": 0,
+          "neutral": 1,
+          "positive": 13
+        }
+      },
+      "price": {
+        "gold_support": 9,
+        "pred_support": 9,
+        "gold_coverage": 0.0968,
+        "pred_coverage": 0.0968,
+        "tp": 9,
+        "fp": 0,
+        "fn": 0,
+        "tn": 84,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "gold_state_counts": {
+          "absent_unknown": 84,
+          "negative": 0,
+          "neutral": 7,
+          "positive": 2
+        },
+        "pred_state_counts": {
+          "absent_unknown": 84,
+          "negative": 0,
+          "neutral": 8,
+          "positive": 1
+        }
+      },
+      "hygiene": {
+        "gold_support": 1,
+        "pred_support": 1,
+        "gold_coverage": 0.0108,
+        "pred_coverage": 0.0108,
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 92,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "gold_state_counts": {
+          "absent_unknown": 92,
+          "negative": 1,
+          "neutral": 0,
+          "positive": 0
+        },
+        "pred_state_counts": {
+          "absent_unknown": 92,
+          "negative": 1,
+          "neutral": 0,
+          "positive": 0
+        }
+      },
+      "service": {
+        "gold_support": 0,
+        "pred_support": 1,
+        "gold_coverage": 0.0,
+        "pred_coverage": 0.0108,
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "tn": 92,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "gold_state_counts": {
+          "absent_unknown": 93,
+          "negative": 0,
+          "neutral": 0,
+          "positive": 0
+        },
+        "pred_state_counts": {
+          "absent_unknown": 92,
+          "negative": 0,
+          "neutral": 1,
+          "positive": 0
+        }
+      }
+    },
+    "aspect_detection_macro_precision": 0.9286,
+    "aspect_detection_macro_recall": 0.9286,
+    "aspect_detection_macro_f1": 0.9286,
+    "gold_observed_aspect_pair_count": 24,
+    "per_polarity_observed_sentiment": {
+      "positive": {
+        "support": 14,
+        "tp": 11,
+        "fp": 0,
+        "fn": 3,
+        "precision": 1.0,
+        "recall": 0.7857,
+        "f1": 0.88
+      },
+      "neutral": {
+        "support": 8,
+        "tp": 8,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.8889,
+        "recall": 1.0,
+        "f1": 0.9412
+      },
+      "negative": {
+        "support": 2,
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6667
+      }
+    },
+    "observed_sentiment_macro_precision": 0.963,
+    "observed_sentiment_macro_recall": 0.7619,
+    "observed_sentiment_macro_f1": 0.8293,
+    "aspect_detection_macro_f1_ci95": [
+      0.7969,
+      0.9762
+    ],
+    "observed_sentiment_macro_f1_ci95": [
+      0.5331,
+      1.0
+    ],
+    "span_audit": {
+      "total_spans": 25,
+      "valid_spans": 25,
+      "invalid_spans": 0,
+      "validity_rate": 1.0,
+      "meets_95pct_gate": true,
+      "invalid_examples": []
+    },
+    "predicted_observed_pair_count": 25,
+    "backed_predicted_observed_pair_count": 25,
+    "unbacked_predicted_observed_pair_count": 0,
+    "all_predicted_aspects_span_backed": true,
+    "m5_2_pilot_gate_eligible": true
+  },
+  "locked_held_out_metrics": {
+    "evaluated_unit_count": 93,
+    "evaluated_video_count": 15,
+    "effective_total_annotated_units": 180,
+    "effective_total_unique_videos": 29,
+    "is_real_pilot_data": true,
+    "human_signoff_complete": true,
+    "per_aspect_detection": {
+      "taste": {
+        "gold_support": 14,
+        "pred_support": 16,
+        "gold_coverage": 0.1505,
+        "pred_coverage": 0.172,
+        "tp": 10,
+        "fp": 6,
+        "fn": 4,
+        "tn": 73,
+        "precision": 0.625,
+        "recall": 0.7143,
+        "f1": 0.6667,
+        "gold_state_counts": {
+          "absent_unknown": 79,
+          "negative": 1,
+          "neutral": 1,
+          "positive": 12
+        },
+        "pred_state_counts": {
+          "absent_unknown": 77,
+          "negative": 0,
+          "neutral": 4,
+          "positive": 12
+        }
+      },
+      "price": {
+        "gold_support": 9,
+        "pred_support": 10,
+        "gold_coverage": 0.0968,
+        "pred_coverage": 0.1075,
+        "tp": 9,
+        "fp": 1,
+        "fn": 0,
+        "tn": 83,
+        "precision": 0.9,
+        "recall": 1.0,
+        "f1": 0.9474,
+        "gold_state_counts": {
+          "absent_unknown": 84,
+          "negative": 0,
+          "neutral": 7,
+          "positive": 2
+        },
+        "pred_state_counts": {
+          "absent_unknown": 83,
+          "negative": 1,
+          "neutral": 8,
+          "positive": 1
+        }
+      },
+      "hygiene": {
+        "gold_support": 1,
+        "pred_support": 0,
+        "gold_coverage": 0.0108,
+        "pred_coverage": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 92,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "gold_state_counts": {
+          "absent_unknown": 92,
+          "negative": 1,
+          "neutral": 0,
+          "positive": 0
+        },
+        "pred_state_counts": {
+          "absent_unknown": 93,
+          "negative": 0,
+          "neutral": 0,
+          "positive": 0
+        }
+      },
+      "service": {
+        "gold_support": 0,
+        "pred_support": 1,
+        "gold_coverage": 0.0,
+        "pred_coverage": 0.0108,
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "tn": 92,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "gold_state_counts": {
+          "absent_unknown": 93,
+          "negative": 0,
+          "neutral": 0,
+          "positive": 0
+        },
+        "pred_state_counts": {
+          "absent_unknown": 92,
+          "negative": 0,
+          "neutral": 1,
+          "positive": 0
+        }
+      }
+    },
+    "aspect_detection_macro_precision": 0.5083,
+    "aspect_detection_macro_recall": 0.5714,
+    "aspect_detection_macro_f1": 0.538,
+    "gold_observed_aspect_pair_count": 24,
+    "per_polarity_observed_sentiment": {
+      "positive": {
+        "support": 14,
+        "tp": 10,
+        "fp": 0,
+        "fn": 4,
+        "precision": 1.0,
+        "recall": 0.7143,
+        "f1": 0.8333
+      },
+      "neutral": {
+        "support": 8,
+        "tp": 7,
+        "fp": 2,
+        "fn": 1,
+        "precision": 0.7778,
+        "recall": 0.875,
+        "f1": 0.8235
+      },
+      "negative": {
+        "support": 2,
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "observed_sentiment_macro_precision": 0.5926,
+    "observed_sentiment_macro_recall": 0.5298,
+    "observed_sentiment_macro_f1": 0.5523,
+    "aspect_detection_macro_f1_ci95": [
+      0.3994,
+      0.8884
+    ],
+    "observed_sentiment_macro_f1_ci95": [
+      0.4215,
+      0.9039
+    ],
+    "span_audit": {
+      "total_spans": 27,
+      "valid_spans": 27,
+      "invalid_spans": 0,
+      "validity_rate": 1.0,
+      "meets_95pct_gate": true,
+      "invalid_examples": []
+    },
+    "predicted_observed_pair_count": 27,
+    "backed_predicted_observed_pair_count": 27,
+    "unbacked_predicted_observed_pair_count": 0,
+    "all_predicted_aspects_span_backed": true,
+    "m5_2_pilot_gate_eligible": false
+  },
+  "all_pool_metrics": {
+    "evaluated_unit_count": 180,
+    "evaluated_video_count": 29,
+    "effective_total_annotated_units": 180,
+    "effective_total_unique_videos": 29,
+    "is_real_pilot_data": true,
+    "human_signoff_complete": true,
+    "per_aspect_detection": {
+      "taste": {
+        "gold_support": 27,
+        "pred_support": 27,
+        "gold_coverage": 0.15,
+        "pred_coverage": 0.15,
+        "tp": 24,
+        "fp": 3,
+        "fn": 3,
+        "tn": 150,
+        "precision": 0.8889,
+        "recall": 0.8889,
+        "f1": 0.8889,
+        "gold_state_counts": {
+          "absent_unknown": 153,
+          "negative": 2,
+          "neutral": 3,
+          "positive": 22
+        },
+        "pred_state_counts": {
+          "absent_unknown": 153,
+          "negative": 1,
+          "neutral": 3,
+          "positive": 23
+        }
+      },
+      "price": {
+        "gold_support": 15,
+        "pred_support": 16,
+        "gold_coverage": 0.0833,
+        "pred_coverage": 0.0889,
+        "tp": 15,
+        "fp": 1,
+        "fn": 0,
+        "tn": 164,
+        "precision": 0.9375,
+        "recall": 1.0,
+        "f1": 0.9677,
+        "gold_state_counts": {
+          "absent_unknown": 165,
+          "negative": 0,
+          "neutral": 12,
+          "positive": 3
+        },
+        "pred_state_counts": {
+          "absent_unknown": 164,
+          "negative": 0,
+          "neutral": 14,
+          "positive": 2
+        }
+      },
+      "hygiene": {
+        "gold_support": 2,
+        "pred_support": 2,
+        "gold_coverage": 0.0111,
+        "pred_coverage": 0.0111,
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 178,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "gold_state_counts": {
+          "absent_unknown": 178,
+          "negative": 2,
+          "neutral": 0,
+          "positive": 0
+        },
+        "pred_state_counts": {
+          "absent_unknown": 178,
+          "negative": 2,
+          "neutral": 0,
+          "positive": 0
+        }
+      },
+      "service": {
+        "gold_support": 0,
+        "pred_support": 1,
+        "gold_coverage": 0.0,
+        "pred_coverage": 0.0056,
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "tn": 179,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "gold_state_counts": {
+          "absent_unknown": 180,
+          "negative": 0,
+          "neutral": 0,
+          "positive": 0
+        },
+        "pred_state_counts": {
+          "absent_unknown": 179,
+          "negative": 0,
+          "neutral": 1,
+          "positive": 0
+        }
+      }
+    },
+    "aspect_detection_macro_precision": 0.9421,
+    "aspect_detection_macro_recall": 0.963,
+    "aspect_detection_macro_f1": 0.9522,
+    "gold_observed_aspect_pair_count": 44,
+    "per_polarity_observed_sentiment": {
+      "positive": {
+        "support": 25,
+        "tp": 22,
+        "fp": 0,
+        "fn": 3,
+        "precision": 1.0,
+        "recall": 0.88,
+        "f1": 0.9362
+      },
+      "neutral": {
+        "support": 15,
+        "tp": 15,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.9375,
+        "recall": 1.0,
+        "f1": 0.9677
+      },
+      "negative": {
+        "support": 4,
+        "tp": 3,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8571
+      }
+    },
+    "observed_sentiment_macro_precision": 0.9792,
+    "observed_sentiment_macro_recall": 0.8767,
+    "observed_sentiment_macro_f1": 0.9204,
+    "aspect_detection_macro_f1_ci95": [
+      0.8895,
+      0.9832
+    ],
+    "observed_sentiment_macro_f1_ci95": [
+      0.6484,
+      1.0
+    ],
+    "span_audit": {
+      "total_spans": 47,
+      "valid_spans": 47,
+      "invalid_spans": 0,
+      "validity_rate": 1.0,
+      "meets_95pct_gate": true,
+      "invalid_examples": []
+    },
+    "predicted_observed_pair_count": 46,
+    "backed_predicted_observed_pair_count": 46,
+    "unbacked_predicted_observed_pair_count": 0,
+    "all_predicted_aspects_span_backed": true,
+    "m5_2_pilot_gate_eligible": true
+  },
+  "before_after_filter_summary": {
+    "videos_checked": 29,
+    "videos_with_flagged_seeding": 14,
+    "total_flagged_comments": 20,
+    "before_supported_overlap_videos": 3,
+    "after_supported_overlap_videos": 3,
+    "max_abs_supported_discrepancy_shift": 0.0
+  },
+  "threshold_sensitivity_summary": [
+    {
+      "polarity_tau": 0.05,
+      "min_viewer_comments": 1,
+      "videos_with_supported_overlap": 11,
+      "mean_supported_aspect_count": 0.4828,
+      "mean_supported_sentiment_discrepancy": -0.1515
+    },
+    {
+      "polarity_tau": 0.05,
+      "min_viewer_comments": 3,
+      "videos_with_supported_overlap": 3,
+      "mean_supported_aspect_count": 0.1379,
+      "mean_supported_sentiment_discrepancy": -0.2445
+    },
+    {
+      "polarity_tau": 0.05,
+      "min_viewer_comments": 5,
+      "videos_with_supported_overlap": 3,
+      "mean_supported_aspect_count": 0.1034,
+      "mean_supported_sentiment_discrepancy": -0.1334
+    },
+    {
+      "polarity_tau": 0.15,
+      "min_viewer_comments": 1,
+      "videos_with_supported_overlap": 11,
+      "mean_supported_aspect_count": 0.4828,
+      "mean_supported_sentiment_discrepancy": -0.1515
+    },
+    {
+      "polarity_tau": 0.15,
+      "min_viewer_comments": 3,
+      "videos_with_supported_overlap": 3,
+      "mean_supported_aspect_count": 0.1379,
+      "mean_supported_sentiment_discrepancy": -0.2445
+    },
+    {
+      "polarity_tau": 0.15,
+      "min_viewer_comments": 5,
+      "videos_with_supported_overlap": 3,
+      "mean_supported_aspect_count": 0.1034,
+      "mean_supported_sentiment_discrepancy": -0.1334
+    },
+    {
+      "polarity_tau": 0.25,
+      "min_viewer_comments": 1,
+      "videos_with_supported_overlap": 11,
+      "mean_supported_aspect_count": 0.4828,
+      "mean_supported_sentiment_discrepancy": -0.1515
+    },
+    {
+      "polarity_tau": 0.25,
+      "min_viewer_comments": 3,
+      "videos_with_supported_overlap": 3,
+      "mean_supported_aspect_count": 0.1379,
+      "mean_supported_sentiment_discrepancy": -0.2445
+    },
+    {
+      "polarity_tau": 0.25,
+      "min_viewer_comments": 5,
+      "videos_with_supported_overlap": 3,
+      "mean_supported_aspect_count": 0.1034,
+      "mean_supported_sentiment_discrepancy": -0.1334
+    }
+  ],
+  "provenance": {
+    "code_files_sha256": {
+      "packages/data_contracts/multimodal.py": "0176a23901a95a9c8de39aa63c6af8db0bd835251ac4b2746de226a80fbe3dd0",
+      "packages/absa/spans.py": "7796d9b559fb1cc620158242ce9d8e35ea3228121ef4b166506bf25dfbc332ac",
+      "packages/absa/analyzer.py": "5f499d1f177d979328c9fccf7417013d14e808aac29626acabdcb4ec11f2dbbc",
+      "packages/absa/evaluation.py": "6336cd9da8de945525908d47d2f4655c9f17e6983458cf929e3f4e06dd1d71f1",
+      "packages/seeding/evaluation.py": "737053559920c9027c6dd4c2550a15203c9f05184f13f4fc01256ef449886c85",
+      "apps/api/app/routers/trust.py": "2b603c467ce817c7cdbeba4be8121a481a04de9d9b40b94d6078392ad9421da9",
+      "apps/demo/presentation.py": "794492161ff232223a6e47da28dbd3587425edb80b6fce524920b77fb029ea5b",
+      "pipelines/audit_m5_2_absa/run_baseline_checks.py": "08c32c4d68ea62bb37bdc11ca11aaadb3a141331f476b0328a589431b9d5602f"
+    },
+    "data_files_sha256": {
+      "data/annotations/m5_2_pilot_pool.jsonl": "9ca9c792d2879f59e1022839eb89e9088306fe367983d6e1657741df41130437",
+      "data/annotations/m5_2_pilot_locked_predictions.jsonl": "c186904b67a77ee4c38b1f140e7a2cfedc57a01668287c9ae0483ea24d608262",
+      "data/corpus/m3_3_pilot_snapshot_v2/fact_videos.parquet": "8aec43c79b7eb235a303c59da8da016df6e1e292891aeda6966c269dd5bcdbee",
+      "data/corpus/m3_3_pilot_snapshot_v2/fact_voice_segments.parquet": "8da7888c323a231046bf98c5d80551c178a38f33a0e857bfbfee7a12b771a62a",
+      "data/corpus/m3_3_pilot_snapshot_v2/fact_comments.parquet": "9447bd0ee23d5fe5c89e7788701a02513689f752c51dadf794afb5c58033dbe2"
+    }
+  }
+}

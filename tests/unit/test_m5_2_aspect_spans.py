@@ -1583,3 +1583,207 @@ def test_m5_2_nguyen_peer_review_real_pilot_edge_fixes(tmp_path: Path) -> None:
         )
 
 
+def test_m5_2_real_eval_validates_human_signoff_gold_spans_and_end_to_end_pipeline(
+    tmp_path: Path,
+) -> None:
+    import json
+
+    from packages.absa.evaluation import (
+        predict_unit_aspects,
+        validate_and_summarize_m5_2_pool,
+    )
+    from pipelines.audit_m5_2_absa.run_baseline_checks import run_real_pilot_eval
+
+    pool: list[dict[str, object]] = []
+    preds: list[dict[str, object]] = []
+    video_rows: list[dict[str, object]] = []
+    voice_rows: list[dict[str, object]] = []
+    cmt_rows: list[dict[str, object]] = []
+
+    samples = [
+        (
+            "creator_utterance",
+            "Nước dùng đậm đà thơm ngon, giá 45k bình thường",
+            {"taste": "positive", "price": "neutral", "hygiene": "absent_unknown", "service": "absent_unknown"},
+        ),
+        (
+            "viewer_comment",
+            "Bàn ghế hơi bẩn và nhân viên phục vụ quá chậm",
+            {"taste": "absent_unknown", "price": "absent_unknown", "hygiene": "negative", "service": "negative"},
+        ),
+        (
+            "viewer_comment",
+            "Quán ăn sạch sẽ, nhân viên nhiệt tình dễ thương",
+            {"taste": "absent_unknown", "price": "absent_unknown", "hygiene": "positive", "service": "positive"},
+        ),
+        (
+            "viewer_comment",
+            "Đỉnh của chóp luôn",
+            {"taste": "absent_unknown", "price": "absent_unknown", "hygiene": "absent_unknown", "service": "absent_unknown"},
+        ),
+    ]
+
+    for v in range(12):
+        vid = f"vid_m52_{v:02d}"
+        video_rows.append({"video_id": vid, "caption": f"Review quán {v}", "transcript": "Nước dùng đậm đà thơm ngon"})
+        for j in range(10):
+            idx = v * 10 + j
+            skind, text, gold_map = samples[j % len(samples)]
+            uid = f"{vid}::{'utt' if skind == 'creator_utterance' else 'cmt'}::{j:02d}"
+            if skind == "creator_utterance":
+                voice_rows.append({"video_id": vid, "segment_id": f"{j:02d}", "start_sec": 0.0, "end_sec": 2.0, "text": text})
+            else:
+                cmt_rows.append({"video_id": vid, "comment_id": f"{j:02d}", "author_handle": f"u_{idx}", "text": text, "like_count": 1, "reply_count": 0})
+
+            pred_map, pred_spans = predict_unit_aspects(
+                TextUnitInput(unit_id=uid, source_kind=skind, text=text)  # type: ignore[arg-type]
+            )
+            gold_spans = [sp.model_dump() for sp in pred_spans]
+            iid = f"m5_2_{idx + 1:03d}"
+
+            if idx < 50:
+                assign = "double_review_N_K"
+                n_map: dict[str, str] | None = dict(gold_map)
+                k_map: dict[str, str] | None = dict(gold_map)
+                n_sp = list(gold_spans)
+                k_sp = list(gold_spans)
+                n_ver = True
+                k_ver = True
+            elif idx < 85:
+                assign = "N_only"
+                n_map = dict(gold_map)
+                k_map = None
+                n_sp = list(gold_spans)
+                k_sp = []
+                n_ver = True
+                k_ver = False
+            else:
+                assign = "K_only"
+                n_map = None
+                k_map = dict(gold_map)
+                n_sp = []
+                k_sp = list(gold_spans)
+                n_ver = False
+                k_ver = True
+
+            pool.append(
+                {
+                    "item_id": iid,
+                    "unit_id": uid,
+                    "video_id": vid,
+                    "source_kind": skind,
+                    "text": text,
+                    "review_assignment": assign,
+                    "K_aspects": k_map,
+                    "K_spans": k_sp,
+                    "K_note": "ok" if k_ver else "",
+                    "K_human_verified": k_ver,
+                    "N_aspects": n_map,
+                    "N_spans": n_sp,
+                    "N_note": "ok" if n_ver else "",
+                    "N_human_verified": n_ver,
+                    "adjudicated_aspects": dict(gold_map),
+                    "adjudicated_spans": list(gold_spans),
+                }
+            )
+            preds.append(
+                {
+                    "item_id": iid,
+                    "unit_id": uid,
+                    "video_id": vid,
+                    "source_kind": skind,
+                    "pred_aspects": pred_map,
+                    "pred_spans": [sp.model_dump() for sp in pred_spans],
+                }
+            )
+
+    summary = validate_and_summarize_m5_2_pool(pool, preds)
+    assert summary["total_units"] == 120
+    assert summary["gold_span_audit"]["validity_rate"] == 1.0
+    assert summary["agreement"]["double_verified_unit_count"] == 50
+
+    # Fail closed if an observed adjudicated aspect lacks a valid NFC span
+    bad_unbacked = [dict(r) for r in pool]
+    bad_unbacked[0]["adjudicated_spans"] = []
+    with pytest.raises(ValueError, match="span"):
+        validate_and_summarize_m5_2_pool(bad_unbacked, preds)
+
+    # Fail closed if K_only row is unverified
+    bad_unver = [dict(r) for r in pool]
+    bad_unver[-1]["K_human_verified"] = False
+    with pytest.raises(ValueError, match="K_human_verified"):
+        validate_and_summarize_m5_2_pool(bad_unver, preds)
+
+    corpus_dir = tmp_path / "corpus_m52"
+    corpus_dir.mkdir()
+    pd.DataFrame(video_rows).to_parquet(corpus_dir / "fact_videos.parquet", index=False)
+    pd.DataFrame(voice_rows).to_parquet(corpus_dir / "fact_voice_segments.parquet", index=False)
+    pd.DataFrame(cmt_rows).to_parquet(corpus_dir / "fact_comments.parquet", index=False)
+
+    pool_path = tmp_path / "m5_2_pool.jsonl"
+    preds_path = tmp_path / "m5_2_preds.jsonl"
+    out_path = tmp_path / "m5_2_real_eval.json"
+    pool_path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in pool) + "\n", encoding="utf-8")
+    preds_path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in preds) + "\n", encoding="utf-8")
+
+    rep = run_real_pilot_eval(
+        pool_jsonl=pool_path,
+        locked_predictions_jsonl=preds_path,
+        corpus_dir=corpus_dir,
+        output=out_path,
+        n_boot=25,
+    )
+    assert out_path.is_file()
+    assert rep["real_pilot_data_available"] is True
+    assert rep["held_out_metrics"]["m5_2_pilot_gate_eligible"] is True
+
+
+def test_m5_2_dev_and_train_video_disjoint_linguistic_refinements() -> None:
+    from packages.absa.evaluation import audit_source_span_validity, predict_unit_aspects
+
+    # 1. Bare dish/ingredient titles without flavor/evaluative cues stay absent_unknown
+    for idx, bare_title in enumerate(
+        (
+            "Lẩu mì Hải Sản hơn 20 năm ở quận 7 #streetfood",
+            "Phở khô hai tô #phokhogialai79",
+            "Buffet hải sản khách sạn 5 sao Sheraton có gì ?",
+            "Xiên thịt nhìn là muốn thử. Để chị rủ mấy bạn thử.",
+            "Chị lên clip riêng món nộm dưa chuột với ạ",
+            "@Tracy khứa áo vest mắc cừ quá nè bạn",
+            "Đi ăn mà xếp hàng nhìn mắc mệt",
+        )
+    ):
+        pm, sp = predict_unit_aspects(
+            TextUnitInput(unit_id=f"bare_{idx}", source_kind="viewer_comment", text=bare_title)
+        )
+        assert all(v == "absent_unknown" for v in pm.values()), f"False positive on {bare_title!r}: {pm}"
+        assert sp == []
+
+    # 2. Colloquial Vietnamese hygiene, price, taste, and abbreviated-negation patterns
+    cases: list[tuple[str, dict[str, str]]] = [
+        ("Sao không đeo bao tay😂", {"hygiene": "negative"}),
+        ("Quá rẽ 😋😋😋", {"price": "positive"}),
+        ("Quán phở này khó ăn lắm 🤪", {"taste": "negative"}),
+        ("cô không lấy tiền công + vào món ăn củng vậy", {"price": "neutral"}),
+        ("món nèo cũng ngôn", {"taste": "positive"}),
+        ("quán này ăn củng đc . ko phải gọi là quá ngon.", {"taste": "neutral"}),
+        ("Bánh xèo xúc xích Ba con là đỉnh", {"taste": "positive"}),
+        ("TÔ BÁNH CANH CUA LỘT SẴN NGẬP THỊT", {"taste": "positive"}),
+        ("Quán bún dọc mùng hương vị Hà Nội ở quận 7", {"taste": "neutral"}),
+    ]
+    units_map: dict[str, str] = {}
+    collected_spans = []
+    for i, (txt, expected_sub) in enumerate(cases):
+        uid = f"colloq_{i}"
+        units_map[uid] = txt
+        pm, sp = predict_unit_aspects(TextUnitInput(unit_id=uid, source_kind="viewer_comment", text=txt))
+        collected_spans.extend(sp)
+        for aspect in ASPECT_NAMES:
+            exp = expected_sub.get(aspect, "absent_unknown")
+            assert pm[aspect] == exp, f"{txt!r} aspect={aspect}: expected {exp}, got {pm[aspect]}"
+
+    assert audit_source_span_validity(units_map, collected_spans)["validity_rate"] == 1.0
+
+
+
+

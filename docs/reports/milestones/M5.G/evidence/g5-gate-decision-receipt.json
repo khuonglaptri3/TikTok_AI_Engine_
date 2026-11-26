@@ -1,0 +1,27 @@
+{
+  "gate_id": "G5",
+  "report_id": "M5.G",
+  "technical_probe_status": "PASS",
+  "global_gate_status": "NOT_RUN",
+  "governance_note": "Two-person reciprocal gate rule: K sign-off recorded; global G5 flips from NOT_RUN to PASS once N co-signs.",
+  "feature_decisions": {
+    "observable_comment_indicators_m5_1": {
+      "ruling": "ACCEPTED_DIAGNOSTIC_ONLY_WITHOUT_AUTO_FILTERING",
+      "auto_filter_accepted": false,
+      "accepted_runtime_mode": "diagnostic_only_without_filtering"
+    },
+    "four_aspect_absa_with_source_spans_m5_2": {
+      "ruling": "ACCEPTED_QUALIFIED_SPAN_GROUNDED_SENTIMENT_DISCREPANCY",
+      "min_viewer_comments_abstention": 3,
+      "service_qualification": "gold_support=0 in 180-unit real sample; sparse-thread abstention enforced"
+    },
+    "automated_bot_payment_or_diner_consensus_claims": {
+      "ruling": "REJECTED_AND_UNACCEPTED"
+    }
+  },
+  "contributor_signoff": {
+    "K_status": "PASS",
+    "K_signed_at": "2026-11-26T09:08:22.213153+00:00",
+    "N_status": "PENDING_CO_SIGN"
+  }
+}

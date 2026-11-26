@@ -1,0 +1,52 @@
+{
+  "task_id": "M5.2",
+  "receipt_id": "m5_2_joint_annotation_and_real_eval_v1",
+  "completed_at": "2026-11-26T16:00:20+07:00",
+  "source_snapshot_id": "m3_3_pilot_snapshot_v2",
+  "pool_file": "data/annotations/m5_2_pilot_pool.jsonl",
+  "pool_sha256": "9ca9c792d2879f59e1022839eb89e9088306fe367983d6e1657741df41130437",
+  "locked_predictions_file": "data/annotations/m5_2_pilot_locked_predictions.jsonl",
+  "locked_predictions_sha256": "c186904b67a77ee4c38b1f140e7a2cfedc57a01668287c9ae0483ea24d608262",
+  "locked_eval_benchmark_file": "artifacts/benchmarks/m5_2_real_pilot_locked_eval_v1.json",
+  "locked_eval_benchmark_sha256": "2e9a567af77c219a9db939b1b64561cc62c22b5c1babacbae328d8af22922f21",
+  "real_eval_benchmark_file": "artifacts/benchmarks/m5_2_real_pilot_eval_v1.json",
+  "real_eval_benchmark_sha256": "02a5375d1b0db45396e0d25e60188a2d55e72e1715843b220aca44be5a8f2017",
+  "human_signoff": {
+    "N_verified_count": 115,
+    "K_verified_count": 115,
+    "double_review_N_K_count": 50,
+    "N_only_count": 65,
+    "K_only_count": 65,
+    "total_adjudicated_units": 180,
+    "unique_videos": 29,
+    "adjudicated_gold_span_validity": {
+      "total_spans": 44,
+      "valid_spans": 44,
+      "validity_rate": 1.0
+    },
+    "blinded_to_locked_predictions": true,
+    "K_blinded_to_N_labels_during_annotation": true
+  },
+  "inter_annotator_agreement": {
+    "double_verified_unit_count": 50,
+    "aspect_pair_count": 200,
+    "raw_agreement_presence": 0.985,
+    "cohens_kappa_presence": 0.8616,
+    "raw_agreement_4state": 0.975,
+    "cohens_kappa_4state": 0.7731,
+    "disagreement_pair_count": 5
+  },
+  "held_out_evaluation": {
+    "held_out_units": 93,
+    "held_out_videos": 15,
+    "video_overlap_with_dev_and_train": 0,
+    "untuned_locked_aspect_detection_macro_f1": 0.538,
+    "untuned_locked_observed_sentiment_macro_f1": 0.5523,
+    "dev_refined_aspect_detection_macro_f1": 0.9286,
+    "dev_refined_observed_sentiment_macro_f1": 0.8293,
+    "conservative_4aspect_denominator_f1": 0.6964,
+    "predicted_span_validity_rate": 1.0,
+    "m5_2_pilot_gate_eligible": true,
+    "service_qualification": "service had gold_support=0 in the 180-unit real pilot sample (1 predicted FP on held_out); runtime enforces min_viewer_comments=3 support abstention."
+  }
+}

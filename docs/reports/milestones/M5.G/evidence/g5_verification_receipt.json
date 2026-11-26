@@ -1,0 +1,93 @@
+{
+  "gate_id": "G5",
+  "report_id": "M5.G",
+  "executed_at": "2026-11-26T09:08:22.211446+00:00",
+  "elapsed_seconds": 20.286,
+  "provider_spend_usd": 0.0,
+  "all_technical_checks_passed": true,
+  "zero_snapshot_byte_mutations": true,
+  "m5_1_audit": {
+    "gate_check_passed": true,
+    "ruling": "ACCEPTED_DIAGNOSTIC_ONLY_WITHOUT_AUTO_FILTERING",
+    "total_pool_rows": 300,
+    "double_verified_count": 60,
+    "raw_agreement_6class": 0.9333,
+    "cohens_kappa_6class": 0.476,
+    "positive_indicator_cohens_kappa": 1.0,
+    "organic_duplicate_fp_before_after": [
+      2,
+      0
+    ],
+    "held_out_core_missing_support": [
+      "contact_or_link",
+      "observable_duplicate"
+    ],
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "m5_2_audit": {
+    "gate_check_passed": true,
+    "ruling": "ACCEPTED_QUALIFIED_SPAN_GROUNDED_SENTIMENT_DISCREPANCY",
+    "total_units": 180,
+    "unique_videos": 29,
+    "double_verified_units": 50,
+    "cohens_kappa_presence": 0.8616,
+    "cohens_kappa_4state": 0.7731,
+    "gold_span_validity_rate": 1.0,
+    "predicted_span_validity_rate": 1.0,
+    "held_out_aspect_detection_macro_f1": 0.9286,
+    "conservative_4aspect_f1": 0.6964,
+    "held_out_observed_sentiment_macro_f1": 0.8293,
+    "service_gold_support": 0,
+    "qualifications": [
+      "Creator-vs-viewer deltas are framed strictly as observed sentiment_discrepancy (>=3 viewer comments), never deception, hygiene truth, or diner consensus.",
+      "service had gold_support=0 in the 180-unit real pilot sample; runtime enforces min_viewer_comments=3 support abstention."
+    ]
+  },
+  "live_api_and_demo_audit": {
+    "gate_check_passed": true,
+    "comment_filter_policy": "diagnostic_only_unvalidated",
+    "low_support_abstained": true,
+    "demo_hide_seeding_default": false,
+    "markdown_limits_and_spans_rendered": true
+  },
+  "evidence_sha256": {
+    "artifacts/benchmarks/m5_1_real_pilot_eval_v1.json": "1252e5750b436ff5d3b75c33308c50bf911c3cc81ec8458b9241f06e9343c801",
+    "data/annotations/m5_1_pilot_pool.jsonl": "228bb410bfa3ac26bf4c473b9f3851109798f3aee08590b23acb8275320a28f4",
+    "artifacts/benchmarks/m5_2_real_pilot_eval_v1.json": "02a5375d1b0db45396e0d25e60188a2d55e72e1715843b220aca44be5a8f2017",
+    "artifacts/benchmarks/m5_2_real_pilot_locked_eval_v1.json": "2e9a567af77c219a9db939b1b64561cc62c22b5c1babacbae328d8af22922f21",
+    "data/annotations/m5_2_pilot_pool.jsonl": "9ca9c792d2879f59e1022839eb89e9088306fe367983d6e1657741df41130437",
+    "data/annotations/absa_annotation_summary_v1.json": "acd4fbdb9949c3ce30682b1395e3fefadf5dc7b583827755653c467c11b1a4b6"
+  },
+  "verified_snapshots": {
+    "20261118_taxonomy_fix_v1": {
+      "manifest.json": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3"
+    },
+    "m3_3_pilot_snapshot_v1": {
+      "manifest.json": "06c24e14a1dfce0f786b50c2adae140751029e0731de149f8517421d7369f676",
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "8aec43c79b7eb235a303c59da8da016df6e1e292891aeda6966c269dd5bcdbee",
+      "fact_voice_segments.parquet": "8da7888c323a231046bf98c5d80551c178a38f33a0e857bfbfee7a12b771a62a",
+      "fact_comments.parquet": "860edb82dd29951a5ab27943a189156ec14836452187a8176daf89c3efa23d86",
+      "fact_absa_reviews.parquet": "0980c03a73e54a6ad632f709a5074fae0944923656853014e2e976a9df8a2253"
+    },
+    "m3_3_pilot_snapshot_v2": {
+      "manifest.json": "04db27f71a43a56fb12779425afcf07ecfa791507afa35673c0735e395a6c5c4",
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "8aec43c79b7eb235a303c59da8da016df6e1e292891aeda6966c269dd5bcdbee",
+      "fact_voice_segments.parquet": "8da7888c323a231046bf98c5d80551c178a38f33a0e857bfbfee7a12b771a62a",
+      "fact_comments.parquet": "9447bd0ee23d5fe5c89e7788701a02513689f752c51dadf794afb5c58033dbe2",
+      "fact_absa_reviews.parquet": "2770ef0a2b0b9c1ce039d1d0cb074a3ab438b0a1fc8469cb07d30941db99ac94"
+    },
+    "m3_3_playwright_comments_20261125_v5": {
+      "manifest.json": "b086e15c32cbcaf38924068831ebe5e3b1d269ef021111479dc8c02f223af312",
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "8595962a952d35b042f20c79874542f4b2dc9f48c70f539937aedf563965b961",
+      "fact_voice_segments.parquet": "e3836b87e220df3c8b2c494c21ca39c2552a920c34822cec53dfd06c9781e04f",
+      "fact_comments.parquet": "5c4981bfdca5c620dedc7269e386a25363f6c19bac52043cd7eb72e63503ccd7",
+      "fact_absa_reviews.parquet": "d0d0abc48ce2801af4800fd8f0997bb7533001da78acde1d7987ac8e58bc010e"
+    }
+  }
+}

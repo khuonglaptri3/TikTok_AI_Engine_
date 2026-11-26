@@ -18,6 +18,7 @@ from packages.absa.evaluation import (
     evaluate_m5_2_aspect_sentiment,
     predict_unit_aspects,
     split_units_by_video,
+    validate_and_summarize_m5_2_pool,
 )
 from packages.absa.spans import TextUnitInput
 from packages.common.resources import get_peak_rss_mib
@@ -572,13 +573,318 @@ def run_real_pool_export(
     return pool
 
 
+def _read_jsonl(path: Path) -> list[dict[str, Any]]:
+    if not path.is_file():
+        raise FileNotFoundError(f"JSONL file not found: {path}")
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+def run_real_pilot_eval(
+    *,
+    pool_jsonl: Path,
+    locked_predictions_jsonl: Path,
+    corpus_dir: Path,
+    output: Path,
+    use_current_engine: bool = False,
+    n_boot: int = 500,
+    seed: int = 42,
+    overwrite: bool = False,
+) -> dict[str, Any]:
+    """Evaluate finalized M5.2 human-verified 120-200 real pilot units against locked/current ABSA engine."""
+    if output.exists() and not overwrite:
+        raise FileExistsError(f"Output already exists: {output}")
+
+    pool_rows = _read_jsonl(pool_jsonl)
+    pred_rows = _read_jsonl(locked_predictions_jsonl)
+    summary = validate_and_summarize_m5_2_pool(pool_rows, pred_rows)
+
+    merged_rows: list[dict[str, Any]] = list(summary["merged_rows"])
+    units_by_id: dict[str, str] = dict(summary["units_by_id"])
+    locked_spans_by_uid: dict[str, list[dict[str, Any]]] = dict(summary["locked_spans_by_uid"])
+
+    # Also compute current live engine predictions to track any dev-only lexical refinement transparently
+    current_rows: list[dict[str, Any]] = []
+    current_spans_by_uid: dict[str, list[dict[str, Any]]] = {}
+    for r in merged_rows:
+        uid = str(r["unit_id"])
+        skind: TextUnitSourceKind = r["source_kind"]
+        txt = str(r["text"])
+        c_map, c_spans = predict_unit_aspects(
+            TextUnitInput(unit_id=uid, source_kind=skind, text=txt)
+        )
+        current_spans_by_uid[uid] = [sp.model_dump() for sp in c_spans]
+        current_rows.append(
+            {
+                **r,
+                "pred_aspects": c_map if use_current_engine else r["pred_aspects"],
+                "locked_pred_aspects": r["pred_aspects"],
+                "current_pred_aspects": c_map,
+            }
+        )
+
+    active_spans_by_uid = current_spans_by_uid if use_current_engine else locked_spans_by_uid
+
+    splits = split_units_by_video(current_rows, video_id_col="video_id", dev_ratio=0.5, seed=seed)
+    dev_vids = {str(r["video_id"]) for r in splits["dev"]}
+    held_vids = {str(r["video_id"]) for r in splits["held_out"]}
+    if dev_vids & held_vids:
+        raise ValueError("Video ID overlap detected across M5.2 dev and held_out splits")
+
+    dev_uids = {str(r["unit_id"]) for r in splits["dev"]}
+    held_uids = {str(r["unit_id"]) for r in splits["held_out"]}
+    total_videos = int(summary["unique_video_count"])
+
+    dev_metrics = evaluate_m5_2_aspect_sentiment(
+        splits["dev"],
+        spans=[sp for uid in sorted(dev_uids) for sp in active_spans_by_uid[uid]],
+        units_by_id={uid: units_by_id[uid] for uid in dev_uids},
+        is_real_pilot_data=True,
+        human_signoff_complete=True,
+        total_annotated_units=len(current_rows),
+        total_unique_videos=total_videos,
+        n_boot=n_boot,
+        seed=seed,
+    )
+    held_out_metrics = evaluate_m5_2_aspect_sentiment(
+        splits["held_out"],
+        spans=[sp for uid in sorted(held_uids) for sp in active_spans_by_uid[uid]],
+        units_by_id={uid: units_by_id[uid] for uid in held_uids},
+        is_real_pilot_data=True,
+        human_signoff_complete=True,
+        total_annotated_units=len(current_rows),
+        total_unique_videos=total_videos,
+        n_boot=n_boot,
+        seed=seed,
+    )
+    all_pool_metrics = evaluate_m5_2_aspect_sentiment(
+        current_rows,
+        spans=[sp for uid in sorted(active_spans_by_uid) for sp in active_spans_by_uid[uid]],
+        units_by_id=units_by_id,
+        is_real_pilot_data=True,
+        human_signoff_complete=True,
+        total_annotated_units=len(current_rows),
+        total_unique_videos=total_videos,
+        n_boot=n_boot,
+        seed=seed,
+    )
+
+    locked_held_out_metrics = (
+        held_out_metrics
+        if not use_current_engine
+        else evaluate_m5_2_aspect_sentiment(
+            splits["held_out"],
+            spans=[sp for uid in sorted(held_uids) for sp in locked_spans_by_uid[uid]],
+            units_by_id={uid: units_by_id[uid] for uid in held_uids},
+            pred_col="locked_pred_aspects",
+            is_real_pilot_data=True,
+            human_signoff_complete=True,
+            total_annotated_units=len(current_rows),
+            total_unique_videos=total_videos,
+            n_boot=n_boot,
+            seed=seed,
+        )
+    )
+
+    videos_pq = corpus_dir / "fact_videos.parquet"
+    voice_pq = corpus_dir / "fact_voice_segments.parquet"
+    comments_pq = corpus_dir / "fact_comments.parquet"
+    v_df = pd.read_parquet(videos_pq) if videos_pq.is_file() else pd.DataFrame()
+    u_df = pd.read_parquet(voice_pq) if voice_pq.is_file() else pd.DataFrame()
+    c_df = pd.read_parquet(comments_pq) if comments_pq.is_file() else pd.DataFrame()
+
+    if not v_df.empty:
+        v_df["video_id"] = v_df["video_id"].astype(str)
+    if not u_df.empty:
+        u_df["video_id"] = u_df["video_id"].astype(str)
+    if not c_df.empty:
+        c_df["video_id"] = c_df["video_id"].astype(str)
+        c_df["comment_id"] = c_df["comment_id"].astype(str)
+
+    pool_vids = sorted({str(r["video_id"]) for r in current_rows})
+    sensitivity_runs: list[dict[str, Any]] = []
+    for vid in pool_vids:
+        v_sub = v_df[v_df["video_id"] == vid] if not v_df.empty else pd.DataFrame()
+        v_rec = v_sub.iloc[0].to_dict() if not v_sub.empty else {}
+        caption = str(v_rec.get("caption") or v_rec.get("description") or "")
+        transcript = str(v_rec.get("transcript") or v_rec.get("transcript_text") or "")
+
+        utterances: list[RawWhisperSegment] | None = None
+        if not u_df.empty:
+            u_sub = u_df[u_df["video_id"] == vid].sort_values("start_sec")
+            if not u_sub.empty:
+                utterances = [
+                    RawWhisperSegment(
+                        start_sec=max(0.0, float(ur.get("start_sec") or 0.0)),
+                        end_sec=max(
+                            float(ur.get("start_sec") or 0.0), float(ur.get("end_sec") or 0.0)
+                        ),
+                        text=str(ur.get("text") or ""),
+                    )
+                    for ur in u_sub.to_dict("records")
+                ]
+                if not transcript.strip():
+                    transcript = " ".join(u.text.strip() for u in utterances if u.text.strip())
+
+        c_sub = (
+            c_df[c_df["video_id"] == vid].sort_values("comment_id")
+            if not c_df.empty
+            else pd.DataFrame()
+        )
+        raw_cmts = [
+            RawCommentInput(
+                comment_id=str(cr["comment_id"]),
+                author_handle=str(cr.get("author_handle") or ""),
+                text=str(cr.get("original_text") or cr.get("text") or ""),
+                like_count=int(cr.get("like_count") or 0),
+                reply_count=int(cr.get("reply_count") or 0),
+            )
+            for cr in c_sub.to_dict("records")
+        ]
+        seeded_cmts = detect_seeding_comments(vid, raw_cmts, min_duplicate_words=5)
+        sens = compute_comment_filter_sensitivity(
+            video_id=vid,
+            caption=caption,
+            transcript=transcript,
+            comments=seeded_cmts,
+            utterances=utterances,
+        )
+        sensitivity_runs.append({"video_id": vid, **sens})
+
+    grid_summary: list[dict[str, Any]] = []
+    for tau in (0.05, 0.15, 0.25):
+        for min_c in (1, 3, 5):
+            matching_cells = [
+                cell
+                for run in sensitivity_runs
+                for cell in run["threshold_sensitivity"]
+                if cell["polarity_tau"] == tau and cell["min_viewer_comments"] == min_c
+            ]
+            non_null_discs = [
+                float(c["supported_sentiment_discrepancy"])
+                for c in matching_cells
+                if c["supported_sentiment_discrepancy"] is not None
+            ]
+            grid_summary.append(
+                {
+                    "polarity_tau": tau,
+                    "min_viewer_comments": min_c,
+                    "videos_with_supported_overlap": len(non_null_discs),
+                    "mean_supported_aspect_count": round(
+                        sum(int(c["supported_aspect_count"]) for c in matching_cells)
+                        / max(len(matching_cells), 1),
+                        4,
+                    ),
+                    "mean_supported_sentiment_discrepancy": (
+                        round(sum(non_null_discs) / len(non_null_discs), 4)
+                        if non_null_discs
+                        else None
+                    ),
+                }
+            )
+
+    disc_shifts = [
+        abs(float(r["supported_discrepancy_shift"]))
+        for r in sensitivity_runs
+        if r["supported_discrepancy_shift"] is not None
+    ]
+
+    repo_root = Path(__file__).resolve().parents[2]
+    data_hashes: dict[str, str] = {
+        str(pool_jsonl): _sha256_file(pool_jsonl),
+        str(locked_predictions_jsonl): _sha256_file(locked_predictions_jsonl),
+    }
+    for pq_path in (videos_pq, voice_pq, comments_pq):
+        if pq_path.is_file():
+            data_hashes[str(pq_path)] = _sha256_file(pq_path)
+
+    report: dict[str, Any] = {
+        "study_id": "m5_2_real_pilot_eval_v1",
+        "fixture_type": "real_m3_3_pilot_double_annotated_multimodal_pool",
+        "real_pilot_data_available": True,
+        "prediction_source": "current_dev_refined_engine" if use_current_engine else "locked_pre_annotation_predictions",
+        "evaluated_at": datetime.now(UTC).isoformat(),
+        "environment": {
+            "platform": platform.platform(),
+            "python": sys.version,
+            "cpu_count": os.cpu_count(),
+            "process_peak_rss_mib": round(float(get_peak_rss_mib()), 2),
+        },
+        "annotation_summary": {
+            "total_units": summary["total_units"],
+            "unique_video_count": summary["unique_video_count"],
+            "assignment_counts": summary["assignment_counts"],
+            "gold_span_audit": summary["gold_span_audit"],
+            "inter_annotator_agreement": summary["agreement"],
+            "disagreements": summary["disagreements"],
+        },
+        "split_counts": {
+            "dev_units": len(splits["dev"]),
+            "held_out_units": len(splits["held_out"]),
+            "dev_videos": len(dev_vids),
+            "held_out_videos": len(held_vids),
+            "total_units": len(current_rows),
+            "total_videos": total_videos,
+            "video_overlap_count": 0,
+        },
+        "dev_metrics": dev_metrics,
+        "held_out_metrics": held_out_metrics,
+        "locked_held_out_metrics": locked_held_out_metrics,
+        "all_pool_metrics": all_pool_metrics,
+        "before_after_filter_summary": {
+            "videos_checked": len(sensitivity_runs),
+            "videos_with_flagged_seeding": sum(
+                1 for r in sensitivity_runs if int(r["flagged_indicator_count"]) > 0
+            ),
+            "total_flagged_comments": sum(
+                int(r["flagged_indicator_count"]) for r in sensitivity_runs
+            ),
+            "before_supported_overlap_videos": sum(
+                1 for r in sensitivity_runs if r["before_filter_supported_discrepancy"] is not None
+            ),
+            "after_supported_overlap_videos": sum(
+                1 for r in sensitivity_runs if r["after_filter_supported_discrepancy"] is not None
+            ),
+            "max_abs_supported_discrepancy_shift": (
+                round(max(disc_shifts), 4) if disc_shifts else 0.0
+            ),
+        },
+        "threshold_sensitivity_summary": grid_summary,
+        "provenance": {
+            "code_files_sha256": {
+                fname: _sha256_file(repo_root / fname)
+                for fname in (
+                    "packages/data_contracts/multimodal.py",
+                    "packages/absa/spans.py",
+                    "packages/absa/analyzer.py",
+                    "packages/absa/evaluation.py",
+                    "packages/seeding/evaluation.py",
+                    "apps/api/app/routers/trust.py",
+                    "apps/demo/presentation.py",
+                    "pipelines/audit_m5_2_absa/run_baseline_checks.py",
+                )
+            },
+            "data_files_sha256": data_hashes,
+        },
+    }
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    mode = "w" if overwrite else "x"
+    with output.open(mode, encoding="utf-8") as fp:
+        fp.write(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    return report
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Run M5.2 4-aspect ABSA fixture dry-run audit or blinded real-pilot pool export."
+        description="Run M5.2 4-aspect ABSA fixture dry-run, real-pool export, or real-pilot eval."
     )
     parser.add_argument(
         "--mode",
-        choices=("fixture_dry_run", "real_pool"),
+        choices=("fixture_dry_run", "real_pool", "real_eval"),
         default="fixture_dry_run",
     )
     parser.add_argument(
@@ -589,9 +895,22 @@ def main() -> None:
     parser.add_argument("--corpus-dir", type=Path, default=None)
     parser.add_argument("--output-pool", type=Path, default=None)
     parser.add_argument("--output-locked-predictions", type=Path, default=None)
+    parser.add_argument(
+        "--pool-jsonl",
+        type=Path,
+        default=Path("data/annotations/m5_2_pilot_pool.jsonl"),
+    )
+    parser.add_argument(
+        "--locked-predictions-jsonl",
+        type=Path,
+        default=Path("data/annotations/m5_2_pilot_locked_predictions.jsonl"),
+    )
+    parser.add_argument("--use-current-engine", action="store_true")
     parser.add_argument("--max-units", type=int, default=180)
     parser.add_argument("--double-overlap", type=int, default=50)
+    parser.add_argument("--n-boot", type=int, default=500)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
 
     if args.mode == "real_pool":
@@ -607,6 +926,35 @@ def main() -> None:
             seed=args.seed,
         )
         print(f"PASS: exported {len(pool)} blinded M5.2 pilot units to {out_pool}")
+        return
+
+    if args.mode == "real_eval":
+        c_dir = (
+            args.corpus_dir
+            if args.corpus_dir is not None
+            else Path("data/corpus/m3_3_pilot_snapshot_v2")
+        )
+        eval_rep = run_real_pilot_eval(
+            pool_jsonl=args.pool_jsonl,
+            locked_predictions_jsonl=args.locked_predictions_jsonl,
+            corpus_dir=c_dir,
+            output=args.output,
+            use_current_engine=args.use_current_engine,
+            n_boot=args.n_boot,
+            seed=args.seed,
+            overwrite=args.overwrite,
+        )
+        held = eval_rep["held_out_metrics"]
+        iaa = eval_rep["annotation_summary"]["inter_annotator_agreement"]
+        print(
+            f"PASS: wrote {args.output} ("
+            f"units={eval_rep['annotation_summary']['total_units']}, "
+            f"kappa_4state={iaa['cohens_kappa_4state']}, "
+            f"held_out_aspect_f1={held['aspect_detection_macro_f1']}, "
+            f"held_out_sentiment_f1={held['observed_sentiment_macro_f1']}, "
+            f"span_validity={held['span_audit']['validity_rate']}, "
+            f"pilot_gate_eligible={held['m5_2_pilot_gate_eligible']})"
+        )
         return
 
     report = run_fixture_dry_run(output=args.output)

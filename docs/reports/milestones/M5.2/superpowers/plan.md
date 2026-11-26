@@ -564,3 +564,19 @@ python3 scripts/check_secrets.py
 git add packages/absa/evaluation.py packages/absa/__init__.py pipelines/audit_m5_2_absa/ artifacts/benchmarks/m5_2_fixture_dry_run_v1.json docs/reports/milestones/M5.2/ docs/reports/milestones/README.md tests/unit/test_m5_2_aspect_spans.py
 git commit -m "feat(m5.2): add video-disjoint ABSA evaluator, span auditor, fixture dry-run, and milestone report"
 ```
+
+---
+
+### Task 5: Blinded `K` `115`-Unit Co-Annotation, TDD `real_eval` Harness & Final `M5.2` Evaluation (`2026-11-26`)
+
+**Files:**
+- Modify: `packages/absa/evaluation.py`, `packages/absa/__init__.py`
+- Modify: `pipelines/audit_m5_2_absa/run_baseline_checks.py`
+- Modify: `tests/unit/test_m5_2_aspect_spans.py`
+- Modify (after `K` confirmation): `data/annotations/m5_2_pilot_pool.jsonl`
+- Create (after `K` confirmation): `artifacts/benchmarks/m5_2_real_pilot_eval_v1.json`, `docs/reports/milestones/M5.2/evidence/m5_2_joint_annotation_receipt.json`
+- Modify (after `K` confirmation): `docs/reports/milestones/M5.2/README.md`, `docs/reports/milestones/M5.2/evidence/workflow.md`, `docs/reports/milestones/README.md`, `docs/planning/TikTok_AI_Engine_Milestone.md`
+
+- [ ] **Step 1:** Extract `K`'s `115` assigned units (`50` `double_review_N_K` + `65` `K_only`) from `data/annotations/m5_2_pilot_pool.jsonl` strictly blinded to `N_aspects`, `N_spans`, AI drafts, and `m5_2_pilot_locked_predictions.jsonl`; verify 100% exact `NFC` offsets on `K_spans` and present all `115` units in a review artifact for `K`'s explicit confirmation.
+- [ ] **Step 2:** TDD (`RED -> GREEN`) `validate_and_summarize_m5_2_pool` and `run_real_pilot_eval` (`--mode real_eval`) in `tests/unit/test_m5_2_aspect_spans.py`, `packages/absa/evaluation.py`, and `pipelines/audit_m5_2_absa/run_baseline_checks.py`.
+- [ ] **Step 3:** Upon `K`'s explicit confirmation, write `K_human_verified=True` + adjudicated labels/spans to `data/annotations/m5_2_pilot_pool.jsonl`, run `--mode real_eval`, run full `pytest`, Linux/Windows `mypy`, `check_secrets.py`, and docs hygiene, update `M5.2 -> COMPLETE`, commit, and push to `origin/main`.

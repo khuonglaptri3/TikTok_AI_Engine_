@@ -71,28 +71,27 @@ _PRE_MODIFIER_TAIL_RE = re.compile(
     r"không|chẳng|chả|chưa|kém|thiếu|hơi|quá|rất|khá|cực\s+kỳ|cực|siêu)\s+$"
 )
 
-_TASTE_PHRASES: tuple[str, ...] = (
-    "hương vị",
-    "mùi vị",
-    "khẩu vị",
-    "nêm nếm",
-    "gia vị",
+_BARE_TASTE_DISH_PHRASES: tuple[str, ...] = (
     "nước dùng",
     "nước lèo",
     "nước chấm",
     "nước sốt",
     "nước cốt",
     "nước mắm",
+    "bánh canh",
+    "bánh xèo",
+    "bánh xeo",
     "món ăn",
     "đồ ăn",
     "thức ăn",
     "món này",
+    "món nèo",
     "đồ uống",
     "nước uống",
+    "thịt nướng",
     "thịt bò",
     "thịt gà",
     "thịt heo",
-    "thịt nướng",
     "thịt",
     "hải sản",
     "bò viên",
@@ -106,51 +105,75 @@ _TASTE_PHRASES: tuple[str, ...] = (
     "sợi phở",
     "sợi bún",
     "sợi mì",
+)
+
+_EVALUATIVE_TASTE_PHRASES: tuple[str, ...] = (
+    "không hề thúi",
+    "không hài thúi",
     "ngon xuất sắc",
+    "hương vị",
+    "mùi vị",
+    "khẩu vị",
+    "hợp khẩu vị",
+    "vừa miệng",
+    "ngon miệng",
     "thơm ngon",
     "tươi ngon",
-    "ngon miệng",
-    "ngon",
-    "đậm đà",
-    "vừa miệng",
-    "hợp khẩu vị",
     "thanh ngọt",
     "ngọt thanh",
-    "béo ngậy",
     "thơm phức",
-    "thơm",
-    "tươi rói",
-    "tươi",
     "giòn rụm",
     "giòn tan",
-    "giòn",
     "mềm tan",
     "mềm ngọt",
     "mặn chát",
-    "mặn",
     "nhạt nhẽo",
-    "nhạt",
-    "tanh",
     "nguội ngắt",
     "nguội lạnh",
-    "nguội",
-    "ngấy",
-    "ngán",
-    "dở tệ",
-    "dở ẹc",
-    "dở",
+    "béo ngậy",
+    "ngập thịt",
+    "cũng ngôn",
+    "ngôn quá",
+    "ngôn lắm",
+    "hao cơm",
+    "hào cơm",
+    "nêm nếm",
+    "gia vị",
+    "khó ăn",
     "khô khốc",
     "bị khô",
     "hơi khô",
+    "ngọt gắt",
+    "ôi thiu",
+    "tươi rói",
+    "dở tệ",
+    "dở ẹc",
+    "đậm đà",
+    "ngon",
+    "nhon",
+    "thơm",
+    "tươi",
+    "giòn",
+    "mặn",
+    "nhạt",
+    "tanh",
+    "nguội",
+    "ngấy",
+    "ngán",
+    "dở",
     "khô",
     "bở",
-    "ôi thiu",
-    "ngọt gắt",
 )
+
+_TASTE_PHRASES: tuple[str, ...] = _EVALUATIVE_TASTE_PHRASES + _BARE_TASTE_DISH_PHRASES
 
 _PRICE_PHRASES: tuple[str, ...] = (
     "giá cả",
     "giá tiền",
+    "giá vé",
+    "tiền vé",
+    "tiền công",
+    "tính công",
     "mức giá",
     "chi phí",
     "hóa đơn",
@@ -161,6 +184,12 @@ _PRICE_PHRASES: tuple[str, ...] = (
     "hợp túi tiền",
     "đáng tiền",
     "rẻ bèo",
+    "rẽ bèo",
+    "quá rẽ",
+    "siêu rẽ",
+    "rất rẽ",
+    "còn rẽ",
+    "giá rẽ",
     "rẻ",
     "đắt đỏ",
     "đắt",
@@ -176,10 +205,18 @@ _PRICE_PHRASES: tuple[str, ...] = (
 )
 
 _HYGIENE_PHRASES: tuple[str, ...] = (
+    "ngộ độc thực phẩm",
     "an toàn thực phẩm",
     "kém vệ sinh",
     "mất vệ sinh",
     "thiếu vệ sinh",
+    "đeo bao tay",
+    "mang bao tay",
+    "đeo găng tay",
+    "bao tay",
+    "găng tay",
+    "ảy chỉa",
+    "ải chỉa",
     "nhà vệ sinh",
     "vệ sinh",
     "sạch sẽ",
@@ -278,6 +315,19 @@ _SERVICE_PHRASES: tuple[str, ...] = (
     "chảnh",
 )
 
+_DISH_DRY_COMPOUNDS: tuple[str, ...] = (
+    "hủ tiếu khô",
+    "phở khô",
+    "mì khô",
+    "bún khô",
+    "miến khô",
+    "khô mực",
+    "khô bò",
+    "khô gà",
+    "khô cá",
+    "khô heo",
+)
+
 _IGNORED_ASPECT_COMPOUNDS: tuple[str, ...] = (
     "thú vị",
     "quý vị",
@@ -303,7 +353,23 @@ _IGNORED_ASPECT_COMPOUNDS: tuple[str, ...] = (
     "rau giá",
     "giá sống",
     "giá trụng",
-)
+    "dưa chuột",
+    "dơ tay",
+    "giơ tay",
+    "mắc cười",
+    "mắc cừ",
+    "mắc mệt",
+    "mắc cỡ",
+    "mắc mưa",
+    "mắc bận",
+    "mắc công",
+    "mắc ói",
+    "mắc nghẹn",
+    "thắc mắc",
+    "chậm cứu",
+    "nhanh phục hồi",
+    "tụt fl nhanh",
+) + _DISH_DRY_COMPOUNDS
 
 _GUARDED_CONSUMPTION_SACH_PATTERN = (
     r"(?<!quán\s)(?<!đồ\s)(?<!món\s)(?<!thức\s)(?<!bàn\s)(?<!chỗ\s)"
@@ -332,6 +398,10 @@ _IGNORED_ASPECT_COMPOUNDS_RE = re.compile(
     + r")"
 )
 
+_UNCONDITIONAL_TASTE_RE = re.compile(
+    r"(?<!\w)(?:" + _compile_word_phrases(_EVALUATIVE_TASTE_PHRASES) + r"|vị)(?!\w)"
+)
+
 _ASPECT_PATTERNS: dict[AspectName, re.Pattern[str]] = {
     "taste": re.compile(
         r"(?<!\w)(?:"
@@ -357,11 +427,20 @@ _POS_PHRASES: tuple[str, ...] = (
     "xuất sắc",
     "tuyệt vời",
     "đỉnh của chóp",
+    "đỉnh điên",
+    "là đỉnh",
     "thơm ngon",
     "tươi ngon",
     "ngon miệng",
     "ngon lành",
+    "cũng ngôn",
+    "ngôn quá",
+    "ngôn lắm",
+    "ngập thịt",
+    "hao cơm",
+    "hào cơm",
     "ngon",
+    "nhon",
     "đậm đà",
     "vừa miệng",
     "hợp khẩu vị",
@@ -385,6 +464,12 @@ _POS_PHRASES: tuple[str, ...] = (
     "rất ưng",
     "ưng",
     "rẻ bèo",
+    "rẽ bèo",
+    "quá rẽ",
+    "siêu rẽ",
+    "rất rẽ",
+    "còn rẽ",
+    "giá rẽ",
     "rẻ",
     "hạt dẻ",
     "bình dân",
@@ -424,10 +509,21 @@ _POS_PHRASES: tuple[str, ...] = (
 )
 
 _NEG_PHRASES: tuple[str, ...] = (
+    "ngộ độc thực phẩm",
+    "không đeo bao tay",
+    "ko đeo bao tay",
+    "chưa đeo bao tay",
+    "không mang bao tay",
+    "ko mang bao tay",
+    "không đeo găng tay",
+    "ko đeo găng tay",
     "kém chất lượng",
     "kém vệ sinh",
     "mất vệ sinh",
     "thiếu vệ sinh",
+    "ảy chỉa",
+    "ải chỉa",
+    "khó ăn",
     "quảng cáo lố",
     "pr lố",
     "chặt chém",
@@ -517,10 +613,18 @@ _NEG_PHRASES: tuple[str, ...] = (
 )
 
 _NEUTRAL_PHRASES: tuple[str, ...] = (
+    "không hề thúi",
+    "không hài thúi",
     "chấp nhận được",
     "bình thường",
     "tạm ổn",
     "tạm được",
+    "cũng được",
+    "củng được",
+    "cũng đc",
+    "củng đc",
+    "cũng ok",
+    "củng ok",
     "ổn áp",
     "vừa phải",
     "tầm trung",
@@ -546,22 +650,10 @@ _LITOTES_NEG_TARGETS: tuple[str, ...] = (
     "bẩn",
     "dơ",
     "hôi",
+    "thúi",
     "chậm",
     "lâu",
     "khó ăn",
-)
-
-_DISH_DRY_COMPOUNDS: tuple[str, ...] = (
-    "hủ tiếu khô",
-    "phở khô",
-    "mì khô",
-    "bún khô",
-    "miến khô",
-    "khô mực",
-    "khô bò",
-    "khô gà",
-    "khô cá",
-    "khô heo",
 )
 
 _POLARITY_MASK_COMPOUNDS: tuple[str, ...] = (
@@ -583,6 +675,22 @@ _POLARITY_MASK_COMPOUNDS: tuple[str, ...] = (
     "chống ngán",
     "giải ngán",
     "giảm ngán",
+    "dưa chuột",
+    "dơ tay",
+    "giơ tay",
+    "mắc cười",
+    "mắc cừ",
+    "mắc mệt",
+    "mắc cỡ",
+    "mắc mưa",
+    "mắc bận",
+    "mắc công",
+    "mắc ói",
+    "mắc nghẹn",
+    "thắc mắc",
+    "chậm cứu",
+    "nhanh phục hồi",
+    "tụt fl nhanh",
 )
 
 _NEGATED_NEUTRAL_TARGETS: tuple[str, ...] = (
@@ -619,29 +727,55 @@ _SERVICE_WAIT_CONTEXT_RE = re.compile(
     r"phục\s+vụ|nhân\s+viên|chủ\s+quán|thu\s+ngân|tính\s+tiền)(?!\w)"
 )
 
+_NEG_PREFIX = r"(?:không|ko|k|kh|hong|hông|hok|hem|chẳng|chả|chưa)"
+
 _LITOTES_RE = re.compile(
-    r"(?<!\w)(?:không|chẳng|chả|chưa)\s+(?:quá\s+|hề\s+|bị\s+|đến\s+nỗi\s+)?(?:"
+    r"(?<!\w)(?:"
+    + _NEG_PREFIX
+    + r"\s+(?:quá\s+|hề\s+|hài\s+|bị\s+|đến\s+nỗi\s+)?(?:"
     + _LITOTES_ALT
-    + r")(?:\s+lắm)?(?!\w)"
+    + r")(?:\s+lắm)?"
+    + r"|"
+    + _NEG_PREFIX
+    + r"\s+(?:phải\s+(?:gọi\s+là\s+|là\s+))?quá\s+ngon"
+    + r")(?!\w)"
 )
 
 _NEGATED_POS_RE = re.compile(
-    r"(?<!\w)(?:không|chẳng|chả|chưa|kém|thiếu)"
+    r"(?<!\w)(?:"
+    + _NEG_PREFIX
+    + r"|kém|thiếu)"
     r"(?:\s+(?:được|hề|có|mấy|quá|rất|thấy))?\s+(?:"
     + _POS_ALT
     + r")(?!\w)"
 )
 
 _NEGATED_NEUTRAL_RE = re.compile(
-    r"(?<!\w)(?:không|chẳng|chả|chưa|khó)"
+    r"(?<!\w)(?:"
+    + _NEG_PREFIX
+    + r"|khó)"
     r"(?:\s+(?:thể|hề|được|mấy|thấy|có))?\s+(?:"
     + _NEGATED_NEUTRAL_ALT
     + r")(?!\w)"
 )
 
+_EXPLICIT_NEUTRAL_RE = re.compile(
+    r"(?<!\w)(?:" + _compile_word_phrases(_NEUTRAL_PHRASES) + r")(?!\w)"
+)
 _NEUTRAL_RE = re.compile(r"(?<!\w)(?:" + _NEUTRAL_ALT + r")(?!\w)")
 _POS_RE = re.compile(r"(?<!\w)(?:" + _POS_ALT + r")(?!\w)")
 _NEG_RE = re.compile(r"(?<!\w)(?:" + _NEG_ALT + r")(?!\w)")
+
+
+def _has_taste_evaluative_cue(lower_slice: str) -> bool:
+    if _UNCONDITIONAL_TASTE_RE.search(lower_slice) is not None:
+        return True
+    if _EXPLICIT_NEUTRAL_RE.search(lower_slice) is not None:
+        return True
+    if _LITOTES_RE.search(lower_slice) is not None:
+        return True
+    score, _ = _score_local_polarity(lower_slice, polarity_tau=0.05)
+    return score != 0.0
 
 
 def _split_by_regex(text: str, start: int, end: int, pattern: re.Pattern[str]) -> list[tuple[int, int]]:
@@ -667,6 +801,8 @@ def _detect_aspects_in_range(lower_text: str, start: int, end: int) -> list[tupl
     for aspect in ASPECT_NAMES:
         for match in _ASPECT_PATTERNS[aspect].finditer(lower_text, start, end):
             if not _overlaps_any(match.start(), match.end(), ignored):
+                if aspect == "taste" and not _has_taste_evaluative_cue(lower_text[start:end]):
+                    continue
                 hits.append((match.start(), match.end(), aspect))
     hits.sort(key=lambda item: (item[0], -(item[1] - item[0]), ASPECT_NAMES.index(item[2])))
     # Filter overlapping aspect matches by keeping earliest/longest first
