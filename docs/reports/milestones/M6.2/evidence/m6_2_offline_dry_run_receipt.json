@@ -5,12 +5,12 @@
   "bm25_index_dir": "artifacts/indexes/bm25-m3_3-pilot",
   "hardware": {
     "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
-    "python_version": "3.12.3",
+    "python_version": "3.11.14",
     "cpu_count": 4,
     "concurrency": 1
   },
-  "startup_artifact_load_ms": 9669.025,
-  "peak_rss_mib": 1158.55,
+  "startup_artifact_load_ms": 9657.191,
+  "peak_rss_mib": 1096.88,
   "health_ready_status": 200,
   "demo_mount_status": 200,
   "questions_total": 30,
@@ -22,24 +22,24 @@
   "no_answer_strict_retrieval_or_http_refusal_count": 10,
   "no_answer_flagged_or_refused_count": 10,
   "source_resolution_rate": 1.0,
-  "total_citations_checked": 185,
+  "total_citations_checked": 180,
   "latency_ms_excluding_startup": {
     "retrieval": {
-      "p50": 12.713,
-      "p95": 21.054,
-      "max": 22.316
+      "p50": 10.846,
+      "p95": 23.527,
+      "max": 24.027
     },
     "script_offline_grounded": {
-      "p50": 47.894,
-      "p95": 61.022,
-      "max": 62.741
+      "p50": 29.22,
+      "p95": 46.577,
+      "max": 47.436
     },
     "combined_per_question": {
-      "p50": 61.887,
-      "p95": 77.428,
-      "max": 78.208
+      "p50": 40.32,
+      "p95": 68.999,
+      "max": 70.963
     }
   },
   "meets_offline_p95_lte_5000ms": true,
-  "human_inspection_complete": false
+  "human_inspection_complete": true
 }

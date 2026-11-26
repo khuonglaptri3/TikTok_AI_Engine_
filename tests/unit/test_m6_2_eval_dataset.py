@@ -160,3 +160,97 @@ def test_m6_2_epistemic_guardrail_and_caption_location_fallback() -> None:
         with pytest.raises(UnsupportedDomainError):
             engine.generate(ScriptGenerationRequest(brief=q, generation_mode="offline_grounded"))
 
+
+def test_m6_2_k_review_non_fnb_retrieval_abstention_and_hashtag_district_backfill() -> None:
+    df_videos = pd.DataFrame(
+        [
+            {
+                "video_id": "7711004930638630152",
+                "author_handle": "tinhtungtangvn",
+                "tiktok_url": "https://www.tiktok.com/@tinhtungtangvn/video/7711004930638630152",
+                "play_count": 35000,
+                "viral_multiplier": 1.4,
+                "engagement_rate": 0.06,
+                "has_transcript": True,
+                "word_per_second": 3.1,
+                "video_format": "Review quán ăn",
+                "food_category": "Đồ ngọt, Trà & Cà phê",
+                "dishes": ["kem"],
+                "city_norm": None,  # Missing POI GPS; location only in #quan10 hashtag
+                "district_norm": None,
+                "region": "unknown",
+                "poi_name": None,
+                "price_tier": "budget_lt50k",
+                "occasions": [],
+                "hashtag_count": 5,
+                "create_hour": 14,
+                "duration_sec": 93,
+                "duration_bucket": "long_gt60s",
+                "hook_text": "Kem ăn vặt sawadee đồng giá 19k",
+                "body_beats": ["Món này 19 ngàn, cả hai cái kem này cũng 19 ngàn luôn ạ"],
+                "cta_text": "Ghé 140 Tam Đảo nha",
+                "caption": "Kem ăn vặt sawadee đồng giá 19k #streetfood #ancungtiktok #pov #quan10",
+                "transcript": "Hiện tại bên em đang có chương trình đồng giá 19k",
+                "rag_document": (
+                    "[Review quán ăn | Đồ ngọt, Trà & Cà phê] Món: kem. "
+                    "Caption: Kem ăn vặt sawadee đồng giá 19k #quan10 Transcript: đồng giá 19k"
+                ),
+            }
+        ]
+    )
+    bm25 = BM25Index.build(
+        video_ids=df_videos["video_id"].tolist(),
+        documents=df_videos["rag_document"].tolist(),
+        min_bigram_df=1,
+    )
+    retrieval = HybridRetrievalService(df_videos=df_videos, bm25_index=bm25, restrict_to_df=True)
+    manifest = CorpusManifest(
+        snapshot_id="test_m6_2_k_fix",
+        created_at="2026-11-26T00:00:00+00:00",
+        date_window_start="2026-11-01",
+        date_window_end="2026-11-26",
+        total_creators=1,
+        total_videos=1,
+        transcribed_videos=1,
+        poi_tagged_videos=0,
+        ec_tagged_videos=0,
+        files=[
+            CorpusFileChecksum(
+                filename="dim_creators.parquet",
+                rows=1,
+                columns=1,
+                sha256="0" * 64,
+                size_bytes=1,
+            )
+        ],
+        caveats=["test"],
+    )
+    analytics = NicheAnalyticsEngine(
+        manifest=manifest,
+        df_creators=pd.DataFrame([{"author_id": "a1"}]),
+        df_videos=df_videos,
+    )
+    engine = GroundedScriptEngine(
+        analytics_engine=analytics,
+        retrieval_service=retrieval,
+        gemini_client=BoundedGeminiClient(settings=AppSettings(gemini_api_key="")),
+    )
+
+    # 1. Concatenated #quan10 hashtag backfills city_norm='hồ chí minh' so Quận 10 brief cites 7711004930638630152
+    script_q10 = engine.generate(
+        ScriptGenerationRequest(
+            brief="kem ăn vặt sawadee đồng giá 19k Quận 10",
+            generation_mode="offline_grounded",
+        )
+    )
+    assert any(c.citation.video_id == "7711004930638630152" for c in script_q10.evidence_cards)
+
+    # 2. Blatant non-F&B query abstains cleanly in retrieval (not just script generation)
+    r_non_fnb = retrieval.search(
+        RetrievalRequest(query="phân tích thị trường chứng khoán và tiền ảo bitcoin tháng này")
+    )
+    assert r_non_fnb.insufficient_evidence is True
+    assert r_non_fnb.items == []
+    assert r_non_fnb.abstain_reason == "unsupported_non_fnb_domain"
+
+

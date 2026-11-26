@@ -1,0 +1,72 @@
+{
+  "task_id": "M6.2",
+  "recorded_at_utc": "2026-11-26T05:22:12.124809+00:00",
+  "inspectors": [
+    "Nguyễn Việt Nguyên (N, 30/30)",
+    "Trần Đình Khương (K, 30/30)"
+  ],
+  "both_contributors_verified_30_of_30": true,
+  "questions_sha256": "fbfeaf1d40fdc1146e1cfb843d677c13893a1e7b83155ef0304ac2fbc5b5c0f2",
+  "answers_sheet_sha256": "ce99da7a9682fb1f3a59fa9c83a3dcd3e8f49479ea031b2e1b25ecab8446c4ce",
+  "dry_run_receipt_sha256": "5a4d2b64905bdca41b2c3c0be738fba30222112e096d8d79e75a58dda220d2df",
+  "metrics": {
+    "total_questions": 30,
+    "answerable_questions": 20,
+    "no_answer_questions": 10,
+    "source_identity_resolution_rate": 1.0,
+    "total_citations_resolved": "180/180",
+    "answerable_citation_coverage_rate": 1.0,
+    "fresh_m3_3_target_hit_rate_retrieval": "8/8 (1.0)",
+    "fresh_m3_3_target_cited_rate_script": "8/8 (1.0)",
+    "provenance_honesty_rate_N": 1.0,
+    "provenance_honesty_rate_K": 1.0,
+    "supported_claims_N": {
+      "supported": 18,
+      "total": 20,
+      "rate": 0.9
+    },
+    "supported_claims_K": {
+      "supported": 18,
+      "total": 20,
+      "rate": 0.9
+    },
+    "supported_claims_mean_two_inspector_rate": 0.9,
+    "supported_claims_unadjudicated_intersection": {
+      "supported": 17,
+      "total": 20,
+      "rate": 0.85
+    },
+    "no_answer_strict_refusal_rate_retrieval": "10/10 (1.0)",
+    "no_answer_bounded_refusal_or_zero_citation_rate_script": "10/10 (1.0)",
+    "inter_inspector_exact_agreement_30": {
+      "agreed": 28,
+      "total": 30,
+      "rate": 0.9333
+    },
+    "offline_combined_latency_ms": {
+      "p50": 40.32,
+      "p95": 68.999,
+      "max": 70.963
+    },
+    "meets_p95_lte_5000ms_gate": true
+  },
+  "claim_support_disagreements_preserved": [
+    {
+      "query_id": "m6_2_06",
+      "query": "bún cá lóc đồng ăn sáng dân dã ở Cần Thơ",
+      "N_claim_supported": true,
+      "K_claim_supported": false,
+      "N_claim_note": "Citations resolve, temporal provenance is honest (wps_estimated/M3.3 flagged as needing verification), and beats match query topic/location.",
+      "K_claim_note": "Verified K (2026-11-26): PARTIAL_SPLIT_DISH — combines Cần Thơ bún thập cẩm (7313884507499728129) and cá lóc nướng trui (7354342706522475794) rather than exact bún cá lóc đồng."
+    },
+    {
+      "query_id": "m6_2_07",
+      "query": "bánh khọt giòn rụm tôm tươi đặc sản Vũng Tàu",
+      "N_claim_supported": false,
+      "K_claim_supported": true,
+      "N_claim_note": "PARTIAL_CITY_ONLY: Verified Vũng Tàu travel/food clips cited, but specific bánh khọt dish cue absent in top-3 beats.",
+      "K_claim_note": "Verified K (2026-11-26): Sources 7355096697078353170 & 7396312107714743570 are genuine Vũng Tàu bánh khọt reviews (7 cái 50k); Beat 1-2 quote general VT intro."
+    }
+  ],
+  "status_note": "All M6.2 technical benchmarks and two-contributor (30/30 N + 30/30 K) answer/provenance inspections are complete; task status remains IN_PROGRESS solely awaiting upstream gate sign-offs (M3.G, M4.G, M5.G) per milestone dependency plan."
+}

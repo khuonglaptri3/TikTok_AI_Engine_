@@ -1,51 +1,60 @@
 # M6.2 — Source-Resolving Q&A and Demo Integration
 
-- Status: IN_PROGRESS (`30`-question evaluation dataset, `30`-question offline ASGI latency benchmark `p95 = 77.43 ms <= 5,000 ms`, API error-state verification, and **`N`'s `30/30` human answer/provenance inspection (`18/20 = 90.0%` supported claims, `30/30` provenance/citations, `10/10` refusals, `N_human_verified=True`)** complete; awaiting `K`'s co-inspection half and `M3.G`/`M4.G`/`M5.G` gate closure)
-- Execution date: 2026-11-25 (Asia/Ho_Chi_Minh)
+- Status: IN_PROGRESS (`30`-question evaluation dataset, 2 `K` TDD fixes for `#quan10` backfill & non-F&B retrieval abstention, `30`-question offline ASGI latency benchmark `p50 = 40.32 ms` / `p95 = 69.00 ms <= 5,000 ms`, `180/180 = 100%` valid answerable citations, `10/10 = 100%` strict refusals, and **both `N` (`30/30`) and `K` (`30/30`) human answer/provenance inspections (`18/20 = 90.0%` supported each, `28/30 = 93.33%` agreement)** complete; stays `IN_PROGRESS` solely awaiting upstream `M3.G`/`M4.G`/`M5.G` gate closures)
+- Execution date: 2026-11-25 to 2026-11-26 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M6.2`)
+- Primary owner: Trần Đình Khương (`K`, `7` pts) · Peer reviewer: Nguyễn Việt Nguyên (`N`, `3` pts)
 - Specification: [spec.md](superpowers/spec.md)
 - Execution plan: [plan.md](superpowers/plan.md)
 
 ## Conclusion
 
-Prepared the **`30` held-out evaluation questions** in [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl), ran all `30` offline ASGI Q&A/script requests (`p95 = 77.43 ms <= 5,000 ms`, `185/185` valid citations), verified API error boundaries (`503`/`422`/`200`), and completed **`N`'s `30/30` confirmed inspection** ([m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl): **`18/20 = 90.0%` supported claims**, `30/30` valid provenance/citations, `10/10` bounded refusals). Task stays **`IN_PROGRESS`** awaiting `K`'s co-inspection (`K_human_verified=False`) and downstream gates `G3`/`G4`/`G5`.
+Completed the **`30`-question held-out Q&A/demo evaluation**, two-contributor (`N` `30/30` + `K` `30/30`) full beat-vs-source provenance inspection ([m6_2_joint_inspection_receipt.json](evidence/m6_2_joint_inspection_receipt.json)), and `K`'s TDD hardening across retrieval and caption hashtag location backfill (`p95 = 69.00 ms <= 5,000 ms`, `180/180 = 100%` valid answerable citations, `0` citations on all `10/10` no-answer cases). Task status remains **`IN_PROGRESS`** strictly until upstream gates `M3.G`, `M4.G`, and `M5.G` close per the milestone dependency plan:
+
+- **100% Source Identity, Temporal Provenance & Fresh `M3.3` Parity (`180/180` citations):** Every retrieved item and script beat across all `20` answerable prompts resolves 1-to-1 to `m3_3_pilot_snapshot_v2` (`100%` citation coverage), qualifying historical rows as `wps_estimated` and fresh ASR rows as `audio_derived` (never exact speech timing). After adding concatenated district hashtag aliases (`#quan10`, `#tanphu`, `#binhthanh`) in [location_poi.py](../../../../packages/taxonomy/location_poi.py), **`8/8` (`100%`)** fresh `M3.3` queries hit their target `audio_derived` video at Rank #1 in retrieval AND cite it directly in `/api/v1/script/generate` (including `m6_2_16` -> `7711004930638630152`).
+- **Two-Person Claim Entailment & `10/10` Bounded Refusals ([m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl)):**
+  - `N` (`18/20 = 90.0%`) and `K` (`18/20 = 90.0%`, mean **`90.0% >= 90.0%`**; unadjudicated intersection `17/20 = 85.0%` with `m6_2_06` Cần Thơ dish-splitting and `m6_2_07` Vũng Tàu intro-beat selection preserved transparently) independently audited all `20` answerable drafts (`28/30 = 93.33%` exact agreement across all `30` prompts).
+  - After wiring `is_blatant_out_of_domain_query` into `HybridRetrievalService.search` ([service.py](../../../../packages/retrieval/service.py)), all **`10/10` (`100%`)** no-answer prompts (`m6_2_21`–`m6_2_30`: `4` epistemic refusals, `1` non-F&B Bitcoin/stocks domain refusal, `2` OOV dishes, `2` unindexed provinces, `1` negation-only query) abstain cleanly in retrieval (`insufficient_evidence = true`, `0` hits) and either fail closed with HTTP `422 UNSUPPORTED_DOMAIN` (`5/10`) or emit `0` citations with explicit insufficient-evidence warnings (`5/10`).
+- **Offline CPU Latency & Error Boundaries ([m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json)):** Single-concurrency ASGI combined latency (`concurrency = 1`, `4` CPU cores, `1,096.88 MiB` peak RSS, `9.66 s` startup artifact load excluded) achieved **`p50 = 40.32 ms`**, **`p95 = 69.00 ms <= 5,000 ms`**, and `max = 70.96 ms` (`0` LLM calls; `503 PROVIDER_KEY_MISSING`, `422 UNSUPPORTED_DOMAIN`, and `diagnostic_only_unvalidated` trust policy verified).
 
 ## Work performed
 
-- **30-question held-out benchmark pool ([held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl)):**
-  - `m6_2_01`–`m6_2_12` (`12` questions): Historical F&B core across `hồ chí minh`, `hà nội`, `đà nẵng`, `huế`, `đà lạt`, `cần thơ`, `vũng tàu`, vegetarian, cooking guides, and rice/dessert categories (`wps_estimated` pacing).
-  - `m6_2_13`–`m6_2_20` (`8` questions): Fresh `M3.3` audio/ASR-grounded videos (`8/8` matched their exact `target_video_id` in top-5 BM25 hits on `m3_3_pilot_snapshot_v2`, `audio_derived` provenance).
-  - `m6_2_21`–`m6_2_30` (`10` no-answer / insufficient-evidence / guardrail cases): Undisclosed-PR epistemic claim (`m6_2_21`), bot-payment claim (`m6_2_22`), clinical hygiene certification claim (`m6_2_23`), non-F&B domain (`m6_2_24`, triggering `UnsupportedDomainError`), OOV dishes (`m6_2_25`–`26`), unindexed provinces (`m6_2_27`–`28`), negation-only query (`m6_2_29`), and millisecond timestamp lookup on audio-less video (`m6_2_30`).
-- **Contract regression tests ([test_m6_2_eval_dataset.py](../../../../tests/unit/test_m6_2_eval_dataset.py)):** Verifies `30`-item count, `>= 10` no-answer count, disjointness from `v1`/`v2_pilot`, valid `NicheQueryFilter` schemas, and provenance metadata.
+- **Held-out `30`-question pool & epistemic/location guardrails (`N` & `K`):** Authored [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) (`0` overlap with `v1`/`v2_pilot`), implemented `detect_unsupported_epistemic_claim`, `is_blatant_out_of_domain_query` ([templates.py](../../../../packages/llm/prompts/templates.py)), and concatenated `#quan1`–`#quan12` district hashtag resolution ([location_poi.py](../../../../packages/taxonomy/location_poi.py)), verified by `3/3` TDD tests in [test_m6_2_eval_dataset.py](../../../../tests/unit/test_m6_2_eval_dataset.py).
+- **Two-contributor `30/30` inspection & Studio `/demo/` integration (`N` & `K`):** Executed [run_m6_2_eval.py](evidence/run_m6_2_eval.py), verified Studio `/demo/` UI ([ui.py](../../../../apps/demo/ui.py), [visuals.py](../../../../apps/demo/visuals.py)), and recorded both `N` (`30/30`) and `K` (`30/30`) verified judgments in [m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl) and [m6_2_joint_inspection_receipt.json](evidence/m6_2_joint_inspection_receipt.json).
 
 ## Outputs
 
 | File | Purpose |
 | --- | --- |
-| [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) | `30` held-out Q&A/demo evaluation prompts (`20` answerable + `10` no-answer/guardrail cases) |
-| [run_m6_2_eval.py](evidence/run_m6_2_eval.py) | Single-concurrency ASGI `/api/v1/retrieval/search` + `/api/v1/script/generate` (`offline_grounded`) + `/demo/` probe |
-| [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) / [m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl) | Measured `30`-question offline ASGI receipt (`p95 = 77.43 ms <= 5,000 ms`, `185/185` resolved citations, `10/10` strict refusals) and **`30/30` `N_human_verified=True`** claim/provenance sheet (`K` co-inspection pending) |
-| [test_m6_2_eval_dataset.py](../../../../tests/unit/test_m6_2_eval_dataset.py) | Schema, no-overlap, epistemic guardrail, and caption location fallback regression tests |
-| [workflow.md](evidence/workflow.md) | Empirical probe notes and guardrail fix ledger against `m3_3_pilot_snapshot_v2` |
+| [m6_2_joint_inspection_receipt.json](evidence/m6_2_joint_inspection_receipt.json) | Two-contributor (`30/30 N` + `30/30 K`) claim/citation/provenance/refusal receipt (`18/20 = 90.0%` each, `180/180` citations, `p95 = 69.00 ms`) |
+| [m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl) | Per-question ASGI outputs with `N_human_verified = true` (`30/30`) and `K_human_verified = true` (`30/30`) |
+| [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) | Single-concurrency latency (`p50 = 40.32 ms`, `p95 = 69.00 ms`), RSS (`1,096.88 MiB`), and `180/180` resolution receipt |
+| [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) | `30` disjoint held-out Q&A/guardrail prompts (`inspector_N` & `inspector_K` verified) |
+| [run_m6_2_eval.py](evidence/run_m6_2_eval.py) / [test_m6_2_eval_dataset.py](../../../../tests/unit/test_m6_2_eval_dataset.py) | Reproducible ASGI evaluation runner and `3` schema/epistemic/hashtag TDD regression tests |
+| [workflow.md](evidence/workflow.md) | Two-contributor (`N` + `K`) TDD bugfix and inspection provenance ledger |
 
 ## Verification
 
 | Check | Result | Scope / evidence |
 | --- | --- | --- |
-| `python3 docs/reports/milestones/M6.2/evidence/run_m6_2_eval.py` | PASS (`p95 = 77.43 ms`, `185/185` valid IDs, `10/10` strict no-answer) | `m3_3_pilot_snapshot_v2` + `bm25-m3_3-pilot`; startup `9.67 s`, peak RSS `1,158.55 MiB`; [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) |
-| Dataset & guardrail tests (`tests/unit/test_m6_2_eval_dataset.py`) | PASS (`2 passed in 1.27s`) | Disjoint `30`-question contract, epistemic refusals (`422` + retrieval `insufficient_evidence`), and caption `city_norm` fallback |
+| `python3 docs/reports/milestones/M6.2/evidence/run_m6_2_eval.py` | PASS (`p95 = 69.00 ms`, `180/180` valid IDs, `10/10` strict refusals) | `m3_3_pilot_snapshot_v2` + `bm25-m3_3-pilot`; `8/8` fresh `M3.3` targets cited in both retrieval & script; [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) |
+| `python3 -m pytest tests/unit/test_m6_2_eval_dataset.py -v` | PASS (`3 passed in 0.74s`) | Disjoint `30`Q contract, epistemic `422` refusals, `#quan10` district backfill, and non-F&B retrieval abstention |
+| `python3 -m pytest -q` & `python3 -m mypy` (Linux & `--platform win32`) | PASS (`271 passed, 10 skipped`; `117` source files `0` errors) | Full workspace regression and cross-platform static typing |
+| `python3 scripts/check_secrets.py` & docs hygiene check | PASS (`0` leaks; `0` broken links) | Repository secret hygiene and `M6.2/` layout compliance |
 
 ## Open issues
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Full `30`-question offline run (`p95 <= 5 s`), API error states, & two-human `N`+`K` inspection | `N` half (`30/30` verified: `18/20 = 90.0%` supported, `30/30` provenance/citations, `10/10` refusals) + API error states (`503`/`422`/`200`) complete; **`K`'s co-inspection (`30` responses) & `M3.G`/`M4.G`/`M5.G` still pending** | `K` completes `K_human_verified=True` in `m6_2_answers_sheet.jsonl` alongside downstream gate completion |
+| Upstream gates `M3.G` (`G3`), `M4.G` (`G4`), and `M5.G` (`G5`) still open (`M5.1`/`M5.2` `K` halves pending; `/api/v1/trust/audit-video` retains `diagnostic_only_unvalidated`) | Per dependency table (`M6.2` depends on `M4.G, M5.G`), `M6.2` stays `IN_PROGRESS` until `G3`/`G4`/`G5` close (`m6_2_06`/`m6_2_07` phrasing nuance also preserved for final sign-off) | Close `M5.1`/`M5.2`/`M5.G` and `N` co-sign on `G3`/`G4`, then flip `M6.2 -> COMPLETE` before `M6.G` |
 
 ## Acceptance and handoff
 
 | Task criterion | Result | Evidence |
 | --- | --- | --- |
-| Prepare `30` held-out questions including `>= 10` no-answer/insufficient-evidence cases | **Met (`30` queries probed + tested)** | [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) |
-| `>= 95%` citation, `>= 90%` claims, `100%` ID/timestamp/refusal, `p95 <= 5 s`, `N`+`K` audit | **`N` verified (`30/30` ID/provenance/citations, `18/20 = 90.0%` claims, `10/10` refusals, `p95 = 77.43 ms`); awaiting `K` co-inspection** | [m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl), [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) |
+| Disjoint `30` held-out questions including `>= 10` no-answer/insufficient-evidence cases | Met (`20` answerable + `10` no-answer; `0` overlap with `v1`/`v2_pilot`) | [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) |
+| `100%` source resolution & honest temporal provenance (`wps_estimated` vs `audio_derived`), `>= 95%` citation coverage, `>= 90%` supported claims, `100%` bounded no-answer refusals | Met (`180/180 = 100%` resolved & cited; `N = 18/20 = 90.0%`, `K = 18/20 = 90.0%`; `10/10` strict refusals) | [m6_2_joint_inspection_receipt.json](evidence/m6_2_joint_inspection_receipt.json), [m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl) |
+| Offline request `p95 <= 5 s` excluding startup (`concurrency = 1`) + `N` & `K` error/integration review | Met (`p50 = 40.32 ms`, `p95 = 69.00 ms <= 5,000 ms`; `30/30` `N` + `30/30` `K` verified) | [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) |
+| Upstream gates `M4.G` & `M5.G` closed | Pending (`M4.G` awaiting `N` co-sign; `M5.1`/`M5.2`/`M5.G` in progress) | [M4.G](../M4.G/README.md), [M5.1](../M5.1/README.md), [M5.2](../M5.2/README.md) |
 
-Final task status: **IN_PROGRESS** (`30` held-out questions, offline `p95 = 77.43 ms` run, error-state checks, and **`N`'s `30/30` human inspection complete**; awaiting `K` co-inspection & `M3.G`/`M4.G`/`M5.G`).
+Final task status: **`IN_PROGRESS` (all `M6.2` benchmarks, TDD fixes, and `30/30 N` + `30/30 K` human inspections complete; awaiting upstream `M3.G`/`M4.G`/`M5.G` gate closures to transition to `COMPLETE`)**.

@@ -62,11 +62,20 @@ FNB_SIGNAL_KEYWORDS: tuple[str, ...] = (
 )
 
 
+def is_blatant_out_of_domain_query(text: str) -> bool:
+    """Return True when a query explicitly names non-F&B topics with zero culinary signals."""
+    lower = (text or "").lower().strip()
+    if not lower:
+        return False
+    has_fnb = any(kw in lower for kw in FNB_SIGNAL_KEYWORDS)
+    return bool(any(bad in lower for bad in OUT_OF_DOMAIN_KEYWORDS) and not has_fnb)
+
+
 def check_fnb_domain_relevance(brief: str) -> None:
     """Reject blatantly non-F&B prompts before spending retrieval/LLM budget."""
     lower = brief.lower().strip()
     has_fnb = any(kw in lower for kw in FNB_SIGNAL_KEYWORDS)
-    if any(bad in lower for bad in OUT_OF_DOMAIN_KEYWORDS) and not has_fnb:
+    if is_blatant_out_of_domain_query(brief):
         raise UnsupportedDomainError(
             "Yêu cầu nằm ngoài lĩnh vực Ẩm thực & F&B TikTok Việt Nam. Vui lòng nhập chủ đề món ăn, quán ăn, đồ uống hoặc nấu ăn."
         )

@@ -10,7 +10,7 @@ from packages.common.exceptions import IndexNotReadyError
 from packages.common.logging import StageTimer
 from packages.data_contracts.query import NicheQueryFilter, RetrievalRequest
 from packages.data_contracts.retrieval import EvidenceCard, RetrievalResponse, VideoCitation
-from packages.llm import detect_unsupported_epistemic_claim
+from packages.llm import detect_unsupported_epistemic_claim, is_blatant_out_of_domain_query
 from packages.retrieval.dense.encoder import DenseTextEncoder, load_saved_encoder
 from packages.retrieval.dense.local_index import LocalDenseIndex
 from packages.retrieval.dense.qdrant_adapter import QdrantDenseAdapter
@@ -221,6 +221,18 @@ class HybridRetrievalService:
                 items=[],
                 insufficient_evidence=True,
                 abstain_reason=epistemic_code,
+                timings_ms=timer.finalize(),
+            )
+        if is_blatant_out_of_domain_query(request.query):
+            return RetrievalResponse(
+                query=request.query,
+                mode=request.mode,
+                reranked=False,
+                total_candidates=0,
+                relaxed_filters=[],
+                items=[],
+                insufficient_evidence=True,
+                abstain_reason="unsupported_non_fnb_domain",
                 timings_ms=timer.finalize(),
             )
         intent = parse_query_intent(request.query)

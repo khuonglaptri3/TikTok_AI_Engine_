@@ -5,9 +5,14 @@ import argparse
 import json
 import os
 import platform
+import sys
 import time
 from pathlib import Path
 from typing import Any
+
+_REPO_ROOT = Path(__file__).resolve().parents[5]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
 
 import pandas as pd
 from fastapi.testclient import TestClient
@@ -65,6 +70,17 @@ def run_evaluation(
     retrieval_latencies_ms: list[float] = []
     script_latencies_ms: list[float] = []
     combined_latencies_ms: list[float] = []
+
+    existing_annotations: dict[str, dict[str, Any]] = {}
+    if output_answers.is_file():
+        for raw_line in output_answers.read_text(encoding="utf-8").splitlines():
+            if raw_line.strip():
+                prev = json.loads(raw_line)
+                existing_annotations[str(prev["query_id"])] = {
+                    k: v
+                    for k, v in prev.items()
+                    if k.startswith(("N_", "K_"))
+                }
 
     resolved_citations = 0
     total_citations = 0
@@ -131,42 +147,43 @@ def run_evaluation(
                         resolved_citations += 1
 
         guardrail = s_body.get("guardrail", {}) if s_resp.status_code == 200 else {}
-        answer_rows.append(
-            {
-                "query_id": qid,
-                "category": q["category"],
-                "expect_insufficient_evidence": bool(q["expect_insufficient_evidence"]),
-                "query": q_text,
-                "filters": filters,
-                "retrieval_status": r_resp.status_code,
-                "retrieval_insufficient_evidence": bool(r_body.get("insufficient_evidence", False))
-                if r_resp.status_code == 200
-                else True,
-                "retrieval_abstain_reason": r_body.get("abstain_reason")
-                if r_resp.status_code == 200
-                else r_body.get("code"),
-                "retrieved_video_ids": r_vids,
-                "retrieved_provenance": vid_provenance,
-                "target_video_hit": (
-                    str(q["target_video_id"]) in r_vids
-                    if q.get("target_video_id")
-                    else None
-                ),
-                "script_status": s_resp.status_code,
-                "script_error_code": s_body.get("code") if s_resp.status_code != 200 else None,
-                "script_error_message": s_body.get("message") if s_resp.status_code != 200 else None,
-                "script_warnings": guardrail.get("warnings", []),
-                "script_cited_video_ids": sorted(set(s_beat_vids)),
-                "guardrail_valid_citations_ratio": guardrail.get("valid_citations_ratio"),
-                "guardrail_citation_coverage_ratio": guardrail.get("citation_coverage_ratio"),
-                "retrieval_ms": r_ms,
-                "script_ms": s_ms,
-                "N_human_verified": False,
-                "K_human_verified": False,
-                "N_claim_note": "",
-                "K_claim_note": "",
-            }
-        )
+        preserved_human = existing_annotations.get(qid, {})
+        row_out: dict[str, Any] = {
+            "query_id": qid,
+            "category": q["category"],
+            "expect_insufficient_evidence": bool(q["expect_insufficient_evidence"]),
+            "query": q_text,
+            "filters": filters,
+            "retrieval_status": r_resp.status_code,
+            "retrieval_insufficient_evidence": bool(r_body.get("insufficient_evidence", False))
+            if r_resp.status_code == 200
+            else True,
+            "retrieval_abstain_reason": r_body.get("abstain_reason")
+            if r_resp.status_code == 200
+            else r_body.get("code"),
+            "retrieved_video_ids": r_vids,
+            "retrieved_provenance": vid_provenance,
+            "target_video_hit": (
+                str(q["target_video_id"]) in r_vids
+                if q.get("target_video_id")
+                else None
+            ),
+            "script_status": s_resp.status_code,
+            "script_error_code": s_body.get("code") if s_resp.status_code != 200 else None,
+            "script_error_message": s_body.get("message") if s_resp.status_code != 200 else None,
+            "script_warnings": guardrail.get("warnings", []),
+            "script_cited_video_ids": sorted(set(s_beat_vids)),
+            "guardrail_valid_citations_ratio": guardrail.get("valid_citations_ratio"),
+            "guardrail_citation_coverage_ratio": guardrail.get("citation_coverage_ratio"),
+            "retrieval_ms": r_ms,
+            "script_ms": s_ms,
+            "N_human_verified": False,
+            "K_human_verified": False,
+            "N_claim_note": "",
+            "K_claim_note": "",
+        }
+        row_out.update(preserved_human)
+        answer_rows.append(row_out)
 
     output_answers.parent.mkdir(parents=True, exist_ok=True)
     output_answers.write_text(
