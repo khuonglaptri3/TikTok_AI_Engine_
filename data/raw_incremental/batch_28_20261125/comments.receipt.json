@@ -1,0 +1,17 @@
+{
+  "source": "playwright_rendered_video_batch",
+  "base_snapshot_id": "m3_3_playwright_comments_20261125_v2",
+  "requested_videos": 28,
+  "captured_videos": 26,
+  "zero_comment_videos": 2,
+  "unavailable_videos": 0,
+  "comment_count": 355,
+  "comment_id_scheme": "dom_derived_sha256_not_tiktok_native",
+  "manual_challenge_count": 1,
+  "cooldown_seconds": 10.0,
+  "jitter_seconds": 4.0,
+  "scroll_rounds": 4,
+  "stopped_reason": "completed",
+  "elapsed_seconds": 666.938,
+  "source_sha256": "6a2a5d4d3d14d944237164632f383d97c27c16c4479a21641273e50991b69fa1"
+}

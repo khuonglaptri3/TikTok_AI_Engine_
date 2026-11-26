@@ -61,6 +61,7 @@ _COMMENTS_SCHEMA = pa.schema(
         ("video_id", pa.string()),
         ("author_handle", pa.string()),
         ("text", pa.string()),
+        ("original_text", pa.string()),
         ("like_count", pa.int64()),
         ("reply_count", pa.int64()),
         ("is_seeding", pa.bool_()),
@@ -306,6 +307,8 @@ def _ingest_incremental_batch_to_gold(
             if old_comments is not None:
                 for item in old_comments[old_comments["video_id"] == rec.video_id].to_dict(orient="records"):
                     cleaned_item = {k: _normalize_scalar(v) for k, v in item.items()}
+                    if cleaned_item.get("original_text"):
+                        cleaned_item["text"] = cleaned_item["original_text"]
                     prior_comments.append(RawCommentInput.model_validate(cleaned_item))
             rec = rec.model_copy(update={"comments": _merge_comments(prior_comments, rec.comments)})
         existing_vids.add(rec.video_id)

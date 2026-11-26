@@ -21,6 +21,109 @@ from pipelines.crawl_incremental.worker import BoundedIncrementalCollector
 from pipelines.ingest_incremental_to_gold import ingest_incremental_batch_to_gold
 
 
+def test_tiktokapi_session_receives_scoped_netscape_cookies_with_env_token(tmp_path: Path) -> None:
+    from pipelines.crawl_incremental.providers import TikTokApiCollectorProvider
+
+    cookie_file = tmp_path / "cookies.txt"
+    cookie_file.write_text(
+        "# Netscape HTTP Cookie File\n"
+        ".tiktok.com\tTRUE\t/\tTRUE\t1893456000\tsid_tt\tparent_session\n"
+        "www.tiktok.com\tFALSE\t/\tTRUE\t1893456000\tsid_tt\twww_session\n"
+        ".tiktok.com\tTRUE\t/\tTRUE\t1893456000\tcsrfToken\tcsrf_value\n"
+        "tiktok.com\tFALSE\t/\tTRUE\t1893456000\troot_host_only\troot_value\n"
+        ".tiktok.com\tTRUE\t/\tTRUE\t1893456000\tmsToken\tstale_jar_token\n"
+        ".tiktok.com\tTRUE\t/\tTRUE\t1\texpired_cookie\told_value\n"
+        ".example.com\tTRUE\t/\tTRUE\t1893456000\tforeign_cookie\tforeign_value\n",
+        encoding="utf-8",
+    )
+    session_calls: list[dict[str, Any]] = []
+
+    class _EmptyUser:
+        async def videos(self, count: int):
+            if False:
+                yield None
+
+    class _FakeApi:
+        async def __aenter__(self) -> _FakeApi:
+            return self
+
+        async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+            return None
+
+        async def create_sessions(self, **kwargs: Any) -> None:
+            session_calls.append(kwargs)
+
+        def user(self, username: str) -> _EmptyUser:
+            return _EmptyUser()
+
+    with_cookies = TikTokApiCollectorProvider(
+        allow_live_network=True,
+        ms_token="current_env_token",
+        cookies_file=cookie_file,
+        api_factory=_FakeApi,
+    )
+    try:
+        assert with_cookies.discover_candidates(["creator"], 1) == []
+    finally:
+        with_cookies.close()
+    assert session_calls[0]["cookies"] == [
+        {"sid_tt": "www_session", "csrfToken": "csrf_value", "msToken": "current_env_token"}
+    ]
+
+    without_cookies = TikTokApiCollectorProvider(
+        allow_live_network=True,
+        ms_token="current_env_token",
+        api_factory=_FakeApi,
+    )
+    try:
+        assert without_cookies.discover_candidates(["creator"], 1) == []
+    finally:
+        without_cookies.close()
+    assert "cookies" not in session_calls[1]
+
+
+@pytest.mark.filterwarnings("error::UserWarning")
+def test_tiktokapi_rejects_malformed_cookie_file_without_leaking_values(tmp_path: Path) -> None:
+    from pipelines.crawl_incremental.providers import TikTokApiCollectorProvider
+
+    cookie_file = tmp_path / "bad_cookies.txt"
+    cookie_file.write_text(
+        "# Netscape HTTP Cookie File\nmalformed line with secret_session_value\n",
+        encoding="utf-8",
+    )
+
+    class _FakeApi:
+        async def __aenter__(self) -> _FakeApi:
+            return self
+
+        async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+            return None
+
+        async def create_sessions(self, **kwargs: Any) -> None:
+            return None
+
+        def user(self, username: str) -> Any:
+            class _EmptyUser:
+                async def videos(self, count: int):
+                    if False:
+                        yield None
+
+            return _EmptyUser()
+
+    provider = TikTokApiCollectorProvider(
+        allow_live_network=True,
+        ms_token="current_env_token",
+        cookies_file=cookie_file,
+        api_factory=_FakeApi,
+    )
+    try:
+        with pytest.raises(LiveNetworkDisabledError) as caught:
+            provider.discover_candidates(["creator"], 1)
+        assert "secret_session_value" not in str(caught.value)
+    finally:
+        provider.close()
+
+
 def _make_candidate(
     video_id: str,
     create_dt: datetime,

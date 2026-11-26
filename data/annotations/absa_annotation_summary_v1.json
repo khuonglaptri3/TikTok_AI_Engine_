@@ -1,0 +1,106 @@
+{
+  "corpus_snapshot_id": "m3_3_playwright_comments_20261125_v5",
+  "label_source": "ai_semantic_manual_read_v1",
+  "human_verified": false,
+  "total_annotated_units": 2887,
+  "total_annotated_comments": 2823,
+  "train_video_disjoint_comments": 2429,
+  "train_video_disjoint_unique_videos": 90,
+  "m5_2_eval_pool_units": 180,
+  "m5_2_eval_pool_unique_videos": 29,
+  "video_overlap_between_train_and_m5_2_pool": 0,
+  "span_audit_all_2887_units": {
+    "total_spans": 665,
+    "valid_spans": 665,
+    "invalid_spans": 0,
+    "validity_rate": 1.0,
+    "meets_95pct_gate": true,
+    "invalid_examples": []
+  },
+  "comments_with_at_least_one_aspect": 574,
+  "aspect_distribution_all_2823_comments": {
+    "taste": {
+      "absent_unknown": 2346,
+      "positive": 407,
+      "negative": 53,
+      "neutral": 17
+    },
+    "price": {
+      "absent_unknown": 2736,
+      "negative": 22,
+      "positive": 55,
+      "neutral": 10
+    },
+    "hygiene": {
+      "absent_unknown": 2791,
+      "negative": 12,
+      "positive": 20
+    },
+    "service": {
+      "absent_unknown": 2801,
+      "negative": 10,
+      "positive": 12
+    }
+  },
+  "aspect_distribution_train_2429_comments": {
+    "taste": {
+      "absent_unknown": 2031,
+      "positive": 334,
+      "neutral": 15,
+      "negative": 49
+    },
+    "price": {
+      "absent_unknown": 2358,
+      "positive": 44,
+      "negative": 18,
+      "neutral": 9
+    },
+    "hygiene": {
+      "negative": 10,
+      "absent_unknown": 2407,
+      "positive": 12
+    },
+    "service": {
+      "absent_unknown": 2409,
+      "negative": 8,
+      "positive": 12
+    }
+  },
+  "files": {
+    "all_2823_comments_jsonl": {
+      "path": "data/annotations/all_2823_comments_absa_v1.jsonl",
+      "sha256": "7e5564c88b0136268a55e2be3a446ee0619d20f53dbe82acd157a6106693b0d7",
+      "rows": 2823
+    },
+    "all_2823_comments_csv": {
+      "path": "data/annotations/all_2823_comments_absa_v1.csv",
+      "sha256": "baae3ebd3f29ff48955bb55f7cd8e5a598d5f7656f3bae4ec38017db27930815",
+      "rows": 2823
+    },
+    "train_video_disjoint_jsonl": {
+      "path": "data/annotations/absa_train_video_disjoint_v1.jsonl",
+      "sha256": "36ff8c1910db1675c03e5972a1565ccec2f47aa054451f26c35412fd85ba2f29",
+      "rows": 2429
+    },
+    "train_video_disjoint_csv": {
+      "path": "data/annotations/absa_train_video_disjoint_v1.csv",
+      "sha256": "ddc03b712fe5a7ef01355d7e753cbc1da6b532e08d928c03dbeaca914e3f1331",
+      "rows": 2429
+    },
+    "m5_2_blinded_pool_jsonl": {
+      "path": "data/annotations/m5_2_pilot_pool_v1.jsonl",
+      "sha256": "1bec93efe9acc9055d60e6eee69462e8bb3fb10dc9510cced30853da68065cb6",
+      "rows": 180
+    },
+    "m5_2_ai_draft_jsonl": {
+      "path": "data/annotations/m5_2_pilot_pool_v1_ai_semantic_draft.jsonl",
+      "sha256": "79e78bd54553e3ca3e17a51191af9bf0d4b986ef06399d61d5a6fe628a427caa",
+      "rows": 180
+    },
+    "m5_2_ai_draft_csv": {
+      "path": "data/annotations/m5_2_pilot_pool_v1_ai_semantic_draft.csv",
+      "sha256": "d2169248a027a9358eb38cb1152700108a84b47f841c5b1eb3741cc7be61c403",
+      "rows": 180
+    }
+  }
+}

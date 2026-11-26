@@ -1,0 +1,9 @@
+{
+  "source_mode": "live_provider",
+  "as_of_utc": "2026-11-25T06:55:52.615022+00:00",
+  "cutoff_utc": "2026-07-28T06:55:52.615022+00:00",
+  "succeeded_ids": [],
+  "skipped_reasons": {},
+  "failed_reasons": {},
+  "audio_receipts": {}
+}

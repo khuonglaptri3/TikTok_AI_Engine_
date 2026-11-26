@@ -5,8 +5,10 @@ import importlib.util
 import json
 import subprocess
 import threading
+import warnings
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import datetime
+from http.cookiejar import LoadError, MozillaCookieJar
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -250,6 +252,43 @@ def _validate_live_auth(allow_live_network: bool, ms_token: str) -> str:
     return cleaned
 
 
+def _load_tiktok_session_cookies(cookies_file: Path, ms_token: str) -> dict[str, str]:
+    """Read cookies for www.tiktok.com without exposing file contents in errors."""
+    jar = MozillaCookieJar(str(cookies_file))
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", UserWarning)
+            jar.load(ignore_discard=True, ignore_expires=True)
+    except (OSError, LoadError, UnicodeError, ValueError, UserWarning):
+        raise LiveNetworkDisabledError(
+            "Configured TikTok cookies file is not a readable Netscape cookies.txt file"
+        ) from None
+
+    chosen: dict[str, tuple[tuple[int, bool], str]] = {}
+    for cookie in jar:
+        domain = cookie.domain.lstrip(".").lower()
+        if domain not in {"tiktok.com", "www.tiktok.com"}:
+            continue
+        if domain == "tiktok.com" and not cookie.domain_specified:
+            continue
+        if cookie.expires not in (None, 0) and cookie.is_expired():
+            continue
+        if not cookie.name or cookie.value is None:
+            continue
+        priority = (len(domain), not cookie.domain_initial_dot)
+        previous = chosen.get(cookie.name)
+        if previous is None or priority > previous[0]:
+            chosen[cookie.name] = (priority, cookie.value)
+
+    if not chosen:
+        raise LiveNetworkDisabledError(
+            "Configured TikTok cookies file has no valid www.tiktok.com cookies"
+        )
+    values = {name: item[1] for name, item in chosen.items()}
+    values["msToken"] = ms_token
+    return values
+
+
 class TikTokApiCollectorProvider:
     """Official TikTokApi provider adapting 21KHDL-TikTok-Analytics itemStruct, pinned-post, & single-session mechanics."""
 
@@ -308,16 +347,24 @@ class TikTokApiCollectorProvider:
     async def _ensure_session_async(self) -> Any:
         if self._api_instance is not None:
             return self._api_instance
+        session_cookies = (
+            _load_tiktok_session_cookies(self._cookies_file, self._ms_token)
+            if self._cookies_file is not None
+            else None
+        )
         api = await self._instantiate_api().__aenter__()
         try:
-            await api.create_sessions(
-                num_sessions=1,
-                ms_tokens=[self._ms_token],
-                headless=self._headless,
-                browser=self._browser,
-                sleep_after=2,
-                timeout=self._timeout_sec * 1000,
-            )
+            session_kwargs: dict[str, Any] = {
+                "num_sessions": 1,
+                "ms_tokens": [self._ms_token],
+                "headless": self._headless,
+                "browser": self._browser,
+                "sleep_after": 2,
+                "timeout": self._timeout_sec * 1000,
+            }
+            if session_cookies is not None:
+                session_kwargs["cookies"] = [session_cookies]
+            await api.create_sessions(**session_kwargs)
         except Exception:
             try:
                 await api.__aexit__(None, None, None)

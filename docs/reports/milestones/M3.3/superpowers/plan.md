@@ -688,3 +688,90 @@ python3 scripts/check_secrets.py
 git add pipelines/pilot_m3_3/ .env.example docs/reports/milestones/M3.3/ docs/reports/milestones/README.md tests/unit/test_m3_3_pilot_pipeline.py
 git commit -m "feat(m3.3): wire hybrid auto backend, auto-creators, resume, preflight, and home run guide"
 ```
+
+---
+
+### Task 4: Reconcile Local Browser Cookies and Measure One Bounded Live Rerun (2026-11-25)
+
+**Files:**
+- Update: `docs/reports/milestones/M3.3/superpowers/spec.md`
+- Update: `docs/reports/milestones/M3.3/superpowers/plan.md`
+- Update: `docs/reports/milestones/M3.3/evidence/workflow.md`
+- Update: `docs/reports/milestones/M3.3/README.md`
+- Create: distinct sanitized receipt under `docs/reports/milestones/M3.3/evidence/`
+- Local only: gitignored `.env` and an external Netscape cookies file; preserve the source JSON.
+
+**Interfaces:** Consumes the owner supplied local JSON cookie export and `pipelines.pilot_m3_3` CLI. Produces an aligned local `MS_TOKEN`/`TIKTOK_COOKIES_FILE` pair and a measured, honest live pilot receipt.
+
+- [x] **Step 1:** Validate the JSON shape, unexpired `www.tiktok.com` `msToken`, and current configuration using counts and booleans only. Record the existing blocked receipt separately before running.
+- [x] **Step 2:** Convert the JSON export to a Netscape file without printing cookie values; keep one matching `msToken` and validate the file with `MozillaCookieJar`.
+- [x] **Step 3:** Update only the two `.env` auth keys, check effective loader output by equality/paths without echoing secrets, and run `--preflight-only` with new output paths.
+- [x] **Step 4:** If preflight is ready, execute one bounded `--mode live_pilot --allow-live-network --backend auto --no-tiktok-headless --auto-creators 5` run using distinct output paths; honor fail-closed anti-bot handling.
+- [x] **Step 5:** Check the resulting receipt/manifest, run `python scripts/check_secrets.py`, update this task's evidence/report with the observed result, and verify report links/layout/status consistency. Do not overwrite the prior successful M3.3 measurement.
+
+### Task 5: Pass the Netscape Session Cookies to TikTokApi (2026-11-25)
+
+**Files:**
+- Modify: `pipelines/crawl_incremental/providers.py` (`TikTokApiCollectorProvider` and a focused cookie loader)
+- Test: `tests/unit/test_bounded_collector_worker.py`
+- Update: `docs/reports/milestones/M3.3/README.md`, `docs/reports/milestones/M3.3/evidence/workflow.md`, and `docs/reports/milestones/README.md`
+- Create: distinct receipt/manifest evidence for one new live attempt if preflight permits it
+
+**Interfaces:** Consume existing `cookies_file: Path | None` and `MS_TOKEN`; produce the TikTokApi `cookies=[dict[str, str]]` session argument only when a valid file is configured. No public CLI changes.
+
+- [x] **Step 1:** Add offline failing tests with a fake TikTokApi session verifying a valid Netscape jar passes scoped session cookies, excludes host-only `tiktok.com`, chooses the specific `www.tiktok.com` duplicate, and overrides jar `msToken` with `MS_TOKEN`; verify the no-file path still omits `cookies` and malformed input does not expose secret content.
+- [x] **Step 2:** Run the targeted tests and confirm RED for the missing cookie propagation behavior, not a test setup error.
+- [x] **Step 3:** Implement a minimal cookie loader and pass its mapping to `create_sessions`; keep anti-bot exceptions fail-closed.
+- [x] **Step 4:** Run targeted tests, then full `pytest`, type check, secret scan, and diff hygiene. Record actual outputs.
+- [x] **Step 5:** If all local gates pass, run one preflight and one owner-authorized bounded live pilot with distinct work/Gold/BM25/receipt paths. Stop on anti-bot and preserve every prior attempt.
+- [x] **Step 6:** Record the live result, evidence hashes, report/index status, and remaining source-access limitation. Review the diff and report truthfully whether fresh data was obtained.
+
+### Task 6: Import Authorized Comment Files into a New Gold Snapshot (2026-11-25)
+
+**Files:**
+- Create: `pipelines/import_authorized_comments/{__init__.py,importer.py,__main__.py}`
+- Test: `tests/unit/test_snapshot_continuity.py` (reuse its verified synthetic Gold fixture)
+- Update: `docs/reports/milestones/M3.3/README.md`, `docs/reports/milestones/M3.3/evidence/workflow.md`, `docs/reports/milestones/README.md`
+- Create: `docs/reports/milestones/M3.3/evidence/authorized_comments_template.csv`
+
+**Interfaces:** `import_authorized_comments(comments_file: Path, base_corpus_dir: Path, work_dir: Path, output_corpus_dir: Path, *, source_label: str, as_of_utc: datetime, preflight_only: bool = False) -> AuthorizedCommentReceipt` validates a normalized CSV/JSONL file, returns a no-write `READY` receipt in preflight mode, or writes a bounded incremental batch and calls the verified dual-sink converter with `update_existing=True` into a new snapshot. The CLI supports `--preflight-only`, `--source-label`, `--as-of`, `--base-corpus`, `--comments-file`, `--work-dir`, and `--output-gold`.
+
+- [x] **Step 1:** Write an end-to-end synthetic fixture test that imports two comments for an existing fresh video, verifies `fact_comments`/ABSA rows, original video/voice preservation, immutable base hashes, and provenance receipt. Watch RED before implementation.
+- [x] **Step 2:** Write focused failing validation tests for unknown/old video IDs, duplicate IDs, blank text, invalid counts, and bound violations; verify preflight writes no batch or snapshot.
+- [x] **Step 3:** Implement minimal CSV/JSONL parsing, source hashing, Gold membership/window checks, bounded comment grouping, atomic batch/receipt writes, and the `update_existing=True` call. Add a header-only CSV template.
+- [x] **Step 4:** Run targeted tests, then full pytest, Linux/Windows mypy, Ruff, and secret scan. Check that no fixture is reported as live data.
+- [x] **Step 5:** Inspect the workspace for a real authorized file. If none exists, run preflight on a controlled fixture only, document `REAL_INPUT_MISSING`, and do not create a production Gold snapshot. Update report/index/workflow and verify links/layout/hashes.
+
+### Task 7: Capture Visible Comments from Known Video URLs with Playwright (2026-11-25)
+
+**Files:** `pipelines/capture_playwright_comments/{__init__.py,__main__.py,capture.py}`, focused tests under `tests/unit/`, and this M3.3 task bundle/report/index. No change to creator discovery or historical corpus.
+
+**Interfaces:** A bounded page capture accepts a verified Gold video URL, scoped Netscape cookies, and a new JSONL output path. It emits rows accepted by `pipelines.import_authorized_comments`; only a validated nonempty live output can feed the immutable Gold importer. Challenge/login/empty pages produce no output file.
+
+- [x] **Step 1:** Probe one known accepted video URL in direct Playwright using the configured scoped cookies. Record elapsed time, final host, challenge/login state, and comment-card selector counts without printing cookies or comment text. The comments action exposed a slider CAPTCHA, so continue only through the owner's explicitly offered manual completion in one bounded visible-browser wait.
+- [x] **Step 2:** From observed DOM structure, write offline tests first for valid URL/Gold membership, rendered-card text extraction, bounded count, missing native IDs, and challenge/empty no-write behavior; observe RED.
+- [x] **Step 3:** Implement the minimal one-page Playwright capture CLI and normalized JSONL output. Preserve source text and provenance, close the browser, and fail closed on challenge or missing cards.
+- [x] **Step 4:** Run targeted tests, full pytest, Linux/Windows mypy, Ruff, and secret scan. Review the implementation and correct concrete findings with TDD (`19/19` capture tests, `253` full `pytest`, `111`-file Windows/Linux `mypy`, `ruff`, and `check_secrets.py` all green after two independent review + TDD fix passes).
+- [x] **Step 5:** Run one distinct bounded live capture, then preflight/import only if real comments were captured. Record receipt/Gold row counts, timing, blockers, hashes, report/index consistency, and actual remaining work. *(Verified both fail-closed no-write behavior when an unsolved background window expired at `300 s`, and live foreground execution of `pipelines.capture_playwright_comments` on `https://www.tiktok.com/@saigonmap/video/7710502428428356871`: `20` real comments captured in `17.656 s` after manual owner slider solve -> `READY` preflight -> `IMPORTED` into SHA256-verified `m3_3_playwright_comments_20261125_v2` with `39` total real comments across `2` videos and `39/39` nonblank `original_text`.)*
+
+### Task 8: Single-Session Remaining-Pilot Batch Capture with Cooldown, Scroll & Checkpointing (2026-11-25)
+
+**Files:** `pipelines/capture_playwright_comments/{capture.py,__main__.py}`, `tests/unit/test_playwright_comment_capture.py`, and M3.3 report/workflow records.
+
+**Interfaces:** Adds `select_remaining_pilot_urls(corpus_dir, *, as_of_utc)`, optional `scroll_rounds` / `allow_zero_comments` on `capture_comments_on_page`, `run_batch_comment_capture(...)` with `.state.json` checkpointing + `cooldown_seconds`/`jitter_seconds` (`10–14`s default) + `1,000`-row ceiling, and CLI flags `--remaining-pilot`, `--cooldown-seconds`, `--jitter-seconds`, `--scroll-rounds`, and `--resume`.
+
+- [x] **Step 1:** Write failing offline tests for remaining-pilot Gold selection, bounded comment-panel scrolling + zero-comment continuation, single-session batch cooldown/checkpointing/fail-closed CAPTCHA halt + `--resume`, and CLI flag validation; observe RED (`4/4` failed).
+- [x] **Step 2:** Implement minimal batch selection, bounded scroll, zero-comment handling, checkpointed `run_batch_comment_capture`, and CLI flags without breaking single-URL mode.
+- [x] **Step 3:** Run targeted tests (`23/23` passed), `ruff`, Windows/Linux `mypy` (`111` files clean), and `scripts/check_secrets.py` (`0` leaks).
+- [x] **Step 4:** Execute live `--remaining-pilot` capture against `m3_3_playwright_comments_20261125_v2` with owner supervision, import captured rows into `m3_3_playwright_comments_20261125_v3`, and update M3.3 evidence/report (`28/28` visited in `666.938 s`, `manual_challenge_count=1`, `355` new comments -> `394` total real comments across `28` commented pilot videos in verified `v3`).
+
+### Task 9: Bounded 100-Video Fresh Metadata + Comment Expansion (`<= 5,000` Comments) (2026-11-25)
+
+**Files:** `pipelines/capture_playwright_comments/{capture.py,__main__.py}`, `pipelines/import_authorized_comments/{importer.py,__main__.py}`, `tests/unit/test_playwright_comment_capture.py`, and M3.3 report/workflow records.
+
+**Interfaces:** Adds `max_total_comments` (`1..5000`, CLI `--max-total-comments`) on `capture_playwright_comments` and `max_rows: int = 1000` (`1..5000`, CLI `--max-rows`) on `import_authorized_comments`, preserving `1,000` defaults.
+
+- [x] **Step 1:** Write a failing test verifying default `1,000`-row rejection, explicit `max_rows=5000` / `--max-total-comments 5000` acceptance over `1,005` rows, and rejection above `5,000`; observe RED.
+- [x] **Step 2:** Implement `--max-total-comments` (`<= 5000`) and `max_rows` / `--max-rows` (`<= 5000`), and verify `pytest`, `ruff`, `mypy` (`111` files), and `check_secrets.py` (`0` leaks).
+- [x] **Step 3:** Run bounded `pipelines.crawl_incremental` (`--backend ytdlp --max-succeeded 100 --max-audio-minutes 0`) over curated F&B creators protecting all `71,026` IDs in `v3`, and ingest the `100` fresh metadata records into `m3_3_playwright_comments_20261125_v4_meta` (`persisted=100`, `failed=0`, `V4_TOTAL_VIDEOS=71,126`).
+- [x] **Step 4:** Run `--remaining-pilot` (`--max-total-comments 5000`, `8–12 s` cooldown) across the `100` new fresh videos, import into `m3_3_playwright_comments_20261125_v5`, and record verified hashes/counts (`100` new videos visited in `2,383.062 s`, `90` commented videos -> `2,429` new comments -> **`2,823` total real comments across `118` commented videos** in verified `v5`).

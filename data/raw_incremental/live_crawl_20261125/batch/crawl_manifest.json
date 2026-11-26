@@ -1,0 +1,249 @@
+{
+  "source_mode": "live_provider",
+  "is_synthetic_fixture": false,
+  "collector_backend_requested": "auto",
+  "collector_backends_used": [
+    "ytdlp"
+  ],
+  "as_of_utc": "2026-11-25T06:31:36.947343+00:00",
+  "cutoff_utc": "2026-07-28T06:31:36.947343+00:00",
+  "base_corpus_snapshot_id": "20261118_taxonomy_fix_v1",
+  "historical_protected_count": 70996,
+  "creators_queried": [
+    "spicykim9386",
+    "haidangrevieww",
+    "khaikhampha",
+    "putaangi",
+    "trangtam2607"
+  ],
+  "bounds": {
+    "window_days": 120,
+    "max_creators": 5,
+    "max_candidate_videos": 50,
+    "max_succeeded_videos": 30,
+    "max_audio_minutes": 60.0,
+    "max_comments_total": 1000,
+    "max_comments_per_video": 50,
+    "max_retries": 2,
+    "session_deadline_seconds": 7200.0
+  },
+  "requested_count": 20,
+  "succeeded_count": 0,
+  "failed_count": 1,
+  "skipped_count": 19,
+  "persisted_records_count": 0,
+  "duplicate_candidates_ignored": 0,
+  "converted_audio_count": 0,
+  "collected_comments_count": 0,
+  "accumulated_audio_minutes": 0.0,
+  "stopped_reason": "anti_bot_challenge_blocked",
+  "discovery_error": null,
+  "output_jsonl": "videos_4m.jsonl",
+  "items": [
+    {
+      "video_id": "7709935080692616468",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-19T17:25:52+00:00",
+      "status": "failed",
+      "attempts": 1,
+      "reason": "anti_bot_challenge_blocked: comments blocked by anti-bot/captcha challenge (tip: try --no-tiktok-headless on desktop or refresh MS_TOKEN): None -> TikTok returned an empty response. They are detecting you're a bot, try some of these: headless=False, browser='webkit', consider usi",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711969409136479509",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-25T05:00:12+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711310158609075464",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-23T10:22:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709852534852193544",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-19T12:05:32+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7706504130927545620",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-11-10T11:32:04+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709123948134419733",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-17T12:58:17+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7711218437204282645",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-23T05:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710252426921741575",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-20T13:57:21+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709469873650339090",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-18T11:20:40+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7705377772474060053",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-11-07T10:41:12+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7707295032742513940",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-12T14:41:08+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710897979464404245",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-22T11:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709502966520106247",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-18T13:29:04+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7709116352463654162",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-17T12:28:47+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7701299342182862101",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-10-27T10:54:53+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7706562281068596501",
+      "author_handle": "spicykim9386",
+      "create_time": "2026-11-10T15:17:42+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7710154219377970439",
+      "author_handle": "haidangrevieww",
+      "create_time": "2026-11-20T11:00:00+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7708643166085188872",
+      "author_handle": "khaikhampha",
+      "create_time": "2026-11-16T05:52:36+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7708039878256168198",
+      "author_handle": "putaangi",
+      "create_time": "2026-11-14T14:51:35+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    },
+    {
+      "video_id": "7696847390648667412",
+      "author_handle": "trangtam2607",
+      "create_time": "2026-10-15T10:58:59+00:00",
+      "status": "skipped",
+      "attempts": 0,
+      "reason": "anti_bot_challenge_blocked",
+      "comment_count": 0,
+      "audio_receipt": null
+    }
+  ],
+  "timings_ms": {
+    "discovery_ms": 76666.07,
+    "collection_ms": 19775.3,
+    "total_ms": 96466.52
+  }
+}

@@ -1,0 +1,1018 @@
+{
+  "source_mode": "live_provider",
+  "as_of_utc": "2026-11-25T15:22:26.440239+00:00",
+  "cutoff_utc": "2026-07-28T15:22:26.440239+00:00",
+  "succeeded_ids": [
+    "7712010582064434440",
+    "7712090904550526216",
+    "7711971981343673601",
+    "7711957828755492104",
+    "7712061965249547526",
+    "7709935080692616468",
+    "7711969409136479509",
+    "7712082891462741266",
+    "7709852534852193544",
+    "7706504130927545620",
+    "7711933979229719826",
+    "7712078020462382344",
+    "7711292781196479762",
+    "7712039287218343174",
+    "7711573507380907270",
+    "7710160130234518802",
+    "7711954639633009927",
+    "7709123948134419733",
+    "7711218437204282645",
+    "7711310158609075464",
+    "7709469873650339090",
+    "7705377772474060053",
+    "7709669796459154696",
+    "7712016037310401799",
+    "7711997085150612754",
+    "7711241845690486023",
+    "7707295032742513940",
+    "7710897979464404245",
+    "7710252426921741575",
+    "7709116352463654162",
+    "7701299342182862101",
+    "7705018509901696264",
+    "7711647537203121426",
+    "7711759906981825810",
+    "7711170683740441863",
+    "7706562281068596501",
+    "7710154219377970439",
+    "7709502966520106247",
+    "7708039878256168198",
+    "7696847390648667412",
+    "7703356521685601543",
+    "7711335983152647476",
+    "7711670394104696071",
+    "7705476932762160404",
+    "7709825324946623751",
+    "7708643166085188872",
+    "7707260715001826568",
+    "7692765616008138004",
+    "7696678649688263944",
+    "7711273855016389896",
+    "7712129360777579783",
+    "7711584193318358290",
+    "7705095070306946325",
+    "7709727319648242965",
+    "7708372026800557320",
+    "7707164813314608392",
+    "7690909201639558401",
+    "7694462429115223304",
+    "7710964724397100295",
+    "7711371734485650706",
+    "7703249876330581300",
+    "7709410671854750997",
+    "7706864008757808391",
+    "7706478215711264018",
+    "7686838412061494549",
+    "7690055730921065746",
+    "7710902954861071634",
+    "7711297582449921298",
+    "7702879703316630804",
+    "7709094794856893717",
+    "7706140392672087304",
+    "7706179970976009490",
+    "7686456408203660565",
+    "7684830674053778695",
+    "7710593738245967112",
+    "7708713355699031297",
+    "7711218285852822792",
+    "7708698925552667924",
+    "7706768764917812487",
+    "7702492534014070036",
+    "7708679546215714068",
+    "7705394036537953544",
+    "7706170027912727816",
+    "7684231336265092372",
+    "7682969259399580946",
+    "7710531715134917906",
+    "7708382866916281607",
+    "7708564001600310548",
+    "7707196319953112321",
+    "7698793688197172501",
+    "7708308212000345365",
+    "7705269194027437318",
+    "7706133614450199816",
+    "7683118184123288853",
+    "7678670143861296391",
+    "7710222607970225426",
+    "7707936524070964498",
+    "7708270681527438600",
+    "7706766124687379730",
+    "7705017702598888712"
+  ],
+  "skipped_reasons": {
+    "7712010582064434440": "already_succeeded_in_checkpoint",
+    "7711971981343673601": "already_succeeded_in_checkpoint",
+    "7711957828755492104": "already_succeeded_in_checkpoint",
+    "7712061965249547526": "already_succeeded_in_checkpoint",
+    "7709935080692616468": "already_succeeded_in_checkpoint",
+    "7711969409136479509": "already_succeeded_in_checkpoint",
+    "7712082891462741266": "already_succeeded_in_checkpoint",
+    "7709852534852193544": "already_succeeded_in_checkpoint",
+    "7706504130927545620": "already_succeeded_in_checkpoint",
+    "7711933979229719826": "already_succeeded_in_checkpoint",
+    "7712078020462382344": "already_succeeded_in_checkpoint",
+    "7711292781196479762": "already_succeeded_in_checkpoint",
+    "7712039287218343174": "already_succeeded_in_checkpoint",
+    "7711573507380907270": "already_succeeded_in_checkpoint",
+    "7710160130234518802": "already_succeeded_in_checkpoint",
+    "7711954639633009927": "already_succeeded_in_checkpoint",
+    "7709123948134419733": "already_succeeded_in_checkpoint",
+    "7711218437204282645": "already_succeeded_in_checkpoint",
+    "7711310158609075464": "already_succeeded_in_checkpoint",
+    "7709469873650339090": "already_succeeded_in_checkpoint",
+    "7705377772474060053": "already_succeeded_in_checkpoint",
+    "7709669796459154696": "already_succeeded_in_checkpoint",
+    "7712016037310401799": "already_succeeded_in_checkpoint",
+    "7710799156024986887": "historical_protected_id",
+    "7711997085150612754": "already_succeeded_in_checkpoint",
+    "7710598047721458945": "historical_protected_id",
+    "7710150153201536262": "historical_protected_id",
+    "7711241845690486023": "already_succeeded_in_checkpoint",
+    "7707295032742513940": "already_succeeded_in_checkpoint",
+    "7710897979464404245": "already_succeeded_in_checkpoint",
+    "7710252426921741575": "already_succeeded_in_checkpoint",
+    "7709116352463654162": "already_succeeded_in_checkpoint",
+    "7701299342182862101": "already_succeeded_in_checkpoint",
+    "7705018509901696264": "already_succeeded_in_checkpoint",
+    "7711647537203121426": "already_succeeded_in_checkpoint",
+    "7709793907894193415": "historical_protected_id",
+    "7711759906981825810": "already_succeeded_in_checkpoint",
+    "7710450847070653716": "historical_protected_id",
+    "7710143263436508417": "historical_protected_id",
+    "7711170683740441863": "already_succeeded_in_checkpoint",
+    "7706562281068596501": "already_succeeded_in_checkpoint",
+    "7710154219377970439": "already_succeeded_in_checkpoint",
+    "7709502966520106247": "already_succeeded_in_checkpoint",
+    "7708039878256168198": "already_succeeded_in_checkpoint",
+    "7696847390648667412": "already_succeeded_in_checkpoint",
+    "7703356521685601543": "already_succeeded_in_checkpoint",
+    "7711335983152647476": "already_succeeded_in_checkpoint",
+    "7709738723730066706": "historical_protected_id",
+    "7711670394104696071": "already_succeeded_in_checkpoint",
+    "7710262606010846484": "historical_protected_id",
+    "7709711126140849426": "historical_protected_id",
+    "7710502428428356871": "historical_protected_id",
+    "7705476932762160404": "already_succeeded_in_checkpoint",
+    "7709825324946623751": "already_succeeded_in_checkpoint",
+    "7708643166085188872": "already_succeeded_in_checkpoint",
+    "7707260715001826568": "already_succeeded_in_checkpoint",
+    "7692765616008138004": "already_succeeded_in_checkpoint",
+    "7696678649688263944": "already_succeeded_in_checkpoint",
+    "7711273855016389896": "already_succeeded_in_checkpoint",
+    "7709416664755866887": "historical_protected_id",
+    "7710067177193377045": "historical_protected_id",
+    "7709372899198602514": "historical_protected_id",
+    "7710191968239848711": "historical_protected_id",
+    "7709388788732087570": "historical_protected_id",
+    "7709423559424167188": "historical_protected_id",
+    "7709031604986940679": "historical_protected_id",
+    "7708970028552457480": "historical_protected_id",
+    "7709375359300537601": "historical_protected_id",
+    "7709080401645473044": "historical_protected_id",
+    "7707183296874106119": "historical_protected_id",
+    "7708688614837832978": "historical_protected_id",
+    "7707187736549117192": "historical_protected_id",
+    "7711004930638630152": "historical_protected_id",
+    "7706832341804633352": "historical_protected_id",
+    "7710927418533399815": "historical_protected_id",
+    "7698039572726320404": "max_succeeded_ceiling",
+    "7707972005148101908": "max_succeeded_ceiling",
+    "7704910687608343815": "max_succeeded_ceiling",
+    "7705375642610683157": "max_succeeded_ceiling",
+    "7678293230022102293": "max_succeeded_ceiling",
+    "7676417143906356498": "max_succeeded_ceiling",
+    "7710160733375302920": "max_succeeded_ceiling",
+    "7707588221743418642": "max_succeeded_ceiling",
+    "7710634206874946824": "historical_protected_id",
+    "7707842549968293140": "max_succeeded_ceiling",
+    "7703803006717857030": "max_succeeded_ceiling",
+    "7704892100038462738": "max_succeeded_ceiling",
+    "7697681446600740117": "max_succeeded_ceiling",
+    "7707602031716044052": "max_succeeded_ceiling",
+    "7704643534627900679": "max_succeeded_ceiling",
+    "7704303369854209298": "max_succeeded_ceiling",
+    "7677552308686966037": "max_succeeded_ceiling",
+    "7672633307108052232": "max_succeeded_ceiling",
+    "7709851447835381000": "max_succeeded_ceiling",
+    "7707214349877939464": "max_succeeded_ceiling",
+    "7710562414172966151": "historical_protected_id",
+    "7707597480459767060": "max_succeeded_ceiling",
+    "7704913136222014728": "max_succeeded_ceiling",
+    "7704214468691102984": "max_succeeded_ceiling",
+    "7697318738500013332": "max_succeeded_ceiling",
+    "7707513812626296082": "max_succeeded_ceiling",
+    "7703939464489487634": "max_succeeded_ceiling",
+    "7703973469100313863": "max_succeeded_ceiling",
+    "7676807423457332500": "max_succeeded_ceiling",
+    "7671610475116809490": "max_succeeded_ceiling",
+    "7709789489358589191": "max_succeeded_ceiling"
+  },
+  "failed_reasons": {},
+  "audio_receipts": {
+    "7712010582064434440": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7712090904550526216": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711971981343673601": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711957828755492104": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7712061965249547526": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709935080692616468": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711969409136479509": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7712082891462741266": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709852534852193544": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706504130927545620": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711933979229719826": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7712078020462382344": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711292781196479762": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7712039287218343174": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711573507380907270": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7710160130234518802": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711954639633009927": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709123948134419733": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711218437204282645": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711310158609075464": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709469873650339090": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7705377772474060053": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709669796459154696": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7712016037310401799": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711997085150612754": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711241845690486023": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7707295032742513940": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7710897979464404245": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7710252426921741575": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709116352463654162": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7701299342182862101": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7705018509901696264": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711647537203121426": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711759906981825810": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711170683740441863": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706562281068596501": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7710154219377970439": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709502966520106247": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708039878256168198": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7696847390648667412": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7703356521685601543": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711335983152647476": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711670394104696071": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7705476932762160404": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709825324946623751": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708643166085188872": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7707260715001826568": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7692765616008138004": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7696678649688263944": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711273855016389896": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7712129360777579783": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711584193318358290": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7705095070306946325": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709727319648242965": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708372026800557320": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7707164813314608392": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7690909201639558401": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7694462429115223304": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7710964724397100295": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711371734485650706": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7703249876330581300": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709410671854750997": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706864008757808391": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706478215711264018": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7686838412061494549": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7690055730921065746": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7710902954861071634": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711297582449921298": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7702879703316630804": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7709094794856893717": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706140392672087304": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706179970976009490": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7686456408203660565": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7684830674053778695": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7710593738245967112": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708713355699031297": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7711218285852822792": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708698925552667924": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706768764917812487": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7702492534014070036": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708679546215714068": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7705394036537953544": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706170027912727816": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7684231336265092372": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7682969259399580946": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7710531715134917906": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708382866916281607": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708564001600310548": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7707196319953112321": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7698793688197172501": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708308212000345365": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7705269194027437318": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706133614450199816": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7683118184123288853": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7678670143861296391": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7710222607970225426": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7707936524070964498": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7708270681527438600": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7706766124687379730": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    },
+    "7705017702598888712": {
+      "status": "skipped_audio_ceiling",
+      "target_bitrate_kbps": 64,
+      "audio_path": null,
+      "audio_bytes": 0,
+      "audio_sha256": null,
+      "reason": "max_audio_minutes_ceiling_reached"
+    }
+  }
+}
