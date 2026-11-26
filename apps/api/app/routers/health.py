@@ -31,6 +31,7 @@ async def health_ready(request: Request) -> dict[str, Any]:
     qdrant_ready, qdrant_points = (
         c.retrieval.qdrant.check_collection_ready() if c.retrieval.qdrant else (False, 0)
     )
+    mm = c.multimodal
     return {
         "status": "ready",
         "corpus_snapshot_id": c.analytics.manifest.snapshot_id,
@@ -41,12 +42,20 @@ async def health_ready(request: Request) -> dict[str, Any]:
         "qdrant_dense_ready": qdrant_ready,
         "qdrant_points": qdrant_points,
         "gemini_key_configured": c.gemini.is_configured,
+        "multimodal_available": mm.available,
+        "multimodal_snapshot_id": mm.snapshot_id,
+        "multimodal_videos_with_comments": mm.videos_with_comments,
+        "multimodal_total_comments": mm.total_comments,
+        "multimodal_voice_videos": mm.videos_with_voice_segments,
+        "multimodal_prosody_audio_videos": mm.videos_with_prosody_audio,
+        "multimodal_voice_segments": mm.total_voice_segments,
     }
 
 
 @router.get("/api/v1/demo/modules")
 async def demo_modules(request: Request) -> dict[str, Any]:
     c = _container(request)
+    mm = c.multimodal
     return {
         "project": "ViralFoodRAG — Evidence-Based TikTok Content Intelligence & Script Engine",
         "corpus_snapshot_id": c.analytics.manifest.snapshot_id,
@@ -54,6 +63,14 @@ async def demo_modules(request: Request) -> dict[str, Any]:
         "transcribed_videos": c.analytics.manifest.transcribed_videos,
         "poi_tagged_videos": c.analytics.manifest.poi_tagged_videos,
         "gemini_key_configured": c.gemini.is_configured,
+        "multimodal_corpus": {
+            "available": mm.available,
+            "snapshot_id": mm.snapshot_id,
+            "videos_with_comments": mm.videos_with_comments,
+            "total_comments": mm.total_comments,
+            "videos_with_voice_segments": mm.videos_with_voice_segments,
+            "total_voice_segments": mm.total_voice_segments,
+        },
         "taxonomy": {
             "video_formats": list(VIDEO_FORMATS),
             "food_categories": list(FOOD_CATEGORIES),
@@ -69,3 +86,9 @@ async def demo_modules(request: Request) -> dict[str, Any]:
 async def evaluation_summary(request: Request) -> dict[str, Any]:
     c = _container(request)
     return c.load_benchmark_summary()
+
+
+@router.get("/api/v1/evaluation/milestones")
+async def evaluation_milestones(request: Request) -> dict[str, Any]:
+    c = _container(request)
+    return c.load_milestone_evaluations()

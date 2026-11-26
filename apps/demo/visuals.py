@@ -207,18 +207,28 @@ def render_hero_banner_html(
     poi_tagged_videos: int,
     transcribed_videos: int,
     gemini_configured: bool,
+    multimodal_snapshot_id: str | None = None,
+    multimodal_comments: int = 0,
+    multimodal_voice_segments: int = 0,
 ) -> str:
     llm_pill = (
         '<span class="vfs-pill vfs-pill-amber">Gemini Free-Tier Key Active</span>'
         if gemini_configured
         else '<span class="vfs-pill vfs-pill-green">Offline CPU ($0 Verified)</span>'
     )
+    mm_chips = ""
+    if multimodal_snapshot_id:
+        mm_chips = (
+            f'<span class="vfs-pill vfs-pill-green vfs-pill-mono">Multimodal: {_esc(multimodal_snapshot_id)}</span>'
+            f'<span class="vfs-pill vfs-pill-green">{int(multimodal_comments):,} real comments</span>'
+            f'<span class="vfs-pill vfs-pill-green">{int(multimodal_voice_segments):,} audio_derived segs</span>'
+        )
     return (
         '<div class="vfs-hero">'
         '<div class="vfs-hero-top">'
         '<div>'
         '<h1>🍜 ViralFoodRAG — TikTok F&amp;B Intelligence &amp; Trust Studio</h1>'
-        '<p>Phân tích chuẩn ngách từ dữ liệu thực tế, truy xuất bằng chứng video có trích dẫn và chẩn đoán ABSA/Seeding không bịa nguồn.</p>'
+        '<p>Phân tích chuẩn ngách từ dữ liệu thực tế, truy xuất bằng chứng video có trích dẫn và kiểm toán đa phương thức M3–M5 (Prosody, Disclosure, Seeding, ABSA) không bịa nguồn.</p>'
         '</div>'
         f'<div>{llm_pill}</div>'
         '</div>'
@@ -228,6 +238,7 @@ def render_hero_banner_html(
         f'<span class="vfs-pill">{total_creators:,} creators</span>'
         f'<span class="vfs-pill">{transcribed_videos:,} transcripts</span>'
         f'<span class="vfs-pill">{poi_tagged_videos:,} GPS POIs</span>'
+        f'{mm_chips}'
         '</div></div>'
     )
 
@@ -537,10 +548,175 @@ def render_trust_audit_html(data: dict[str, Any], *, hide_seeding: bool = False)
     )
 
 
-def render_system_status_html(ready_data: dict[str, Any], eval_data: dict[str, Any]) -> str:
+def render_corpus_video_header_html(video: dict[str, Any]) -> str:
+    vid = _esc(video.get("video_id", ""))
+    handle = _esc(video.get("author_handle", "creator"))
+    url = _safe_url(video.get("tiktok_url"))
+    snap = _esc(video.get("snapshot_id", "multimodal_gold"))
+    plays = int(video.get("play_count") or 0)
+    dur = int(video.get("duration_sec") or 0)
+    cat = _esc(video.get("food_category") or "F&B")
+    city = _esc(video.get("city_norm") or "Việt Nam")
+    cap = _esc(video.get("caption") or "(Không có caption)")
+    tags = " ".join(f"#{_esc(t)}" for t in (video.get("hashtags") or []))
     return (
         '<div class="vfs-card">'
-        '<h3>⚙️ Tình Trạng Hệ Thống &amp; Benchmark Đóng Băng</h3>'
+        '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;">'
+        f'<h3>🎬 Video Thực Tế Từ Kho Gold: <a href="{url}" target="_blank" rel="noopener noreferrer">@{handle}</a> '
+        f'<span class="vfs-pill vfs-pill-mono">{vid}</span></h3>'
+        f'<span class="vfs-pill vfs-pill-blue vfs-pill-mono">{snap}</span>'
+        '</div>'
+        '<div class="vfs-chip-row">'
+        f'<span class="vfs-pill">{plays:,} views</span>'
+        f'<span class="vfs-pill">{dur}s</span>'
+        f'<span class="vfs-pill">{cat}</span>'
+        f'<span class="vfs-pill">📍 {city}</span>'
+        f'<span class="vfs-pill">is_ad={_esc(bool(video.get("is_ad", False)))}</span>'
+        f'<span class="vfs-pill">is_ec_video={_esc(bool(video.get("is_ec_video", False)))}</span>'
+        '</div>'
+        f'<div class="vfs-quote" style="margin-top:8px;"><strong>Caption gốc:</strong> {cap}'
+        + (f'<br><span style="color:#1e40af;font-family:var(--vfs-mono);font-size:0.78rem;">{tags}</span>' if tags else "")
+        + '</div></div>'
+    )
+
+
+def render_disclosure_promo_html(disc: dict[str, Any]) -> str:
+    flag_status = str(disc.get("disclosure_flag_status") or "unlabeled_unknown")
+    flag_cls = "vfs-pill-amber" if flag_status != "unlabeled_unknown" else "vfs-pill"
+    lex_score = float(disc.get("lexical_promo_score") or 0.0)
+    gt_status = str(disc.get("sponsorship_ground_truth_status") or "undisclosed_sponsorship_deferred")
+    note = str(disc.get("disclosure_target_note") or "")
+    cats = disc.get("matched_categories") or []
+    inds = disc.get("matched_indicators") or []
+
+    cat_pills = "".join(f'<span class="vfs-pill vfs-pill-blue">{_esc(c)}</span>' for c in cats) or (
+        '<span class="vfs-pill">Không có nhóm từ khóa khuyến mãi</span>'
+    )
+    ind_pills = "".join(f'<span class="vfs-pill vfs-pill-mono">{_esc(i)}</span>' for i in inds) or (
+        '<span class="vfs-pill">0 từ khóa khuyến mãi khớp</span>'
+    )
+    return (
+        '<div class="vfs-card">'
+        '<h3>🏷️ Tách Bạch Cờ Công Khai &amp; Từ Ngữ Khuyến Mãi (M4.2)</h3>'
+        f'<div class="vfs-alert vfs-alert-amber" style="font-size:0.83rem;">{_esc(note)}</div>'
+        '<div class="vfs-kpi-grid">'
+        f'<div class="vfs-kpi"><div class="vfs-kpi-label">Observed Platform Flag</div><div class="vfs-kpi-val" style="font-size:0.88rem;"><span class="vfs-pill {flag_cls}">{_esc(flag_status)}</span></div></div>'
+        f'<div class="vfs-kpi"><div class="vfs-kpi-label">Lexical Promo Density</div><div class="vfs-kpi-val">{lex_score:.2f}</div></div>'
+        f'<div class="vfs-kpi"><div class="vfs-kpi-label">Matched Cue Count</div><div class="vfs-kpi-val">{len(inds)}</div></div>'
+        f'<div class="vfs-kpi"><div class="vfs-kpi-label">Hidden Sponsorship</div><div class="vfs-kpi-val" style="font-size:0.78rem;"><span class="vfs-pill vfs-pill-amber">{_esc(gt_status)}</span></div></div>'
+        '</div>'
+        f'<div style="font-size:0.84rem;margin-bottom:6px;"><strong>Nhóm chỉ dấu từ vựng:</strong> {cat_pills}</div>'
+        f'<div style="font-size:0.84rem;"><strong>Từ khóa quan sát được:</strong> {ind_pills}</div>'
+        '</div>'
+    )
+
+
+def render_prosody_segments_html(prosody: dict[str, Any]) -> str:
+    seg_cnt = int(prosody.get("segment_count") or 0)
+    aud_cnt = int(prosody.get("audio_derived_segments") or 0)
+    wps_cnt = int(prosody.get("wps_estimated_segments") or 0)
+    med_wps = prosody.get("median_words_per_sec")
+    mean_pitch = prosody.get("mean_pitch_std_hz")
+    mean_energy = prosody.get("mean_energy_cv")
+    note = str(prosody.get("descriptive_note") or "")
+    inv = prosody.get("temporal_invariants") or {}
+    inv_ok = bool(inv.get("meets_100pct_invariant_gate", True))
+    inv_cls = "vfs-pill-green" if inv_ok else "vfs-pill-red"
+    inv_txt = (
+        f"Temporal Invariants PASS ({int(inv.get('valid_segments') or seg_cnt)}/{int(inv.get('total_segments') or seg_cnt)})"
+        if seg_cnt > 0
+        else "Chưa có phân đoạn Whisper/ASR cho video này"
+    )
+
+    wps_str = f"{float(med_wps):.2f} từ/s" if med_wps is not None else "N/A"
+    pitch_str = f"{float(mean_pitch):.2f} Hz" if mean_pitch is not None else "N/A"
+    energy_str = f"{float(mean_energy):.4f}" if mean_energy is not None else "N/A"
+
+    segs = prosody.get("voice_segments") or []
+    seg_rows: list[str] = []
+    for s in segs[:40]:
+        src = str(s.get("timestamp_source") or "audio_derived")
+        src_cls = "vfs-pill-green" if src == "audio_derived" else "vfs-pill-amber"
+        st = float(s.get("start_sec") or 0.0)
+        en = float(s.get("end_sec") or 0.0)
+        p_val = f"{float(s['pitch_std']):.1f} Hz" if s.get("pitch_std") is not None else "—"
+        e_val = f"{float(s['energy_cv']):.3f}" if s.get("energy_cv") is not None else "—"
+        seg_rows.append(
+            "<tr>"
+            f'<td style="white-space:nowrap;font-family:var(--vfs-mono);font-size:0.78rem;">{st:05.2f}s → {en:05.2f}s</td>'
+            f'<td><span class="vfs-pill {src_cls} vfs-pill-mono">{_esc(src)}</span></td>'
+            f'<td style="white-space:nowrap;">{float(s.get("words_per_sec") or 0.0):.2f} w/s • {p_val} • CV {e_val}</td>'
+            f'<td>{_esc(s.get("text") or "")}</td>'
+            "</tr>"
+        )
+    table_html = (
+        '<div style="max-height:260px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;margin-top:8px;">'
+        '<table class="vfs-table" style="margin-top:0;">'
+        '<thead><tr><th>Mốc giây</th><th>Nguồn mốc</th><th>Prosody mô tả</th><th>Lời thoại ASR</th></tr></thead>'
+        f'<tbody>{"".join(seg_rows)}</tbody></table></div>'
+        if seg_rows
+        else '<div style="font-size:0.84rem;color:#64748b;margin-top:6px;">Video này chỉ có metadata + bình luận thực tế (chưa chạy bóc băng .mp3 M4.1).</div>'
+    )
+
+    return (
+        '<div class="vfs-card">'
+        '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;">'
+        '<h3>🎙️ Mốc Thời Gian Lời Thoại &amp; Ngữ Điệu Mô Tả (M4.1)</h3>'
+        f'<span class="vfs-pill {inv_cls}">{_esc(inv_txt)}</span>'
+        '</div>'
+        f'<div style="font-size:0.82rem;color:#475569;margin-bottom:8px;"><em>{_esc(note)}</em></div>'
+        '<div class="vfs-kpi-grid">'
+        f'<div class="vfs-kpi"><div class="vfs-kpi-label">Utterances (audio_derived / wps)</div><div class="vfs-kpi-val">{aud_cnt} / {wps_cnt}</div></div>'
+        f'<div class="vfs-kpi"><div class="vfs-kpi-label">Median Speaking Rate</div><div class="vfs-kpi-val">{_esc(wps_str)}</div></div>'
+        f'<div class="vfs-kpi"><div class="vfs-kpi-label">Mean F0 Pitch Std</div><div class="vfs-kpi-val">{_esc(pitch_str)}</div></div>'
+        f'<div class="vfs-kpi"><div class="vfs-kpi-label">Mean Energy CV</div><div class="vfs-kpi-val">{_esc(energy_str)}</div></div>'
+        '</div>'
+        f'{table_html}'
+        '</div>'
+    )
+
+
+def render_milestone_evaluations_html(ms_data: dict[str, Any]) -> str:
+    milestones = (ms_data or {}).get("milestones") or {}
+    if not milestones:
+        return render_placeholder_html("Chưa có dữ liệu tổng hợp thực nghiệm M2–M6.")
+    rows: list[str] = []
+    for mid, item in milestones.items():
+        if not isinstance(item, dict):
+            continue
+        status = str(item.get("status") or "UNKNOWN")
+        s_cls = (
+            "vfs-pill-green"
+            if status == "COMPLETE"
+            else ("vfs-pill-blue" if status == "IN_PROGRESS" else "vfs-pill-amber")
+        )
+        title = _esc(item.get("title") or mid)
+        headline = _esc(item.get("headline") or "Chưa có biên bản JSON trên đĩa")
+        rows.append(
+            "<tr>"
+            f'<td><span class="vfs-pill vfs-pill-mono"><strong>{_esc(mid)}</strong></span></td>'
+            f'<td><span class="vfs-pill {s_cls}">{_esc(status)}</span></td>'
+            f'<td><strong>{title}</strong></td>'
+            f'<td style="font-family:var(--vfs-mono);font-size:0.8rem;">{headline}</td>'
+            "</tr>"
+        )
+    return (
+        '<div class="vfs-card">'
+        '<h3>📊 Bảng Điểm Thực Nghiệm Xác Minh Toàn Dự Án (M2.2 – M6.2)</h3>'
+        '<table class="vfs-table">'
+        '<thead><tr><th>Task</th><th>Trạng thái</th><th>Hạng mục AI</th><th>Số liệu kiểm chứng thực tế trên kho lưu trữ</th></tr></thead>'
+        f'<tbody>{"".join(rows)}</tbody></table>'
+        '</div>'
+    )
+
+
+def render_system_status_html(ready_data: dict[str, Any], eval_data: dict[str, Any]) -> str:
+    mm_snap = ready_data.get("multimodal_snapshot_id") or "N/A"
+    mm_cmts = int(ready_data.get("multimodal_total_comments") or 0)
+    mm_segs = int(ready_data.get("multimodal_voice_segments") or 0)
+    return (
+        '<div class="vfs-card">'
+        '<h3>⚙️ Tình Trạng Hệ Thống &amp; Kho Dữ Liệu Đa Phương Thức</h3>'
         '<div class="vfs-kpi-grid">'
         f'<div class="vfs-kpi"><div class="vfs-kpi-label">Status</div><div class="vfs-kpi-val">{_esc(ready_data.get("status", "unknown"))}</div></div>'
         f'<div class="vfs-kpi"><div class="vfs-kpi-label">Gold Snapshot</div><div class="vfs-kpi-val" style="font-size:0.86rem;">{_esc(ready_data.get("corpus_snapshot_id", "N/A"))}</div></div>'
@@ -550,6 +726,9 @@ def render_system_status_html(ready_data: dict[str, Any], eval_data: dict[str, A
         '<div class="vfs-chip-row">'
         f'<span class="vfs-pill">Total Videos: {int(ready_data.get("total_videos", 0)):,}</span>'
         f'<span class="vfs-pill">Creators: {int(ready_data.get("total_creators", 0)):,}</span>'
+        f'<span class="vfs-pill vfs-pill-green vfs-pill-mono">Multimodal: {_esc(mm_snap)}</span>'
+        f'<span class="vfs-pill vfs-pill-green">Real Comments: {mm_cmts:,}</span>'
+        f'<span class="vfs-pill vfs-pill-green">Voice Segments: {mm_segs:,}</span>'
         f'<span class="vfs-pill">Qdrant Ready: {_esc(ready_data.get("qdrant_dense_ready", False))}</span>'
         f'<span class="vfs-pill">Gemini Key Configured: {_esc(ready_data.get("gemini_key_configured", False))}</span>'
         '</div></div>'
