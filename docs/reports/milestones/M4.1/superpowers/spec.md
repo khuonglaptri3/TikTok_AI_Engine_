@@ -22,3 +22,12 @@
    - Sample `>= 50` utterances across `<= 20.0` audio minutes of ASR-transcribed pilot videos into a clean annotation sheet (`human_verified = false`) split equally with double-review overlap for `N` and `K` to supply `ref_transcript`, `ref_start_sec`, and `ref_end_sec`.
    - Evaluate **`CER`** and **`WER`** under stated explicit tokenization (`NFC`, lowercased, Unicode punctuation stripped) plus absolute boundary errors (`|pred_start - ref_start|`, `|pred_end - ref_end|`).
    - Gate rule (`precise_playback_allowed`): requires `is_real_human_verified=True`, `evaluated_utterance_count >= 50`, `total_sampled_audio_minutes <= 20.0`, `invariant_pass_rate == 1.0`, `boundary_median_abs_err_sec <= 1.0`, and `boundary_p95_abs_err_sec <= 3.0`; otherwise fail closed (`abstain_precise_playback = True`).
+
+## 2. Phase 2 — Primary-Owner (`K`) Code Review, TDD Hardening, `38`-Utterance Audio Verification & Joint Adjudication (`2026-11-26`)
+
+1. **Adversarial Evaluator Hardening (`packages/prosody/evaluation.py`):**
+   - Enforce fail-closed completeness and temporal validity on every `human_verified=True` row: require non-empty normalized `ref_text` and finite `0.0 <= ref_start_sec < ref_end_sec <= audio_duration_sec`; expose `invalid_verified_row_count` and block `precise_playback_allowed` if any `human_verified=True` row is malformed or incomplete.
+   - Compute `total_sampled_audio_minutes` across all sampled pool rows (`rows`) rather than only `human_verified=True` rows so leaving videos unverified can never mask a `> 20.0` minute pool overrun.
+   - Add edit-operation breakdowns (`word_substitutions`, `word_deletions`, `word_insertions`, `char_substitutions`, `char_deletions`, `char_insertions`) and `compute_m4_1_annotator_agreement(rows)` over `double_review_N_K` rows (`exact_normalized_text_match_rate`, symmetric inter-annotator `WER`/`CER`, boundary median/p95 delta between `N` and `K`, and explicit disagreement records).
+2. **Independent `K` `38`-Utterance Audio Verification & Overlap Adjudication:**
+   - Independently listen to all `10` pilot `.mp3` clips (`0–19 s` + sample-accurate utterance slices and `10 ms` RMS onset/offset envelopes) blinded to `N_ref_*`, present all `38` `K`-assigned items (`22 K_only` + `16 double_review_N_K`) to contributor `K` for explicit human confirmation, record `K`'s confirmed annotations, compute `16`-item `N`-vs-`K` IAA, adjudicate any differences transparently, and run the final `60`-utterance (`>= 50`) `evaluate_m4_1_reference_set` receipt.

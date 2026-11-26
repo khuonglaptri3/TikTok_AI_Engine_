@@ -252,3 +252,106 @@ def test_run_m4_1_pilot_audit_fail_closed_and_receipt(tmp_path: Path) -> None:
             decode_fn=fake_decode,
         )
 
+
+def test_m4_1_k_review_strict_verified_bounds_pool_cap_and_iaa() -> None:
+    from packages.prosody import compute_m4_1_annotator_agreement, evaluate_m4_1_reference_set
+
+    base_rows = [
+        {
+            "segment_id": f"v{i // 10}_s{i:03d}",
+            "video_id": f"v{i // 10}",
+            "audio_duration_sec": 60.0,
+            "pred_start_sec": 1.0,
+            "pred_end_sec": 3.5,
+            "ref_start_sec": 1.1,
+            "ref_end_sec": 3.4,
+            "pred_text": "Bánh xèo giòn rụm",
+            "ref_text": "Bánh xèo giòn rụm",
+            "human_verified": True,
+        }
+        for i in range(50)
+    ]
+
+    # 1. Incomplete or out-of-bounds human_verified row MUST fail closed
+    missing_bounds = [dict(r) for r in base_rows]
+    missing_bounds[0]["ref_start_sec"] = None
+    res_missing = evaluate_m4_1_reference_set(
+        missing_bounds,
+        is_real_human_verified=True,
+        invariant_pass_rate=1.0,
+    )
+    assert res_missing["invalid_verified_row_count"] == 1
+    assert res_missing["evaluated_utterance_count"] == 49
+    assert res_missing["precise_playback_allowed"] is False
+
+    bad_end = [dict(r) for r in base_rows]
+    bad_end[0]["ref_end_sec"] = 61.5  # exceeds audio_duration_sec=60.0
+    res_bad_end = evaluate_m4_1_reference_set(
+        bad_end,
+        is_real_human_verified=True,
+        invariant_pass_rate=1.0,
+    )
+    assert res_bad_end["invalid_verified_row_count"] == 1
+    assert res_bad_end["precise_playback_allowed"] is False
+
+    # 2. Unverified videos in an >20m sampled pool MUST NOT bypass max_sampled_audio_minutes
+    oversized_pool = [dict(r) for r in base_rows] + [
+        {
+            "segment_id": "v_extra_s000",
+            "video_id": "v_extra",
+            "audio_duration_sec": 1000.0,  # +16.67 min -> total 21.67 min > 20.0 min
+            "pred_start_sec": 0.0,
+            "pred_end_sec": 2.0,
+            "ref_start_sec": None,
+            "ref_end_sec": None,
+            "pred_text": "Chưa chấm",
+            "ref_text": "",
+            "human_verified": False,
+        }
+    ]
+    res_oversized = evaluate_m4_1_reference_set(
+        oversized_pool,
+        is_real_human_verified=True,
+        invariant_pass_rate=1.0,
+    )
+    assert res_oversized["total_sampled_audio_minutes"] > 20.0
+    assert res_oversized["precise_playback_allowed"] is False
+
+    # 3. Inter-annotator agreement over double_review_N_K rows
+    overlap_rows = [
+        {
+            "segment_id": "u1",
+            "review_assignment": "double_review_N_K",
+            "N_verified": True,
+            "N_ref_start_sec": 1.00,
+            "N_ref_end_sec": 2.50,
+            "N_ref_text": "Kẹp chả!",
+            "K_verified": True,
+            "K_ref_start_sec": 1.04,
+            "K_ref_end_sec": 2.48,
+            "K_ref_text": "kẹp chả",
+        },
+        {
+            "segment_id": "u2",
+            "review_assignment": "double_review_N_K",
+            "N_verified": True,
+            "N_ref_start_sec": 3.00,
+            "N_ref_end_sec": 4.80,
+            "N_ref_text": "trending Hà Nội trên Đà Lạt",
+            "K_verified": True,
+            "K_ref_start_sec": 3.12,
+            "K_ref_end_sec": 4.66,
+            "K_ref_text": "trending họ nói trên Đà Lạt",
+        },
+    ]
+    iaa = compute_m4_1_annotator_agreement(overlap_rows)
+    assert iaa["double_review_total"] == 2
+    assert iaa["both_verified_count"] == 2
+    assert iaa["exact_normalized_text_match_count"] == 1
+    assert iaa["exact_normalized_text_match_rate"] == 0.5
+    assert iaa["inter_annotator_wer"] == pytest.approx(2.0 / 8.0, abs=1e-4)
+    assert iaa["boundary_median_abs_diff_sec"] == pytest.approx(0.08, abs=1e-4)
+    assert len(iaa["text_disagreements"]) == 1
+    assert iaa["text_disagreements"][0]["segment_id"] == "u2"
+
+

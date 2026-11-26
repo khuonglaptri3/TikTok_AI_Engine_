@@ -1,0 +1,149 @@
+{
+  "task_id": "M4.1",
+  "status": "COMPLETE",
+  "recorded_at_utc": "2026-11-26T03:29:52.064956+00:00",
+  "verified_by": [
+    "Nguyễn Việt Nguyên (N, 38/38)",
+    "Trần Đình Khương (K, 38/38)"
+  ],
+  "annotation_time_minutes": {
+    "K_phase2_review_minutes_38_utterances": 27.0,
+    "N_phase1_review_minutes_38_utterances": null,
+    "note": "K review & audio verification measured 2026-11-26T10:02-10:29+07:00; N Phase 1 duration was not separately logged in m4_1_n_reference_eval_receipt.json."
+  },
+  "sheet_path": "docs/reports/milestones/M4.1/evidence/m4_1_utterance_review_sheet.jsonl",
+  "sheet_sha256": "32865789bcf6388a40d9c1456e31e8a43a35633847c5c9d8285353fe53010025",
+  "sheet_counts": {
+    "total_pool_utterances": 60,
+    "N_only_verified": 22,
+    "K_only_verified": 22,
+    "double_review_total": 16,
+    "double_review_both_verified": 16,
+    "double_review_exact_consensus_verified": 9,
+    "double_review_phrasing_diff_preserved": 7,
+    "strict_consensus_human_verified_total": 53
+  },
+  "canonical_strict_consensus_53_metrics": {
+    "tokenization_spec": "Unicode NFC -> lowercase -> strip non-word punctuation -> WER splits on whitespace word tokens; CER iterates non-whitespace characters.",
+    "is_real_human_verified": true,
+    "evaluated_utterance_count": 53,
+    "invalid_verified_row_count": 0,
+    "min_utterances_required": 50,
+    "unique_video_count": 10,
+    "pool_unique_video_count": 10,
+    "total_sampled_audio_minutes": 16.752,
+    "max_sampled_audio_minutes_cap": 20.0,
+    "total_ref_words": 551,
+    "word_substitutions": 119,
+    "word_deletions": 27,
+    "word_insertions": 1,
+    "total_ref_chars": 1753,
+    "char_substitutions": 165,
+    "char_deletions": 115,
+    "char_insertions": 16,
+    "wer": 0.2668,
+    "cer": 0.1689,
+    "boundary_sample_count": 106,
+    "boundary_median_abs_err_sec": 0.06,
+    "boundary_p95_abs_err_sec": 0.2,
+    "start_boundary_median_abs_err_sec": 0.04,
+    "end_boundary_median_abs_err_sec": 0.06,
+    "meets_median_1s_gate": true,
+    "meets_p95_3s_gate": true,
+    "meets_100pct_invariant_gate": true,
+    "precise_playback_allowed": true,
+    "abstain_precise_playback": false
+  },
+  "sensitivity_itn_dialect_normalized_53_metrics": {
+    "wer": 0.245,
+    "cer": 0.1492,
+    "note": "Equates spoken numerals/currency ('19k' == '19 ngàn' == '19 nghìn', '1'=='một', '2'=='hai') to isolate genuine ASR errors from ITN formatting."
+  },
+  "sensitivity_all_60_utterances": {
+    "k_phrasing_on_7_diffs": {
+      "evaluated_utterance_count": 60,
+      "wer": 0.2873,
+      "cer": 0.1777,
+      "boundary_median_abs_err_sec": 0.06,
+      "boundary_p95_abs_err_sec": 0.2,
+      "precise_playback_allowed": true
+    },
+    "n_phrasing_on_7_diffs": {
+      "evaluated_utterance_count": 60,
+      "wer": 0.2909,
+      "cer": 0.1808,
+      "boundary_median_abs_err_sec": 0.06,
+      "boundary_p95_abs_err_sec": 0.2,
+      "precise_playback_allowed": true
+    }
+  },
+  "inter_annotator_agreement_16_overlap": {
+    "double_review_total": 16,
+    "both_verified_count": 16,
+    "exact_normalized_text_match_count": 9,
+    "exact_normalized_text_match_rate": 0.5625,
+    "inter_annotator_wer": 0.1366,
+    "inter_annotator_cer": 0.0943,
+    "boundary_diff_sample_count": 32,
+    "boundary_median_abs_diff_sec": 0.04,
+    "boundary_p95_abs_diff_sec": 0.158,
+    "text_disagreements": [
+      {
+        "segment_id": "7710450847070653716_s002",
+        "N_ref_text": "mà được hầm mềm rất là ngon với vị the dịu của hoa tiêu và sốt đậm vị ăn hao cơm lắm",
+        "K_ref_text": "mà được hầm mềm rất là ngon với lại vị the nhẹ của hoa tiêu và sốt đậm vị ăn hao cơm lắm",
+        "start_diff_sec": 0.1,
+        "end_diff_sec": 0.02
+      },
+      {
+        "segment_id": "7710450847070653716_s004",
+        "N_ref_text": "Tôi thích ăn bang bang nha",
+        "K_ref_text": "Tôi thích Bang Bang nha",
+        "start_diff_sec": 0.04,
+        "end_diff_sec": 0.12
+      },
+      {
+        "segment_id": "7710799156024986887_s002",
+        "N_ref_text": "trending Hà Nội trên Đà Lạt",
+        "K_ref_text": "trending họ nói ở trên Đà Lạt",
+        "start_diff_sec": 0.14,
+        "end_diff_sec": 0.08
+      },
+      {
+        "segment_id": "7710799156024986887_s005",
+        "N_ref_text": "Dừa",
+        "K_ref_text": "Dữ",
+        "start_diff_sec": 0.14,
+        "end_diff_sec": 0.2
+      },
+      {
+        "segment_id": "7710927418533399815_s002",
+        "N_ref_text": "Trời ơi nhìn những cái ly vú sữa dầm dừa non hấp dẫn quá luôn nè",
+        "K_ref_text": "Trời ơi chưa uống nhưng nhìn các ly vú sữa dầm dừa non nó hấp dẫn quá luôn nè",
+        "start_diff_sec": 0.06,
+        "end_diff_sec": 0.02
+      },
+      {
+        "segment_id": "7711004930638630152_s002",
+        "N_ref_text": "Món này 19 nghìn, món này 19 nghìn, món này 19 nghìn",
+        "K_ref_text": "Món này 19 ngàn, món này 19 ngàn, món này 19 ngàn, món này 19 ngàn",
+        "start_diff_sec": 0.1,
+        "end_diff_sec": 0.04
+      },
+      {
+        "segment_id": "7711004930638630152_s003",
+        "N_ref_text": "Món này cũng 19 nghìn, cả hai cái kem này cũng 19 nghìn luôn ạ",
+        "K_ref_text": "Món này cũng 19 ngàn, cả hai cái kem này cũng 19 ngàn luôn ạ",
+        "start_diff_sec": 0.14,
+        "end_diff_sec": 0.0
+      }
+    ]
+  },
+  "inter_annotator_agreement_dialect_normalized": {
+    "exact_normalized_text_match_count": 10,
+    "exact_normalized_text_match_rate": 0.625,
+    "inter_annotator_wer": 0.1056,
+    "inter_annotator_cer": 0.0781
+  },
+  "qualification_statement": "ASR timestamps pass 100% temporal invariants (436/436) and manual boundary error gates (median 0.06s <= 1.0s, p95 0.2s <= 3.0s across 53 strictly agreed utterances), so audio_derived utterance playback offsets are accepted as bounded estimates (never exact word-level speech timing); historical wps_estimated rows remain interpolated estimates; prosody features remain strictly descriptive."
+}

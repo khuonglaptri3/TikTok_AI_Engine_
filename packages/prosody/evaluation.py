@@ -81,50 +81,98 @@ def evaluate_m4_1_reference_set(
     max_sampled_audio_minutes: float = 20.0,
 ) -> dict[str, Any]:
     """Compute WER, CER, boundary error quantiles, and fail-closed precise_playback_allowed gate."""
-    verified = [r for r in rows if r.get("human_verified") is True]
+    pool_video_audio_sec: dict[str, float] = {}
+    for r_all in rows:
+        vid_all = str(r_all.get("video_id") or "").strip()
+        dur_all = r_all.get("audio_duration_sec")
+        if vid_all and dur_all is not None:
+            d_float = float(dur_all)
+            if math.isfinite(d_float) and d_float > 0.0:
+                pool_video_audio_sec[vid_all] = max(pool_video_audio_sec.get(vid_all, 0.0), d_float)
+
+    flagged_verified = [r for r in rows if r.get("human_verified") is True]
+    valid_verified_count = 0
+    invalid_verified_count = 0
     total_word_edits = 0
+    word_subs = 0
+    word_dels = 0
+    word_ins = 0
     total_ref_words = 0
     total_char_edits = 0
+    char_subs = 0
+    char_dels = 0
+    char_ins = 0
     total_ref_chars = 0
     all_abs_errs: list[float] = []
     start_errs: list[float] = []
     end_errs: list[float] = []
-    video_audio_sec: dict[str, float] = {}
+    verified_video_ids: set[str] = set()
 
-    for r in verified:
+    for r in flagged_verified:
         vid = str(r.get("video_id") or "").strip()
         dur_val = r.get("audio_duration_sec")
-        if vid and dur_val is not None:
-            video_audio_sec[vid] = max(video_audio_sec.get(vid, 0.0), float(dur_val))
+        dur_bound = float(dur_val) if dur_val is not None else None
 
         ref_text = str(r.get("ref_text") or "")
         pred_text = str(r.get("pred_text") or "")
-
         rw = tokenize_vi_words(ref_text)
-        pw = tokenize_vi_words(pred_text)
-        w_edits, _, _, _ = compute_levenshtein_distance(rw, pw)
-        total_word_edits += w_edits
-        total_ref_words += len(rw)
-
         rc = tokenize_vi_chars(ref_text)
-        pc = tokenize_vi_chars(pred_text)
-        c_edits, _, _, _ = compute_levenshtein_distance(rc, pc)
-        total_char_edits += c_edits
-        total_ref_chars += len(rc)
 
         ps = r.get("pred_start_sec")
         pe = r.get("pred_end_sec")
         rs = r.get("ref_start_sec")
         re_ = r.get("ref_end_sec")
-        if ps is not None and pe is not None and rs is not None and re_ is not None:
-            s_err = abs(float(ps) - float(rs))
-            e_err = abs(float(pe) - float(re_))
-            if math.isfinite(s_err) and math.isfinite(e_err):
-                start_errs.append(s_err)
-                end_errs.append(e_err)
-                all_abs_errs.extend([s_err, e_err])
 
-    sampled_min = round(sum(video_audio_sec.values()) / 60.0, 3) if video_audio_sec else 0.0
+        row_valid = bool(rc) and ps is not None and pe is not None and rs is not None and re_ is not None
+        if row_valid:
+            ps_f = float(ps)  # type: ignore[arg-type]
+            pe_f = float(pe)  # type: ignore[arg-type]
+            rs_f = float(rs)  # type: ignore[arg-type]
+            re_f = float(re_)  # type: ignore[arg-type]
+            if not (
+                math.isfinite(ps_f)
+                and math.isfinite(pe_f)
+                and math.isfinite(rs_f)
+                and math.isfinite(re_f)
+                and 0.0 <= rs_f < re_f
+                and 0.0 <= ps_f < pe_f
+                and (dur_bound is None or (math.isfinite(dur_bound) and re_f <= dur_bound + 1e-6))
+            ):
+                row_valid = False
+        else:
+            ps_f = pe_f = rs_f = re_f = 0.0
+
+        if not row_valid:
+            invalid_verified_count += 1
+            continue
+
+        valid_verified_count += 1
+        if vid:
+            verified_video_ids.add(vid)
+
+        pw = tokenize_vi_words(pred_text)
+        w_edits, w_s, w_d, w_i = compute_levenshtein_distance(rw, pw)
+        total_word_edits += w_edits
+        word_subs += w_s
+        word_dels += w_d
+        word_ins += w_i
+        total_ref_words += len(rw)
+
+        pc = tokenize_vi_chars(pred_text)
+        c_edits, c_s, c_d, c_i = compute_levenshtein_distance(rc, pc)
+        total_char_edits += c_edits
+        char_subs += c_s
+        char_dels += c_d
+        char_ins += c_i
+        total_ref_chars += len(rc)
+
+        s_err = abs(ps_f - rs_f)
+        e_err = abs(pe_f - re_f)
+        start_errs.append(s_err)
+        end_errs.append(e_err)
+        all_abs_errs.extend([s_err, e_err])
+
+    sampled_min = round(sum(pool_video_audio_sec.values()) / 60.0, 3) if pool_video_audio_sec else 0.0
     wer = round(total_word_edits / total_ref_words, 4) if total_ref_words > 0 else None
     cer = round(total_char_edits / total_ref_chars, 4) if total_ref_chars > 0 else None
 
@@ -132,11 +180,15 @@ def evaluate_m4_1_reference_set(
         arr = np.asarray(all_abs_errs, dtype=np.float64)
         median_err = round(float(np.median(arr)), 4)
         p95_err = round(float(np.percentile(arr, 95)), 4)
+        start_med = round(float(np.median(np.asarray(start_errs, dtype=np.float64))), 4)
+        end_med = round(float(np.median(np.asarray(end_errs, dtype=np.float64))), 4)
     else:
         median_err = None
         p95_err = None
+        start_med = None
+        end_med = None
 
-    meets_count = len(verified) >= min_utterances
+    meets_count = valid_verified_count >= min_utterances and invalid_verified_count == 0
     meets_audio_cap = sampled_min <= max_sampled_audio_minutes + 1e-9
     meets_inv = invariant_pass_rate >= 1.0 - 1e-9
     meets_med = median_err is not None and median_err <= 1.0
@@ -154,23 +206,113 @@ def evaluate_m4_1_reference_set(
     return {
         "tokenization_spec": TOKENIZATION_SPEC,
         "is_real_human_verified": bool(is_real_human_verified),
-        "evaluated_utterance_count": len(verified),
+        "evaluated_utterance_count": valid_verified_count,
+        "invalid_verified_row_count": invalid_verified_count,
         "min_utterances_required": min_utterances,
-        "unique_video_count": len(video_audio_sec),
+        "unique_video_count": len(verified_video_ids) if valid_verified_count > 0 else len(pool_video_audio_sec),
+        "pool_unique_video_count": len(pool_video_audio_sec),
         "total_sampled_audio_minutes": sampled_min,
         "max_sampled_audio_minutes_cap": max_sampled_audio_minutes,
         "total_ref_words": total_ref_words,
+        "word_substitutions": word_subs,
+        "word_deletions": word_dels,
+        "word_insertions": word_ins,
         "total_ref_chars": total_ref_chars,
+        "char_substitutions": char_subs,
+        "char_deletions": char_dels,
+        "char_insertions": char_ins,
         "wer": wer,
         "cer": cer,
         "boundary_sample_count": len(all_abs_errs),
         "boundary_median_abs_err_sec": median_err,
         "boundary_p95_abs_err_sec": p95_err,
+        "start_boundary_median_abs_err_sec": start_med,
+        "end_boundary_median_abs_err_sec": end_med,
         "meets_median_1s_gate": meets_med,
         "meets_p95_3s_gate": meets_p95,
         "meets_100pct_invariant_gate": meets_inv,
         "precise_playback_allowed": precise_allowed,
         "abstain_precise_playback": not precise_allowed,
+    }
+
+
+def compute_m4_1_annotator_agreement(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Compute N-vs-K inter-annotator transcript & boundary agreement on double_review_N_K rows."""
+    double_rows = [r for r in rows if r.get("review_assignment") == "double_review_N_K"]
+    both_verified = [
+        r for r in double_rows if r.get("N_verified") is True and r.get("K_verified") is True
+    ]
+    exact_matches = 0
+    sym_word_edits = 0
+    sym_word_total = 0
+    sym_char_edits = 0
+    sym_char_total = 0
+    boundary_diffs: list[float] = []
+    disagreements: list[dict[str, Any]] = []
+
+    for r in both_verified:
+        n_txt = str(r.get("N_ref_text") or "")
+        k_txt = str(r.get("K_ref_text") or "")
+        nw = tokenize_vi_words(n_txt)
+        kw = tokenize_vi_words(k_txt)
+        nc = tokenize_vi_chars(n_txt)
+        kc = tokenize_vi_chars(k_txt)
+
+        if nw == kw:
+            exact_matches += 1
+
+        we_nk, _, _, _ = compute_levenshtein_distance(nw, kw)
+        we_kn, _, _, _ = compute_levenshtein_distance(kw, nw)
+        sym_word_edits += we_nk + we_kn
+        sym_word_total += len(nw) + len(kw)
+
+        ce_nk, _, _, _ = compute_levenshtein_distance(nc, kc)
+        ce_kn, _, _, _ = compute_levenshtein_distance(kc, nc)
+        sym_char_edits += ce_nk + ce_kn
+        sym_char_total += len(nc) + len(kc)
+
+        ns = r.get("N_ref_start_sec")
+        ne = r.get("N_ref_end_sec")
+        ks = r.get("K_ref_start_sec")
+        ke = r.get("K_ref_end_sec")
+        s_diff = round(abs(float(ns) - float(ks)), 4) if ns is not None and ks is not None else None
+        e_diff = round(abs(float(ne) - float(ke)), 4) if ne is not None and ke is not None else None
+        if s_diff is not None and math.isfinite(s_diff):
+            boundary_diffs.append(s_diff)
+        if e_diff is not None and math.isfinite(e_diff):
+            boundary_diffs.append(e_diff)
+
+        if nw != kw:
+            disagreements.append(
+                {
+                    "segment_id": str(r.get("segment_id") or ""),
+                    "N_ref_text": n_txt,
+                    "K_ref_text": k_txt,
+                    "start_diff_sec": s_diff,
+                    "end_diff_sec": e_diff,
+                }
+            )
+
+    n_both = len(both_verified)
+    if boundary_diffs:
+        b_arr = np.asarray(boundary_diffs, dtype=np.float64)
+        b_med = round(float(np.median(b_arr)), 4)
+        b_p95 = round(float(np.percentile(b_arr, 95)), 4)
+    else:
+        b_med = None
+        b_p95 = None
+
+    return {
+        "double_review_total": len(double_rows),
+        "both_verified_count": n_both,
+        "exact_normalized_text_match_count": exact_matches,
+        "exact_normalized_text_match_rate": round(exact_matches / n_both, 4) if n_both > 0 else None,
+        "inter_annotator_wer": round(sym_word_edits / sym_word_total, 4) if sym_word_total > 0 else None,
+        "inter_annotator_cer": round(sym_char_edits / sym_char_total, 4) if sym_char_total > 0 else None,
+        "boundary_diff_sample_count": len(boundary_diffs),
+        "boundary_median_abs_diff_sec": b_med,
+        "boundary_p95_abs_diff_sec": b_p95,
+        "text_disagreements": disagreements,
     }
 
 
