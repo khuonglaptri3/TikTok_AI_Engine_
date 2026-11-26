@@ -7,13 +7,17 @@ import gradio as gr
 import httpx
 from fastapi import FastAPI
 
-from apps.demo.presentation import (
-    format_benchmark_markdown,
-    format_evidence_cards_markdown,
-    format_script_markdown,
-    format_timings_markdown,
-    format_trust_audit_markdown,
-    parse_demo_comment_lines,
+from apps.demo.presentation import parse_demo_comment_lines
+from apps.demo.visuals import (
+    render_benchmark_html,
+    render_error_alert_html,
+    render_evidence_cards_html,
+    render_hero_banner_html,
+    render_placeholder_html,
+    render_script_html,
+    render_system_status_html,
+    render_timings_html,
+    render_trust_audit_html,
 )
 from packages.taxonomy import FOOD_CATEGORIES, OCCASION_LABELS, PRICE_TIERS, VIDEO_FORMATS
 
@@ -24,8 +28,25 @@ def _clean_choice(val: str | None) -> str | None:
     return val.strip()
 
 
+def _build_filters(
+    video_format: str | None,
+    food_category: str | None,
+    price_tier: str | None,
+    occasion: str | None,
+    city_norm: str | None,
+) -> dict[str, str]:
+    raw = {
+        "video_format": _clean_choice(video_format),
+        "food_category": _clean_choice(food_category),
+        "price_tier": _clean_choice(price_tier),
+        "occasion": _clean_choice(occasion),
+        "city_norm": city_norm.strip().lower() if city_norm and city_norm.strip() else None,
+    }
+    return {k: v for k, v in raw.items() if v is not None}
+
+
 def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
-    """Build thin 3-tab Gradio workspace calling FastAPI routes over in-process ASGI transport."""
+    """Build thin 4-tab Gradio workspace calling FastAPI routes over in-process ASGI transport."""
 
     async def _post_api(path: str, payload: dict[str, Any]) -> tuple[int, dict[str, Any]]:
         transport = httpx.ASGITransport(app=api_app)
@@ -50,17 +71,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
         occasion: str,
         city_norm: str,
     ) -> tuple[str, str, str, str]:
-        filters = {
-            k: v
-            for k, v in {
-                "video_format": _clean_choice(video_format),
-                "food_category": _clean_choice(food_category),
-                "price_tier": _clean_choice(price_tier),
-                "occasion": _clean_choice(occasion),
-                "city_norm": city_norm.strip().lower() if city_norm and city_norm.strip() else None,
-            }.items()
-            if v is not None
-        }
+        filters = _build_filters(video_format, food_category, price_tier, occasion, city_norm)
         payload = {
             "brief": brief,
             "generation_mode": generation_mode,
@@ -70,18 +81,18 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
         }
         status, data = await _post_api("/api/v1/script/generate", payload)
         if status != 200:
-            err = f"### ⚠️ Lỗi (`{data.get('code', status)}`)\n{data.get('message', json.dumps(data, ensure_ascii=False))}"
-            return err, "", "", ""
+            err_html = render_error_alert_html(
+                data.get("code", f"HTTP {status}"),
+                data.get("message", json.dumps(data, ensure_ascii=False)),
+            )
+            return "", err_html, "", ""
 
-        script_md = format_script_markdown(data)
-        bench_md = format_benchmark_markdown(data.get("niche_benchmark") or {})
-        ev_md = format_evidence_cards_markdown(
-            data.get("evidence_cards") or [],
-            mode="hybrid_rrf",
-            total_cands=len(data.get("evidence_cards") or []),
-        )
-        timings_md = format_timings_markdown(data.get("timings_ms") or {})
-        return script_md, bench_md, ev_md, timings_md
+        timings_html = render_timings_html(data.get("timings_ms") or {}, label="Script Pipeline")
+        script_html = render_script_html(data)
+        bench_html = render_benchmark_html(data.get("niche_benchmark") or {})
+        cards = data.get("evidence_cards") or []
+        ev_html = render_evidence_cards_html(cards, mode="hybrid_rrf", total_cands=len(cards))
+        return timings_html, script_html, bench_html, ev_html
 
     async def handle_explore_evidence(
         query: str,
@@ -93,16 +104,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
         price_tier: str,
         city_norm: str,
     ) -> tuple[str, str, str]:
-        filters = {
-            k: v
-            for k, v in {
-                "video_format": _clean_choice(video_format),
-                "food_category": _clean_choice(food_category),
-                "price_tier": _clean_choice(price_tier),
-                "city_norm": city_norm.strip().lower() if city_norm and city_norm.strip() else None,
-            }.items()
-            if v is not None
-        }
+        filters = _build_filters(video_format, food_category, price_tier, None, city_norm)
         b_status, b_data = await _post_api("/api/v1/analytics/niche-benchmark", filters)
         r_status, r_data = await _post_api(
             "/api/v1/retrieval/search",
@@ -114,22 +116,27 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                 "filters": filters,
             },
         )
-        bench_md = format_benchmark_markdown(b_data) if b_status == 200 else str(b_data)
+        bench_html = (
+            render_benchmark_html(b_data)
+            if b_status == 200
+            else render_error_alert_html(b_data.get("code", b_status), b_data.get("message", ""))
+        )
         if r_status != 200:
-            err = f"### ⚠️ Lỗi truy xuất (`{r_data.get('code', r_status)}`)\n{r_data.get('message', '')}"
-            return bench_md, err, ""
-        ev_md = format_evidence_cards_markdown(
+            err_html = render_error_alert_html(
+                r_data.get("code", f"HTTP {r_status}"),
+                r_data.get("message", json.dumps(r_data, ensure_ascii=False)),
+            )
+            return "", bench_html, err_html
+
+        timings_html = render_timings_html(r_data.get("timings_ms") or {}, label="Retrieval")
+        ev_html = render_evidence_cards_html(
             r_data.get("items") or [],
             mode=str(r_data.get("mode", mode)),
             total_cands=int(r_data.get("total_candidates", 0)),
+            insufficient_evidence=bool(r_data.get("insufficient_evidence", False)),
+            abstain_reason=r_data.get("abstain_reason"),
         )
-        t_md = format_timings_markdown(r_data.get("timings_ms") or {})
-        return bench_md, ev_md, t_md
-
-    async def handle_refresh_status() -> tuple[dict[str, Any], dict[str, Any]]:
-        _, ready_data = await _get_api("/health/ready")
-        _, eval_data = await _get_api("/api/v1/evaluation/summary")
-        return ready_data, eval_data
+        return timings_html, bench_html, ev_html
 
     async def handle_trust_audit(
         caption: str,
@@ -140,7 +147,6 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
         is_ec_video: bool = False,
     ) -> tuple[str, str]:
         comments_payload = parse_demo_comment_lines(raw_comments_lines)
-
         status, data = await _post_api(
             "/api/v1/trust/audit-video",
             {
@@ -152,134 +158,197 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
             },
         )
         if status != 200:
-            return f"### ⚠️ Lỗi (`{status}`)\n{json.dumps(data, ensure_ascii=False)}", ""
+            return "", render_error_alert_html(status, json.dumps(data, ensure_ascii=False))
         return (
-            format_trust_audit_markdown(data, hide_seeding=hide_seeding),
-            format_timings_markdown(data.get("timings_ms") or {}),
+            render_timings_html(data.get("timings_ms") or {}, label="Trust Audit"),
+            render_trust_audit_html(data, hide_seeding=hide_seeding),
         )
+
+    async def handle_refresh_status() -> tuple[str, dict[str, Any], dict[str, Any]]:
+        _, ready_data = await _get_api("/health/ready")
+        _, eval_data = await _get_api("/api/v1/evaluation/summary")
+        summary_html = render_system_status_html(ready_data, eval_data)
+        return summary_html, ready_data, eval_data
+
+    container = getattr(api_app.state, "container", None)
+    manifest = getattr(getattr(container, "analytics", None), "manifest", None)
+    gemini_ok = bool(getattr(getattr(container, "gemini", None), "is_configured", False))
+    hero_html = render_hero_banner_html(
+        snapshot_id=str(getattr(manifest, "snapshot_id", "local_verified_corpus")),
+        total_videos=int(getattr(manifest, "total_videos", 0)),
+        total_creators=int(getattr(manifest, "total_creators", 0)),
+        poi_tagged_videos=int(getattr(manifest, "poi_tagged_videos", 0)),
+        transcribed_videos=int(getattr(manifest, "transcribed_videos", 0)),
+        gemini_configured=gemini_ok,
+    )
 
     all_opt = "(Tự động / Tất cả)"
 
     with gr.Blocks(title="ViralFoodRAG — Evidence-Based TikTok Intelligence") as demo:
-        gr.Markdown(
-            "# 🍜 ViralFoodRAG — Evidence-Based TikTok Content Intelligence & Script Engine\n"
-            "Hệ thống phân tích chuẩn thực nghiệm ngách (**70,996 video • 264 creators • 23,448 GPS POIs • 21,748 transcripts**) "
-            "và sinh kịch bản dựa trên bằng chứng video thành công thực tế."
-        )
+        gr.HTML(hero_html)
 
         with gr.Tabs():
-            with gr.Tab("1. Evidence-Grounded Script Studio"):
-                with gr.Row():
-                    with gr.Column(scale=2):
+            # TAB 1: Script Studio
+            with gr.Tab("1. Studio Kịch Bản (Script Studio)"):
+                with gr.Row(equal_height=False):
+                    with gr.Column(scale=5):
                         brief_in = gr.Textbox(
-                            label="Đề bài sáng tạo video (Brief)",
+                            label="Đề bài video (Brief)",
                             lines=3,
                             value="Review quán ốc sinh viên bình dân khoảng 35k ăn đêm ở Quận 4 Sài Gòn, nhấn mạnh nước chấm sả tắc",
                         )
                         with gr.Row():
-                            gen_mode_in = gr.Radio(
-                                choices=["offline_grounded", "gemini_free"],
-                                value="offline_grounded",
-                                label="Chế độ tổng hợp (offline_grounded = $0 không cần API key; gemini_free = dùng GEMINI_API_KEY)",
-                            )
+                            p_s1 = gr.Button("Mẫu 1: Ốc sinh viên Q4", size="sm")
+                            p_s2 = gr.Button("Mẫu 2: Đậu hũ thúi Q1 (M3.3)", size="sm")
+                            p_s3 = gr.Button("Mẫu 3: Test chặn ngoài F&B", size="sm")
+                        gen_mode_in = gr.Radio(
+                            choices=["offline_grounded", "gemini_free"],
+                            value="offline_grounded",
+                            label="Chế độ tổng hợp (offline_grounded = $0 không cần key)",
+                        )
+                        with gr.Row():
                             dur_in = gr.Slider(20, 120, value=45, step=5, label="Thời lượng mục tiêu (giây)")
-                            topk_in = gr.Slider(3, 8, value=5, step=1, label="Số video bằng chứng (Top-K)")
-                    with gr.Column(scale=1):
-                        fmt_in = gr.Dropdown([all_opt, *VIDEO_FORMATS], value=all_opt, label="Định dạng video")
-                        cat_in = gr.Dropdown([all_opt, *FOOD_CATEGORIES], value=all_opt, label="Nhóm ẩm thực")
-                        price_in = gr.Dropdown([all_opt, *PRICE_TIERS], value=all_opt, label="Phân khúc giá")
-                        occ_in = gr.Dropdown([all_opt, *OCCASION_LABELS], value=all_opt, label="Hoàn cảnh / Dịp ăn")
-                        city_in = gr.Textbox(label="Tỉnh / Thành phố (tuỳ chọn, vd: hồ chí minh, hà nội, đà lạt)", value="")
+                            topk_in = gr.Slider(3, 8, value=5, step=1, label="Số video bằng chứng")
+                        with gr.Accordion("Bộ lọc ngách nâng cao (tùy chọn)", open=False):
+                            fmt_in = gr.Dropdown([all_opt, *VIDEO_FORMATS], value=all_opt, label="Định dạng video")
+                            cat_in = gr.Dropdown([all_opt, *FOOD_CATEGORIES], value=all_opt, label="Nhóm ẩm thực")
+                            price_in = gr.Dropdown([all_opt, *PRICE_TIERS], value=all_opt, label="Phân khúc giá")
+                            occ_in = gr.Dropdown([all_opt, *OCCASION_LABELS], value=all_opt, label="Hoàn cảnh / Dịp ăn")
+                            city_in = gr.Textbox(label="Tỉnh / Thành phố (vd: hồ chí minh, hà nội, đà lạt)", value="")
+                        gen_btn = gr.Button("🚀 Truy Xuất & Sinh Kịch Bản Chuẩn Ngách", variant="primary")
 
-                gen_btn = gr.Button("🚀 Truy Xuất Bằng Chứng & Sinh Kịch Bản Chuẩn Ngách", variant="primary")
-                timings_out = gr.Markdown()
-                bench_out = gr.Markdown()
-                script_out = gr.Markdown()
-                evidence_out = gr.Markdown()
+                    with gr.Column(scale=7):
+                        timings_out = gr.HTML(render_timings_html({}))
+                        with gr.Tabs():
+                            with gr.Tab("📜 Kịch Bản & Guardrail"):
+                                script_out = gr.HTML(render_placeholder_html("Chọn mẫu hoặc nhập đề bài rồi nhấn 'Truy Xuất & Sinh Kịch Bản'."))
+                            with gr.Tab("📊 Niche Micro-Benchmark"):
+                                bench_out = gr.HTML(render_placeholder_html("Thống kê ngách lịch sử sẽ hiển thị tại đây."))
+                            with gr.Tab("🎬 Bằng Chứng Trích Dẫn"):
+                                evidence_out = gr.HTML(render_placeholder_html("Các video bằng chứng nguồn sẽ hiển thị tại đây."))
+
+                p_s1.click(lambda: ("Review quán ốc sinh viên bình dân khoảng 35k ăn đêm ở Quận 4 Sài Gòn, nhấn mạnh nước chấm sả tắc", ""), outputs=[brief_in, city_in])
+                p_s2.click(lambda: ("Đậu hũ thúi hong thúi quán đông khách Quận 1", ""), outputs=[brief_in, city_in])
+                p_s3.click(lambda: ("Phân tích thị trường chứng khoán và tiền ảo bitcoin tháng này", ""), outputs=[brief_in, city_in])
 
                 gen_btn.click(
                     fn=handle_generate_script,
                     inputs=[brief_in, gen_mode_in, dur_in, topk_in, fmt_in, cat_in, price_in, occ_in, city_in],
-                    outputs=[script_out, bench_out, evidence_out, timings_out],
+                    outputs=[timings_out, script_out, bench_out, evidence_out],
                 )
 
-            with gr.Tab("2. Hybrid Evidence Explorer & Micro-Benchmarks"):
-                with gr.Row():
-                    q_in = gr.Textbox(
-                        label="Từ khoá / Ngữ cảnh tìm kiếm lời thoại & caption",
-                        value="công thức làm gà rang bơ tỏi đơn giản tại nhà",
-                        scale=3,
-                    )
-                    mode_in = gr.Dropdown(["bm25", "hybrid_rrf", "dense"], value="bm25", label="Chế độ truy xuất", scale=1)
-                    rerank_in = gr.Checkbox(value=True, label="Bật Reranker")
-                    k_in = gr.Slider(3, 15, value=5, step=1, label="Top-K")
-                with gr.Row():
-                    e_fmt = gr.Dropdown([all_opt, *VIDEO_FORMATS], value=all_opt, label="Định dạng")
-                    e_cat = gr.Dropdown([all_opt, *FOOD_CATEGORIES], value=all_opt, label="Nhóm món")
-                    e_price = gr.Dropdown([all_opt, *PRICE_TIERS], value=all_opt, label="Mức giá")
-                    e_city = gr.Textbox(label="Thành phố chuẩn hoá", value="")
+            # TAB 2: Hybrid Evidence Explorer
+            with gr.Tab("2. Khám Phá Bằng Chứng & Ngách"):
+                with gr.Row(equal_height=False):
+                    with gr.Column(scale=4):
+                        q_in = gr.Textbox(
+                            label="Từ khóa / Ngữ cảnh tìm kiếm",
+                            lines=2,
+                            value="công thức làm gà rang bơ tỏi đơn giản tại nhà",
+                        )
+                        with gr.Row():
+                            p_e1 = gr.Button("Mẫu 1: Gà rang bơ tỏi", size="sm")
+                            p_e2 = gr.Button("Mẫu 2: Không có nguồn (Lai Châu)", size="sm")
+                        with gr.Row():
+                            mode_in = gr.Dropdown(["bm25", "hybrid_rrf", "dense"], value="bm25", label="Chế độ truy xuất")
+                            k_in = gr.Slider(3, 15, value=5, step=1, label="Top-K")
+                        rerank_in = gr.Checkbox(value=True, label="Bật Reranker theo ngữ cảnh")
+                        with gr.Accordion("Bộ lọc ngách (tùy chọn)", open=False):
+                            e_fmt = gr.Dropdown([all_opt, *VIDEO_FORMATS], value=all_opt, label="Định dạng")
+                            e_cat = gr.Dropdown([all_opt, *FOOD_CATEGORIES], value=all_opt, label="Nhóm món")
+                            e_price = gr.Dropdown([all_opt, *PRICE_TIERS], value=all_opt, label="Mức giá")
+                            e_city = gr.Textbox(label="Thành phố chuẩn hóa", value="")
+                        search_btn = gr.Button("🔍 Phân Tích Ngách & Truy Xuất", variant="primary")
 
-                search_btn = gr.Button("🔍 Phân Tích Ngách & Truy Xuất Video Viral", variant="primary")
-                e_timings = gr.Markdown()
-                e_bench = gr.Markdown()
-                e_cards = gr.Markdown()
+                    with gr.Column(scale=8):
+                        e_timings = gr.HTML(render_timings_html({}))
+                        e_bench = gr.HTML(render_placeholder_html("Thống kê ngách của lát cắt lọc sẽ hiển thị tại đây."))
+                        e_cards = gr.HTML(render_placeholder_html("Danh sách video bằng chứng sẽ hiển thị tại đây."))
 
+                p_e1.click(lambda: ("công thức làm gà rang bơ tỏi đơn giản tại nhà", ""), outputs=[q_in, e_city])
+                p_e2.click(lambda: ("quán cơm tấm sườn bì chả ở Lai Châu", "lai châu"), outputs=[q_in, e_city])
                 search_btn.click(
                     fn=handle_explore_evidence,
                     inputs=[q_in, mode_in, k_in, rerank_in, e_fmt, e_cat, e_price, e_city],
-                    outputs=[e_bench, e_cards, e_timings],
+                    outputs=[e_timings, e_bench, e_cards],
                 )
 
-            with gr.Tab("3. Comment Patterns & ABSA (Heuristic Baseline)"):
-                gr.Markdown("Dữ liệu nhập tay; các giá trị điền sẵn là ví dụ tổng hợp, không phải kết quả crawl thực tế.")
-                t_cap = gr.Textbox(
-                    label="Caption video cần phân tích",
-                    value="Khai trương lẩu bò mắm ruốc Quận 10 giảm giá 20% ngon xuất sắc",
-                )
-                t_tr = gr.Textbox(
-                    label="Lời thoại KOC (Transcript)",
-                    lines=3,
-                    value="Tặng ngay voucher khai trương nha anh em! Nước lẩu bò thơm đậm đà, thịt tươi đầy đặn giá 169k siêu rẻ, không gian sạch sẽ thoáng mát nhân viên dễ thương cực kỳ!",
-                )
-                t_comms = gr.Textbox(
-                    label="Danh sách Bình luận (mỗi dòng: @user: nội dung)",
-                    lines=5,
-                    value=(
-                        "@viewer_01: Nhìn nước lẩu ở quán này sôi sùng sục thơm mùi sả ớt hấp dẫn ghê mọi người ơi\n"
-                        "@viewer_02: Nhìn nước lẩu ở quán này sôi sùng sục thơm mùi sả ớt hấp dẫn ghê mọi người nha\n"
-                        "@viewer_03: Nhận tuyển CTV việc nhẹ lương cao inbox zalo 0909123456\n"
-                        "@viewer_04: Nước lẩu mặn chát mà bàn ghế bẩn đầy khói, nhân viên phục vụ quá chậm chờ 40 phút\n"
-                        "@viewer_05: Thịt ít xịu tính thêm rau bún vô đắt chứ không rẻ như lời khen"
+            # TAB 3: Trust & ABSA Diagnostics
+            with gr.Tab("3. Chẩn Đoán Bình Luận & ABSA"):
+                with gr.Row(equal_height=False):
+                    with gr.Column(scale=5):
+                        gr.Markdown("Nhập tay caption/transcript/comment để thử nghiệm baseline chẩn đoán `M5.1` + `M5.2` (giá trị mẫu là ví dụ tổng hợp).")
+                        with gr.Row():
+                            p_t1 = gr.Button("Mẫu 1: KOC khen vs Viewer chê + Spam", size="sm")
+                            p_t2 = gr.Button("Mẫu 2: Thiếu bình luận (<3) — Tạm dừng", size="sm")
+                        t_cap = gr.Textbox(
+                            label="Caption video",
+                            value="Khai trương lẩu bò mắm ruốc Quận 10 giảm giá 20% ngon xuất sắc",
+                        )
+                        t_tr = gr.Textbox(
+                            label="Lời thoại KOC (Transcript)",
+                            lines=3,
+                            value="Tặng ngay voucher khai trương nha anh em! Nước lẩu bò thơm đậm đà, thịt tươi đầy đặn giá 169k siêu rẻ, không gian sạch sẽ thoáng mát nhân viên dễ thương cực kỳ!",
+                        )
+                        t_comms = gr.Textbox(
+                            label="Danh sách bình luận (mỗi dòng: @user: nội dung)",
+                            lines=5,
+                            value=(
+                                "@viewer_01: Nước lẩu mặn chát mà bàn ghế bẩn đầy khói\n"
+                                "@viewer_02: Thịt ít xịu tính thêm rau bún vô đắt chứ không rẻ đâu\n"
+                                "@viewer_03: Vị lẩu hơi mặn, chờ phục vụ lên món quá chậm gần 40 phút\n"
+                                "@viewer_04: Nước chấm mặn gắt, đồ ăn nguội, phục vụ chưa ổn\n"
+                                "@viewer_05: Nhận tuyển CTV việc nhẹ lương cao inbox zalo 0909123456"
+                            ),
+                        )
+                        with gr.Row():
+                            t_is_ad = gr.Checkbox(value=False, label="Cờ is_ad (Observed Ad Flag)")
+                            t_is_ec = gr.Checkbox(value=False, label="Cờ is_ec_video (Giỏ hàng)")
+                        hide_seed_chk = gr.Checkbox(
+                            value=False,
+                            label="Tạm ẩn bình luận có chỉ dấu (mặc định tắt — chẩn đoán M5.1)",
+                        )
+                        audit_btn = gr.Button("🛡️ Phân Tích Chỉ Dấu & ABSA", variant="primary")
+
+                    with gr.Column(scale=7):
+                        t_audit_timings = gr.HTML(render_timings_html({}))
+                        t_audit_html = gr.HTML(render_placeholder_html("Nhấn 'Phân Tích Chỉ Dấu & ABSA' để xem ma trận 4 khía cạnh và trích dẫn span."))
+
+                p_t1.click(
+                    lambda: (
+                        "Khai trương lẩu bò mắm ruốc Quận 10 giảm giá 20% ngon xuất sắc",
+                        "Tặng ngay voucher khai trương nha anh em! Nước lẩu bò thơm đậm đà, thịt tươi đầy đặn giá 169k siêu rẻ, không gian sạch sẽ thoáng mát nhân viên dễ thương cực kỳ!",
+                        "@viewer_01: Nước lẩu mặn chát mà bàn ghế bẩn đầy khói\n@viewer_02: Thịt ít xịu tính thêm rau bún vô đắt chứ không rẻ đâu\n@viewer_03: Vị lẩu hơi mặn, chờ phục vụ lên món quá chậm gần 40 phút\n@viewer_04: Nước chấm mặn gắt, đồ ăn nguội, phục vụ chưa ổn\n@viewer_05: Nhận tuyển CTV việc nhẹ lương cao inbox zalo 0909123456",
                     ),
+                    outputs=[t_cap, t_tr, t_comms],
                 )
-                with gr.Row():
-                    t_is_ad = gr.Checkbox(
-                        value=False,
-                        label="Cờ nền tảng is_ad (Observed Ad Flag)",
-                    )
-                    t_is_ec = gr.Checkbox(
-                        value=False,
-                        label="Cờ giỏ hàng is_ec_video (Observed E-Commerce Flag)",
-                    )
-                    hide_seed_chk = gr.Checkbox(
-                        value=False,
-                        label="Tạm ẩn bình luận có chỉ dấu trùng lặp/liên hệ/nhiễu (mặc định tắt — chế độ chẩn đoán M5.1)",
-                    )
-                audit_btn = gr.Button("Phân Tích Mẫu Bình Luận Và Điểm ABSA", variant="primary")
-                t_audit_timings = gr.Markdown()
-                t_audit_md = gr.Markdown()
+                p_t2.click(
+                    lambda: (
+                        "Quán ăn lâu đời Quận 1",
+                        "Nước dùng đậm đà lắm nha mọi người",
+                        "@viewer_01: Ngon nha\n@viewer_02: Địa chỉ ở đâu vậy shop",
+                    ),
+                    outputs=[t_cap, t_tr, t_comms],
+                )
                 audit_btn.click(
                     fn=handle_trust_audit,
                     inputs=[t_cap, t_tr, t_comms, hide_seed_chk, t_is_ad, t_is_ec],
-                    outputs=[t_audit_md, t_audit_timings],
+                    outputs=[t_audit_timings, t_audit_html],
                 )
 
-            with gr.Tab("4. Readiness & Retrieval Benchmark"):
-                refresh_btn = gr.Button("🔄 Kiểm Tra Trạng Thái Hệ Thống & Báo Cáo Đánh Giá")
-                with gr.Row():
-                    ready_json = gr.JSON(label="/health/ready")
-                    eval_json = gr.JSON(label="/api/v1/evaluation/summary (Frozen Retrieval Benchmark)")
-                refresh_btn.click(fn=handle_refresh_status, inputs=[], outputs=[ready_json, eval_json])
+            # TAB 4: Readiness & Benchmark Summary
+            with gr.Tab("4. Hệ Thống & Đánh Giá"):
+                refresh_btn = gr.Button("🔄 Kiểm Tra Trạng Thái & Tóm Tắt Đánh Giá", variant="primary")
+                sys_summary_html = gr.HTML(render_placeholder_html("Nhấn nút bên trên để đọc trạng thái trực tiếp từ /health/ready và /api/v1/evaluation/summary."))
+                with gr.Accordion("Raw JSON Inspector (/health/ready & benchmark)", open=False):
+                    with gr.Row():
+                        ready_json = gr.JSON(label="/health/ready")
+                        eval_json = gr.JSON(label="/api/v1/evaluation/summary")
+                refresh_btn.click(
+                    fn=handle_refresh_status,
+                    inputs=[],
+                    outputs=[sys_summary_html, ready_json, eval_json],
+                )
 
     blocks_out: gr.Blocks = demo
     return blocks_out
