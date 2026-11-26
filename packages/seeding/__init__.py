@@ -2,17 +2,21 @@
 
 from packages.seeding.detector import detect_comment_indicators, detect_seeding_comments
 from packages.seeding.evaluation import (
+    CORE_POSITIVE_INDICATOR_CLASSES,
     compute_comment_filter_sensitivity,
     compute_inter_annotator_agreement,
     evaluate_comment_indicator_metrics,
     split_comments_by_video,
+    validate_and_summarize_annotated_pool,
 )
 
 __all__ = [
+    "CORE_POSITIVE_INDICATOR_CLASSES",
     "compute_comment_filter_sensitivity",
     "compute_inter_annotator_agreement",
     "detect_comment_indicators",
     "detect_seeding_comments",
     "evaluate_comment_indicator_metrics",
     "split_comments_by_video",
+    "validate_and_summarize_annotated_pool",
 ]

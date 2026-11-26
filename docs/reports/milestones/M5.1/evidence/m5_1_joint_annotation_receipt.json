@@ -1,0 +1,57 @@
+{
+  "task_id": "M5.1",
+  "receipt_id": "m5_1_joint_annotation_and_real_eval_v1",
+  "completed_at": "2026-11-26T14:09:07+07:00",
+  "source_snapshot_id": "m3_3_pilot_snapshot_v2",
+  "pool_file": "data/annotations/m5_1_pilot_pool.jsonl",
+  "pool_sha256": "228bb410bfa3ac26bf4c473b9f3851109798f3aee08590b23acb8275320a28f4",
+  "locked_predictions_file": "data/annotations/m5_1_pilot_pool_locked_predictions.jsonl",
+  "locked_predictions_sha256": "00244904307386ea4706f542a00214f0a07856d37f017fad0aa778ddd849ec55",
+  "real_eval_benchmark_file": "artifacts/benchmarks/m5_1_real_pilot_eval_v1.json",
+  "real_eval_benchmark_sha256": "1252e5750b436ff5d3b75c33308c50bf911c3cc81ec8458b9241f06e9343c801",
+  "human_signoff": {
+    "N_verified_count": 180,
+    "K_verified_count": 180,
+    "double_review_N_K_count": 60,
+    "N_only_count": 120,
+    "K_only_count": 120,
+    "total_adjudicated_pool_count": 300,
+    "unique_videos": 22,
+    "blinded_to_locked_predictions": true,
+    "K_blinded_to_N_labels_during_annotation": true
+  },
+  "inter_annotator_agreement": {
+    "raw_agreement": 0.9333,
+    "cohens_kappa_6class": 0.476,
+    "positive_indicator_raw_agreement": 1.0,
+    "positive_indicator_cohens_kappa": 1.0,
+    "disagreement_count": 4,
+    "disagreement_boundary": "100% of disagreements (4/4) occurred between no_indicator_observed and unknown_ambiguous (m5_1_005, m5_1_006, m5_1_007, m5_1_031); zero disagreements on positive spam/noise/link indicators."
+  },
+  "held_out_third_summary": {
+    "evaluated_comment_count": 46,
+    "unique_video_count": 7,
+    "video_overlap_across_splits": 0,
+    "noise_or_empty_f1": 1.0,
+    "core_positive_classes_missing_support": [
+      "contact_or_link",
+      "observable_duplicate"
+    ],
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "all_pool_300_summary": {
+    "adjudicated_label_counts": {
+      "no_indicator_observed": 271,
+      "noise_or_empty": 14,
+      "unknown_ambiguous": 13,
+      "contact_or_link": 1,
+      "template_phrase_match": 1,
+      "observable_duplicate": 0
+    },
+    "organic_duplicate_ablation_fp_reduction": "2 -> 0",
+    "macro_precision": 0.3095,
+    "macro_recall": 0.3095,
+    "macro_f1": 0.3095
+  }
+}

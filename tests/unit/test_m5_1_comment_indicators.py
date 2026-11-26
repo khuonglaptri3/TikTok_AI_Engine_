@@ -373,7 +373,16 @@ def test_k_review_empty_after_filter_abstention_and_demo_bare_url_parsing() -> N
         "author_handle": "viewer_3",
         "text": "Giá: 45k một tô đầy ắp",
     }
-    flagged = detect_seeding_comments("v_url", [RawCommentInput(**parsed[0])])
+    flagged = detect_seeding_comments(
+        "v_url",
+        [
+            RawCommentInput(
+                comment_id=parsed[0]["comment_id"],
+                author_handle=parsed[0]["author_handle"],
+                text=parsed[0]["text"],
+            )
+        ],
+    )
     assert flagged[0].observable_label == "contact_or_link"
 
     # When 100% of comments are flagged, after-filter viewer sentiment must abstain rather than faking 0.0
@@ -387,4 +396,174 @@ def test_k_review_empty_after_filter_abstention_and_demo_bare_url_parsing() -> N
     assert sens["after_filter_viewer_mean"] is None
     assert sens["mean_score_shift"] is None
     assert sens["after_filter_hype_gap"] == 0.0
+
+
+def test_m5_1_sparse_emoji_only_split_does_not_unlock_auto_filter() -> None:
+    rows: list[dict[str, object]] = []
+    for vid_idx in range(30):
+        rows.append(
+            {
+                "comment_id": f"e_{vid_idx}",
+                "video_id": f"v_{vid_idx:02d}",
+                "adjudicated_label": "noise_or_empty",
+                "pred_label": "noise_or_empty",
+            }
+        )
+        rows.append(
+            {
+                "comment_id": f"c_{vid_idx}",
+                "video_id": f"v_{vid_idx:02d}",
+                "adjudicated_label": "no_indicator_observed",
+                "pred_label": "no_indicator_observed",
+            }
+        )
+    rep = evaluate_comment_indicator_metrics(
+        rows,
+        pred_col="pred_label",
+        truth_col="adjudicated_label",
+        human_signoff_complete=True,
+        total_annotated_pool_count=180,
+        n_boot=20,
+        seed=42,
+    )
+    assert rep["macro_precision"] == pytest.approx(1.0, abs=1e-4)
+    assert rep["macro_recall"] == pytest.approx(1.0, abs=1e-4)
+    assert rep["core_positive_classes_missing_support"] == ["contact_or_link", "observable_duplicate"]
+    assert rep["auto_filter_eligible"] is False
+    assert rep["recommended_mode"] == "diagnostic_only_without_filtering"
+
+
+def test_m5_1_real_eval_validates_human_signoff_adjudication_and_end_to_end_pipeline(
+    tmp_path: object,
+) -> None:
+    import json
+    from pathlib import Path
+
+    from packages.seeding.evaluation import validate_and_summarize_annotated_pool
+    from pipelines.audit_m5_1_comments.run_baseline_checks import run_real_pilot_eval
+
+    root = Path(str(tmp_path))
+    pool: list[dict[str, object]] = []
+    preds: list[dict[str, object]] = []
+    video_rows: list[dict[str, object]] = []
+    comment_rows: list[dict[str, object]] = []
+
+    for v in range(15):
+        vid = f"vid_{v:02d}"
+        video_rows.append(
+            {
+                "video_id": vid,
+                "caption": "Bánh canh cua ngon ở Quận 1",
+                "transcript": "Nước dùng thanh ngọt chả cá dai giá hợp lý",
+            }
+        )
+        for j in range(10):
+            idx = v * 10 + j
+            item_id = f"m5_1_{idx + 1:03d}"
+            cid = f"c_{idx + 1:03d}"
+            text = "🥰🥰🥰" if j == 0 else f"Nước dùng quán {v} thanh ngọt ngon món {j}"
+            lbl = "noise_or_empty" if j == 0 else "no_indicator_observed"
+            if idx < 60:
+                assign = "double_review_N_K"
+                n_lbl: str | None = lbl
+                k_lbl: str | None = "unknown_ambiguous" if idx == 5 else lbl
+                n_ver = True
+                k_ver = True
+                adj = lbl
+                adj_note = "Emoji/text verified on full thread context" if idx == 5 else ""
+            elif idx < 105:
+                assign = "N_only"
+                n_lbl = lbl
+                k_lbl = None
+                n_ver = True
+                k_ver = False
+                adj = lbl
+                adj_note = ""
+            else:
+                assign = "K_only"
+                n_lbl = None
+                k_lbl = lbl
+                n_ver = False
+                k_ver = True
+                adj = lbl
+                adj_note = ""
+
+            pool.append(
+                {
+                    "item_id": item_id,
+                    "comment_id": cid,
+                    "video_id": vid,
+                    "author_handle": f"user_{idx}",
+                    "original_text": text,
+                    "review_assignment": assign,
+                    "N_label": n_lbl,
+                    "N_note": "ok" if n_ver else "",
+                    "N_human_verified": n_ver,
+                    "K_label": k_lbl,
+                    "K_note": "ok" if k_ver else "",
+                    "K_human_verified": k_ver,
+                    "adjudicated_label": adj,
+                    "adjudication_note": adj_note,
+                }
+            )
+            preds.append(
+                {
+                    "item_id": item_id,
+                    "video_id": vid,
+                    "comment_id": cid,
+                    "predicted_observable_label": lbl,
+                    "predicted_reason_codes": ["zero_lexical_tokens"] if j == 0 else [],
+                }
+            )
+            comment_rows.append(
+                {
+                    "comment_id": cid,
+                    "video_id": vid,
+                    "author_handle": f"user_{idx}",
+                    "text": text,
+                    "like_count": 1,
+                    "reply_count": 0,
+                }
+            )
+
+    summary = validate_and_summarize_annotated_pool(pool, preds)
+    assert summary["total_pool_rows"] == 150
+    assert summary["agreement"]["total_double_annotated"] == 60
+    assert len(summary["disagreements"]) == 1
+
+    # Fail closed if K_only item is unverified
+    bad_unverified = [dict(r) for r in pool]
+    bad_unverified[-1]["K_human_verified"] = False
+    with pytest.raises(ValueError, match="K_human_verified"):
+        validate_and_summarize_annotated_pool(bad_unverified, preds)
+
+    # Fail closed if unanimous N == K double-reviewed row is overridden to a different adjudicated_label
+    bad_override = [dict(r) for r in pool]
+    bad_override[0]["adjudicated_label"] = "contact_or_link"
+    with pytest.raises(ValueError, match="unanimous"):
+        validate_and_summarize_annotated_pool(bad_override, preds)
+
+    corpus_dir = root / "corpus"
+    corpus_dir.mkdir(parents=True)
+    pd.DataFrame(video_rows).to_parquet(corpus_dir / "fact_videos.parquet", index=False)
+    pd.DataFrame(comment_rows).to_parquet(corpus_dir / "fact_comments.parquet", index=False)
+
+    pool_path = root / "m5_1_pilot_pool.jsonl"
+    preds_path = root / "m5_1_pilot_pool_locked_predictions.jsonl"
+    out_path = root / "m5_1_real_eval.json"
+    pool_path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in pool) + "\n", encoding="utf-8")
+    preds_path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in preds) + "\n", encoding="utf-8")
+
+    eval_report = run_real_pilot_eval(
+        pool_jsonl=pool_path,
+        locked_predictions_jsonl=preds_path,
+        corpus_dir=corpus_dir,
+        output=out_path,
+        n_boot=25,
+    )
+    assert out_path.is_file()
+    assert eval_report["real_pilot_comments_available"] is True
+    assert eval_report["held_out_third_metrics"]["human_signoff_complete"] is True
+    assert eval_report["held_out_third_metrics"]["recommended_mode"] == "diagnostic_only_without_filtering"
+
 

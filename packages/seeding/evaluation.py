@@ -33,6 +33,12 @@ POSITIVE_INDICATOR_CLASSES: tuple[str, ...] = (
     "template_phrase_match",
 )
 
+CORE_POSITIVE_INDICATOR_CLASSES: tuple[str, ...] = (
+    "observable_duplicate",
+    "contact_or_link",
+    "noise_or_empty",
+)
+
 SEEDING_REASON_TO_OBSERVABLE_LABEL: dict[str, str] = {
     "contact_or_link_spam": "contact_or_link",
     "emoji_or_empty_noise": "noise_or_empty",
@@ -115,11 +121,22 @@ def compute_inter_annotator_agreement(
     unknown_count = sum(
         1 for a, b in zip(clean_n, clean_k) if a == "unknown_ambiguous" or b == "unknown_ambiguous"
     )
+    pos_set = frozenset(POSITIVE_INDICATOR_CLASSES)
+    bin_n = [a in pos_set for a in clean_n]
+    bin_k = [b in pos_set for b in clean_k]
+    pos_raw_agr = sum(1 for a, b in zip(bin_n, bin_k) if a == b) / total
+    p_pos_n = sum(1 for a in bin_n if a) / total
+    p_pos_k = sum(1 for b in bin_k if b) / total
+    p_pos_exp = p_pos_n * p_pos_k + (1.0 - p_pos_n) * (1.0 - p_pos_k)
+    pos_kappa = (pos_raw_agr - p_pos_exp) / (1.0 - p_pos_exp) if p_pos_exp < 1.0 else 1.0
+
     pair_counts = Counter(f"{a} -> {b}" for a, b in zip(clean_n, clean_k))
     return {
         "total_double_annotated": total,
         "raw_agreement": round(raw_agreement, 4),
         "cohens_kappa": round(float(kappa), 4),
+        "positive_indicator_raw_agreement": round(pos_raw_agr, 4),
+        "positive_indicator_cohens_kappa": round(float(pos_kappa), 4),
         "unknown_ambiguous_count": unknown_count,
         "class_pair_counts": dict(sorted(pair_counts.items())),
     }
@@ -221,11 +238,17 @@ def evaluate_comment_indicator_metrics(
     pred_counts = dict(sorted(Counter(y_pred).items()))
 
     eff_pool_count = int(total_annotated_pool_count) if total_annotated_pool_count is not None else len(rows)
-    # M5.1 gate: >= 150 total human-verified pilot comments (>= 45 in held_out_third), P >= 0.85, R >= 0.60
+    core_missing_support = sorted(
+        c for c in CORE_POSITIVE_INDICATOR_CLASSES if int(per_class[c]["support"]) == 0
+    )
+    # M5.1 gate: >= 150 total human-verified pilot comments (>= 45 in held_out_third),
+    # positive support across all 3 core indicator classes (duplicate, contact/link, noise),
+    # P >= 0.85, and R >= 0.60.
     auto_filter_eligible = (
         eff_pool_count >= 150
         and len(rows) >= 45
         and human_signoff_complete
+        and len(core_missing_support) == 0
         and macro_p >= 0.85
         and macro_r >= 0.60
     )
@@ -239,6 +262,7 @@ def evaluate_comment_indicator_metrics(
         "truth_class_counts": truth_counts,
         "pred_class_counts": pred_counts,
         "per_class_metrics": per_class,
+        "core_positive_classes_missing_support": core_missing_support,
         "macro_precision": round(macro_p, 4),
         "macro_recall": round(macro_r, 4),
         "macro_f1": round(macro_f1, 4),
@@ -251,6 +275,7 @@ def evaluate_comment_indicator_metrics(
         "auto_filter_thresholds": {
             "min_annotated_comments": 150,
             "min_held_out_comments": 45,
+            "min_core_positive_classes_with_support": len(CORE_POSITIVE_INDICATOR_CLASSES),
             "min_macro_precision": 0.85,
             "min_macro_recall": 0.60,
         },
@@ -517,7 +542,148 @@ def compute_comment_filter_sensitivity(
     }
 
 
+def validate_and_summarize_annotated_pool(
+    pool_rows: list[dict[str, Any]],
+    locked_prediction_rows: list[dict[str, Any]],
+    *,
+    min_pool_rows: int = 150,
+    max_pool_rows: int = 300,
+    min_double_overlap: int = 60,
+) -> dict[str, Any]:
+    """Fail-closed human signoff, adjudication, and locked-prediction validator for M5.1 real pools."""
+    if not (min_pool_rows <= len(pool_rows) <= max_pool_rows):
+        raise ValueError(
+            f"Pool row count must be in [{min_pool_rows}, {max_pool_rows}], got {len(pool_rows)}"
+        )
+    if len(locked_prediction_rows) != len(pool_rows):
+        raise ValueError(
+            f"Locked prediction count ({len(locked_prediction_rows)}) != pool count ({len(pool_rows)})"
+        )
+
+    pred_by_item: dict[str, dict[str, Any]] = {}
+    for p in locked_prediction_rows:
+        iid = str(p.get("item_id") or "").strip()
+        if not iid or iid in pred_by_item:
+            raise ValueError(f"Missing or duplicate item_id in locked predictions: {iid!r}")
+        _require_valid_label(p.get("predicted_observable_label"), "predicted_observable_label")
+        pred_by_item[iid] = p
+
+    seen_items: set[str] = set()
+    seen_cid_pairs: set[tuple[str, str]] = set()
+    double_n: list[str] = []
+    double_k: list[str] = []
+    disagreements: list[dict[str, Any]] = []
+    merged_rows: list[dict[str, Any]] = []
+    n_counts: Counter[str] = Counter()
+    k_counts: Counter[str] = Counter()
+    adj_counts: Counter[str] = Counter()
+    assign_counts: Counter[str] = Counter()
+
+    for row in pool_rows:
+        iid = str(row.get("item_id") or "").strip()
+        vid = str(row.get("video_id") or "").strip()
+        cid = str(row.get("comment_id") or "").strip()
+        if not iid or not vid or not cid:
+            raise ValueError(f"Missing item_id/video_id/comment_id in row: {row!r}")
+        if iid in seen_items or (vid, cid) in seen_cid_pairs:
+            raise ValueError(f"Duplicate item or (video_id, comment_id) in pool: {iid} / {(vid, cid)}")
+        seen_items.add(iid)
+        seen_cid_pairs.add((vid, cid))
+
+        pred_entry = pred_by_item.get(iid)
+        if pred_entry is None:
+            raise ValueError(f"Missing locked prediction for item_id={iid}")
+        if str(pred_entry.get("video_id") or "").strip() != vid or str(pred_entry.get("comment_id") or "").strip() != cid:
+            raise ValueError(f"Locked prediction key mismatch on {iid}: pool={(vid, cid)} vs pred={pred_entry}")
+
+        assign = str(row.get("review_assignment") or "").strip()
+        assign_counts[assign] += 1
+        adj_lbl = _require_valid_label(row.get("adjudicated_label"), f"{iid}.adjudicated_label")
+
+        if assign == "double_review_N_K":
+            if row.get("N_human_verified") is not True:
+                raise ValueError(f"{iid}: double_review_N_K requires N_human_verified=True")
+            if row.get("K_human_verified") is not True:
+                raise ValueError(f"{iid}: double_review_N_K requires K_human_verified=True")
+            n_lbl = _require_valid_label(row.get("N_label"), f"{iid}.N_label")
+            k_lbl = _require_valid_label(row.get("K_label"), f"{iid}.K_label")
+            if n_lbl == k_lbl and adj_lbl != n_lbl:
+                raise ValueError(
+                    f"{iid}: cannot override unanimous N==K label {n_lbl!r} with {adj_lbl!r}"
+                )
+            double_n.append(n_lbl)
+            double_k.append(k_lbl)
+            n_counts[n_lbl] += 1
+            k_counts[k_lbl] += 1
+            if n_lbl != k_lbl:
+                disagreements.append(
+                    {
+                        "item_id": iid,
+                        "video_id": vid,
+                        "comment_id": cid,
+                        "author_handle": str(row.get("author_handle") or ""),
+                        "original_text": str(row.get("original_text") or ""),
+                        "N_label": n_lbl,
+                        "K_label": k_lbl,
+                        "adjudicated_label": adj_lbl,
+                        "adjudication_note": str(row.get("adjudication_note") or ""),
+                    }
+                )
+        elif assign == "N_only":
+            if row.get("N_human_verified") is not True:
+                raise ValueError(f"{iid}: N_only requires N_human_verified=True")
+            if row.get("K_human_verified") is not False or row.get("K_label") is not None:
+                raise ValueError(f"{iid}: N_only must keep K_human_verified=False and K_label=None")
+            n_lbl = _require_valid_label(row.get("N_label"), f"{iid}.N_label")
+            if adj_lbl != n_lbl:
+                raise ValueError(f"{iid}: N_only adjudicated_label {adj_lbl!r} != N_label {n_lbl!r}")
+            n_counts[n_lbl] += 1
+        elif assign == "K_only":
+            if row.get("K_human_verified") is not True:
+                raise ValueError(f"{iid}: K_only requires K_human_verified=True")
+            if row.get("N_human_verified") is not False or row.get("N_label") is not None:
+                raise ValueError(f"{iid}: K_only must keep N_human_verified=False and N_label=None")
+            k_lbl = _require_valid_label(row.get("K_label"), f"{iid}.K_label")
+            if adj_lbl != k_lbl:
+                raise ValueError(f"{iid}: K_only adjudicated_label {adj_lbl!r} != K_label {k_lbl!r}")
+            k_counts[k_lbl] += 1
+        else:
+            raise ValueError(f"{iid}: invalid review_assignment {assign!r}")
+
+        adj_counts[adj_lbl] += 1
+        pred_lbl = _require_valid_label(
+            pred_entry.get("predicted_observable_label"), f"{iid}.predicted_observable_label"
+        )
+        merged_rows.append(
+            {
+                **row,
+                "adjudicated_label": adj_lbl,
+                "pred_label": pred_lbl,
+                "pred_reason_codes": list(pred_entry.get("predicted_reason_codes") or []),
+            }
+        )
+
+    if len(double_n) < min_double_overlap:
+        raise ValueError(
+            f"Expected >= {min_double_overlap} double_review_N_K items, got {len(double_n)}"
+        )
+
+    agreement = compute_inter_annotator_agreement(double_n, double_k)
+    return {
+        "total_pool_rows": len(merged_rows),
+        "unique_video_count": len({str(r["video_id"]) for r in merged_rows}),
+        "assignment_counts": dict(sorted(assign_counts.items())),
+        "n_verified_label_counts": dict(sorted(n_counts.items())),
+        "k_verified_label_counts": dict(sorted(k_counts.items())),
+        "adjudicated_label_counts": dict(sorted(adj_counts.items())),
+        "agreement": agreement,
+        "disagreements": disagreements,
+        "merged_rows": merged_rows,
+    }
+
+
 __all__ = [
+    "CORE_POSITIVE_INDICATOR_CLASSES",
     "OBSERVABLE_COMMENT_CLASSES",
     "POSITIVE_INDICATOR_CLASSES",
     "SEEDING_REASON_TO_OBSERVABLE_LABEL",
@@ -527,4 +693,5 @@ __all__ = [
     "evaluate_comment_indicator_metrics",
     "reconstruct_observable_predictions",
     "split_comments_by_video",
+    "validate_and_summarize_annotated_pool",
 ]

@@ -14,7 +14,7 @@ from typing import Any
 import pandas as pd
 
 from packages.common.resources import get_peak_rss_mib
-from packages.data_contracts.multimodal import RawCommentInput
+from packages.data_contracts.multimodal import RawCommentInput, RawWhisperSegment
 from packages.seeding.detector import detect_seeding_comments
 from packages.seeding.evaluation import (
     build_annotation_pool,
@@ -22,6 +22,7 @@ from packages.seeding.evaluation import (
     evaluate_comment_indicator_metrics,
     reconstruct_observable_predictions,
     split_comments_by_video,
+    validate_and_summarize_annotated_pool,
 )
 
 
@@ -234,11 +235,284 @@ def run_real_pool_export(
     return pool
 
 
+def _read_jsonl(path: Path) -> list[dict[str, Any]]:
+    if not path.is_file():
+        raise FileNotFoundError(f"JSONL file not found: {path}")
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+def run_real_pilot_eval(
+    *,
+    pool_jsonl: Path,
+    locked_predictions_jsonl: Path,
+    corpus_dir: Path,
+    output: Path,
+    n_boot: int = 1000,
+    seed: int = 42,
+    overwrite: bool = False,
+) -> dict[str, Any]:
+    """Evaluate finalized M5.1 human-verified real pilot comments against locked predictions."""
+    if output.exists() and not overwrite:
+        raise FileExistsError(f"Output already exists: {output}")
+
+    pool_rows = _read_jsonl(pool_jsonl)
+    pred_rows = _read_jsonl(locked_predictions_jsonl)
+    summary = validate_and_summarize_annotated_pool(pool_rows, pred_rows)
+    merged_rows: list[dict[str, Any]] = list(summary["merged_rows"])
+
+    splits = split_comments_by_video(merged_rows, video_id_col="video_id", seed=seed)
+    dev_vids = {str(r["video_id"]) for r in splits["dev"]}
+    cal_vids = {str(r["video_id"]) for r in splits["calibration"]}
+    test_vids = {str(r["video_id"]) for r in splits["held_out_third"]}
+    if (dev_vids & cal_vids) or (dev_vids & test_vids) or (cal_vids & test_vids):
+        raise ValueError("Video ID overlap detected across M5.1 splits")
+
+    held_out_eval = evaluate_comment_indicator_metrics(
+        splits["held_out_third"],
+        pred_col="pred_label",
+        truth_col="adjudicated_label",
+        human_signoff_complete=True,
+        total_annotated_pool_count=len(merged_rows),
+        n_boot=n_boot,
+        seed=seed,
+    )
+    dev_eval = evaluate_comment_indicator_metrics(
+        splits["dev"],
+        pred_col="pred_label",
+        truth_col="adjudicated_label",
+        human_signoff_complete=True,
+        total_annotated_pool_count=len(merged_rows),
+        n_boot=min(n_boot, 300),
+        seed=seed,
+    )
+    cal_eval = evaluate_comment_indicator_metrics(
+        splits["calibration"],
+        pred_col="pred_label",
+        truth_col="adjudicated_label",
+        human_signoff_complete=True,
+        total_annotated_pool_count=len(merged_rows),
+        n_boot=min(n_boot, 300),
+        seed=seed,
+    )
+    all_pool_eval = evaluate_comment_indicator_metrics(
+        merged_rows,
+        pred_col="pred_label",
+        truth_col="adjudicated_label",
+        human_signoff_complete=True,
+        total_annotated_pool_count=len(merged_rows),
+        n_boot=n_boot,
+        seed=seed,
+    )
+
+    videos_pq = corpus_dir / "fact_videos.parquet"
+    comments_pq = corpus_dir / "fact_comments.parquet"
+    voice_pq = corpus_dir / "fact_voice_segments.parquet"
+    v_df = pd.read_parquet(videos_pq) if videos_pq.is_file() else pd.DataFrame()
+    c_df = pd.read_parquet(comments_pq) if comments_pq.is_file() else pd.DataFrame()
+    u_df = pd.read_parquet(voice_pq) if voice_pq.is_file() else pd.DataFrame()
+
+    if not v_df.empty:
+        v_df["video_id"] = v_df["video_id"].astype(str)
+    if not c_df.empty:
+        c_df["video_id"] = c_df["video_id"].astype(str)
+        c_df["comment_id"] = c_df["comment_id"].astype(str)
+    if not u_df.empty:
+        u_df["video_id"] = u_df["video_id"].astype(str)
+
+    gold_by_key = {
+        (str(r["video_id"]), str(r["comment_id"])): str(r["adjudicated_label"])
+        for r in merged_rows
+    }
+    pool_vids = sorted({str(r["video_id"]) for r in merged_rows})
+
+    legacy_short_dup_fp = 0
+    guarded_short_dup_fp = 0
+    sensitivity_per_video: list[dict[str, Any]] = []
+
+    for vid in pool_vids:
+        v_sub = v_df[v_df["video_id"] == vid] if not v_df.empty else pd.DataFrame()
+        v_rec = v_sub.iloc[0].to_dict() if not v_sub.empty else {}
+        caption = str(v_rec.get("caption") or v_rec.get("description") or "")
+        transcript = str(v_rec.get("transcript") or v_rec.get("transcript_text") or "")
+
+        c_sub = (
+            c_df[c_df["video_id"] == vid].sort_values("comment_id")
+            if not c_df.empty
+            else pd.DataFrame()
+        )
+        raw_inputs = [
+            RawCommentInput(
+                comment_id=str(cr["comment_id"]),
+                author_handle=str(cr.get("author_handle") or ""),
+                text=str(cr.get("original_text") or cr.get("text") or ""),
+                like_count=int(cr.get("like_count") or 0),
+                reply_count=int(cr.get("reply_count") or 0),
+            )
+            for cr in c_sub.to_dict("records")
+        ]
+        guarded = detect_seeding_comments(vid, raw_inputs, min_duplicate_words=5)
+        legacy = detect_seeding_comments(vid, raw_inputs, min_duplicate_words=1)
+
+        for g_rec, l_rec in zip(guarded, legacy):
+            gold_lbl = gold_by_key.get((vid, g_rec.comment_id))
+            if gold_lbl == "no_indicator_observed":
+                if l_rec.observable_label == "observable_duplicate":
+                    legacy_short_dup_fp += 1
+                if g_rec.observable_label == "observable_duplicate":
+                    guarded_short_dup_fp += 1
+
+        utterances: list[RawWhisperSegment] | None = None
+        if not u_df.empty:
+            u_sub = u_df[u_df["video_id"] == vid].sort_values("start_sec")
+            if not u_sub.empty:
+                utterances = [
+                    RawWhisperSegment(
+                        start_sec=max(0.0, float(ur.get("start_sec") or 0.0)),
+                        end_sec=max(float(ur.get("start_sec") or 0.0), float(ur.get("end_sec") or 0.0)),
+                        text=str(ur.get("text") or ""),
+                    )
+                    for ur in u_sub.to_dict("records")
+                ]
+
+        sens = compute_comment_filter_sensitivity(
+            caption=caption,
+            transcript=transcript,
+            comments=guarded,
+            utterances=utterances,
+            video_id=vid,
+        )
+        sensitivity_per_video.append(
+            {
+                "video_id": vid,
+                "total_comments": sens["total_comments"],
+                "flagged_indicator_count": sens["flagged_indicator_count"],
+                "unflagged_comment_count": sens["unflagged_comment_count"],
+                "after_filter_abstained": sens["after_filter_abstained"],
+                "before_filter_viewer_mean": sens["before_filter_viewer_mean"],
+                "after_filter_viewer_mean": sens["after_filter_viewer_mean"],
+                "mean_score_shift": sens["mean_score_shift"],
+                "before_filter_supported_aspects": sens["before_filter_supported_aspects"],
+                "after_filter_supported_aspects": sens["after_filter_supported_aspects"],
+                "before_filter_supported_discrepancy": sens["before_filter_supported_discrepancy"],
+                "after_filter_supported_discrepancy": sens["after_filter_supported_discrepancy"],
+                "supported_discrepancy_shift": sens["supported_discrepancy_shift"],
+            }
+        )
+
+    repo_root = Path(__file__).resolve().parents[2]
+    data_hashes: dict[str, str] = {
+        str(pool_jsonl): _sha256_file(pool_jsonl),
+        str(locked_predictions_jsonl): _sha256_file(locked_predictions_jsonl),
+    }
+    for pq_path in (videos_pq, comments_pq, voice_pq):
+        if pq_path.is_file():
+            data_hashes[str(pq_path)] = _sha256_file(pq_path)
+
+    report: dict[str, Any] = {
+        "study_id": "m5_1_real_pilot_eval_v1",
+        "fixture_type": "real_m3_3_pilot_double_annotated_pool",
+        "real_pilot_comments_available": True,
+        "evaluated_at": datetime.now(UTC).isoformat(),
+        "environment": {
+            "platform": platform.platform(),
+            "python": sys.version,
+            "cpu_count": os.cpu_count(),
+            "process_peak_rss_mib": round(float(get_peak_rss_mib()), 2),
+        },
+        "annotation_summary": {
+            "total_pool_rows": summary["total_pool_rows"],
+            "unique_video_count": summary["unique_video_count"],
+            "assignment_counts": summary["assignment_counts"],
+            "n_verified_label_counts": summary["n_verified_label_counts"],
+            "k_verified_label_counts": summary["k_verified_label_counts"],
+            "adjudicated_label_counts": summary["adjudicated_label_counts"],
+            "inter_annotator_agreement": summary["agreement"],
+            "disagreements": summary["disagreements"],
+        },
+        "split_counts": {k: len(v) for k, v in splits.items()},
+        "split_video_counts": {
+            "dev": len(dev_vids),
+            "calibration": len(cal_vids),
+            "held_out_third": len(test_vids),
+            "video_overlap_count": 0,
+        },
+        "organic_duplicate_ablation_real_pool": {
+            "legacy_min_words_1_false_positives": legacy_short_dup_fp,
+            "guarded_min_words_5_false_positives": guarded_short_dup_fp,
+        },
+        "held_out_third_metrics": held_out_eval,
+        "dev_metrics": dev_eval,
+        "calibration_metrics": cal_eval,
+        "all_pool_metrics": all_pool_eval,
+        "real_corpus_filter_sensitivity": {
+            "videos_checked": len(sensitivity_per_video),
+            "videos_with_flagged_comments": sum(
+                1 for s in sensitivity_per_video if int(s["flagged_indicator_count"]) > 0
+            ),
+            "total_flagged_comments": sum(
+                int(s["flagged_indicator_count"]) for s in sensitivity_per_video
+            ),
+            "avg_flagged_per_video": round(
+                sum(int(s["flagged_indicator_count"]) for s in sensitivity_per_video)
+                / max(len(sensitivity_per_video), 1),
+                4,
+            ),
+            "max_abs_mean_score_shift": round(
+                max(
+                    (
+                        abs(float(s["mean_score_shift"]))
+                        for s in sensitivity_per_video
+                        if s["mean_score_shift"] is not None
+                    ),
+                    default=0.0,
+                ),
+                4,
+            ),
+            "max_abs_supported_discrepancy_shift": round(
+                max(
+                    (
+                        abs(float(s["supported_discrepancy_shift"]))
+                        for s in sensitivity_per_video
+                        if s["supported_discrepancy_shift"] is not None
+                    ),
+                    default=0.0,
+                ),
+                4,
+            ),
+            "per_video": sensitivity_per_video,
+        },
+        "provenance": {
+            "code_files_sha256": {
+                fname: _sha256_file(repo_root / fname)
+                for fname in (
+                    "packages/seeding/detector.py",
+                    "packages/seeding/evaluation.py",
+                    "packages/data_contracts/multimodal.py",
+                    "apps/api/app/routers/trust.py",
+                    "apps/demo/presentation.py",
+                    "pipelines/audit_m5_1_comments/run_baseline_checks.py",
+                )
+            },
+            "data_files_sha256": data_hashes,
+        },
+    }
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    mode = "w" if overwrite else "x"
+    with output.open(mode, encoding="utf-8") as fp:
+        fp.write(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    return report
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run M5.1 dry-run regression or real-pilot export.")
+    parser = argparse.ArgumentParser(description="Run M5.1 dry-run regression, real-pilot export, or real-pilot eval.")
     parser.add_argument(
         "--mode",
-        choices=("fixture_dry_run", "real_pool"),
+        choices=("fixture_dry_run", "real_pool", "real_eval"),
         default="fixture_dry_run",
     )
     parser.add_argument(
@@ -247,7 +521,24 @@ def main() -> None:
         default=Path("artifacts/benchmarks/m5_1_fixture_dry_run.json"),
     )
     parser.add_argument("--comments-parquet", type=Path, default=None)
+    parser.add_argument(
+        "--pool-jsonl",
+        type=Path,
+        default=Path("data/annotations/m5_1_pilot_pool.jsonl"),
+    )
+    parser.add_argument(
+        "--locked-predictions-jsonl",
+        type=Path,
+        default=Path("data/annotations/m5_1_pilot_pool_locked_predictions.jsonl"),
+    )
+    parser.add_argument(
+        "--corpus-dir",
+        type=Path,
+        default=Path("data/corpus/m3_3_pilot_snapshot_v2"),
+    )
     parser.add_argument("--max-items", type=int, default=300)
+    parser.add_argument("--n-boot", type=int, default=1000)
+    parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
 
     if args.mode == "real_pool":
@@ -259,6 +550,27 @@ def main() -> None:
             max_items=args.max_items,
         )
         print(f"PASS: exported {len(pool)} pilot comments to {args.output}")
+        return
+
+    if args.mode == "real_eval":
+        eval_rep = run_real_pilot_eval(
+            pool_jsonl=args.pool_jsonl,
+            locked_predictions_jsonl=args.locked_predictions_jsonl,
+            corpus_dir=args.corpus_dir,
+            output=args.output,
+            n_boot=args.n_boot,
+            overwrite=args.overwrite,
+        )
+        hm = eval_rep["held_out_third_metrics"]
+        iaa = eval_rep["annotation_summary"]["inter_annotator_agreement"]
+        print(
+            f"PASS: wrote {args.output} ("
+            f"pool={eval_rep['annotation_summary']['total_pool_rows']}, "
+            f"kappa={iaa['cohens_kappa']}, "
+            f"held_out_P={hm['macro_precision']}, "
+            f"held_out_R={hm['macro_recall']}, "
+            f"recommended_mode={hm['recommended_mode']})"
+        )
         return
 
     report = run_fixture_dry_run(output=args.output)

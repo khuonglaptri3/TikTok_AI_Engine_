@@ -1,0 +1,898 @@
+{
+  "study_id": "m5_1_real_pilot_eval_v1",
+  "fixture_type": "real_m3_3_pilot_double_annotated_pool",
+  "real_pilot_comments_available": true,
+  "evaluated_at": "2026-11-26T07:09:06.844095+00:00",
+  "environment": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.11.14 | packaged by conda-forge | (main, Oct 13 2025, 14:09:32) [GCC 14.3.0]",
+    "cpu_count": 4,
+    "process_peak_rss_mib": 1199.16
+  },
+  "annotation_summary": {
+    "total_pool_rows": 300,
+    "unique_video_count": 22,
+    "assignment_counts": {
+      "K_only": 120,
+      "N_only": 120,
+      "double_review_N_K": 60
+    },
+    "n_verified_label_counts": {
+      "no_indicator_observed": 159,
+      "noise_or_empty": 12,
+      "template_phrase_match": 1,
+      "unknown_ambiguous": 8
+    },
+    "k_verified_label_counts": {
+      "contact_or_link": 1,
+      "no_indicator_observed": 170,
+      "noise_or_empty": 4,
+      "unknown_ambiguous": 5
+    },
+    "adjudicated_label_counts": {
+      "contact_or_link": 1,
+      "no_indicator_observed": 271,
+      "noise_or_empty": 14,
+      "template_phrase_match": 1,
+      "unknown_ambiguous": 13
+    },
+    "inter_annotator_agreement": {
+      "total_double_annotated": 60,
+      "raw_agreement": 0.9333,
+      "cohens_kappa": 0.476,
+      "positive_indicator_raw_agreement": 1.0,
+      "positive_indicator_cohens_kappa": 1.0,
+      "unknown_ambiguous_count": 4,
+      "class_pair_counts": {
+        "no_indicator_observed -> no_indicator_observed": 54,
+        "no_indicator_observed -> unknown_ambiguous": 1,
+        "noise_or_empty -> noise_or_empty": 2,
+        "unknown_ambiguous -> no_indicator_observed": 3
+      }
+    },
+    "disagreements": [
+      {
+        "item_id": "m5_1_005",
+        "video_id": "7710562414172966151",
+        "comment_id": "7710596815314076434",
+        "author_handle": "tinhtungtangvn",
+        "original_text": "@Nghĩa Tục Ngữ",
+        "N_label": "unknown_ambiguous",
+        "K_label": "no_indicator_observed",
+        "adjudicated_label": "unknown_ambiguous",
+        "adjudication_note": "Adjudicated to unknown_ambiguous per guideline line 20 ('Keep unknown_ambiguous explicitly; do not force into no_indicator_observed'): video creator @tinhtungtangvn posting bare @mention without commentary."
+      },
+      {
+        "item_id": "m5_1_006",
+        "video_id": "7710562414172966151",
+        "comment_id": "7710596823438181127",
+        "author_handle": "tinhtungtangvn",
+        "original_text": "@Lâm Anh",
+        "N_label": "unknown_ambiguous",
+        "K_label": "no_indicator_observed",
+        "adjudicated_label": "unknown_ambiguous",
+        "adjudication_note": "Adjudicated to unknown_ambiguous per guideline line 20 ('Keep unknown_ambiguous explicitly; do not force into no_indicator_observed'): video creator @tinhtungtangvn posting bare @mention without commentary."
+      },
+      {
+        "item_id": "m5_1_007",
+        "video_id": "7710562414172966151",
+        "comment_id": "7710596859686699784",
+        "author_handle": "tinhtungtangvn",
+        "original_text": "@Nguyen Bao Quoc Tuan",
+        "N_label": "unknown_ambiguous",
+        "K_label": "no_indicator_observed",
+        "adjudicated_label": "unknown_ambiguous",
+        "adjudication_note": "Adjudicated to unknown_ambiguous per guideline line 20 ('Keep unknown_ambiguous explicitly; do not force into no_indicator_observed'): video creator @tinhtungtangvn posting bare @mention without commentary."
+      },
+      {
+        "item_id": "m5_1_031",
+        "video_id": "7710502428428356871",
+        "comment_id": "7710820880801366804",
+        "author_handle": "user613108186835",
+        "original_text": "Tới công chuyện với tui",
+        "N_label": "no_indicator_observed",
+        "K_label": "unknown_ambiguous",
+        "adjudicated_label": "unknown_ambiguous",
+        "adjudication_note": "Adjudicated to unknown_ambiguous per guideline line 20 ('Keep unknown_ambiguous explicitly; do not force into no_indicator_observed'): colloquial TikTok idiom ('Tới công chuyện với tui') without explicit food/venue anchor."
+      }
+    ]
+  },
+  "split_counts": {
+    "dev": 126,
+    "calibration": 128,
+    "held_out_third": 46
+  },
+  "split_video_counts": {
+    "dev": 8,
+    "calibration": 7,
+    "held_out_third": 7,
+    "video_overlap_count": 0
+  },
+  "organic_duplicate_ablation_real_pool": {
+    "legacy_min_words_1_false_positives": 2,
+    "guarded_min_words_5_false_positives": 0
+  },
+  "held_out_third_metrics": {
+    "evaluated_comment_count": 46,
+    "total_annotated_pool_count": 300,
+    "unique_video_count": 7,
+    "human_signoff_complete": true,
+    "bootstrap_mode": "video_cluster_resample",
+    "truth_class_counts": {
+      "no_indicator_observed": 36,
+      "noise_or_empty": 6,
+      "unknown_ambiguous": 4
+    },
+    "pred_class_counts": {
+      "no_indicator_observed": 40,
+      "noise_or_empty": 6
+    },
+    "per_class_metrics": {
+      "observable_duplicate": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "contact_or_link": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "noise_or_empty": {
+        "support": 6,
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "template_phrase_match": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "core_positive_classes_missing_support": [
+      "contact_or_link",
+      "observable_duplicate"
+    ],
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "bootstrap_95_ci": {
+      "macro_precision": {
+        "point": 1.0,
+        "ci95_low": 0.0,
+        "ci95_high": 1.0
+      },
+      "macro_recall": {
+        "point": 1.0,
+        "ci95_low": 0.0,
+        "ci95_high": 1.0
+      },
+      "macro_f1": {
+        "point": 1.0,
+        "ci95_low": 0.0,
+        "ci95_high": 1.0
+      }
+    },
+    "confusion_matrix": {
+      "no_indicator_observed": {
+        "no_indicator_observed": 36
+      },
+      "unknown_ambiguous": {
+        "no_indicator_observed": 4
+      },
+      "noise_or_empty": {
+        "noise_or_empty": 6
+      }
+    },
+    "auto_filter_thresholds": {
+      "min_annotated_comments": 150,
+      "min_held_out_comments": 45,
+      "min_core_positive_classes_with_support": 3,
+      "min_macro_precision": 0.85,
+      "min_macro_recall": 0.6
+    },
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "dev_metrics": {
+    "evaluated_comment_count": 126,
+    "total_annotated_pool_count": 300,
+    "unique_video_count": 8,
+    "human_signoff_complete": true,
+    "bootstrap_mode": "video_cluster_resample",
+    "truth_class_counts": {
+      "contact_or_link": 1,
+      "no_indicator_observed": 115,
+      "noise_or_empty": 4,
+      "template_phrase_match": 1,
+      "unknown_ambiguous": 5
+    },
+    "pred_class_counts": {
+      "no_indicator_observed": 122,
+      "noise_or_empty": 4
+    },
+    "per_class_metrics": {
+      "observable_duplicate": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "contact_or_link": {
+        "support": 1,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "noise_or_empty": {
+        "support": 4,
+        "tp": 3,
+        "fp": 1,
+        "fn": 1,
+        "precision": 0.75,
+        "recall": 0.75,
+        "f1": 0.75
+      },
+      "template_phrase_match": {
+        "support": 1,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "core_positive_classes_missing_support": [
+      "observable_duplicate"
+    ],
+    "macro_precision": 0.25,
+    "macro_recall": 0.25,
+    "macro_f1": 0.25,
+    "bootstrap_95_ci": {
+      "macro_precision": {
+        "point": 0.25,
+        "ci95_low": 0.0,
+        "ci95_high": 1.0
+      },
+      "macro_recall": {
+        "point": 0.25,
+        "ci95_low": 0.0,
+        "ci95_high": 0.8665
+      },
+      "macro_f1": {
+        "point": 0.25,
+        "ci95_low": 0.0,
+        "ci95_high": 0.8571
+      }
+    },
+    "confusion_matrix": {
+      "noise_or_empty": {
+        "no_indicator_observed": 1,
+        "noise_or_empty": 3
+      },
+      "no_indicator_observed": {
+        "no_indicator_observed": 114,
+        "noise_or_empty": 1
+      },
+      "unknown_ambiguous": {
+        "no_indicator_observed": 5
+      },
+      "template_phrase_match": {
+        "no_indicator_observed": 1
+      },
+      "contact_or_link": {
+        "no_indicator_observed": 1
+      }
+    },
+    "auto_filter_thresholds": {
+      "min_annotated_comments": 150,
+      "min_held_out_comments": 45,
+      "min_core_positive_classes_with_support": 3,
+      "min_macro_precision": 0.85,
+      "min_macro_recall": 0.6
+    },
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "calibration_metrics": {
+    "evaluated_comment_count": 128,
+    "total_annotated_pool_count": 300,
+    "unique_video_count": 7,
+    "human_signoff_complete": true,
+    "bootstrap_mode": "video_cluster_resample",
+    "truth_class_counts": {
+      "no_indicator_observed": 120,
+      "noise_or_empty": 4,
+      "unknown_ambiguous": 4
+    },
+    "pred_class_counts": {
+      "no_indicator_observed": 124,
+      "noise_or_empty": 4
+    },
+    "per_class_metrics": {
+      "observable_duplicate": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "contact_or_link": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "noise_or_empty": {
+        "support": 4,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "template_phrase_match": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "core_positive_classes_missing_support": [
+      "contact_or_link",
+      "observable_duplicate"
+    ],
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "bootstrap_95_ci": {
+      "macro_precision": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_recall": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      },
+      "macro_f1": {
+        "point": 1.0,
+        "ci95_low": 1.0,
+        "ci95_high": 1.0
+      }
+    },
+    "confusion_matrix": {
+      "no_indicator_observed": {
+        "no_indicator_observed": 120
+      },
+      "noise_or_empty": {
+        "noise_or_empty": 4
+      },
+      "unknown_ambiguous": {
+        "no_indicator_observed": 4
+      }
+    },
+    "auto_filter_thresholds": {
+      "min_annotated_comments": 150,
+      "min_held_out_comments": 45,
+      "min_core_positive_classes_with_support": 3,
+      "min_macro_precision": 0.85,
+      "min_macro_recall": 0.6
+    },
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "all_pool_metrics": {
+    "evaluated_comment_count": 300,
+    "total_annotated_pool_count": 300,
+    "unique_video_count": 22,
+    "human_signoff_complete": true,
+    "bootstrap_mode": "video_cluster_resample",
+    "truth_class_counts": {
+      "contact_or_link": 1,
+      "no_indicator_observed": 271,
+      "noise_or_empty": 14,
+      "template_phrase_match": 1,
+      "unknown_ambiguous": 13
+    },
+    "pred_class_counts": {
+      "no_indicator_observed": 286,
+      "noise_or_empty": 14
+    },
+    "per_class_metrics": {
+      "observable_duplicate": {
+        "support": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "contact_or_link": {
+        "support": 1,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "noise_or_empty": {
+        "support": 14,
+        "tp": 13,
+        "fp": 1,
+        "fn": 1,
+        "precision": 0.9286,
+        "recall": 0.9286,
+        "f1": 0.9286
+      },
+      "template_phrase_match": {
+        "support": 1,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "core_positive_classes_missing_support": [
+      "observable_duplicate"
+    ],
+    "macro_precision": 0.3095,
+    "macro_recall": 0.3095,
+    "macro_f1": 0.3095,
+    "bootstrap_95_ci": {
+      "macro_precision": {
+        "point": 0.3095,
+        "ci95_low": 0.25,
+        "ci95_high": 1.0
+      },
+      "macro_recall": {
+        "point": 0.3095,
+        "ci95_low": 0.25,
+        "ci95_high": 1.0
+      },
+      "macro_f1": {
+        "point": 0.3095,
+        "ci95_low": 0.2592,
+        "ci95_high": 0.9715
+      }
+    },
+    "confusion_matrix": {
+      "no_indicator_observed": {
+        "no_indicator_observed": 270,
+        "noise_or_empty": 1
+      },
+      "unknown_ambiguous": {
+        "no_indicator_observed": 13
+      },
+      "noise_or_empty": {
+        "no_indicator_observed": 1,
+        "noise_or_empty": 13
+      },
+      "template_phrase_match": {
+        "no_indicator_observed": 1
+      },
+      "contact_or_link": {
+        "no_indicator_observed": 1
+      }
+    },
+    "auto_filter_thresholds": {
+      "min_annotated_comments": 150,
+      "min_held_out_comments": 45,
+      "min_core_positive_classes_with_support": 3,
+      "min_macro_precision": 0.85,
+      "min_macro_recall": 0.6
+    },
+    "auto_filter_eligible": false,
+    "recommended_mode": "diagnostic_only_without_filtering"
+  },
+  "real_corpus_filter_sensitivity": {
+    "videos_checked": 22,
+    "videos_with_flagged_comments": 10,
+    "total_flagged_comments": 15,
+    "avg_flagged_per_video": 0.6818,
+    "max_abs_mean_score_shift": 0.0,
+    "max_abs_supported_discrepancy_shift": 0.0,
+    "per_video": [
+      {
+        "video_id": "7706832341804633352",
+        "total_comments": 42,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 42,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": -0.3966,
+        "after_filter_viewer_mean": -0.3966,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7708970028552457480",
+        "total_comments": 40,
+        "flagged_indicator_count": 1,
+        "unflagged_comment_count": 39,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": -0.6133,
+        "after_filter_viewer_mean": -0.6133,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7709080401645473044",
+        "total_comments": 9,
+        "flagged_indicator_count": 1,
+        "unflagged_comment_count": 8,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.25,
+        "after_filter_viewer_mean": 0.25,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7709372899198602514",
+        "total_comments": 4,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 4,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": -0.2,
+        "after_filter_viewer_mean": -0.2,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7709375359300537601",
+        "total_comments": 2,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 2,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.0,
+        "after_filter_viewer_mean": 0.0,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7709416664755866887",
+        "total_comments": 3,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 3,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.0,
+        "after_filter_viewer_mean": 0.0,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7709423559424167188",
+        "total_comments": 10,
+        "flagged_indicator_count": 1,
+        "unflagged_comment_count": 9,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.0,
+        "after_filter_viewer_mean": 0.0,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7709711126140849426",
+        "total_comments": 7,
+        "flagged_indicator_count": 1,
+        "unflagged_comment_count": 6,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.25,
+        "after_filter_viewer_mean": 0.25,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7709738723730066706",
+        "total_comments": 1,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 1,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.0,
+        "after_filter_viewer_mean": 0.0,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710067177193377045",
+        "total_comments": 12,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 12,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.3091,
+        "after_filter_viewer_mean": 0.3091,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [
+          "taste"
+        ],
+        "after_filter_supported_aspects": [
+          "taste"
+        ],
+        "before_filter_supported_discrepancy": -0.9091,
+        "after_filter_supported_discrepancy": -0.9091,
+        "supported_discrepancy_shift": 0.0
+      },
+      {
+        "video_id": "7710143263436508417",
+        "total_comments": 4,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 4,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.0,
+        "after_filter_viewer_mean": 0.0,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710150153201536262",
+        "total_comments": 2,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 2,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": -0.5,
+        "after_filter_viewer_mean": -0.5,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710191968239848711",
+        "total_comments": 21,
+        "flagged_indicator_count": 1,
+        "unflagged_comment_count": 20,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.25,
+        "after_filter_viewer_mean": 0.25,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710262606010846484",
+        "total_comments": 4,
+        "flagged_indicator_count": 1,
+        "unflagged_comment_count": 3,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.0,
+        "after_filter_viewer_mean": 0.0,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710293148903230728",
+        "total_comments": 7,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 7,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.25,
+        "after_filter_viewer_mean": 0.25,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710450847070653716",
+        "total_comments": 9,
+        "flagged_indicator_count": 5,
+        "unflagged_comment_count": 4,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.25,
+        "after_filter_viewer_mean": 0.25,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710492265776549128",
+        "total_comments": 6,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 6,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.25,
+        "after_filter_viewer_mean": 0.25,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710502428428356871",
+        "total_comments": 44,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 44,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": -0.2079,
+        "after_filter_viewer_mean": -0.2079,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [
+          "taste"
+        ],
+        "after_filter_supported_aspects": [
+          "taste"
+        ],
+        "before_filter_supported_discrepancy": -0.1364,
+        "after_filter_supported_discrepancy": -0.1364,
+        "supported_discrepancy_shift": 0.0
+      },
+      {
+        "video_id": "7710562414172966151",
+        "total_comments": 6,
+        "flagged_indicator_count": 0,
+        "unflagged_comment_count": 6,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.25,
+        "after_filter_viewer_mean": 0.25,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710634206874946824",
+        "total_comments": 6,
+        "flagged_indicator_count": 2,
+        "unflagged_comment_count": 4,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.25,
+        "after_filter_viewer_mean": 0.25,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [],
+        "after_filter_supported_aspects": [],
+        "before_filter_supported_discrepancy": null,
+        "after_filter_supported_discrepancy": null,
+        "supported_discrepancy_shift": null
+      },
+      {
+        "video_id": "7710927418533399815",
+        "total_comments": 50,
+        "flagged_indicator_count": 1,
+        "unflagged_comment_count": 49,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": 0.05,
+        "after_filter_viewer_mean": 0.05,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [
+          "taste"
+        ],
+        "after_filter_supported_aspects": [
+          "taste"
+        ],
+        "before_filter_supported_discrepancy": -1.0,
+        "after_filter_supported_discrepancy": -1.0,
+        "supported_discrepancy_shift": 0.0
+      },
+      {
+        "video_id": "7711004930638630152",
+        "total_comments": 50,
+        "flagged_indicator_count": 1,
+        "unflagged_comment_count": 49,
+        "after_filter_abstained": false,
+        "before_filter_viewer_mean": -0.125,
+        "after_filter_viewer_mean": -0.125,
+        "mean_score_shift": 0.0,
+        "before_filter_supported_aspects": [
+          "taste"
+        ],
+        "after_filter_supported_aspects": [
+          "taste"
+        ],
+        "before_filter_supported_discrepancy": 0.0714,
+        "after_filter_supported_discrepancy": 0.0714,
+        "supported_discrepancy_shift": 0.0
+      }
+    ]
+  },
+  "provenance": {
+    "code_files_sha256": {
+      "packages/seeding/detector.py": "8531c734e31144fd089c3eee9466356adada56e0e09802164074a2cde8feb973",
+      "packages/seeding/evaluation.py": "737053559920c9027c6dd4c2550a15203c9f05184f13f4fc01256ef449886c85",
+      "packages/data_contracts/multimodal.py": "0176a23901a95a9c8de39aa63c6af8db0bd835251ac4b2746de226a80fbe3dd0",
+      "apps/api/app/routers/trust.py": "2b603c467ce817c7cdbeba4be8121a481a04de9d9b40b94d6078392ad9421da9",
+      "apps/demo/presentation.py": "794492161ff232223a6e47da28dbd3587425edb80b6fce524920b77fb029ea5b",
+      "pipelines/audit_m5_1_comments/run_baseline_checks.py": "3f8435c49c39ef7d13d54dbe41a1468e1405b81910edf1bfa891594038c7bc6c"
+    },
+    "data_files_sha256": {
+      "data/annotations/m5_1_pilot_pool.jsonl": "228bb410bfa3ac26bf4c473b9f3851109798f3aee08590b23acb8275320a28f4",
+      "data/annotations/m5_1_pilot_pool_locked_predictions.jsonl": "00244904307386ea4706f542a00214f0a07856d37f017fad0aa778ddd849ec55",
+      "data/corpus/m3_3_pilot_snapshot_v2/fact_videos.parquet": "8aec43c79b7eb235a303c59da8da016df6e1e292891aeda6966c269dd5bcdbee",
+      "data/corpus/m3_3_pilot_snapshot_v2/fact_comments.parquet": "9447bd0ee23d5fe5c89e7788701a02513689f752c51dadf794afb5c58033dbe2",
+      "data/corpus/m3_3_pilot_snapshot_v2/fact_voice_segments.parquet": "8da7888c323a231046bf98c5d80551c178a38f33a0e857bfbfee7a12b771a62a"
+    }
+  }
+}
