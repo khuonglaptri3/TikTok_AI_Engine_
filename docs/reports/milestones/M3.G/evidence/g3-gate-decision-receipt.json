@@ -5,8 +5,10 @@
   "peer_reviewer_and_replay_contributor": "Nguyễn Việt Nguyên (N)",
   "decided_by_primary_owner_at": "2026-11-26T09:17:00+07:00",
   "primary_owner_recommendation": "PASS_FREEZE_FURTHER_CRAWLING",
-  "n_peer_approval": "PENDING_N_FINAL_CONCURRENCE_ON_UNIFIED_V2_V5_RECEIPT",
-  "gate_status_until_two_person_signoff": "IN_PROGRESS_READY_FOR_JOINT_PASS",
+  "n_peer_approval": "PASS_CONFIRMED_BY_N_OWNER_RELAYED_2026_11_27",
+  "n_confirmed_at": "2026-11-27T08:39:15+07:00",
+  "gate_result": "PASS",
+  "gate_status_until_two_person_signoff": "COMPLETE_JOINT_PASS",
   "decision_scope": "M3.1-M3.3 vertical capture-to-ASR-to-Gold-to-BM25 slice and post-pilot comment enrichments verified across 4 immutable Gold snapshots (base 20261118_taxonomy_fix_v1, pilot v1, TikTokApi native-comment v2 = 452 comments across 28/30 pilot videos, and Playwright expansion v5 = 2,823 comments across 118/130 fresh F&B videos) with 0 byte mutations, 29/29 64kbps mp3 SHA-256 verified (46.683 min; 27 pure F&B), 10/10 fresh ASR searchable (RTF=0.1971), 30/30 N+K human verified (N=15.0 min, K=18.0 min, total=33.0 min), and M3.1 repeated-ingest + deduplication probes passing. Unblocks M4.1, M5.1, and M5.2; freezes all further live network crawling (0 additional sessions authorized).",
   "prerequisite_gates": {
     "G0": "PASS",

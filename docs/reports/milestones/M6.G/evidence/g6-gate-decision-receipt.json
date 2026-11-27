@@ -1,0 +1,24 @@
+{
+  "gate_id": "G6",
+  "task_id": "M6.G",
+  "local_cpu_release_decision": "PASS",
+  "public_hosting_decision": "BLOCKED",
+  "gate_status": "COMPLETE_LOCAL_RELEASE_PASS_PUBLIC_HOSTING_BLOCKED",
+  "authorized_spend_usd": 0.0,
+  "accepted_capabilities": {
+    "M2.1_niche_micro_benchmarks": "ACCEPTED_DESCRIPTIVE_COHORT_QUANTILES",
+    "M2.2_M6.1_retrieval": "ACCEPTED_BM25_V3_AND_M3_3_PILOT_WITH_RERANKING",
+    "M2.3_M6.2_grounded_script_and_qa": "ACCEPTED_OFFLINE_GROUNDED_DEFAULT_OPTIONAL_BOUNDED_GEMINI_FREE",
+    "M3.1_M3.3_incremental_dual_sink": "ACCEPTED_FROZEN_AT_ZERO_NEW_CRAWL_SESSIONS",
+    "M4.1_audio_timestamps_and_prosody": "ACCEPTED_BOUNDED_AUDIO_DERIVED_OFFSET_AND_DESCRIPTIVE_PROSODY",
+    "M4.2_disclosure_and_promo": "ACCEPTED_OBSERVED_FLAGS_SEPARATED_FROM_LEXICAL_CUES_HIDDEN_PR_DEFERRED",
+    "M5.1_comment_indicators": "ACCEPTED_DIAGNOSTIC_ONLY_WITHOUT_AUTO_FILTERING",
+    "M5.2_four_aspect_absa": "ACCEPTED_QUALIFIED_MIN_3_COMMENTS_SPAN_GROUNDED_DISCREPANCY"
+  },
+  "contributor_signoff": {
+    "K_status": "PASS",
+    "N_status": "PASS",
+    "confirmed_at": "2026-11-27T08:39:15+07:00",
+    "note": "Both contributors K and N reviewed all M0-M6 deliverables and gate boundaries; local CPU release accepted as PASS and public hosting recorded as BLOCKED on upstream data redistribution rights."
+  }
+}

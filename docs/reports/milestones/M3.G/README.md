@@ -1,7 +1,7 @@
-# M3.G — Bounded Capture-to-Transcript-to-Search & Capacity Gate (`G3`)
+# M3.G — Bounded Capture-to-Transcript-to-Search & Capacity Gate (`G3 = PASS`)
 
-- Status: IN_PROGRESS (All technical `G3` checks, `M3.1` repeated-ingest replays, `29`-`.mp3` SHA-256 verification, `30/30` `N`+`K` inspection timings (`33.0` min total), and `v2`/`v5` comment readiness checks **PASS** (`M4.1 = READY_UNBLOCKED`, `M5.1 = READY_UNBLOCKED`, `M5.2 = READY_UNBLOCKED`); awaiting `N` final co-sign on the unified `v1`/`v2`/`v5` receipt before flipping global `G3` from `NOT_RUN` to `PASS`)
-- Execution date: 2026-11-23 to 2026-11-26 (Asia/Ho_Chi_Minh)
+- Status: COMPLETE (All technical `G3` checks, `M3.1` repeated-ingest replays, `29`-`.mp3` SHA-256 verification, `30/30` `N`+`K` inspection timings (`33.0` min total), and `v2`/`v5` comment readiness checks **PASS**; joint `K` + `N` confirmation recorded in [g3-gate-decision-receipt.json](evidence/g3-gate-decision-receipt.json) on `2026-11-27T08:39:15+07:00`, flipping `G3 = PASS`)
+- Execution date: 2026-11-23 to 2026-11-27 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M3.G`)
 - Primary owner: Trần Đình Khương (`K`, `2` pts) · Peer reviewer & replay contributor: Nguyễn Việt Nguyên (`N`, `2` pts)
 - Specification: [spec.md](superpowers/spec.md)
@@ -57,7 +57,7 @@ Executed and unified both `N`'s repeated-ingest replay preparation ([g3_capacity
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Final `N` co-sign on unified `v1`/`v2`/`v5` `G3` receipt | Both open items from `N`'s initial prep (`K` inspection time & `comment_coverage_rate = 0.0`) are now resolved; global `G3` stays `NOT_RUN` until `N` confirms the unified receipt | `N` quick concurrence (`M3.G -> COMPLETE`, `G3 -> PASS`) |
+| None (further live crawling frozen at `0` new sessions) | All `M4`/`M5` datasets are verified on disk; any future live TikTok crawl requires a new bounded gate budget | Preserved in [M6.G](../M6.G/README.md) |
 
 ## Acceptance and handoff
 
@@ -66,6 +66,6 @@ Executed and unified both `N`'s repeated-ingest replay preparation ([g3_capacity
 | Repeated `M3.1` ingest & `M3.3` minimum vertical slice (`>= 5` searchable real fresh videos) | Met (`5.64 s` / `6.14 s` replays; `10/10` searchable; `436` voice segments preserved) | [g3_capacity_and_replay_receipt.json](evidence/g3_capacity_and_replay_receipt.json), [g3_verification_receipt.json](evidence/g3_verification_receipt.json) |
 | Measured audio `RTF`, capture yield, domain purity, comment coverage & annotation time | Met (`RTF = 0.1971`, `0.60` capture, `27/30` pure F&B audio, `93.33%` `v2` comment coverage / `2,823` `v5` comments, `33.0` min `N`+`K` inspection) | [g3_verification_receipt.json](evidence/g3_verification_receipt.json) |
 | Further collection estimated & bounded by explicit budget | Met (`0` further live sessions authorized; all `M4`/`M5` datasets on disk) | [g3-gate-decision-receipt.json](evidence/g3-gate-decision-receipt.json) |
-| Two-person reciprocal gate confirmation (`K` + `N`) | Ready for final `N` co-sign (`N` prep + `K` gate decision unified) | [g3-gate-decision-receipt.json](evidence/g3-gate-decision-receipt.json) |
+| Two-person reciprocal gate confirmation (`K` + `N`) | Met (`K` & `N` confirmed `G3 = PASS`, `2026-11-27T08:39:15+07:00`) | [g3-gate-decision-receipt.json](evidence/g3-gate-decision-receipt.json) |
 
-Final status: **`M3.G` is `IN_PROGRESS` (all technical & data-readiness criteria `PASS`; awaiting `N` final concurrence on the unified receipt to flip `M3.G -> COMPLETE` / `G3 -> PASS`)**.
+Final status: **`M3.G` is `COMPLETE` and Gate `G3` is `PASS` (`0` additional live crawl sessions authorized; `M4`/`M5` datasets frozen on verified Gold snapshots)**.

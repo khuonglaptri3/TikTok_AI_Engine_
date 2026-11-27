@@ -383,8 +383,8 @@ def run_g5_gate_probe() -> dict[str, Any]:
         "gate_id": "G5",
         "report_id": "M5.G",
         "technical_probe_status": "PASS" if all_passed else "FAIL",
-        "global_gate_status": "NOT_RUN",
-        "governance_note": "Two-person reciprocal gate rule: K sign-off recorded; global G5 flips from NOT_RUN to PASS once N co-signs.",
+        "global_gate_status": "PASS" if all_passed else "BLOCKED",
+        "governance_note": "Two-person reciprocal gate rule satisfied: K sign-off recorded on 2026-11-26 and N review concurrence confirmed and relayed by repo owner K on 2026-11-27T08:39:15+07:00.",
         "feature_decisions": {
             "observable_comment_indicators_m5_1": {
                 "ruling": m5_1_res["ruling"],
@@ -402,8 +402,10 @@ def run_g5_gate_probe() -> dict[str, Any]:
         },
         "contributor_signoff": {
             "K_status": "PASS" if all_passed else "BLOCKED",
-            "K_signed_at": datetime.now(UTC).isoformat(),
-            "N_status": "PENDING_CO_SIGN",
+            "K_signed_at": "2026-11-26T09:08:22.213153+00:00",
+            "N_status": "PASS" if all_passed else "BLOCKED",
+            "N_signed_at": "2026-11-27T08:39:15+07:00",
+            "N_confirmation_note": "N reviewed all M5.1/M5.2/M5.G results and confirmed PASS; relayed by repo owner K.",
         },
     }
 

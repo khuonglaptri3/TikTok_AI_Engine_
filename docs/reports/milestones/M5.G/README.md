@@ -1,7 +1,7 @@
-# M5.G — Qualified Comment & Aspect Trust-Diagnostic Gate (`G5`)
+# M5.G — Qualified Comment & Aspect Trust-Diagnostic Gate (`G5 = PASS`)
 
-- Status: IN_PROGRESS (`M5.1 = COMPLETE` and `M5.2 = COMPLETE`; all technical `G5` checks, real-sample provenance, video-disjoint anti-leakage boundaries, `100%` NFC span audits, `>= 3`-comment abstention, and diagnostic-only UI/API limits **PASS** in [run_g5_checks.py](evidence/run_g5_checks.py) with `K` co-owner concurrence recorded in [g5-gate-decision-receipt.json](evidence/g5-gate-decision-receipt.json); awaiting `N` co-sign alongside `M3.G` and `M4.G` before flipping global `G5` from `NOT_RUN` to `PASS`)
-- Execution date: 2026-11-26 (Asia/Ho_Chi_Minh)
+- Status: COMPLETE (`M5.1 = COMPLETE` and `M5.2 = COMPLETE`; all technical `G5` checks, real-sample provenance, video-disjoint anti-leakage boundaries, `100%` NFC span audits, `>= 3`-comment abstention, and diagnostic-only UI/API limits **PASS** in [run_g5_checks.py](evidence/run_g5_checks.py); joint `K` + `N` confirmation recorded in [g5-gate-decision-receipt.json](evidence/g5-gate-decision-receipt.json) on `2026-11-27T08:39:15+07:00`, flipping `G5 = PASS`)
+- Execution date: 2026-11-26 to 2026-11-27 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M5.G`)
 - Repository version: `main` (post-`71cf3232`)
 - Shared co-owners: Trần Đình Khương (`K`, `2` pts) & Nguyễn Việt Nguyên (`N`, `2` pts)
@@ -52,7 +52,7 @@ Executed the deterministic Gate `G5` verification suite ([run_g5_checks.py](evid
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Reciprocal `N` co-sign on `M5.G` (alongside `M3.G` and `M4.G`) | Per two-person governance, `M5.G` stays `IN_PROGRESS` and global `G5` stays `NOT_RUN` until `N` confirms [g5-gate-decision-receipt.json](evidence/g5-gate-decision-receipt.json) | `N` co-signs `M3.G`, `M4.G`, and `M5.G` (`G3/G4/G5 -> PASS`), unlocking `M6.1`/`M6.2 -> COMPLETE` and `M6.G` |
+| Sparse positive spam (`0` `contact_or_link` / `observable_duplicate` on `held_out_third`) and `service` `gold_support = 0` in `180`-unit pilot | Auto-filtering remains unaccepted (`diagnostic_only_without_filtering` enforced) and `< 3`-comment threads abstain | Preserved transparently in API, `/demo/`, and [M6.G](../M6.G/README.md) |
 
 ## Acceptance and handoff
 
@@ -60,6 +60,6 @@ Executed the deterministic Gate `G5` verification suite ([run_g5_checks.py](evid
 | --- | --- | --- |
 | Independently annotated real pilot data, provenance, uncertainty, spans, abstention, and filter sensitivity meet `M5.1`–`M5.2` criteria | Met (`300` `M5.1` comments + `180` `M5.2` units `100%` `N`+`K` verified; `100%` NFC spans; `0` video overlap) | [g5_verification_receipt.json](evidence/g5_verification_receipt.json) |
 | Insufficient positive spam data keeps automatic filtering unaccepted; demo displays diagnostic limits | Met (`auto_filter_eligible = false`, `hide_seeding = False`, `min_viewer_comments = 3` abstention) | [g5_verification_receipt.json](evidence/g5_verification_receipt.json), [g5-gate-decision-receipt.json](evidence/g5-gate-decision-receipt.json) |
-| Two-person reciprocal gate confirmation (`K` + `N`) | Ready for `N` co-sign (`K` `PASS` recorded) | [g5-gate-decision-receipt.json](evidence/g5-gate-decision-receipt.json) |
+| Two-person reciprocal gate confirmation (`K` + `N`) | Met (`K` & `N` confirmed `G5 = PASS`, `2026-11-27T08:39:15+07:00`) | [g5-gate-decision-receipt.json](evidence/g5-gate-decision-receipt.json) |
 
-Final status: **`M5.G` is `IN_PROGRESS` (all technical `G5` checks `PASS`; awaiting `N` co-sign alongside `M3.G` and `M4.G` to flip `M5.G -> COMPLETE` / `G5 -> PASS`)**.
+Final status: **`M5.G` is `COMPLETE` and Gate `G5` is `PASS` (`M5.1` accepted in diagnostic-only mode without auto-filtering; `M5.2` accepted as qualified `>= 3`-comment span-grounded sentiment discrepancy)**.

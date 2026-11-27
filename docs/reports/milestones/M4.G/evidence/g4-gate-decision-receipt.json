@@ -5,8 +5,10 @@
   "peer_reviewer_and_probe_author": "Trần Đình Khương (K)",
   "reviewed_by_k_at": "2026-11-26T11:05:00+07:00",
   "k_peer_review_recommendation": "PASS_QUALIFIED_AUDIO_AND_OBSERVABLE_PROMO_ONLY",
-  "n_primary_owner_signoff": "PENDING_N_FINAL_CONCURRENCE_WITH_G3",
-  "gate_status_until_two_person_signoff": "IN_PROGRESS_READY_FOR_JOINT_PASS",
+  "n_primary_owner_signoff": "PASS_CONFIRMED_BY_N_OWNER_RELAYED_2026_11_27",
+  "n_confirmed_at": "2026-11-27T08:39:15+07:00",
+  "gate_result": "PASS",
+  "gate_status_until_two_person_signoff": "COMPLETE_JOINT_PASS",
   "feature_decisions": {
     "fresh_asr_segment_timestamps": "ACCEPTED_AS_BOUNDED_AUDIO_DERIVED_ESTIMATES (436/436 invariants=1.0; 53>=50 agreed utts med=0.06s<=1.0s, p95=0.20s<=3.0s; never exact word-level speech timing)",
     "historical_interpolated_timestamps": "RETAINED_AS_WPS_ESTIMATED_NEVER_AUDIO_EXACT",

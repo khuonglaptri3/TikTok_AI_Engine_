@@ -1,7 +1,7 @@
 # M6.2 — Source-Resolving Q&A and Demo Integration
 
-- Status: IN_PROGRESS (`30`-question evaluation dataset, 2 `K` TDD fixes for `#quan10` backfill & non-F&B retrieval abstention, `30`-question offline ASGI latency benchmark `p50 = 40.32 ms` / `p95 = 69.00 ms <= 5,000 ms`, `180/180 = 100%` valid answerable citations, `10/10 = 100%` strict refusals, and **both `N` (`30/30`) and `K` (`30/30`) human answer/provenance inspections (`18/20 = 90.0%` supported each, `28/30 = 93.33%` agreement)** complete; stays `IN_PROGRESS` solely awaiting upstream `M3.G`/`M4.G`/`M5.G` gate closures)
-- Execution date: 2026-11-25 to 2026-11-26 (Asia/Ho_Chi_Minh)
+- Status: COMPLETE (`30`-question evaluation dataset, 2 `K` TDD fixes for `#quan10` backfill & non-F&B retrieval abstention, `30`-question offline ASGI latency benchmark `p50 = 40.32 ms` / `p95 = 69.00 ms <= 5,000 ms`, `180/180 = 100%` valid answerable citations, `10/10 = 100%` strict refusals, live `M3`–`M6` multimodal corpus wiring into `apps/api` & `/demo/`, and **both `N` (`30/30`) and `K` (`30/30`) human answer/provenance inspections (`18/20 = 90.0%` supported each, `28/30 = 93.33%` agreement)** complete; upstream `M3.G`, `M4.G`, `M5.G`, and `M6.1` closed `PASS` / `COMPLETE` on `2026-11-27`)
+- Execution date: 2026-11-25 to 2026-11-27 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M6.2`)
 - Primary owner: Trần Đình Khương (`K`, `7` pts) · Peer reviewer: Nguyễn Việt Nguyên (`N`, `3` pts)
 - Specification: [spec.md](superpowers/spec.md)
@@ -9,7 +9,7 @@
 
 ## Conclusion
 
-Completed the **`30`-question held-out Q&A/demo evaluation**, two-contributor (`N` `30/30` + `K` `30/30`) full beat-vs-source provenance inspection ([m6_2_joint_inspection_receipt.json](evidence/m6_2_joint_inspection_receipt.json)), and `K`'s TDD hardening across retrieval and caption hashtag location backfill (`p95 = 69.00 ms <= 5,000 ms`, `180/180 = 100%` valid answerable citations, `0` citations on all `10/10` no-answer cases). Task status remains **`IN_PROGRESS`** strictly until upstream gates `M3.G`, `M4.G`, and `M5.G` close per the milestone dependency plan:
+Completed the **`30`-question held-out Q&A/demo evaluation**, two-contributor (`N` `30/30` + `K` `30/30`) full beat-vs-source provenance inspection ([m6_2_joint_inspection_receipt.json](evidence/m6_2_joint_inspection_receipt.json)), live `M3`–`M6` multimodal Gold corpus integration into `apps/api` and `/demo/`, and `K`'s TDD hardening across retrieval and caption hashtag location backfill (`p95 = 69.00 ms <= 5,000 ms`, `180/180 = 100%` valid answerable citations, `0` citations on all `10/10` no-answer cases). With upstream gates `M3.G`, `M4.G`, and `M5.G` confirmed `PASS` and `M6.1` `COMPLETE`, **`M6.2` is `COMPLETE`**:
 
 - **100% Source Identity, Temporal Provenance & Fresh `M3.3` Parity (`180/180` citations):** Every retrieved item and script beat across all `20` answerable prompts resolves 1-to-1 to `m3_3_pilot_snapshot_v2` (`100%` citation coverage), qualifying historical rows as `wps_estimated` and fresh ASR rows as `audio_derived` (never exact speech timing). After adding concatenated district hashtag aliases (`#quan10`, `#tanphu`, `#binhthanh`) in [location_poi.py](../../../../packages/taxonomy/location_poi.py), **`8/8` (`100%`)** fresh `M3.3` queries hit their target `audio_derived` video at Rank #1 in retrieval AND cite it directly in `/api/v1/script/generate` (including `m6_2_16` -> `7711004930638630152`).
 - **Two-Person Claim Entailment & `10/10` Bounded Refusals ([m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl)):**
@@ -46,7 +46,7 @@ Completed the **`30`-question held-out Q&A/demo evaluation**, two-contributor (`
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Upstream gates `M3.G` (`G3`), `M4.G` (`G4`), and `M5.G` (`G5`) still open (`M5.1`/`M5.2` `K` halves pending; `/api/v1/trust/audit-video` retains `diagnostic_only_unvalidated`) | Per dependency table (`M6.2` depends on `M4.G, M5.G`), `M6.2` stays `IN_PROGRESS` until `G3`/`G4`/`G5` close (`m6_2_06`/`m6_2_07` phrasing nuance also preserved for final sign-off) | Close `M5.1`/`M5.2`/`M5.G` and `N` co-sign on `G3`/`G4`, then flip `M6.2 -> COMPLETE` before `M6.G` |
+| Preserved `2/20` answerable claim-support disagreements (`m6_2_06` Cần Thơ dish-splitting & `m6_2_07` Vũng Tàu intro-beat selection) | Mean two-inspector support is `90.0% >= 90.0%` (`18/20` each); unadjudicated intersection `17/20 = 85.0%` is reported transparently alongside diagnostic-only `M5.1` comment policy | Recorded transparently in [m6_2_joint_inspection_receipt.json](evidence/m6_2_joint_inspection_receipt.json) and [M6.G](../M6.G/README.md) |
 
 ## Acceptance and handoff
 
@@ -55,6 +55,6 @@ Completed the **`30`-question held-out Q&A/demo evaluation**, two-contributor (`
 | Disjoint `30` held-out questions including `>= 10` no-answer/insufficient-evidence cases | Met (`20` answerable + `10` no-answer; `0` overlap with `v1`/`v2_pilot`) | [held_out_questions_30.jsonl](../../../../data/evaluation/m6_2/held_out_questions_30.jsonl) |
 | `100%` source resolution & honest temporal provenance (`wps_estimated` vs `audio_derived`), `>= 95%` citation coverage, `>= 90%` supported claims, `100%` bounded no-answer refusals | Met (`180/180 = 100%` resolved & cited; `N = 18/20 = 90.0%`, `K = 18/20 = 90.0%`; `10/10` strict refusals) | [m6_2_joint_inspection_receipt.json](evidence/m6_2_joint_inspection_receipt.json), [m6_2_answers_sheet.jsonl](evidence/m6_2_answers_sheet.jsonl) |
 | Offline request `p95 <= 5 s` excluding startup (`concurrency = 1`) + `N` & `K` error/integration review | Met (`p50 = 40.32 ms`, `p95 = 69.00 ms <= 5,000 ms`; `30/30` `N` + `30/30` `K` verified) | [m6_2_offline_dry_run_receipt.json](evidence/m6_2_offline_dry_run_receipt.json) |
-| Upstream gates `M4.G` & `M5.G` closed | Pending (`M4.G` awaiting `N` co-sign; `M5.1`/`M5.2`/`M5.G` in progress) | [M4.G](../M4.G/README.md), [M5.1](../M5.1/README.md), [M5.2](../M5.2/README.md) |
+| Upstream gates `M4.G` & `M5.G` closed & `M6.1` backend finalized | Met (`M3.G`, `M4.G`, `M5.G` = `PASS`; `M6.1` = `COMPLETE` with `bm25-v3` retained) | [M3.G](../M3.G/README.md), [M4.G](../M4.G/README.md), [M5.G](../M5.G/README.md), [M6.1](../M6.1/README.md) |
 
-Final task status: **`IN_PROGRESS` (all `M6.2` benchmarks, TDD fixes, and `30/30 N` + `30/30 K` human inspections complete; awaiting upstream `M3.G`/`M4.G`/`M5.G` gate closures to transition to `COMPLETE`)**.
+Final task status: **`COMPLETE` (all `M6.2` benchmarks, TDD fixes, `apps/` multimodal wiring, `30/30 N` + `30/30 K` human inspections, and upstream gate prerequisites satisfied)**.

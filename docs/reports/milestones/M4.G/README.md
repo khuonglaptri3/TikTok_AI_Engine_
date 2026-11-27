@@ -1,7 +1,7 @@
-# M4.G — Audio Timing/Provenance & Observable Promotion Gate (`G4`)
+# M4.G — Audio Timing/Provenance & Observable Promotion Gate (`G4 = PASS`)
 
-- Status: IN_PROGRESS (`M4.1 = COMPLETE` and `M4.2 = COMPLETE`; all technical `G4` checks, `29`-video fresh prosody-vs-promo audit, anti-leakage checks, and ASGI epistemic refusal guardrails **PASS** in [run_g4_checks.py](evidence/run_g4_checks.py) with `K` peer-review concurrence recorded in [g4-gate-decision-receipt.json](evidence/g4-gate-decision-receipt.json); awaiting `N` primary-owner co-sign alongside `M3.G` before flipping global `G4` from `NOT_RUN` to `PASS`)
-- Execution date: 2026-11-26 (Asia/Ho_Chi_Minh)
+- Status: COMPLETE (`M4.1 = COMPLETE` and `M4.2 = COMPLETE`; all technical `G4` checks, `29`-video fresh prosody-vs-promo audit, anti-leakage checks, and ASGI epistemic refusal guardrails **PASS** in [run_g4_checks.py](evidence/run_g4_checks.py); joint `N` + `K` confirmation recorded in [g4-gate-decision-receipt.json](evidence/g4-gate-decision-receipt.json) on `2026-11-27T08:39:15+07:00`, flipping `G4 = PASS`)
+- Execution date: 2026-11-26 to 2026-11-27 (Asia/Ho_Chi_Minh)
 - Requirement source: [TikTok_AI_Engine_Milestone.md](../../../planning/TikTok_AI_Engine_Milestone.md) (`M4.G`)
 - Repository version: `main` (post-`1ad93439`)
 - Primary owner: Nguyễn Việt Nguyên (`N`, `2` pts) · Peer reviewer & probe author: Trần Đình Khương (`K`, `2` pts)
@@ -54,7 +54,7 @@ Executed the deterministic Gate `G4` verification suite ([run_g4_checks.py](evid
 
 | Issue | Impact | Follow-up / responsible task |
 | --- | --- | --- |
-| Final `N` primary-owner co-sign on `M4.G` (alongside `M3.G`) | Per two-person governance, `M4.G` stays `IN_PROGRESS` and global `G4` stays `NOT_RUN` until `N` confirms [g4-gate-decision-receipt.json](evidence/g4-gate-decision-receipt.json) | `N` co-signs `M3.G` and `M4.G` (`G3 -> PASS`, `G4 -> PASS`) |
+| Undisclosed sponsorship ground truth unavailable | Hidden-sponsorship probability prediction remains deferred and refused via `HTTP 422`; prosody-promo classification remains rejected | Preserved as explicit boundary in [M6.G](../M6.G/README.md) |
 
 ## Acceptance and handoff
 
@@ -62,6 +62,6 @@ Executed the deterministic Gate `G4` verification suite ([run_g4_checks.py](evid
 | --- | --- | --- |
 | Timestamp quality/resource limits meet `M4.1` criteria (`100%` invariants, `<= 1 s` med, `<= 3 s` p95, `<= 4 CPU h`, `<= 8 GiB`) | Met (`436/436`, `med = 0.06 s`, `p95 = 0.20 s`, `222.60 s`, `<= 1,009.46 MiB`) | [g4_verification_receipt.json](evidence/g4_verification_receipt.json) |
 | Observed-target wording meets `M4.2` criteria; gate does not convert disclosed flags or prosody into hidden-sponsorship labels | Met (`DEFERRED_NO_GROUND_TRUTH`, `HTTP 422` refusal, `29`-video prosody classifier rejected) | [g4_verification_receipt.json](evidence/g4_verification_receipt.json), [g4-gate-decision-receipt.json](evidence/g4-gate-decision-receipt.json) |
-| Two-person reciprocal gate confirmation (`N` + `K`) | Ready for `N` co-sign (`K` peer-review `PASS` recorded) | [g4-gate-decision-receipt.json](evidence/g4-gate-decision-receipt.json) |
+| Two-person reciprocal gate confirmation (`N` + `K`) | Met (`K` & `N` confirmed `G4 = PASS`, `2026-11-27T08:39:15+07:00`) | [g4-gate-decision-receipt.json](evidence/g4-gate-decision-receipt.json) |
 
-Final status: **`M4.G` is `IN_PROGRESS` (all technical `G4` checks `PASS`; awaiting `N` co-sign alongside `M3.G` to flip `M4.G -> COMPLETE` / `G4 -> PASS`)**.
+Final status: **`M4.G` is `COMPLETE` and Gate `G4` is `PASS` (bounded `audio_derived` segment offsets and separated observable flags/promo cues accepted; hidden-PR & prosody-intent claims deferred/rejected)**.

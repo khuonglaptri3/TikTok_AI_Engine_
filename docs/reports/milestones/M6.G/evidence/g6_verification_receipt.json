@@ -1,0 +1,148 @@
+{
+  "gate_id": "G6",
+  "report_id": "M6.G",
+  "executed_at_utc": "2026-11-27T01:57:26.025210+00:00",
+  "elapsed_seconds": 39.899,
+  "provider_spend_usd": 0.0,
+  "local_cpu_release_checks_passed": true,
+  "zero_snapshot_byte_mutations": true,
+  "secrets_scanner_passed": true,
+  "upstream_gates_and_tasks": {
+    "upstream_all_ready": true,
+    "verified_gate_count": 6,
+    "verified_task_count": 23,
+    "unready_gates": [],
+    "incomplete_tasks": []
+  },
+  "gate_statuses": {
+    "G0": "PASS",
+    "G1": "PASS",
+    "G2": "PASS",
+    "G3": "PASS",
+    "G4": "PASS",
+    "G5": "PASS"
+  },
+  "package_build": {
+    "build_passed": true,
+    "build_method": "uv_build_offline",
+    "declared_packages": [
+      "apps",
+      "packages",
+      "pipelines"
+    ],
+    "sdist_filename": "tiktok_viral_rag-0.2.0.tar.gz",
+    "sdist_bytes": 233699,
+    "wheel_filename": "tiktok_viral_rag-0.2.0-py3-none-any.whl",
+    "wheel_bytes": 290994,
+    "build_wall_ms": 12264.39
+  },
+  "measured_resources": {
+    "peak_rss_mib": 1347.97,
+    "m3_3_pilot_snapshot_v2_bytes": 58994470,
+    "m3_3_playwright_v5_bytes": 59265049,
+    "bm25_m3_3_pilot_bytes": 44129154,
+    "combined_demo_artifact_disk_mib": 154.87
+  },
+  "live_runtime_probe": {
+    "runtime_all_passed": true,
+    "corpus_snapshot_id": "m3_3_pilot_snapshot_v2",
+    "indexed_bm25_videos": 21758,
+    "multimodal_snapshot_id": "m3_3_playwright_comments_20261125_v5",
+    "multimodal_total_comments": 2823,
+    "multimodal_voice_segments": 436,
+    "missing_key_status_code": 503,
+    "ood_status_code": 422,
+    "epistemic_disclosure_status_code": 422,
+    "demo_html_status_code": 200,
+    "demo_html_bytes": 163546,
+    "all_evaluated_milestones_complete": true,
+    "route_latencies_ms": {
+      "startup_load_ms": 9823.69,
+      "health_ready_ms": 117.8,
+      "niche_benchmark_ms": 17.1,
+      "retrieval_search_ms": 19.2,
+      "offline_script_ms": 44.56,
+      "multimodal_catalog_ms": 5.58,
+      "multimodal_video_audit_ms": 100.64,
+      "demo_html_ms": 64.17
+    }
+  },
+  "hosting_evaluation": {
+    "local_cpu_release_decision": "PASS",
+    "public_hosting_decision": "BLOCKED",
+    "measured_peak_rss_mib": 1347.97,
+    "measured_artifact_disk_mib": 154.87,
+    "source_redistribution_licensed": false,
+    "blocking_reasons": [
+      "G1 (M1.G) blocks public redistribution of upstream TikTok transcripts (70,996 historical + 130 fresh videos), 2,823 viewer comments (@author_handle), and 29 .mp3 audio files without an upstream redistribution license."
+    ],
+    "candidates": [
+      {
+        "candidate": "Hugging Face Spaces (Free CPU Basic)",
+        "official_tier_terms": "Free tier: 2 vCPU, 16 GB RAM, 50 GB ephemeral disk; sleeps after 48h inactivity; $0 without paid upgrade.",
+        "ram_fit": true,
+        "storage_fit": true,
+        "zero_paid_prerequisite": true,
+        "sleep_and_cold_start_limits": "48h idle sleep; ~10-20s container cold start + ~8-10s corpus load.",
+        "rights_and_privacy_cleared": false,
+        "ruling": "BLOCKED_DATA_REDISTRIBUTION_AND_PII"
+      },
+      {
+        "candidate": "Render Free Web Service",
+        "official_tier_terms": "Free tier: 0.1 CPU, 512 MB RAM, ephemeral filesystem, spins down after 15m idle.",
+        "ram_fit": false,
+        "storage_fit": false,
+        "zero_paid_prerequisite": true,
+        "sleep_and_cold_start_limits": "15m idle spin-down; 512 MB RAM ceiling causes OOM on ~1.1 GiB corpus load.",
+        "rights_and_privacy_cleared": false,
+        "ruling": "REJECTED_INSUFFICIENT_512MB_RAM_AND_DATA_RIGHTS"
+      },
+      {
+        "candidate": "Railway / Fly.io",
+        "official_tier_terms": "Time-limited trial credit or credit-card / paid-plan prerequisite required for ongoing hosting.",
+        "ram_fit": true,
+        "storage_fit": true,
+        "zero_paid_prerequisite": false,
+        "sleep_and_cold_start_limits": "Violates project rule requiring a genuinely perpetual free tier with no paid prerequisite or billing risk.",
+        "rights_and_privacy_cleared": false,
+        "ruling": "REJECTED_NO_PERPETUAL_ZERO_CARD_FREE_TIER"
+      }
+    ]
+  },
+  "verified_snapshots": {
+    "20261117_recovered_v1": {
+      "manifest.json": "10ed9c666707319f0a67c688e77d79ddc409e11c1f57ff075a01a3d718b714f4",
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "1bfc6c6f819b4c0176345029e5ae4e630a4e9c0438c89548aab893e1d30c1ecd"
+    },
+    "20261118_taxonomy_fix_v1": {
+      "manifest.json": "49f23739f9e2ea8f1f66fe1b299fe636c19965c99fcadf2bdd6eef7dc18c27de",
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "9684c438784073768a7c0dcc6c5fedaf1a23829a97056dc8c614bb28a51c31f3"
+    },
+    "m3_3_pilot_snapshot_v1": {
+      "manifest.json": "06c24e14a1dfce0f786b50c2adae140751029e0731de149f8517421d7369f676",
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "8aec43c79b7eb235a303c59da8da016df6e1e292891aeda6966c269dd5bcdbee",
+      "fact_voice_segments.parquet": "8da7888c323a231046bf98c5d80551c178a38f33a0e857bfbfee7a12b771a62a",
+      "fact_comments.parquet": "860edb82dd29951a5ab27943a189156ec14836452187a8176daf89c3efa23d86",
+      "fact_absa_reviews.parquet": "0980c03a73e54a6ad632f709a5074fae0944923656853014e2e976a9df8a2253"
+    },
+    "m3_3_pilot_snapshot_v2": {
+      "manifest.json": "04db27f71a43a56fb12779425afcf07ecfa791507afa35673c0735e395a6c5c4",
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "8aec43c79b7eb235a303c59da8da016df6e1e292891aeda6966c269dd5bcdbee",
+      "fact_voice_segments.parquet": "8da7888c323a231046bf98c5d80551c178a38f33a0e857bfbfee7a12b771a62a",
+      "fact_comments.parquet": "9447bd0ee23d5fe5c89e7788701a02513689f752c51dadf794afb5c58033dbe2",
+      "fact_absa_reviews.parquet": "2770ef0a2b0b9c1ce039d1d0cb074a3ab438b0a1fc8469cb07d30941db99ac94"
+    },
+    "m3_3_playwright_comments_20261125_v5": {
+      "manifest.json": "b086e15c32cbcaf38924068831ebe5e3b1d269ef021111479dc8c02f223af312",
+      "dim_creators.parquet": "0a704391fd5395582770a4113dca6eeabfbc6fcb2520731b08a9c0e4177facf7",
+      "fact_videos.parquet": "8595962a952d35b042f20c79874542f4b2dc9f48c70f539937aedf563965b961",
+      "fact_voice_segments.parquet": "e3836b87e220df3c8b2c494c21ca39c2552a920c34822cec53dfd06c9781e04f",
+      "fact_comments.parquet": "5c4981bfdca5c620dedc7269e386a25363f6c19bac52043cd7eb72e63503ccd7",
+      "fact_absa_reviews.parquet": "d0d0abc48ce2801af4800fd8f0997bb7533001da78acde1d7987ac8e58bc010e"
+    }
+  }
+}

@@ -178,7 +178,7 @@ class ServiceContainer:
         if m61 is not None:
             milestones["M6.1"] = {
                 "available": True,
-                "status": "IN_PROGRESS",
+                "status": "COMPLETE",
                 "title": "5,000-Doc CPU Dense & Hybrid Parity (tfidf_svd & MiniLM vs bm25-v3)",
                 "headline": (
                     "bm25-v3 retained as default (Recall@10=1.0000, p95~41 ms vs MiniLM hybrid p95=114.33 ms)"
@@ -200,7 +200,7 @@ class ServiceContainer:
             lat62 = mt.get("offline_combined_latency_ms") or {}
             milestones["M6.2"] = {
                 "available": True,
-                "status": "IN_PROGRESS",
+                "status": "COMPLETE",
                 "title": "30-Prompt Source-Resolving Q&A & Studio /demo/ (N 30/30 + K 30/30)",
                 "headline": (
                     f"citations={mt.get('total_citations_resolved')}, "
