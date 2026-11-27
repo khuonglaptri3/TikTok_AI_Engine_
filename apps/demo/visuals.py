@@ -517,10 +517,14 @@ def render_trust_audit_html(data: dict[str, Any], *, hide_seeding: bool = False)
         for c in shown
     ) or '<div style="font-size:0.84rem;color:#64748b;">Không có bình luận hiển thị theo bộ lọc hiện tại.</div>'
 
+    absa_model = str(data.get("absa_model_used") or "lexicon_v1")
     disc_banner = (
-        f'<span class="vfs-pill vfs-pill-blue">Sentiment Discrepancy: {float(sup_disc):+.2f}</span>'
-        if sup_disc is not None
-        else f'<span class="vfs-pill vfs-pill-amber">Discrepancy tạm dừng ({_esc(abs_reason or "insufficient_overlapping_aspect_support_min_3_comments")})</span>'
+        f'<span class="vfs-pill vfs-pill-green vfs-pill-mono">ABSA Engine: {_esc(absa_model)}</span> '
+        + (
+            f'<span class="vfs-pill vfs-pill-blue">Sentiment Discrepancy: {float(sup_disc):+.2f}</span>'
+            if sup_disc is not None
+            else f'<span class="vfs-pill vfs-pill-amber">Discrepancy tạm dừng ({_esc(abs_reason or "insufficient_overlapping_aspect_support_min_3_comments")})</span>'
+        )
     )
 
     return (

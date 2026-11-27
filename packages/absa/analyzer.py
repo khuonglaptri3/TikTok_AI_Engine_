@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from collections.abc import Callable
+from typing import Literal
 
 from packages.absa.disclosure import analyze_disclosure_and_promo
 from packages.absa.spans import TextUnitInput, summarize_units_aspects
@@ -13,6 +15,7 @@ from packages.data_contracts.multimodal import (
     AspectDiscrepancyDetail,
     AspectName,
     AspectSentimentScores,
+    AspectSpanEvidence,
     CommentRecord,
     RawWhisperSegment,
 )
@@ -235,6 +238,7 @@ def analyze_koc_vs_viewer_absa(
     utterances: list[RawWhisperSegment] | None = None,
     min_viewer_comments: int = 3,
     polarity_tau: float = 0.15,
+    absa_engine: Literal["lexicon_v1", "phobert_ner_t4_finetuned", "phobert_hybrid"] = "lexicon_v1",
 ) -> AbsaComparisonRecord:
     if min_viewer_comments < 1:
         raise ValueError("min_viewer_comments must be >= 1")
@@ -317,10 +321,23 @@ def analyze_koc_vs_viewer_absa(
             )
         )
 
+    custom_extractor: Callable[[TextUnitInput], list[AspectSpanEvidence]] | None = None
+    if absa_engine in {"phobert_ner_t4_finetuned", "phobert_hybrid"}:
+        from packages.absa.neural_absa import get_phobert_absa_model
+
+        nn_bundle = get_phobert_absa_model()
+        use_hybrid = absa_engine == "phobert_hybrid"
+        custom_extractor = lambda u: nn_bundle.extract_unit_spans(  # noqa: E731
+            u,
+            hybrid_lexicon=use_hybrid,
+            polarity_tau=polarity_tau,
+        )
+
     koc_aspect_summaries, koc_spans, _ = summarize_units_aspects(
         creator_units,
         min_support_units=1,
         polarity_tau=polarity_tau,
+        span_extractor=custom_extractor,
     )
 
     viewer_units: list[TextUnitInput] = []
@@ -338,6 +355,7 @@ def analyze_koc_vs_viewer_absa(
         viewer_units,
         min_support_units=min_viewer_comments,
         polarity_tau=polarity_tau,
+        span_extractor=custom_extractor,
     )
 
     merged_viewer_pains = list(viewer_pains)

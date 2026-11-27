@@ -177,6 +177,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
     async def handle_audit_corpus_video(
         video_id: str | None,
         hide_seeding: bool,
+        absa_engine: str = "auto",
     ) -> tuple[str, str, str, str, str]:
         if not video_id or not str(video_id).strip():
             msg = render_error_alert_html(
@@ -185,7 +186,10 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                 amber=True,
             )
             return "", msg, "", "", ""
-        status, data = await _get_api(f"/api/v1/trust/corpus-video/{str(video_id).strip()}")
+        status, data = await _get_api(
+            f"/api/v1/trust/corpus-video/{str(video_id).strip()}",
+            params={"absa_engine": absa_engine or "auto"},
+        )
         if status != 200:
             err = render_error_alert_html(
                 data.get("code", f"HTTP {status}"),
@@ -207,6 +211,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
         is_ad: bool = False,
         is_ec_video: bool = False,
         epistemic_question: str = "",
+        absa_engine: str = "lexicon_v1",
     ) -> tuple[str, str, str]:
         q_clean = (epistemic_question or "").strip()
         d_status, d_data = await _post_api(
@@ -235,6 +240,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                 "is_ad": bool(is_ad),
                 "is_ec_video": bool(is_ec_video),
                 "comments": comments_payload,
+                "absa_engine": absa_engine or "lexicon_v1",
             },
         )
         if status != 200:
@@ -403,6 +409,11 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                                     value=initial_vid,
                                     label="Video thực tế trong kho Gold",
                                 )
+                                mm_absa_engine = gr.Dropdown(
+                                    choices=["auto", "phobert_hybrid", "phobert_ner_t4_finetuned", "lexicon_v1"],
+                                    value="auto",
+                                    label="Mô hình ABSA (auto = PhoBERT_NER_T4 fine-tuned khi sẵn sàng)",
+                                )
                                 mm_hide_seed = gr.Checkbox(
                                     value=False,
                                     label="Tạm ẩn bình luận có chỉ dấu trên giao diện (mặc định tắt — M5.1)",
@@ -430,7 +441,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                         )
                         mm_audit_btn.click(
                             fn=handle_audit_corpus_video,
-                            inputs=[mm_dropdown, mm_hide_seed],
+                            inputs=[mm_dropdown, mm_hide_seed, mm_absa_engine],
                             outputs=[mm_timings, mm_header, mm_disc, mm_prosody, mm_trust],
                         )
 
@@ -472,6 +483,11 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                                 with gr.Row():
                                     t_is_ad = gr.Checkbox(value=False, label="Cờ is_ad (Observed Ad Flag)")
                                     t_is_ec = gr.Checkbox(value=False, label="Cờ is_ec_video (Giỏ hàng)")
+                                t_absa_engine = gr.Dropdown(
+                                    choices=["phobert_hybrid", "phobert_ner_t4_finetuned", "lexicon_v1"],
+                                    value="phobert_hybrid",
+                                    label="Mô hình ABSA sử dụng (PhoBERT_NER_T4 fine-tuned vs Lexicon)",
+                                )
                                 hide_seed_chk = gr.Checkbox(
                                     value=False,
                                     label="Tạm ẩn bình luận có chỉ dấu (mặc định tắt — chẩn đoán M5.1)",
@@ -516,7 +532,7 @@ def build_gradio_blocks(api_app: FastAPI) -> gr.Blocks:
                         )
                         audit_btn.click(
                             fn=handle_trust_audit_manual,
-                            inputs=[t_cap, t_tr, t_comms, hide_seed_chk, t_is_ad, t_is_ec, t_question],
+                            inputs=[t_cap, t_tr, t_comms, hide_seed_chk, t_is_ad, t_is_ec, t_question, t_absa_engine],
                             outputs=[t_audit_timings, t_disc_html, t_audit_html],
                         )
 

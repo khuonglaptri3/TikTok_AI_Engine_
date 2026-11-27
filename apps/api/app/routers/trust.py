@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel, ConfigDict, Field
 
 from apps.api.app.dependencies import ServiceContainer
 from packages.absa import analyze_disclosure_and_promo, analyze_koc_vs_viewer_absa
+from packages.absa.neural_absa import is_phobert_absa_available
 from packages.common.exceptions import UnsupportedDomainError, ViralRagError
 from packages.common.logging import StageTimer
 from packages.data_contracts._validators import validate_timings_ms
@@ -38,6 +39,12 @@ class DisclosureCheckRequest(BaseModel):
 @router.post("/audit-video", response_model=TrustAuditResponse)
 async def audit_video_trust(payload: TrustAuditRequest) -> TrustAuditResponse:
     timer = StageTimer()
+    if payload.absa_engine != "lexicon_v1" and not is_phobert_absa_available():
+        raise ViralRagError(
+            "MODEL_NOT_READY",
+            "Fine-tuned PhoBERT_NER_T4-ABSA weights are not built on disk; run python -m pipelines.train_absa_phobert.",
+            status_code=503,
+        )
     with timer.measure("seeding_filter_ms"):
         cleansed = detect_seeding_comments(payload.video_id, payload.comments)
     with timer.measure("absa_comparison_ms"):
@@ -50,6 +57,7 @@ async def audit_video_trust(payload: TrustAuditRequest) -> TrustAuditResponse:
             is_ec_video=payload.is_ec_video,
             hashtags=payload.hashtags,
             utterances=payload.utterances,
+            absa_engine=payload.absa_engine,
         )
         sensitivity = compute_comment_filter_sensitivity(
             caption=payload.caption,
@@ -61,6 +69,7 @@ async def audit_video_trust(payload: TrustAuditRequest) -> TrustAuditResponse:
     return TrustAuditResponse(
         comparison=comparison,
         comments=cleansed,
+        absa_model_used=payload.absa_engine,
         comment_filter_policy="diagnostic_only_unvalidated",
         filter_sensitivity=sensitivity,
         timings_ms=timer.finalize(),
@@ -94,7 +103,13 @@ async def list_corpus_multimodal_videos(
 
 
 @router.get("/corpus-video/{video_id}")
-async def audit_corpus_video_by_id(video_id: str, request: Request) -> dict[str, Any]:
+async def audit_corpus_video_by_id(
+    video_id: str,
+    request: Request,
+    absa_engine: Literal["auto", "lexicon_v1", "phobert_ner_t4_finetuned", "phobert_hybrid"] = Query(
+        default="auto"
+    ),
+) -> dict[str, Any]:
     timer = StageTimer()
     c = _container(request)
     with timer.measure("corpus_lookup_ms"):
@@ -105,6 +120,18 @@ async def audit_corpus_video_by_id(video_id: str, request: Request) -> dict[str,
             f"Video {video_id!r} was not found in verified multimodal corpus snapshot {c.multimodal.snapshot_id!r}.",
             status_code=404,
         )
+
+    effective_engine: Literal["lexicon_v1", "phobert_ner_t4_finetuned", "phobert_hybrid"]
+    if absa_engine == "auto":
+        effective_engine = "phobert_hybrid" if is_phobert_absa_available() else "lexicon_v1"
+    else:
+        if absa_engine != "lexicon_v1" and not is_phobert_absa_available():
+            raise ViralRagError(
+                "MODEL_NOT_READY",
+                "Fine-tuned PhoBERT_NER_T4-ABSA weights are not built on disk; run python -m pipelines.train_absa_phobert.",
+                status_code=503,
+            )
+        effective_engine = absa_engine
 
     meta = bundle["video"]
     raw_comments = bundle["raw_comment_models"]
@@ -122,6 +149,7 @@ async def audit_corpus_video_by_id(video_id: str, request: Request) -> dict[str,
             is_ec_video=bool(meta["is_ec_video"]),
             hashtags=meta["hashtags"],
             utterances=raw_utterances,
+            absa_engine=effective_engine,
         )
         sensitivity = compute_comment_filter_sensitivity(
             caption=meta["caption"],
@@ -135,6 +163,7 @@ async def audit_corpus_video_by_id(video_id: str, request: Request) -> dict[str,
     trust_resp = TrustAuditResponse(
         comparison=comparison,
         comments=cleansed,
+        absa_model_used=effective_engine,
         comment_filter_policy="diagnostic_only_unvalidated",
         filter_sensitivity=sensitivity,
         timings_ms=final_timings,

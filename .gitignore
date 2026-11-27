@@ -18,4 +18,6 @@ build/
 # Owner explicitly authorized publishing the full dataset and runtime artifacts.
 # data/, artifacts/indexes/ and artifacts/enrichment/ are tracked byte-for-byte.
 # Secret files, tool caches and unrelated legacy application archives stay ignored.
+# Heavy fine-tuned neural weights (reproducible locally via python -m pipelines.train_absa_phobert)
+artifacts/models/**/*.safetensors
 archive/

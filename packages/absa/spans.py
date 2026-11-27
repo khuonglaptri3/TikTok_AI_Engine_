@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from packages.data_contracts._validators import require_non_blank
@@ -1034,6 +1035,7 @@ def summarize_units_aspects(
     *,
     min_support_units: int = 1,
     polarity_tau: float = 0.15,
+    span_extractor: Callable[[TextUnitInput], list[AspectSpanEvidence]] | None = None,
 ) -> tuple[dict[AspectName, AspectAggregateSummary], list[AspectSpanEvidence], list[str]]:
     """Aggregate extracted aspect spans across units while preserving absent_unknown vs observed neutral."""
     if min_support_units < 1:
@@ -1045,7 +1047,11 @@ def summarize_units_aspects(
     pain_points: list[str] = []
 
     for unit in units:
-        unit_spans = extract_unit_aspect_spans(unit, polarity_tau=polarity_tau)
+        unit_spans = (
+            span_extractor(unit)
+            if span_extractor is not None
+            else extract_unit_aspect_spans(unit, polarity_tau=polarity_tau)
+        )
         all_spans.extend(unit_spans)
         for sp in unit_spans:
             if sp.polarity_label == "negative" and len(pain_points) < 6:

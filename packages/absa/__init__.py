@@ -15,6 +15,13 @@ from packages.absa.evaluation import (
     split_units_by_video,
     validate_and_summarize_m5_2_pool,
 )
+from packages.absa.neural_absa import (
+    AbsaEngineMode,
+    LoadedPhoBertAbsaModel,
+    PhoBertNerT4MultiTaskABSA,
+    get_phobert_absa_model,
+    is_phobert_absa_available,
+)
 from packages.absa.spans import (
     TextUnitInput,
     extract_unit_aspect_spans,
@@ -22,6 +29,9 @@ from packages.absa.spans import (
 )
 
 __all__ = [
+    "AbsaEngineMode",
+    "LoadedPhoBertAbsaModel",
+    "PhoBertNerT4MultiTaskABSA",
     "TextUnitInput",
     "VALID_ASPECT_STATES",
     "analyze_disclosure_and_promo",
@@ -32,6 +42,8 @@ __all__ = [
     "compute_m5_2_annotator_agreement",
     "evaluate_m5_2_aspect_sentiment",
     "extract_unit_aspect_spans",
+    "get_phobert_absa_model",
+    "is_phobert_absa_available",
     "predict_unit_aspects",
     "score_text_aspects",
     "split_units_by_video",

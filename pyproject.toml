@@ -76,3 +76,8 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["transformers", "transformers.*", "safetensors", "safetensors.*", "tokenizers", "tokenizers.*"]
+follow_imports = "skip"
+ignore_missing_imports = true

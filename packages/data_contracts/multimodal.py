@@ -371,6 +371,7 @@ class TrustAuditRequest(BaseModel):
     is_ad: bool = False
     is_ec_video: bool = False
     comments: list[RawCommentInput] = Field(default_factory=list)
+    absa_engine: Literal["lexicon_v1", "phobert_ner_t4_finetuned", "phobert_hybrid"] = "lexicon_v1"
 
     @field_validator("video_id")
     @classmethod
@@ -391,6 +392,7 @@ class TrustAuditResponse(BaseModel):
 
     comparison: AbsaComparisonRecord
     comments: list[CommentRecord]
+    absa_model_used: str = "lexicon_v1"
     comment_filter_policy: Literal[
         "diagnostic_only_unvalidated",
         "validated_filter_applied",
